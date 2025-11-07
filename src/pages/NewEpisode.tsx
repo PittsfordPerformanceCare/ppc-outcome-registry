@@ -1,0 +1,221 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { PPC_STORE } from "@/lib/ppcStore";
+import { PPC_CONFIG, IndexType } from "@/lib/ppcConfig";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner";
+import { Save } from "lucide-react";
+
+export default function NewEpisode() {
+  const navigate = useNavigate();
+  const [patientName, setPatientName] = useState("");
+  const [region, setRegion] = useState<string>("");
+  const [dateOfService, setDateOfService] = useState("");
+  const [selectedIndices, setSelectedIndices] = useState<IndexType[]>([]);
+  const [baselineScores, setBaselineScores] = useState<Record<string, string>>({});
+
+  const handleRegionChange = (value: string) => {
+    setRegion(value);
+    const recommendedIndices = PPC_CONFIG.regionToIndices(value) as IndexType[];
+    setSelectedIndices(recommendedIndices);
+    
+    // Initialize baseline scores
+    const scores: Record<string, string> = {};
+    recommendedIndices.forEach((index) => {
+      scores[index] = "";
+    });
+    setBaselineScores(scores);
+  };
+
+  const handleIndexToggle = (index: IndexType, checked: boolean) => {
+    if (checked) {
+      setSelectedIndices([...selectedIndices, index]);
+      setBaselineScores({ ...baselineScores, [index]: "" });
+    } else {
+      setSelectedIndices(selectedIndices.filter((i) => i !== index));
+      const newScores = { ...baselineScores };
+      delete newScores[index];
+      setBaselineScores(newScores);
+    }
+  };
+
+  const handleScoreChange = (index: string, value: string) => {
+    setBaselineScores({ ...baselineScores, [index]: value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validation
+    if (!patientName.trim()) {
+      toast.error("Please enter patient name");
+      return;
+    }
+    if (!region) {
+      toast.error("Please select a region");
+      return;
+    }
+    if (!dateOfService) {
+      toast.error("Please enter date of service");
+      return;
+    }
+    if (selectedIndices.length === 0) {
+      toast.error("Please select at least one outcome index");
+      return;
+    }
+
+    // Validate scores
+    const scores: Record<string, number> = {};
+    for (const index of selectedIndices) {
+      const score = parseFloat(baselineScores[index]);
+      if (isNaN(score) || score < 0 || score > 100) {
+        toast.error(`Invalid score for ${index}. Must be between 0 and 100.`);
+        return;
+      }
+      scores[index] = score;
+    }
+
+    // Generate episode ID
+    const episodeId = `EP${Date.now()}`;
+
+    // Calculate follow-up date (90 days from service date)
+    const serviceDate = new Date(dateOfService);
+    const followupDate = new Date(serviceDate);
+    followupDate.setDate(followupDate.getDate() + 90);
+
+    // Save episode
+    PPC_STORE.setEpisodeMeta(episodeId, {
+      episodeId,
+      patientName: patientName.trim(),
+      region,
+      dateOfService,
+      indices: selectedIndices,
+      baselineScores: scores,
+      followupDate: followupDate.toISOString().split("T")[0],
+    });
+
+    toast.success("Episode created successfully!");
+    navigate("/");
+  };
+
+  return (
+    <div className="mx-auto max-w-3xl space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold">Create New Episode</h1>
+        <p className="mt-2 text-muted-foreground">
+          Enter baseline patient information and outcome scores
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Patient Information</CardTitle>
+            <CardDescription>Basic demographics and episode details</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="patientName">Patient Name *</Label>
+              <Input
+                id="patientName"
+                placeholder="Enter patient name"
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="region">Anatomical Region *</Label>
+                <Select value={region} onValueChange={handleRegionChange} required>
+                  <SelectTrigger id="region">
+                    <SelectValue placeholder="Select region" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PPC_CONFIG.regionEnum.map((r) => (
+                      <SelectItem key={r} value={r}>
+                        {r}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dateOfService">Date of Service *</Label>
+                <Input
+                  id="dateOfService"
+                  type="date"
+                  value={dateOfService}
+                  onChange={(e) => setDateOfService(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {region && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Outcome Indices</CardTitle>
+              <CardDescription>
+                Select outcome measures and enter baseline scores (0-100)
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {(["NDI", "ODI", "QuickDASH", "LEFS"] as IndexType[]).map((index) => (
+                <div key={index} className="flex items-start space-x-4 rounded-lg border p-4">
+                  <Checkbox
+                    id={index}
+                    checked={selectedIndices.includes(index)}
+                    onCheckedChange={(checked) => handleIndexToggle(index, checked as boolean)}
+                  />
+                  <div className="flex-1 space-y-2">
+                    <Label htmlFor={index} className="text-base font-medium">
+                      {index}
+                    </Label>
+                    {selectedIndices.includes(index) && (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.1"
+                          placeholder="Enter baseline score"
+                          value={baselineScores[index] || ""}
+                          onChange={(e) => handleScoreChange(index, e.target.value)}
+                          className="max-w-xs"
+                          required
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          MCID: {PPC_CONFIG.mcid[index]}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="mt-6 flex justify-end gap-4">
+          <Button type="button" variant="outline" onClick={() => navigate("/")}>
+            Cancel
+          </Button>
+          <Button type="submit" className="gap-2">
+            <Save className="h-4 w-4" />
+            Create Episode
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
