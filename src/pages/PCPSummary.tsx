@@ -637,6 +637,12 @@ export default function PCPSummary() {
                   <p className="text-base">{episode.start_date}</p>
                 </div>
               )}
+              {episode.dischargeDate && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Discharge Date</p>
+                  <p className="text-base">{episode.dischargeDate}</p>
+                </div>
+              )}
               {episode.visits && (
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Visits</p>
