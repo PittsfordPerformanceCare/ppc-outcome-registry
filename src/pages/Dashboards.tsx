@@ -22,6 +22,7 @@ interface EpisodeOutcome {
   dischargeScore: number;
   delta: number;
   mcidAchieved: boolean;
+  mcidThreshold: number;
   daysToDischarge: number;
   visitCount: number;
   clinicianId: string;
@@ -117,6 +118,7 @@ export default function Dashboards() {
             dischargeScore: dischargeScore.score,
             delta,
             mcidAchieved,
+            mcidThreshold,
             daysToDischarge,
             visitCount,
             clinicianId: episode.clinician || "Unknown",
@@ -396,6 +398,109 @@ export default function Dashboards() {
       }))
       .sort((a, b) => b.count - a.count);
   }, [filteredOutcomes]);
+
+  // At-Risk Episodes: Identify episodes needing intervention
+  const [atRiskEpisodes, setAtRiskEpisodes] = useState<Array<{
+    episodeId: string;
+    patientName: string;
+    region: string;
+    diagnosis: string;
+    daysActive: number;
+    visitCount: number;
+    compliance: string;
+    delta: number;
+    mcidThreshold: number;
+    riskFactors: string[];
+    recommendation: string;
+  }>>([]);
+
+  useEffect(() => {
+    const fetchAtRiskEpisodes = async () => {
+      try {
+        // Fetch active episodes (no discharge date or recently discharged)
+        const { data: episodes, error } = await supabase
+          .from("episodes")
+          .select("*")
+          .order("date_of_service", { ascending: false });
+
+        if (error) throw error;
+        if (!episodes) return;
+
+        const atRisk: typeof atRiskEpisodes = [];
+
+        for (const episode of episodes) {
+          // Find outcome data for this episode
+          const episodeOutcome = outcomes.find(o => o.episodeId === episode.id);
+          
+          // Skip if no outcome data yet
+          if (!episodeOutcome) continue;
+
+          const riskFactors: string[] = [];
+          let recommendation = "";
+
+          // Calculate days active
+          const startDate = new Date(episode.date_of_service);
+          const endDate = episode.discharge_date ? new Date(episode.discharge_date) : new Date();
+          const daysActive = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+
+          // Risk Factor 1: Low Compliance
+          const compliance = episode.compliance_rating || "Unknown";
+          if (compliance === "Low" || compliance.includes("0-59")) {
+            riskFactors.push("Low Compliance");
+          }
+
+          // Risk Factor 2: Minimal Improvement (< 50% of MCID threshold)
+          const mcidThreshold = episodeOutcome.mcidThreshold;
+          const improvementPct = (Math.abs(episodeOutcome.delta) / mcidThreshold) * 100;
+          if (improvementPct < 50 && improvementPct > 0) {
+            riskFactors.push("Minimal Improvement");
+          }
+
+          // Risk Factor 3: Declining Trajectory
+          if (episodeOutcome.delta < 0) {
+            riskFactors.push("Declining Trajectory");
+            recommendation = "Consider neurological examination or imaging to rule out underlying pathology";
+          }
+
+          // Risk Factor 4: Extended Care without good results
+          if (episodeOutcome.visitCount > 6 && improvementPct < 75) {
+            riskFactors.push("Extended Care");
+            if (!recommendation) {
+              recommendation = "Review for complex presentation - may need advanced imaging or specialist referral";
+            }
+          }
+
+          // Only include episodes with at least one risk factor
+          if (riskFactors.length > 0) {
+            atRisk.push({
+              episodeId: episode.id,
+              patientName: episode.patient_name,
+              region: episode.region,
+              diagnosis: episode.diagnosis || "Unknown",
+              daysActive,
+              visitCount: episodeOutcome.visitCount,
+              compliance,
+              delta: episodeOutcome.delta,
+              mcidThreshold,
+              riskFactors,
+              recommendation: recommendation || "Continue monitoring - consider treatment plan adjustment",
+            });
+          }
+        }
+
+        // Sort by number of risk factors (highest risk first)
+        atRisk.sort((a, b) => b.riskFactors.length - a.riskFactors.length);
+        setAtRiskEpisodes(atRisk);
+
+      } catch (error) {
+        console.error("Error fetching at-risk episodes:", error);
+      }
+    };
+
+    if (!loading && outcomes.length > 0) {
+      fetchAtRiskEpisodes();
+    }
+  }, [loading, outcomes]);
 
   // Chart colors
   const CHART_COLORS = ['#A51C30', '#16a34a', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6'];
@@ -1117,6 +1222,153 @@ export default function Dashboards() {
               ) : (
                 <div className="flex items-center justify-center h-[300px] text-muted-foreground">
                   <p>No referral source data available</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* At-Risk Episodes Table */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <span className="text-2xl">🚨</span> Episodes Requiring Attention
+                  </CardTitle>
+                  <CardDescription>
+                    Patients with minimal improvement, declining trajectory, or extended care
+                  </CardDescription>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold" style={{ color: PPC_CONFIG.brandColor }}>
+                    {atRiskEpisodes.length}
+                  </div>
+                  <div className="text-xs text-muted-foreground">At-Risk Episodes</div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {atRiskEpisodes.length > 0 ? (
+                <div className="space-y-4">
+                  {/* Summary Stats */}
+                  <div className="grid gap-3 md:grid-cols-4 mb-4">
+                    <div className="p-3 rounded-lg border bg-red-50 dark:bg-red-950/20">
+                      <div className="text-xs text-muted-foreground">Declining</div>
+                      <div className="text-xl font-bold text-red-600">
+                        {atRiskEpisodes.filter(e => e.riskFactors.includes("Declining Trajectory")).length}
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-lg border bg-orange-50 dark:bg-orange-950/20">
+                      <div className="text-xs text-muted-foreground">Extended Care</div>
+                      <div className="text-xl font-bold text-orange-600">
+                        {atRiskEpisodes.filter(e => e.riskFactors.includes("Extended Care")).length}
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-lg border bg-yellow-50 dark:bg-yellow-950/20">
+                      <div className="text-xs text-muted-foreground">Minimal Progress</div>
+                      <div className="text-xl font-bold text-yellow-600">
+                        {atRiskEpisodes.filter(e => e.riskFactors.includes("Minimal Improvement")).length}
+                      </div>
+                    </div>
+                    <div className="p-3 rounded-lg border bg-gray-50 dark:bg-gray-950/20">
+                      <div className="text-xs text-muted-foreground">Low Compliance</div>
+                      <div className="text-xl font-bold text-gray-600">
+                        {atRiskEpisodes.filter(e => e.riskFactors.includes("Low Compliance")).length}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Episodes Table */}
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left p-2">Priority</th>
+                          <th className="text-left p-2">Patient</th>
+                          <th className="text-left p-2">Region/Diagnosis</th>
+                          <th className="text-center p-2">Days Active</th>
+                          <th className="text-center p-2">Visits</th>
+                          <th className="text-left p-2">Risk Factors</th>
+                          <th className="text-left p-2">Clinical Recommendation</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {atRiskEpisodes.map((episode, idx) => (
+                          <tr key={idx} className="border-b hover:bg-muted/50">
+                            <td className="p-2">
+                              <div className="flex items-center gap-1">
+                                {episode.riskFactors.length >= 3 ? (
+                                  <span className="px-2 py-1 rounded text-xs font-semibold bg-red-100 text-red-800">
+                                    HIGH
+                                  </span>
+                                ) : episode.riskFactors.length === 2 ? (
+                                  <span className="px-2 py-1 rounded text-xs font-semibold bg-orange-100 text-orange-800">
+                                    MEDIUM
+                                  </span>
+                                ) : (
+                                  <span className="px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-800">
+                                    LOW
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="p-2">
+                              <div className="font-medium">{episode.patientName}</div>
+                              <div className="text-xs text-muted-foreground font-mono">
+                                {episode.episodeId.substring(0, 12)}...
+                              </div>
+                            </td>
+                            <td className="p-2">
+                              <div className="font-medium">{episode.region}</div>
+                              <div className="text-xs text-muted-foreground max-w-[200px] truncate">
+                                {episode.diagnosis}
+                              </div>
+                            </td>
+                            <td className="p-2 text-center">{episode.daysActive}</td>
+                            <td className="p-2 text-center">{episode.visitCount}</td>
+                            <td className="p-2">
+                              <div className="space-y-1">
+                                {episode.riskFactors.map((factor, fIdx) => (
+                                  <div key={fIdx} className="text-xs">
+                                    <span 
+                                      className="px-1.5 py-0.5 rounded"
+                                      style={{
+                                        backgroundColor: 
+                                          factor === "Declining Trajectory" ? "#fee2e2" :
+                                          factor === "Extended Care" ? "#ffedd5" :
+                                          factor === "Minimal Improvement" ? "#fef3c7" :
+                                          "#f3f4f6",
+                                        color:
+                                          factor === "Declining Trajectory" ? "#991b1b" :
+                                          factor === "Extended Care" ? "#9a3412" :
+                                          factor === "Minimal Improvement" ? "#92400e" :
+                                          "#374151",
+                                      }}
+                                    >
+                                      {factor}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="p-2">
+                              <div className="text-xs max-w-[300px]">
+                                {episode.recommendation}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-64 text-muted-foreground">
+                  <div className="text-center">
+                    <div className="text-4xl mb-2">✅</div>
+                    <p className="font-semibold">No At-Risk Episodes</p>
+                    <p className="text-sm">All patients are progressing well within expected parameters</p>
+                  </div>
                 </div>
               )}
             </CardContent>
