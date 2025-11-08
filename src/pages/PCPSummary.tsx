@@ -6,7 +6,7 @@ import { calculateMCID } from "@/lib/mcidUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Printer, AlertCircle } from "lucide-react";
+import { FileText, Download, Printer, AlertCircle, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 
@@ -586,26 +586,45 @@ export default function PCPSummary() {
             <div className="space-y-4 border-t pt-6">
               <h3 className="text-lg font-semibold">Pain Level Changes</h3>
               <div className="rounded-lg border bg-card p-6">
-                {/* Hero Percentage Improvement */}
-                {episode.painPre !== undefined && episode.painPost !== undefined && episode.painPre > 0 && (
-                  <div className="text-center mb-8 p-6 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/20">
-                    <p className="text-sm font-medium text-muted-foreground mb-2">PAIN REDUCTION ACHIEVED</p>
-                    <div className="flex items-center justify-center gap-3 mb-3">
-                      <div className="text-7xl font-black text-success drop-shadow-lg">
-                        {((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0)}%
+                {/* Hero Before/After Pain Display */}
+                {episode.painPre !== undefined && episode.painPost !== undefined && (
+                  <div className="text-center mb-8 p-8 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30">
+                    <p className="text-sm font-bold text-success mb-6 tracking-wide uppercase">Patient-Reported Pain Level</p>
+                    
+                    {/* Large Before/After Display */}
+                    <div className="flex items-center justify-center gap-6 mb-6">
+                      <div className="text-center p-4 rounded-lg bg-destructive/10">
+                        <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">At Intake</p>
+                        <div className="flex items-baseline justify-center gap-1">
+                          <p className="text-7xl font-black text-destructive">{episode.painPre}</p>
+                          <p className="text-3xl font-bold text-muted-foreground">/10</p>
+                        </div>
+                      </div>
+                      
+                      <ArrowRight className="h-16 w-16 text-success" strokeWidth={3} />
+                      
+                      <div className="text-center p-4 rounded-lg bg-success/10">
+                        <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">At Discharge</p>
+                        <div className="flex items-baseline justify-center gap-1">
+                          <p className="text-7xl font-black text-success">{episode.painPost}</p>
+                          <p className="text-3xl font-bold text-muted-foreground">/10</p>
+                        </div>
                       </div>
                     </div>
-                    <p className="text-lg font-semibold text-success mb-2">
-                      {episode.painPost === 0 ? "COMPLETE PAIN RESOLUTION" :
-                       (episode.painPre - episode.painPost) >= 5 ? "EXCELLENT IMPROVEMENT" :
-                       (episode.painPre - episode.painPost) >= 3 ? "SIGNIFICANT IMPROVEMENT" :
-                       (episode.painPre - episode.painPost) >= 2 ? "MODERATE IMPROVEMENT" :
-                       (episode.painPre - episode.painPost) > 0 ? "MILD IMPROVEMENT" :
-                       "NO IMPROVEMENT"}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {episode.painPre - episode.painPost} point reduction from intake to discharge
-                    </p>
+                    
+                    <div className="space-y-2">
+                      <p className="text-2xl font-bold text-success">
+                        {episode.painPost === 0 ? "COMPLETE PAIN RESOLUTION" :
+                         (episode.painPre - episode.painPost) >= 5 ? "EXCELLENT IMPROVEMENT" :
+                         (episode.painPre - episode.painPost) >= 3 ? "SIGNIFICANT IMPROVEMENT" :
+                         (episode.painPre - episode.painPost) >= 2 ? "MODERATE IMPROVEMENT" :
+                         (episode.painPre - episode.painPost) > 0 ? "MILD IMPROVEMENT" :
+                         "NO IMPROVEMENT"}
+                      </p>
+                      <p className="text-lg font-semibold text-muted-foreground">
+                        {episode.painPre - episode.painPost} point reduction • {((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0)}% improvement
+                      </p>
+                    </div>
                   </div>
                 )}
 
