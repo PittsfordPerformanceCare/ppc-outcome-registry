@@ -456,58 +456,169 @@ export default function PCPSummary() {
           {(episode.painPre !== undefined || episode.painPost !== undefined) && (
             <div className="space-y-4 border-t pt-6">
               <h3 className="text-lg font-semibold">Pain Level Changes</h3>
-              <div className="rounded-lg border bg-card p-4">
-                <div className="grid gap-4 sm:grid-cols-3">
+              <div className="rounded-lg border bg-card p-6">
+                <div className="grid gap-6 sm:grid-cols-3 mb-6">
                   {episode.painPre !== undefined && (
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Initial Pain Level</p>
-                      <p className="text-2xl font-bold">{episode.painPre}/10</p>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Initial Pain Level</p>
+                      <div className="relative">
+                        <p className="text-4xl font-bold text-destructive mb-1">{episode.painPre}/10</p>
+                        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-destructive transition-all"
+                            style={{ width: `${(episode.painPre / 10) * 100}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {episode.painPre >= 8 ? "Severe Pain" :
+                           episode.painPre >= 5 ? "Moderate Pain" :
+                           episode.painPre >= 3 ? "Mild Pain" :
+                           "Minimal Pain"}
+                        </p>
+                      </div>
                     </div>
                   )}
                   {episode.painPost !== undefined && (
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Discharge Pain Level</p>
-                      <p className="text-2xl font-bold">{episode.painPost}/10</p>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Discharge Pain Level</p>
+                      <div className="relative">
+                        <p className={`text-4xl font-bold mb-1 ${
+                          episode.painPost === 0 ? "text-success" :
+                          episode.painPost <= 3 ? "text-warning" :
+                          "text-destructive"
+                        }`}>
+                          {episode.painPost}/10
+                        </p>
+                        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full transition-all ${
+                              episode.painPost === 0 ? "bg-success" :
+                              episode.painPost <= 3 ? "bg-warning" :
+                              "bg-destructive"
+                            }`}
+                            style={{ width: `${(episode.painPost / 10) * 100}%` }}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {episode.painPost >= 8 ? "Severe Pain" :
+                           episode.painPost >= 5 ? "Moderate Pain" :
+                           episode.painPost >= 3 ? "Mild Pain" :
+                           episode.painPost === 0 ? "No Pain" :
+                           "Minimal Pain"}
+                        </p>
+                      </div>
                     </div>
                   )}
                   {episode.painPre !== undefined && episode.painPost !== undefined && (
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Change</p>
-                      <p className="text-2xl font-bold text-success">
-                        {episode.painPre - episode.painPost} points
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0)}% reduction
-                      </p>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Total Improvement</p>
+                      <div className="relative">
+                        <p className="text-4xl font-bold text-success mb-1">
+                          {episode.painPre - episode.painPost > 0 ? "-" : "+"}
+                          {Math.abs(episode.painPre - episode.painPost)}
+                        </p>
+                        <p className="text-lg font-semibold text-success">
+                          {episode.painPre > 0 ? ((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0) : 0}% reduction
+                        </p>
+                        <Badge className={`mt-2 ${
+                          episode.painPre - episode.painPost >= 5 ? "bg-success/15 text-success border-success/30" :
+                          episode.painPre - episode.painPost >= 3 ? "bg-primary/15 text-primary border-primary/30" :
+                          episode.painPre - episode.painPost >= 2 ? "bg-warning/15 text-warning border-warning/30" :
+                          "bg-muted text-muted-foreground"
+                        }`}>
+                          {episode.painPre - episode.painPost >= 5 ? "Excellent" :
+                           episode.painPre - episode.painPost >= 3 ? "Significant" :
+                           episode.painPre - episode.painPost >= 2 ? "Moderate" :
+                           episode.painPre - episode.painPost > 0 ? "Mild" :
+                           episode.painPre - episode.painPost === 0 ? "No Change" :
+                           "Increased"}
+                        </Badge>
+                      </div>
                     </div>
                   )}
                 </div>
+                
                 {episode.painPre !== undefined && episode.painPost !== undefined && (
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="text-sm font-medium text-muted-foreground mb-2">Clinical Interpretation</p>
-                    <p className="text-base">
-                      {(() => {
-                        const reduction = episode.painPre - episode.painPost;
-                        const percentReduction = (reduction / episode.painPre * 100).toFixed(0);
-                        
-                        if (episode.painPost === 0) {
-                          return `Patient achieved complete pain resolution, demonstrating a ${reduction}-point reduction from the initial pain rating of ${episode.painPre}/10. This represents a 100% improvement and indicates excellent treatment response with full symptom resolution.`;
-                        } else if (reduction >= 5) {
-                          return `Patient experienced substantial pain reduction of ${reduction} points (${percentReduction}% improvement), decreasing from ${episode.painPre}/10 at intake to ${episode.painPost}/10 at discharge. This clinically significant improvement indicates highly effective pain management and strong treatment response.`;
-                        } else if (reduction >= 3) {
-                          return `Patient demonstrated significant pain improvement with a ${reduction}-point reduction (${percentReduction}% improvement), progressing from ${episode.painPre}/10 to ${episode.painPost}/10. This represents a meaningful clinical improvement that typically correlates with enhanced function and quality of life.`;
-                        } else if (reduction >= 2) {
-                          return `Patient showed moderate pain reduction of ${reduction} points (${percentReduction}% improvement). Pain decreased from ${episode.painPre}/10 at intake to ${episode.painPost}/10 at discharge. While this represents positive progress, the patient may benefit from continued pain management strategies.`;
-                        } else if (reduction >= 1) {
-                          return `Patient reported mild pain reduction of ${reduction} point(s) (${percentReduction}% improvement), with pain levels decreasing from ${episode.painPre}/10 to ${episode.painPost}/10. This modest improvement suggests partial treatment response; additional interventions may be warranted.`;
-                        } else if (reduction === 0) {
-                          return `Pain levels remained stable at ${episode.painPre}/10 throughout treatment. The absence of improvement may indicate a need for treatment plan modification or consideration of alternative therapeutic approaches.`;
-                        } else {
-                          return `Pain levels increased by ${Math.abs(reduction)} point(s) from ${episode.painPre}/10 to ${episode.painPost}/10 during treatment. This finding warrants clinical attention and may require further diagnostic evaluation or treatment plan reassessment.`;
-                        }
-                      })()}
-                    </p>
-                  </div>
+                  <>
+                    {/* Visual Pain Scale Comparison */}
+                    <div className="mb-6 p-4 bg-muted/50 rounded-lg">
+                      <p className="text-sm font-medium mb-3">Pain Scale Progression</p>
+                      <div className="relative h-12">
+                        {/* Background scale */}
+                        <div className="absolute inset-0 flex">
+                          {[...Array(10)].map((_, i) => (
+                            <div
+                              key={i}
+                              className="flex-1 border-r border-border last:border-r-0"
+                              style={{
+                                backgroundColor: i < 3 ? 'hsl(var(--success) / 0.1)' :
+                                               i < 5 ? 'hsl(var(--warning) / 0.1)' :
+                                               i < 7 ? 'hsl(var(--destructive) / 0.2)' :
+                                               'hsl(var(--destructive) / 0.3)'
+                              }}
+                            >
+                              <span className="text-xs text-muted-foreground flex items-center justify-center h-full">
+                                {i + 1}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Initial marker */}
+                        <div
+                          className="absolute top-0 h-6 w-1 bg-destructive"
+                          style={{ left: `${(episode.painPre / 10) * 100}%` }}
+                        >
+                          <div className="absolute -top-1 left-1/2 -translate-x-1/2 text-xs font-semibold text-destructive whitespace-nowrap">
+                            Initial
+                          </div>
+                        </div>
+                        {/* Discharge marker */}
+                        <div
+                          className={`absolute bottom-0 h-6 w-1 ${
+                            episode.painPost === 0 ? "bg-success" :
+                            episode.painPost <= 3 ? "bg-warning" :
+                            "bg-destructive"
+                          }`}
+                          style={{ left: `${(episode.painPost / 10) * 100}%` }}
+                        >
+                          <div className={`absolute -bottom-5 left-1/2 -translate-x-1/2 text-xs font-semibold whitespace-nowrap ${
+                            episode.painPost === 0 ? "text-success" :
+                            episode.painPost <= 3 ? "text-warning" :
+                            "text-destructive"
+                          }`}>
+                            Discharge
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Clinical Interpretation */}
+                    <div className="pt-4 border-t">
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Clinical Interpretation</p>
+                      <p className="text-base leading-relaxed">
+                        {(() => {
+                          const reduction = episode.painPre - episode.painPost;
+                          const percentReduction = (reduction / episode.painPre * 100).toFixed(0);
+                          
+                          if (episode.painPost === 0) {
+                            return `Patient achieved complete pain resolution, demonstrating a ${reduction}-point reduction from the initial pain rating of ${episode.painPre}/10. This represents a 100% improvement and indicates excellent treatment response with full symptom resolution.`;
+                          } else if (reduction >= 5) {
+                            return `Patient experienced substantial pain reduction of ${reduction} points (${percentReduction}% improvement), decreasing from ${episode.painPre}/10 at intake to ${episode.painPost}/10 at discharge. This clinically significant improvement indicates highly effective pain management and strong treatment response.`;
+                          } else if (reduction >= 3) {
+                            return `Patient demonstrated significant pain improvement with a ${reduction}-point reduction (${percentReduction}% improvement), progressing from ${episode.painPre}/10 to ${episode.painPost}/10. This represents a meaningful clinical improvement that typically correlates with enhanced function and quality of life.`;
+                          } else if (reduction >= 2) {
+                            return `Patient showed moderate pain reduction of ${reduction} points (${percentReduction}% improvement). Pain decreased from ${episode.painPre}/10 at intake to ${episode.painPost}/10 at discharge. While this represents positive progress, the patient may benefit from continued pain management strategies.`;
+                          } else if (reduction >= 1) {
+                            return `Patient reported mild pain reduction of ${reduction} point(s) (${percentReduction}% improvement), with pain levels decreasing from ${episode.painPre}/10 to ${episode.painPost}/10. This modest improvement suggests partial treatment response; additional interventions may be warranted.`;
+                          } else if (reduction === 0) {
+                            return `Pain levels remained stable at ${episode.painPre}/10 throughout treatment. The absence of improvement may indicate a need for treatment plan modification or consideration of alternative therapeutic approaches.`;
+                          } else {
+                            return `Pain levels increased by ${Math.abs(reduction)} point(s) from ${episode.painPre}/10 to ${episode.painPost}/10 during treatment. This finding warrants clinical attention and may require further diagnostic evaluation or treatment plan reassessment.`;
+                          }
+                        })()}
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
