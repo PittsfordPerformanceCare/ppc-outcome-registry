@@ -202,4 +202,13 @@ All colors MUST be HSL.
   .space-y-6 > * + * {
     margin-top: 0.75rem !important;
   }
+
+  /* Episode summary print styles */
+  .print\\:block {
+    display: block !important;
+  }
+
+  .print\\:text-sm {
+    font-size: 0.875rem !important;
+  }
 }

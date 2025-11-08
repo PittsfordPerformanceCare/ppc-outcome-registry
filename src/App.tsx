@@ -9,6 +9,7 @@ import NewEpisode from "./pages/NewEpisode";
 import FollowUp from "./pages/FollowUp";
 import Discharge from "./pages/Discharge";
 import PCPSummary from "./pages/PCPSummary";
+import EpisodeSummary from "./pages/EpisodeSummary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/follow-up" element={<FollowUp />} />
             <Route path="/discharge" element={<Discharge />} />
             <Route path="/pcp-summary" element={<PCPSummary />} />
+            <Route path="/episode-summary" element={<EpisodeSummary />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

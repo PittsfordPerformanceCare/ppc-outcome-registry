@@ -548,6 +548,11 @@ export default function Dashboard() {
                           {isCompleted ? "Completed" : "Pending Follow-up"}
                         </Badge>
                       )}
+                      <Link to={`/episode-summary?id=${episode.episodeId}`}>
+                        <Button size="sm" variant="outline">
+                          View Details
+                        </Button>
+                      </Link>
                       {!followup && (
                         <Link to={`/follow-up?episode=${episode.episodeId}`}>
                           <Button size="sm" variant="outline">

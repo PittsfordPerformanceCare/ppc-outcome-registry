@@ -65,3 +65,8 @@ export function getStatusBadgeClass(status: "improving" | "stable" | "declining"
 export function getStatusLabel(status: "improving" | "stable" | "declining"): string {
   return PPC_CONFIG.statusLabels[status];
 }
+
+export function getMCIDThreshold(indexType: string): number | null {
+  const validIndex = indexType as IndexType;
+  return PPC_CONFIG.mcid[validIndex] || null;
+}
