@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
 import { NDIForm } from "@/components/forms/NDIForm";
+import { MetricCard } from "@/components/MetricCard";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -35,6 +36,10 @@ export default function NewEpisode() {
   const [priorTreatments, setPriorTreatments] = useState("");
   const [functionalLimitations, setFunctionalLimitations] = useState("");
   const [treatmentGoals, setTreatmentGoals] = useState("");
+  const [cisPre, setCisPre] = useState<number | null>(null);
+  const [cisPost, setCisPost] = useState<number | null>(null);
+  const [painPre, setPainPre] = useState<number | null>(null);
+  const [painPost, setPainPost] = useState<number | null>(null);
 
   const handleRegionChange = (value: string) => {
     setRegion(value);
@@ -125,6 +130,10 @@ export default function NewEpisode() {
     const followupDate = new Date(serviceDate);
     followupDate.setDate(followupDate.getDate() + 90);
 
+    // Calculate deltas for metrics
+    const cisDelta = cisPre != null && cisPost != null ? cisPost - cisPre : null;
+    const painDelta = painPre != null && painPost != null ? painPre - painPost : null;
+
     // Save episode
     PPC_STORE.setEpisodeMeta(episodeId, {
       episodeId,
@@ -151,6 +160,12 @@ export default function NewEpisode() {
       priorTreatments: priorTreatments.trim(),
       functionalLimitations: functionalLimitations.trim(),
       treatmentGoals: treatmentGoals.trim(),
+      cis_pre: cisPre,
+      cis_post: cisPost,
+      cis_delta: cisDelta,
+      pain_pre: painPre,
+      pain_post: painPost,
+      pain_delta: painDelta,
     });
 
     toast.success("Episode created successfully!");
@@ -422,6 +437,34 @@ export default function NewEpisode() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Intake Metrics: CIS Standing and Pain Scale */}
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
+              <MetricCard
+                title="CIS Standing"
+                description="Neurologic readiness (0–10)"
+                preLabel="Pre (0–10)"
+                postLabel="Post (captured at Final)"
+                preValue={cisPre}
+                postValue={cisPost}
+                onPreChange={setCisPre}
+                onPostChange={setCisPost}
+                isIntake={true}
+                deltaInverted={false}
+              />
+              <MetricCard
+                title="Patient Verbal Pain Scale"
+                description="Self-reported 0–10"
+                preLabel="Pre (0–10)"
+                postLabel="Post (captured at Final)"
+                preValue={painPre}
+                postValue={painPost}
+                onPreChange={setPainPre}
+                onPostChange={setPainPost}
+                isIntake={true}
+                deltaInverted={true}
+              />
+            </div>
 
             <div className="mt-6 space-y-6">
               <div className="flex items-center space-x-2">

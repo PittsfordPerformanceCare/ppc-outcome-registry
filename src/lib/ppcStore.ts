@@ -32,6 +32,12 @@ export interface EpisodeMeta {
   priorTreatments?: string;
   functionalLimitations?: string;
   treatmentGoals?: string;
+  cis_pre?: number | null;
+  cis_post?: number | null;
+  cis_delta?: number | null;
+  pain_pre?: number | null;
+  pain_post?: number | null;
+  pain_delta?: number | null;
 }
 
 export interface FollowupMeta {

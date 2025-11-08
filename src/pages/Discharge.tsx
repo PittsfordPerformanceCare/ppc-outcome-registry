@@ -17,6 +17,7 @@ import { NDIForm } from "@/components/forms/NDIForm";
 import { ODIForm } from "@/components/forms/ODIForm";
 import { QuickDASHForm } from "@/components/forms/QuickDASHForm";
 import { LEFSForm } from "@/components/forms/LEFSForm";
+import { MetricCard } from "@/components/MetricCard";
 
 interface DischargeScores {
   NDI?: number;
@@ -52,6 +53,10 @@ export default function Discharge() {
   const [referredOut, setReferredOut] = useState(false);
   const [referralReason, setReferralReason] = useState("");
   const [availableEpisodes, setAvailableEpisodes] = useState<EpisodeMeta[]>([]);
+  const [cisPre, setCisPre] = useState<number | null>(null);
+  const [cisPost, setCisPost] = useState<number | null>(null);
+  const [painPre, setPainPre] = useState<number | null>(null);
+  const [painPost, setPainPost] = useState<number | null>(null);
 
   useEffect(() => {
     // Load all available episodes for dropdown
@@ -82,6 +87,12 @@ export default function Discharge() {
         setComplianceNotes(meta.compliance_notes || "");
         setReferredOut(meta.referred_out || false);
         setReferralReason(meta.referral_reason || "");
+
+        // Load metrics
+        setCisPre(meta.cis_pre ?? null);
+        setCisPost(meta.cis_post ?? null);
+        setPainPre(meta.pain_pre ?? null);
+        setPainPost(meta.pain_post ?? null);
       }
     }
   }, [episodeId]);
@@ -118,6 +129,10 @@ export default function Discharge() {
     console.log("Existing episode meta:", existingMeta);
     console.log("Existing baseline scores:", existingMeta.baselineScores);
 
+    // Calculate deltas for metrics
+    const cisDelta = cisPre != null && cisPost != null ? cisPost - cisPre : null;
+    const painDelta = painPre != null && painPost != null ? painPre - painPost : null;
+
     // Only update discharge-specific fields, preserve all intake/treatment data
     const meta: EpisodeMeta = {
       ...existingMeta, // Preserve ALL existing fields
@@ -129,6 +144,10 @@ export default function Discharge() {
       referral_reason: referralReason,
       dob: dob || existingMeta.dob,
       clinician: clinician || existingMeta.clinician,
+      cis_post: cisPost,
+      cis_delta: cisDelta,
+      pain_post: painPost,
+      pain_delta: painDelta,
     };
     
     console.log("Meta to save:", meta);
@@ -311,6 +330,34 @@ export default function Discharge() {
           <div className="flex items-center gap-2">
             <h2 className="text-2xl font-semibold">Discharge Outcome Assessments</h2>
             <Badge variant="outline">{region}</Badge>
+          </div>
+
+          {/* Discharge Metrics: CIS Standing and Pain Scale */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <MetricCard
+              title="CIS Standing"
+              description="Neurologic readiness (0–10)"
+              preLabel="Pre (from Intake)"
+              postLabel="Post (0–10)"
+              preValue={cisPre}
+              postValue={cisPost}
+              onPreChange={setCisPre}
+              onPostChange={setCisPost}
+              isIntake={false}
+              deltaInverted={false}
+            />
+            <MetricCard
+              title="Patient Verbal Pain Scale"
+              description="Self-reported 0–10"
+              preLabel="Pre (from Intake)"
+              postLabel="Post (0–10)"
+              preValue={painPre}
+              postValue={painPost}
+              onPreChange={setPainPre}
+              onPostChange={setPainPost}
+              isIntake={false}
+              deltaInverted={true}
+            />
           </div>
           
           {activeIndices.includes("NDI") && (
