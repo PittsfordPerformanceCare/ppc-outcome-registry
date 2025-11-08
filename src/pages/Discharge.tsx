@@ -20,6 +20,7 @@ import { LEFSForm } from "@/components/forms/LEFSForm";
 import { MetricCard } from "@/components/MetricCard";
 import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
+import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorTreatmentSelector";
 
 interface DischargeScores {
   NDI?: number;
@@ -61,6 +62,8 @@ export default function Discharge() {
   const [painPost, setPainPost] = useState<number | null>(null);
   const [diagnosis, setDiagnosis] = useState("");
   const [functionalLimitation, setFunctionalLimitation] = useState("");
+  const [priorTreatmentsData, setPriorTreatmentsData] = useState<PriorTreatment[]>([]);
+  const [priorTreatmentsOther, setPriorTreatmentsOther] = useState("");
 
   useEffect(() => {
     // Load all available episodes for dropdown
@@ -99,6 +102,8 @@ export default function Discharge() {
         setPainPost(meta.pain_post ?? null);
         setDiagnosis(meta.diagnosis || "");
         setFunctionalLimitation(meta.functional_limitation || "");
+        setPriorTreatmentsData(meta.prior_treatments || []);
+        setPriorTreatmentsOther(meta.prior_treatments_other || "");
       }
     }
   }, [episodeId]);
@@ -156,6 +161,8 @@ export default function Discharge() {
       pain_delta: painDelta,
       diagnosis: diagnosis || existingMeta.diagnosis,
       functional_limitation: functionalLimitation || existingMeta.functional_limitation,
+      prior_treatments: priorTreatmentsData,
+      prior_treatments_other: priorTreatmentsOther,
     };
     
     console.log("Meta to save:", meta);
@@ -349,6 +356,18 @@ export default function Discharge() {
               region={region}
               initialLimitation={functionalLimitation}
               onChange={setFunctionalLimitation}
+            />
+          </div>
+
+          {/* Smart Prior Treatment Selector */}
+          <div className="mt-6">
+            <PriorTreatmentSelector
+              initialTreatments={priorTreatmentsData}
+              initialOther={priorTreatmentsOther}
+              onChange={({ prior_treatments, prior_treatments_other }) => {
+                setPriorTreatmentsData(prior_treatments);
+                setPriorTreatmentsOther(prior_treatments_other);
+              }}
             />
           </div>
         </>

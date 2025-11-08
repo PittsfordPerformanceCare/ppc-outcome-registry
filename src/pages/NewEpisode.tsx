@@ -14,6 +14,7 @@ import { NDIForm } from "@/components/forms/NDIForm";
 import { MetricCard } from "@/components/MetricCard";
 import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
+import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorTreatmentSelector";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -39,6 +40,8 @@ export default function NewEpisode() {
   const [functionalLimitations, setFunctionalLimitations] = useState("");
   const [treatmentGoals, setTreatmentGoals] = useState("");
   const [functionalLimitation, setFunctionalLimitation] = useState("");
+  const [priorTreatmentsData, setPriorTreatmentsData] = useState<PriorTreatment[]>([]);
+  const [priorTreatmentsOther, setPriorTreatmentsOther] = useState("");
   const [cisPre, setCisPre] = useState<number | null>(null);
   const [cisPost, setCisPost] = useState<number | null>(null);
   const [painPre, setPainPre] = useState<number | null>(null);
@@ -170,6 +173,8 @@ export default function NewEpisode() {
       pain_post: painPost,
       pain_delta: painDelta,
       functional_limitation: functionalLimitation.trim(),
+      prior_treatments: priorTreatmentsData,
+      prior_treatments_other: priorTreatmentsOther.trim(),
     });
 
     toast.success("Episode created successfully!");
@@ -407,18 +412,20 @@ export default function NewEpisode() {
                     onChange={(e) => setFunctionalLimitations(e.target.value)}
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="priorTreatments">Prior Treatments</Label>
-                  <Input
-                    id="priorTreatments"
-                    placeholder="List any previous treatments received"
-                    value={priorTreatments}
-                    onChange={(e) => setPriorTreatments(e.target.value)}
-                  />
-                </div>
               </CardContent>
             </Card>
+
+            {/* Smart Prior Treatment Selector */}
+            <div className="mt-6">
+              <PriorTreatmentSelector
+                initialTreatments={priorTreatmentsData}
+                initialOther={priorTreatmentsOther}
+                onChange={({ prior_treatments, prior_treatments_other }) => {
+                  setPriorTreatmentsData(prior_treatments);
+                  setPriorTreatmentsOther(prior_treatments_other);
+                }}
+              />
+            </div>
 
             <Card className="mt-6">
               <CardHeader>

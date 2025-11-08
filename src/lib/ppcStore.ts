@@ -30,6 +30,8 @@ export interface EpisodeMeta {
   medications?: string;
   medicalHistory?: string;
   priorTreatments?: string;
+  prior_treatments?: { name: string; result?: "helped" | "no_change" | "worse" }[];
+  prior_treatments_other?: string;
   functionalLimitations?: string;
   functional_limitation?: string;
   treatmentGoals?: string;
