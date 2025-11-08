@@ -30,6 +30,61 @@ export default function PCPSummary() {
     toast.success("Opening print dialog...");
   };
 
+  const handleLoadDemo = () => {
+    const demoEpisodeId = "DEMO-2024-001";
+    
+    // Create demo episode data
+    const demoEpisode: EpisodeMeta = {
+      episodeId: demoEpisodeId,
+      patientName: "Sarah Johnson",
+      region: "Cervical",
+      dateOfService: "2024-01-15",
+      dob: "1985-06-20",
+      clinician: "Dr. Michael Chen, PT, DPT",
+      diagnosis: "Cervical radiculopathy, right C6-C7",
+      npi: "1234567890",
+      indices: ["NDI"],
+      baselineScores: { NDI: 48 },
+      injuryDate: "2023-12-28",
+      injuryMechanism: "Motor vehicle accident - rear-end collision. Patient reports immediate onset of neck pain with radiation to right shoulder and arm.",
+      painLevel: "8",
+      referringPhysician: "Dr. Lisa Martinez, MD",
+      insurance: "Blue Cross Blue Shield - PPO",
+      emergencyContact: "John Johnson (spouse)",
+      emergencyPhone: "(555) 123-4567",
+      medications: "Ibuprofen 600mg TID for pain management\nCyclobenzaprine 5mg QHS for muscle spasms\nGabapentin 300mg TID for neuropathic pain",
+      medicalHistory: "No significant past medical history. No prior episodes of neck pain. Non-smoker. Exercises regularly (yoga 2x/week prior to injury).",
+      priorTreatments: "ER visit on date of injury - X-rays negative for fracture. Prescribed muscle relaxants and NSAIDs. One week of rest recommended by PCP before referral to PT.",
+      functionalLimitations: "Unable to look over shoulder while driving\nDifficulty sleeping due to pain\nLimited ability to lift or carry objects >5 lbs\nUnable to perform overhead activities at work\nIntermittent numbness in right thumb and index finger",
+      treatmentGoals: "Return to full-time work without restrictions\nEliminate radiating arm pain and numbness\nRestore full cervical range of motion\nReturn to regular yoga practice\nImprove sleep quality",
+      start_date: "2024-01-22",
+      visits: "12",
+      resolution_days: "84",
+      compliance_rating: "Excellent (95%)",
+      compliance_notes: "Patient was highly compliant with home exercise program. Attended all scheduled appointments. Maintained detailed symptom journal. Gradually reduced medication use as symptoms improved.",
+      referred_out: false,
+    };
+
+    // Create demo follow-up data
+    const demoFollowup: FollowupMeta = {
+      episodeId: demoEpisodeId,
+      scheduledDate: "2024-04-15",
+      completedDate: "2024-04-15",
+      scores: { NDI: 12 },
+      status: "improving",
+    };
+
+    // Save to storage
+    PPC_STORE.setEpisodeMeta(demoEpisodeId, demoEpisode);
+    PPC_STORE.setFollowupMeta(demoEpisodeId, demoFollowup);
+    PPC_STORE.setFollowupCompleted(demoEpisodeId, true);
+
+    // Reload page with demo episode
+    window.location.href = `/pcp-summary?episode=${demoEpisodeId}`;
+    
+    toast.success("Demo patient data loaded!");
+  };
+
   const handleExport = () => {
     if (!episode || !followup) return;
 
@@ -71,11 +126,15 @@ export default function PCPSummary() {
     return (
       <div className="mx-auto max-w-4xl">
         <Card>
-          <CardContent className="py-12 text-center">
+          <CardContent className="py-12 text-center space-y-4">
             <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <p className="text-muted-foreground">
               No follow-up data available. Please complete a follow-up assessment first.
             </p>
+            <Button onClick={handleLoadDemo} variant="outline" className="gap-2">
+              <FileText className="h-4 w-4" />
+              Load Demo Patient
+            </Button>
           </CardContent>
         </Card>
       </div>
