@@ -6,22 +6,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Save, TrendingDown, TrendingUp, Minus } from "lucide-react";
 
 export default function FollowUp() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const episodeId = searchParams.get("episode");
+  const episodeIdParam = searchParams.get("episode");
 
+  const [selectedEpisodeId, setSelectedEpisodeId] = useState(episodeIdParam || "");
+  const [availableEpisodes, setAvailableEpisodes] = useState<EpisodeMeta[]>([]);
   const [episode, setEpisode] = useState<EpisodeMeta | null>(null);
   const [followupScores, setFollowupScores] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
-    if (episodeId) {
-      const ep = PPC_STORE.getEpisodeMeta(episodeId);
+    // Load all available episodes for dropdown
+    const episodeIds = PPC_STORE.getAllEpisodes();
+    const episodes = episodeIds
+      .map((id) => PPC_STORE.getEpisodeMeta(id))
+      .filter((ep): ep is EpisodeMeta => ep !== null)
+      .sort((a, b) => new Date(b.dateOfService).getTime() - new Date(a.dateOfService).getTime());
+    setAvailableEpisodes(episodes);
+  }, []);
+
+  useEffect(() => {
+    if (selectedEpisodeId) {
+      const ep = PPC_STORE.getEpisodeMeta(selectedEpisodeId);
       if (ep) {
         setEpisode(ep);
         // Initialize followup scores
@@ -32,7 +45,7 @@ export default function FollowUp() {
         setFollowupScores(scores);
 
         // Check if already completed
-        const existingFollowup = PPC_STORE.getFollowupMeta(episodeId);
+        const existingFollowup = PPC_STORE.getFollowupMeta(selectedEpisodeId);
         if (existingFollowup?.scores) {
           const existingScores: Record<string, string> = {};
           Object.entries(existingFollowup.scores).forEach(([key, value]) => {
@@ -41,12 +54,14 @@ export default function FollowUp() {
           setFollowupScores(existingScores);
           setShowResults(true);
         }
+        
+        // Update URL
+        setSearchParams({ episode: selectedEpisodeId });
       } else {
         toast.error("Episode not found");
-        navigate("/");
       }
     }
-  }, [episodeId, navigate]);
+  }, [selectedEpisodeId, setSearchParams]);
 
   const handleScoreChange = (index: string, value: string) => {
     setFollowupScores({ ...followupScores, [index]: value });
@@ -98,11 +113,8 @@ export default function FollowUp() {
     toast.success("Follow-up completed successfully!");
   };
 
-  if (!episode) {
-    return null;
-  }
 
-  const results = showResults
+  const results = showResults && episode
     ? episode.indices.map((index) => {
         const baseline = episode.baselineScores?.[index] || 0;
         const followup = parseFloat(followupScores[index]) || 0;
@@ -122,33 +134,70 @@ export default function FollowUp() {
         <p className="mt-2 text-muted-foreground">Complete outcome assessment and MCID analysis</p>
       </div>
 
-      {/* Episode Summary */}
+      {/* Episode Selection */}
       <Card>
         <CardHeader>
-          <CardTitle>Episode Information</CardTitle>
+          <CardTitle>Select Episode</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Patient:</span>
-            <span className="text-sm text-muted-foreground">{episode.patientName}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Episode ID:</span>
-            <span className="text-sm text-muted-foreground">{episode.episodeId}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Region:</span>
-            <Badge variant="outline">{episode.region}</Badge>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Service Date:</span>
-            <span className="text-sm text-muted-foreground">{episode.dateOfService}</span>
+        <CardContent>
+          <div className="space-y-2">
+            <Label htmlFor="episodeSelect">Choose an episode for follow-up</Label>
+            <Select value={selectedEpisodeId} onValueChange={setSelectedEpisodeId}>
+              <SelectTrigger id="episodeSelect" className="bg-background">
+                <SelectValue placeholder="Select an episode..." />
+              </SelectTrigger>
+              <SelectContent className="bg-popover">
+                {availableEpisodes.length === 0 ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No episodes found. Create one first.
+                  </div>
+                ) : (
+                  availableEpisodes.map((ep) => (
+                    <SelectItem key={ep.episodeId} value={ep.episodeId}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{ep.patientName}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {ep.episodeId} • {ep.region} • {ep.dateOfService}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
 
+      {/* Episode Summary */}
+      {episode && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Episode Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Patient:</span>
+              <span className="text-sm text-muted-foreground">{episode.patientName}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Episode ID:</span>
+              <span className="text-sm text-muted-foreground">{episode.episodeId}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Region:</span>
+              <Badge variant="outline">{episode.region}</Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Service Date:</span>
+              <span className="text-sm text-muted-foreground">{episode.dateOfService}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Follow-up Form */}
-      {!showResults && (
+      {episode && !showResults && (
         <form onSubmit={handleSubmit}>
           <Card>
             <CardHeader>
@@ -195,7 +244,7 @@ export default function FollowUp() {
       )}
 
       {/* Results */}
-      {showResults && (
+      {episode && showResults && (
         <Card>
           <CardHeader>
             <CardTitle>MCID Analysis Results</CardTitle>

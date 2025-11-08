@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Send, Link2, Mail, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { NDIForm } from "@/components/forms/NDIForm";
@@ -50,6 +51,17 @@ export default function Discharge() {
   const [complianceNotes, setComplianceNotes] = useState("");
   const [referredOut, setReferredOut] = useState(false);
   const [referralReason, setReferralReason] = useState("");
+  const [availableEpisodes, setAvailableEpisodes] = useState<EpisodeMeta[]>([]);
+
+  useEffect(() => {
+    // Load all available episodes for dropdown
+    const episodeIds = PPC_STORE.getAllEpisodes();
+    const episodes = episodeIds
+      .map((id) => PPC_STORE.getEpisodeMeta(id))
+      .filter((ep): ep is EpisodeMeta => ep !== null)
+      .sort((a, b) => new Date(b.dateOfService).getTime() - new Date(a.dateOfService).getTime());
+    setAvailableEpisodes(episodes);
+  }, []);
 
   useEffect(() => {
     if (episodeId) {
@@ -57,6 +69,8 @@ export default function Discharge() {
       if (meta) {
         setPatientName(meta.patientName || "");
         setRegion(meta.region || "");
+        setDob(meta.dob || "");
+        setClinician(meta.clinician || "");
       }
     }
   }, [episodeId]);
@@ -184,56 +198,70 @@ export default function Discharge() {
           <CardTitle>Patient Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-4">
             <div>
-              <Label htmlFor="episodeId">Episode ID *</Label>
-              <Input
-                id="episodeId"
-                value={episodeId}
-                onChange={(e) => setEpisodeId(e.target.value)}
-                placeholder="e.g., PPC-2024-001"
-              />
+              <Label htmlFor="episodeSelect">Select Episode *</Label>
+              <Select value={episodeId} onValueChange={setEpisodeId}>
+                <SelectTrigger id="episodeSelect" className="bg-background">
+                  <SelectValue placeholder="Choose an episode to discharge..." />
+                </SelectTrigger>
+                <SelectContent className="bg-popover">
+                  {availableEpisodes.length === 0 ? (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      No episodes found. Create one first.
+                    </div>
+                  ) : (
+                    availableEpisodes.map((ep) => (
+                      <SelectItem key={ep.episodeId} value={ep.episodeId}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{ep.patientName}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {ep.episodeId} • {ep.region} • {ep.dateOfService}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </div>
-            <div>
-              <Label htmlFor="patientName">Patient Name *</Label>
-              <Input
-                id="patientName"
-                value={patientName}
-                onChange={(e) => setPatientName(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="dob">Date of Birth</Label>
-              <Input
-                id="dob"
-                type="date"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="clinician">Discharging Clinician *</Label>
-              <Input
-                id="clinician"
-                value={clinician}
-                onChange={(e) => setClinician(e.target.value)}
-              />
-            </div>
+
+            {episodeId && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="patientName">Patient Name</Label>
+                  <Input
+                    id="patientName"
+                    value={patientName}
+                    readOnly
+                    className="bg-muted"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="dob">Date of Birth</Label>
+                  <Input
+                    id="dob"
+                    type="date"
+                    value={dob}
+                    onChange={(e) => setDob(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="clinician">Discharging Clinician *</Label>
+                  <Input
+                    id="clinician"
+                    value={clinician}
+                    onChange={(e) => setClinician(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Region</Label>
+                  <Input value={region} readOnly className="bg-muted" />
+                </div>
+              </div>
+            )}
           </div>
 
-          <div>
-            <Label>Primary Anatomical Region *</Label>
-            <RadioGroup value={region} onValueChange={setRegion} className="mt-2 grid grid-cols-3 gap-2">
-              {PPC_CONFIG.regionEnum.map((r) => (
-                <div key={r} className="flex items-center space-x-2">
-                  <RadioGroupItem value={r} id={`region-${r}`} />
-                  <Label htmlFor={`region-${r}`} className="cursor-pointer font-normal">
-                    {r}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
         </CardContent>
       </Card>
 
@@ -405,16 +433,17 @@ export default function Discharge() {
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="complianceRating">Compliance Rating</Label>
-            <RadioGroup value={complianceRating} onValueChange={setComplianceRating} className="mt-2">
-              {["Excellent", "Good", "Fair", "Poor"].map((rating) => (
-                <div key={rating} className="flex items-center space-x-2">
-                  <RadioGroupItem value={rating} id={`compliance-${rating}`} />
-                  <Label htmlFor={`compliance-${rating}`} className="cursor-pointer font-normal">
-                    {rating}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
+            <Select value={complianceRating} onValueChange={setComplianceRating}>
+              <SelectTrigger id="complianceRating" className="bg-background">
+                <SelectValue placeholder="Select compliance rating..." />
+              </SelectTrigger>
+              <SelectContent className="bg-popover">
+                <SelectItem value="Excellent (90-100%)">Excellent (90-100%)</SelectItem>
+                <SelectItem value="Good (75-89%)">Good (75-89%)</SelectItem>
+                <SelectItem value="Fair (50-74%)">Fair (50-74%)</SelectItem>
+                <SelectItem value="Poor (<50%)">Poor (&lt;50%)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
