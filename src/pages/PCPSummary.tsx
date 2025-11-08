@@ -5,7 +5,7 @@ import { calculateMCID } from "@/lib/mcidUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Printer } from "lucide-react";
+import { FileText, Download, Printer, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function PCPSummary() {
@@ -402,51 +402,86 @@ export default function PCPSummary() {
           {/* Clinical Findings */}
           <div className="space-y-4 border-t pt-6">
             <h3 className="text-lg font-semibold">Outcome Measures</h3>
+            
+            {(!episode.baselineScores || Object.keys(episode.baselineScores).length === 0) && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-amber-900 dark:text-amber-100">Missing Baseline Scores</p>
+                    <p className="mt-1 text-sm text-amber-700 dark:text-amber-300">
+                      No baseline scores were recorded for this episode. Baseline scores must be entered when creating a new episode.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {(!episode.dischargeScores || Object.keys(episode.dischargeScores).length === 0) && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-amber-900 dark:text-amber-100">Missing Discharge Scores</p>
+                    <p className="mt-1 text-sm text-amber-700 dark:text-amber-300">
+                      No discharge scores were recorded for this episode. Complete the discharge assessment with outcome measures.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {results.map((result) => (
               <div key={result.index} className="rounded-lg border bg-card p-4">
                 <h4 className="mb-4 font-medium">{result.index}</h4>
 
                 {/* Baseline to Discharge */}
-                <div className="mb-4 rounded-md bg-muted/50 p-3">
-                  <div className="mb-2 flex items-center justify-between">
-                    <p className="text-sm font-medium">Baseline → Discharge</p>
-                    <Badge
-                      className={`clinical-badge text-xs ${
-                        result.dischargeStatus === "improving"
-                          ? "badge-improving"
-                          : result.dischargeStatus === "declining"
-                          ? "badge-declining"
-                          : "badge-stable"
-                      }`}
-                    >
-                      {result.dischargeStatus.charAt(0).toUpperCase() + result.dischargeStatus.slice(1)}
-                    </Badge>
+                {result.baseline > 0 || result.discharge > 0 ? (
+                  <div className="mb-4 rounded-md bg-muted/50 p-3">
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="text-sm font-medium">Baseline → Discharge</p>
+                      <Badge
+                        className={`clinical-badge text-xs ${
+                          result.dischargeStatus === "improving"
+                            ? "badge-improving"
+                            : result.dischargeStatus === "declining"
+                            ? "badge-declining"
+                            : "badge-stable"
+                        }`}
+                      >
+                        {result.dischargeStatus.charAt(0).toUpperCase() + result.dischargeStatus.slice(1)}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-4 gap-3 text-center">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Baseline</p>
+                        <p className="text-base font-semibold">{result.baseline.toFixed(1)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Discharge</p>
+                        <p className="text-base font-semibold">{result.discharge.toFixed(1)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Change</p>
+                        <p className="text-base font-semibold">
+                          {result.dischargeChange > 0 ? "+" : ""}
+                          {result.dischargeChange.toFixed(1)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">% Change</p>
+                        <p className="text-base font-semibold">
+                          {result.dischargePercentage > 0 ? "+" : ""}
+                          {result.dischargePercentage.toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-4 gap-3 text-center">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Baseline</p>
-                      <p className="text-base font-semibold">{result.baseline.toFixed(1)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Discharge</p>
-                      <p className="text-base font-semibold">{result.discharge.toFixed(1)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Change</p>
-                      <p className="text-base font-semibold">
-                        {result.dischargeChange > 0 ? "+" : ""}
-                        {result.dischargeChange.toFixed(1)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">% Change</p>
-                      <p className="text-base font-semibold">
-                        {result.dischargePercentage > 0 ? "+" : ""}
-                        {result.dischargePercentage.toFixed(1)}%
-                      </p>
-                    </div>
+                ) : (
+                  <div className="mb-4 rounded-md border border-dashed p-3 text-center text-sm text-muted-foreground">
+                    No baseline or discharge scores available for this index
                   </div>
-                </div>
+                )}
 
                 {/* 90-Day Follow-up (if available) */}
                 {result.hasFollowup && (
