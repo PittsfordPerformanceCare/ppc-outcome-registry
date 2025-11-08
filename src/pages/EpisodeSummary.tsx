@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { PPC_STORE, EpisodeMeta, FollowupMeta } from "@/lib/ppcStore";
+import { getEpisode, getOutcomeScores, getFollowup } from "@/lib/dbOperations";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,20 +22,137 @@ import {
 import { format } from "date-fns";
 import { getMCIDThreshold } from "@/lib/mcidUtils";
 
+interface ProcessedEpisode {
+  episodeId: string;
+  patientName: string;
+  region: string;
+  dateOfService: string;
+  dob?: string;
+  clinician?: string;
+  npi?: string;
+  diagnosis?: string;
+  injuryDate?: string;
+  injuryMechanism?: string;
+  painLevel?: string;
+  functional_limitations?: string[];
+  prior_treatments?: Array<{ name: string; result?: string }>;
+  goals?: Array<{ name: string; notes?: string; result?: string; priority?: string; timeframe_weeks?: number }>;
+  dischargeDate?: string;
+  baselineScores?: Record<string, number>;
+  dischargeScores?: Record<string, number>;
+  visits?: string;
+  compliance_rating?: string;
+  compliance_notes?: string;
+  referred_out?: boolean;
+  referral_reason?: string;
+}
+
+interface FollowupData {
+  scheduledDate: string;
+  completedDate?: string;
+  status?: string;
+  scores?: Record<string, number>;
+}
+
 export default function EpisodeSummary() {
   const [searchParams] = useSearchParams();
   const episodeId = searchParams.get("id");
-  const [episode, setEpisode] = useState<EpisodeMeta | null>(null);
-  const [followup, setFollowup] = useState<FollowupMeta | null>(null);
+  const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
+  const [followup, setFollowup] = useState<FollowupData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (episodeId) {
-      const ep = PPC_STORE.getEpisodeMeta(episodeId);
-      const fu = PPC_STORE.getFollowupMeta(episodeId);
-      setEpisode(ep);
-      setFollowup(fu);
-    }
+    const loadEpisodeData = async () => {
+      if (!episodeId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const [episodeData, scoresData, followupData] = await Promise.all([
+          getEpisode(episodeId),
+          getOutcomeScores(episodeId),
+          getFollowup(episodeId)
+        ]);
+
+        if (!episodeData) {
+          setEpisode(null);
+          setLoading(false);
+          return;
+        }
+
+        // Process baseline and discharge scores
+        const baselineScores: Record<string, number> = {};
+        const dischargeScores: Record<string, number> = {};
+        const followupScores: Record<string, number> = {};
+
+        scoresData?.forEach(score => {
+          if (score.score_type === 'baseline') {
+            baselineScores[score.index_type] = score.score;
+          } else if (score.score_type === 'discharge') {
+            dischargeScores[score.index_type] = score.score;
+          } else if (score.score_type === 'followup') {
+            followupScores[score.index_type] = score.score;
+          }
+        });
+
+        const processedEpisode: ProcessedEpisode = {
+          episodeId: episodeData.id,
+          patientName: episodeData.patient_name,
+          region: episodeData.region,
+          dateOfService: episodeData.date_of_service,
+          dob: episodeData.date_of_birth || undefined,
+          clinician: episodeData.clinician || undefined,
+          npi: episodeData.npi || undefined,
+          diagnosis: episodeData.diagnosis || undefined,
+          injuryDate: episodeData.injury_date || undefined,
+          injuryMechanism: episodeData.injury_mechanism || undefined,
+          painLevel: episodeData.pain_level || undefined,
+          functional_limitations: episodeData.functional_limitations || undefined,
+          prior_treatments: episodeData.prior_treatments as any || undefined,
+          goals: episodeData.treatment_goals as any || undefined,
+          dischargeDate: episodeData.discharge_date || undefined,
+          baselineScores,
+          dischargeScores,
+          visits: episodeData.visits || undefined,
+          compliance_rating: episodeData.compliance_rating || undefined,
+          compliance_notes: episodeData.compliance_notes || undefined,
+          referred_out: episodeData.referred_out || undefined,
+          referral_reason: episodeData.referral_reason || undefined
+        };
+
+        setEpisode(processedEpisode);
+
+        if (followupData) {
+          setFollowup({
+            scheduledDate: followupData.scheduled_date,
+            completedDate: followupData.completed_date || undefined,
+            status: followupData.status || undefined,
+            scores: Object.keys(followupScores).length > 0 ? followupScores : undefined
+          });
+        }
+      } catch (error) {
+        console.error("Error loading episode data:", error);
+        setEpisode(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEpisodeData();
   }, [episodeId]);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto max-w-5xl py-8">
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">Loading episode...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!episode) {
     return (
