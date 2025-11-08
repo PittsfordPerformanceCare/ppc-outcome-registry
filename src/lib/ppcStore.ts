@@ -31,6 +31,7 @@ export interface EpisodeMeta {
   medicalHistory?: string;
   priorTreatments?: string;
   functionalLimitations?: string;
+  functional_limitation?: string;
   treatmentGoals?: string;
   cis_pre?: number | null;
   cis_post?: number | null;

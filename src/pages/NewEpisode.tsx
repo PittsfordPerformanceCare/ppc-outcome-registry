@@ -13,6 +13,7 @@ import { Save } from "lucide-react";
 import { NDIForm } from "@/components/forms/NDIForm";
 import { MetricCard } from "@/components/MetricCard";
 import { DiagnosisSelector } from "@/components/DiagnosisSelector";
+import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ export default function NewEpisode() {
   const [priorTreatments, setPriorTreatments] = useState("");
   const [functionalLimitations, setFunctionalLimitations] = useState("");
   const [treatmentGoals, setTreatmentGoals] = useState("");
+  const [functionalLimitation, setFunctionalLimitation] = useState("");
   const [cisPre, setCisPre] = useState<number | null>(null);
   const [cisPost, setCisPost] = useState<number | null>(null);
   const [painPre, setPainPre] = useState<number | null>(null);
@@ -167,6 +169,7 @@ export default function NewEpisode() {
       pain_pre: painPre,
       pain_post: painPost,
       pain_delta: painDelta,
+      functional_limitation: functionalLimitation.trim(),
     });
 
     toast.success("Episode created successfully!");
@@ -339,6 +342,15 @@ export default function NewEpisode() {
                   }
                   setDiagnosis(newDiagnosis);
                 }}
+              />
+            </div>
+
+            {/* Smart Functional Limitation Selector */}
+            <div className="mt-6">
+              <FunctionalLimitationSelector
+                region={region}
+                initialLimitation={functionalLimitation}
+                onChange={setFunctionalLimitation}
               />
             </div>
 

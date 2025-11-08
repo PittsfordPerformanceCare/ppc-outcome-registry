@@ -19,6 +19,7 @@ import { QuickDASHForm } from "@/components/forms/QuickDASHForm";
 import { LEFSForm } from "@/components/forms/LEFSForm";
 import { MetricCard } from "@/components/MetricCard";
 import { DiagnosisSelector } from "@/components/DiagnosisSelector";
+import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
 
 interface DischargeScores {
   NDI?: number;
@@ -59,6 +60,7 @@ export default function Discharge() {
   const [painPre, setPainPre] = useState<number | null>(null);
   const [painPost, setPainPost] = useState<number | null>(null);
   const [diagnosis, setDiagnosis] = useState("");
+  const [functionalLimitation, setFunctionalLimitation] = useState("");
 
   useEffect(() => {
     // Load all available episodes for dropdown
@@ -96,6 +98,7 @@ export default function Discharge() {
         setPainPre(meta.pain_pre ?? null);
         setPainPost(meta.pain_post ?? null);
         setDiagnosis(meta.diagnosis || "");
+        setFunctionalLimitation(meta.functional_limitation || "");
       }
     }
   }, [episodeId]);
@@ -152,6 +155,7 @@ export default function Discharge() {
       pain_post: painPost,
       pain_delta: painDelta,
       diagnosis: diagnosis || existingMeta.diagnosis,
+      functional_limitation: functionalLimitation || existingMeta.functional_limitation,
     };
     
     console.log("Meta to save:", meta);
@@ -330,13 +334,24 @@ export default function Discharge() {
 
       {/* Smart Diagnosis Selector - Discharge Update */}
       {episodeId && region && (
-        <DiagnosisSelector
-          region={region}
-          diagnosis={diagnosis}
-          onChange={({ diagnosis: newDiagnosis }) => {
-            setDiagnosis(newDiagnosis);
-          }}
-        />
+        <>
+          <DiagnosisSelector
+            region={region}
+            diagnosis={diagnosis}
+            onChange={({ diagnosis: newDiagnosis }) => {
+              setDiagnosis(newDiagnosis);
+            }}
+          />
+          
+          {/* Smart Functional Limitation Selector */}
+          <div className="mt-6">
+            <FunctionalLimitationSelector
+              region={region}
+              initialLimitation={functionalLimitation}
+              onChange={setFunctionalLimitation}
+            />
+          </div>
+        </>
       )}
 
       {/* Discharge Outcome Assessments */}
