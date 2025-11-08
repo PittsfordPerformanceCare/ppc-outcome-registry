@@ -18,6 +18,18 @@ export interface EpisodeMeta {
   compliance_notes?: string;
   referred_out?: boolean;
   referral_reason?: string;
+  injuryDate?: string;
+  injuryMechanism?: string;
+  painLevel?: string;
+  referringPhysician?: string;
+  insurance?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
+  medications?: string;
+  medicalHistory?: string;
+  priorTreatments?: string;
+  functionalLimitations?: string;
+  treatmentGoals?: string;
 }
 
 export interface FollowupMeta {

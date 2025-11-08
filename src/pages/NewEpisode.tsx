@@ -22,6 +22,18 @@ export default function NewEpisode() {
   const [clinician, setClinician] = useState("");
   const [diagnosis, setDiagnosis] = useState("");
   const [npi, setNpi] = useState("");
+  const [injuryDate, setInjuryDate] = useState("");
+  const [injuryMechanism, setInjuryMechanism] = useState("");
+  const [painLevel, setPainLevel] = useState("");
+  const [referringPhysician, setReferringPhysician] = useState("");
+  const [insurance, setInsurance] = useState("");
+  const [emergencyContact, setEmergencyContact] = useState("");
+  const [emergencyPhone, setEmergencyPhone] = useState("");
+  const [medications, setMedications] = useState("");
+  const [medicalHistory, setMedicalHistory] = useState("");
+  const [priorTreatments, setPriorTreatments] = useState("");
+  const [functionalLimitations, setFunctionalLimitations] = useState("");
+  const [treatmentGoals, setTreatmentGoals] = useState("");
 
   const handleRegionChange = (value: string) => {
     setRegion(value);
@@ -80,6 +92,14 @@ export default function NewEpisode() {
       toast.error("Please enter diagnosis");
       return;
     }
+    if (!injuryDate) {
+      toast.error("Please enter injury/onset date");
+      return;
+    }
+    if (!painLevel) {
+      toast.error("Please rate current pain level");
+      return;
+    }
     if (selectedIndices.length === 0) {
       toast.error("Please select at least one outcome index");
       return;
@@ -118,6 +138,18 @@ export default function NewEpisode() {
       diagnosis: diagnosis.trim(),
       npi: npi.trim(),
       start_date: dateOfService,
+      injuryDate,
+      injuryMechanism: injuryMechanism.trim(),
+      painLevel,
+      referringPhysician: referringPhysician.trim(),
+      insurance: insurance.trim(),
+      emergencyContact: emergencyContact.trim(),
+      emergencyPhone: emergencyPhone.trim(),
+      medications: medications.trim(),
+      medicalHistory: medicalHistory.trim(),
+      priorTreatments: priorTreatments.trim(),
+      functionalLimitations: functionalLimitations.trim(),
+      treatmentGoals: treatmentGoals.trim(),
     });
 
     toast.success("Episode created successfully!");
@@ -186,8 +218,8 @@ export default function NewEpisode() {
           <>
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>Clinical Details</CardTitle>
-                <CardDescription>Additional patient and clinical information</CardDescription>
+                <CardTitle>Patient Demographics</CardTitle>
+                <CardDescription>Personal and contact information</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -202,7 +234,48 @@ export default function NewEpisode() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="clinician">Clinician Name *</Label>
+                    <Label htmlFor="insurance">Insurance Provider</Label>
+                    <Input
+                      id="insurance"
+                      placeholder="Enter insurance provider"
+                      value={insurance}
+                      onChange={(e) => setInsurance(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyContact">Emergency Contact Name</Label>
+                    <Input
+                      id="emergencyContact"
+                      placeholder="Enter emergency contact"
+                      value={emergencyContact}
+                      onChange={(e) => setEmergencyContact(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="emergencyPhone">Emergency Contact Phone</Label>
+                    <Input
+                      id="emergencyPhone"
+                      placeholder="Enter phone number"
+                      value={emergencyPhone}
+                      onChange={(e) => setEmergencyPhone(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Clinical Information</CardTitle>
+                <CardDescription>Provider and diagnosis details</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="clinician">Treating Clinician *</Label>
                     <Input
                       id="clinician"
                       placeholder="Enter clinician name"
@@ -211,10 +284,29 @@ export default function NewEpisode() {
                       required
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="npi">Provider NPI</Label>
+                    <Input
+                      id="npi"
+                      placeholder="Enter NPI number"
+                      value={npi}
+                      onChange={(e) => setNpi(e.target.value)}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="diagnosis">Diagnosis *</Label>
+                  <Label htmlFor="referringPhysician">Referring Physician</Label>
+                  <Input
+                    id="referringPhysician"
+                    placeholder="Enter referring physician name"
+                    value={referringPhysician}
+                    onChange={(e) => setReferringPhysician(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="diagnosis">Primary Diagnosis *</Label>
                   <Input
                     id="diagnosis"
                     placeholder="Enter primary diagnosis"
@@ -223,14 +315,70 @@ export default function NewEpisode() {
                     required
                   />
                 </div>
+              </CardContent>
+            </Card>
+
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Injury/Condition Details</CardTitle>
+                <CardDescription>Information about the presenting condition</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="injuryDate">Injury/Onset Date *</Label>
+                    <Input
+                      id="injuryDate"
+                      type="date"
+                      value={injuryDate}
+                      onChange={(e) => setInjuryDate(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="painLevel">Current Pain Level (0-10) *</Label>
+                    <Select value={painLevel} onValueChange={setPainLevel} required>
+                      <SelectTrigger id="painLevel">
+                        <SelectValue placeholder="Select pain level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => (
+                          <SelectItem key={level} value={level.toString()}>
+                            {level} {level === 0 && "- No pain"} {level === 10 && "- Worst pain"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="npi">Provider NPI</Label>
+                  <Label htmlFor="injuryMechanism">Mechanism of Injury/Onset</Label>
                   <Input
-                    id="npi"
-                    placeholder="Enter NPI number (optional)"
-                    value={npi}
-                    onChange={(e) => setNpi(e.target.value)}
+                    id="injuryMechanism"
+                    placeholder="Describe how the injury/condition occurred"
+                    value={injuryMechanism}
+                    onChange={(e) => setInjuryMechanism(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="functionalLimitations">Functional Limitations</Label>
+                  <Input
+                    id="functionalLimitations"
+                    placeholder="What activities are limited by this condition?"
+                    value={functionalLimitations}
+                    onChange={(e) => setFunctionalLimitations(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="priorTreatments">Prior Treatments</Label>
+                  <Input
+                    id="priorTreatments"
+                    placeholder="List any previous treatments received"
+                    value={priorTreatments}
+                    onChange={(e) => setPriorTreatments(e.target.value)}
                   />
                 </div>
               </CardContent>
@@ -238,9 +386,47 @@ export default function NewEpisode() {
 
             <Card className="mt-6">
               <CardHeader>
-                <CardTitle>Outcome Indices</CardTitle>
+                <CardTitle>Medical Background</CardTitle>
+                <CardDescription>Medical history and current medications</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="medicalHistory">Relevant Medical History</Label>
+                  <Input
+                    id="medicalHistory"
+                    placeholder="List relevant medical conditions or history"
+                    value={medicalHistory}
+                    onChange={(e) => setMedicalHistory(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="medications">Current Medications</Label>
+                  <Input
+                    id="medications"
+                    placeholder="List current medications"
+                    value={medications}
+                    onChange={(e) => setMedications(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="treatmentGoals">Treatment Goals</Label>
+                  <Input
+                    id="treatmentGoals"
+                    placeholder="What are the patient's goals for treatment?"
+                    value={treatmentGoals}
+                    onChange={(e) => setTreatmentGoals(e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Outcome Measures</CardTitle>
                 <CardDescription>
-                  Select outcome measures and enter baseline scores (0-100)
+                  Select outcome indices and enter baseline scores (0-100)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
