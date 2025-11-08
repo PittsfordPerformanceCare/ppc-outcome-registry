@@ -124,6 +124,11 @@ export default function Discharge() {
     } else {
       toast.info("Please send the saved PDF via your secure fax channel");
     }
+
+    // Navigate to PCP summary for viewing/printing
+    setTimeout(() => {
+      navigate(`/pcp-summary?episode=${episodeId}`);
+    }, 1000);
   };
 
   const generateFollowupLink = () => {
