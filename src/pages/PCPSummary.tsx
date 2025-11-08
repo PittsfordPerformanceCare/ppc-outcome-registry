@@ -1,90 +1,169 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { PPC_STORE, EpisodeMeta, FollowupMeta } from "@/lib/ppcStore";
+import { getEpisode, getOutcomeScores, getFollowup } from "@/lib/dbOperations";
+import type { Episode } from "@/lib/dbOperations";
 import { calculateMCID } from "@/lib/mcidUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Download, Printer, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { PPC_CONFIG } from "@/lib/ppcConfig";
+
+interface OutcomeScore {
+  index_type: string;
+  score_type: string;
+  score: number;
+}
+
+interface ProcessedEpisode {
+  episodeId: string;
+  patientName: string;
+  region: string;
+  dateOfService: string;
+  dob?: string;
+  clinician?: string;
+  diagnosis?: string;
+  npi?: string;
+  indices: string[];
+  baselineScores?: Record<string, number>;
+  dischargeScores?: Record<string, number>;
+  followupScores?: Record<string, number>;
+  dischargeDate?: string;
+  injuryDate?: string;
+  injuryMechanism?: string;
+  painLevel?: string;
+  referringPhysician?: string;
+  insurance?: string;
+  emergencyContact?: string;
+  emergencyPhone?: string;
+  medications?: string;
+  medicalHistory?: string;
+  priorTreatments?: string;
+  functionalLimitations?: string;
+  treatmentGoals?: string;
+  start_date?: string;
+  visits?: string;
+  resolution_days?: string;
+  compliance_rating?: string;
+  compliance_notes?: string;
+  referred_out?: boolean;
+  referral_reason?: string;
+}
+
+interface FollowupData {
+  scheduledDate?: string;
+  completedDate?: string;
+  status?: string;
+  scores?: Record<string, number>;
+}
 
 export default function PCPSummary() {
   const [searchParams] = useSearchParams();
   const episodeId = searchParams.get("episode");
 
-  const [episode, setEpisode] = useState<EpisodeMeta | null>(null);
-  const [followup, setFollowup] = useState<FollowupMeta | null>(null);
+  const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
+  const [followup, setFollowup] = useState<FollowupData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (episodeId) {
-      const ep = PPC_STORE.getEpisodeMeta(episodeId);
-      const fu = PPC_STORE.getFollowupMeta(episodeId);
-
-      if (ep) setEpisode(ep);
-      if (fu) setFollowup(fu);
+      loadEpisodeData();
     }
   }, [episodeId]);
+
+  const loadEpisodeData = async () => {
+    if (!episodeId) return;
+    
+    setLoading(true);
+    try {
+      // Fetch episode data
+      const episodeData = await getEpisode(episodeId);
+      if (!episodeData) {
+        setLoading(false);
+        return;
+      }
+
+      // Fetch outcome scores
+      const scores = await getOutcomeScores(episodeId);
+      
+      // Process scores into baseline, discharge, and followup
+      const baselineScores: Record<string, number> = {};
+      const dischargeScores: Record<string, number> = {};
+      const followupScores: Record<string, number> = {};
+      
+      scores.forEach((score: OutcomeScore) => {
+        if (score.score_type === "baseline") {
+          baselineScores[score.index_type] = score.score;
+        } else if (score.score_type === "discharge") {
+          dischargeScores[score.index_type] = score.score;
+        } else if (score.score_type === "followup") {
+          followupScores[score.index_type] = score.score;
+        }
+      });
+
+      // Get indices for the region
+      const indices = PPC_CONFIG.regionToIndices(episodeData.region);
+
+      // Process episode data
+      const processedEpisode: ProcessedEpisode = {
+        episodeId: episodeData.id,
+        patientName: episodeData.patient_name,
+        region: episodeData.region,
+        dateOfService: episodeData.date_of_service,
+        dob: episodeData.date_of_birth || undefined,
+        clinician: episodeData.clinician || undefined,
+        diagnosis: episodeData.diagnosis || undefined,
+        npi: episodeData.npi || undefined,
+        indices,
+        baselineScores,
+        dischargeScores,
+        followupScores: Object.keys(followupScores).length > 0 ? followupScores : undefined,
+        dischargeDate: episodeData.discharge_date || undefined,
+        injuryDate: episodeData.injury_date || undefined,
+        injuryMechanism: episodeData.injury_mechanism || undefined,
+        painLevel: episodeData.pain_level || undefined,
+        referringPhysician: episodeData.referring_physician || undefined,
+        insurance: episodeData.insurance || undefined,
+        emergencyContact: episodeData.emergency_contact || undefined,
+        emergencyPhone: episodeData.emergency_phone || undefined,
+        medications: episodeData.medications || undefined,
+        medicalHistory: episodeData.medical_history || undefined,
+        priorTreatments: episodeData.prior_treatments_other || undefined,
+        functionalLimitations: episodeData.functional_limitations?.join("\n") || undefined,
+        treatmentGoals: episodeData.goals_other || undefined,
+        start_date: episodeData.start_date || undefined,
+        visits: episodeData.visits || undefined,
+        resolution_days: episodeData.resolution_days || undefined,
+        compliance_rating: episodeData.compliance_rating || undefined,
+        compliance_notes: episodeData.compliance_notes || undefined,
+        referred_out: episodeData.referred_out || false,
+        referral_reason: episodeData.referral_reason || undefined,
+      };
+
+      setEpisode(processedEpisode);
+
+      // Fetch followup data if exists
+      const followupData = await getFollowup(episodeId);
+      if (followupData) {
+        setFollowup({
+          scheduledDate: followupData.scheduled_date,
+          completedDate: followupData.completed_date || undefined,
+          status: followupData.status || undefined,
+          scores: Object.keys(followupScores).length > 0 ? followupScores : undefined,
+        });
+      }
+    } catch (error) {
+      console.error("Error loading episode:", error);
+      toast.error("Failed to load episode data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePrint = () => {
     window.print();
     toast.success("Opening print dialog...");
-  };
-
-  const handleLoadDemo = () => {
-    const demoEpisodeId = "DEMO-2024-001";
-    
-    // Create demo episode data
-    const demoEpisode: EpisodeMeta = {
-      episodeId: demoEpisodeId,
-      patientName: "Sarah Johnson",
-      region: "Cervical",
-      dateOfService: "2024-01-15",
-      dob: "1985-06-20",
-      clinician: "Dr. Michael Chen, PT, DPT",
-      diagnosis: "Cervical radiculopathy, right C6-C7",
-      npi: "1234567890",
-      indices: ["NDI"],
-      baselineScores: { NDI: 48 },
-      dischargeScores: { NDI: 16 },
-      dischargeDate: "2024-04-15",
-      injuryDate: "2023-12-28",
-      injuryMechanism: "Motor vehicle accident - rear-end collision. Patient reports immediate onset of neck pain with radiation to right shoulder and arm.",
-      painLevel: "8",
-      referringPhysician: "Dr. Lisa Martinez, MD",
-      insurance: "Blue Cross Blue Shield - PPO",
-      emergencyContact: "John Johnson (spouse)",
-      emergencyPhone: "(555) 123-4567",
-      medications: "Ibuprofen 600mg TID for pain management\nCyclobenzaprine 5mg QHS for muscle spasms\nGabapentin 300mg TID for neuropathic pain",
-      medicalHistory: "No significant past medical history. No prior episodes of neck pain. Non-smoker. Exercises regularly (yoga 2x/week prior to injury).",
-      priorTreatments: "ER visit on date of injury - X-rays negative for fracture. Prescribed muscle relaxants and NSAIDs. One week of rest recommended by PCP before referral to PT.",
-      functionalLimitations: "Unable to look over shoulder while driving\nDifficulty sleeping due to pain\nLimited ability to lift or carry objects >5 lbs\nUnable to perform overhead activities at work\nIntermittent numbness in right thumb and index finger",
-      treatmentGoals: "Return to full-time work without restrictions\nEliminate radiating arm pain and numbness\nRestore full cervical range of motion\nReturn to regular yoga practice\nImprove sleep quality",
-      start_date: "2024-01-22",
-      visits: "12",
-      resolution_days: "84",
-      compliance_rating: "Excellent (95%)",
-      compliance_notes: "Patient was highly compliant with home exercise program. Attended all scheduled appointments. Maintained detailed symptom journal. Gradually reduced medication use as symptoms improved.",
-      referred_out: false,
-    };
-
-    // Create demo follow-up data
-    const demoFollowup: FollowupMeta = {
-      episodeId: demoEpisodeId,
-      scheduledDate: "2024-07-15",
-      completedDate: "2024-07-15",
-      scores: { NDI: 12 },
-      status: "improving",
-    };
-
-    // Save to storage
-    PPC_STORE.setEpisodeMeta(demoEpisodeId, demoEpisode);
-    PPC_STORE.setFollowupMeta(demoEpisodeId, demoFollowup);
-    PPC_STORE.setFollowupCompleted(demoEpisodeId, true);
-
-    // Reload page with demo episode
-    window.location.href = `/pcp-summary?episode=${demoEpisodeId}`;
-    
-    toast.success("Demo patient data loaded!");
   };
 
   const handleExport = () => {
@@ -130,6 +209,18 @@ export default function PCPSummary() {
     toast.success("Summary exported successfully!");
   };
 
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-4xl">
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="text-muted-foreground">Loading episode data...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (!episode) {
     return (
       <div className="mx-auto max-w-4xl">
@@ -139,10 +230,6 @@ export default function PCPSummary() {
             <p className="text-muted-foreground">
               No episode data available. Please complete a discharge assessment first.
             </p>
-            <Button onClick={handleLoadDemo} variant="outline" className="gap-2">
-              <FileText className="h-4 w-4" />
-              Load Demo Patient
-            </Button>
           </CardContent>
         </Card>
       </div>
