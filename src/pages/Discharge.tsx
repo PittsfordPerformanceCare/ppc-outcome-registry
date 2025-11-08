@@ -104,12 +104,19 @@ export default function Discharge() {
       if (value != null) dischargeScores[key] = value;
     });
 
+    console.log("=== Discharge: Generate PCP Debug ===");
+    console.log("Current scores state:", scores);
+    console.log("Discharge scores to save:", dischargeScores);
+
     // Load existing episode data and preserve ALL fields
     const existingMeta = PPC_STORE.getEpisodeMeta(episodeId);
     if (!existingMeta) {
       toast.error("Episode data not found");
       return;
     }
+
+    console.log("Existing episode meta:", existingMeta);
+    console.log("Existing baseline scores:", existingMeta.baselineScores);
 
     // Only update discharge-specific fields, preserve all intake/treatment data
     const meta: EpisodeMeta = {
@@ -123,7 +130,13 @@ export default function Discharge() {
       dob: dob || existingMeta.dob,
       clinician: clinician || existingMeta.clinician,
     };
+    
+    console.log("Meta to save:", meta);
     PPC_STORE.setEpisodeMeta(episodeId, meta);
+    
+    // Verify it was saved
+    const savedMeta = PPC_STORE.getEpisodeMeta(episodeId);
+    console.log("Verified saved meta:", savedMeta);
 
     navigate(`/pcp-summary?episode=${episodeId}`);
     toast.success("Opening PCP Summary...");
@@ -301,19 +314,31 @@ export default function Discharge() {
           </div>
           
           {activeIndices.includes("NDI") && (
-            <NDIForm onScoreChange={(score) => setScores({ ...scores, NDI: score })} />
+            <NDIForm onScoreChange={(score) => {
+              console.log("NDI score changed:", score);
+              setScores({ ...scores, NDI: score });
+            }} />
           )}
           
           {activeIndices.includes("ODI") && (
-            <ODIForm onScoreChange={(score) => setScores({ ...scores, ODI: score })} />
+            <ODIForm onScoreChange={(score) => {
+              console.log("ODI score changed:", score);
+              setScores({ ...scores, ODI: score });
+            }} />
           )}
           
           {activeIndices.includes("QuickDASH") && (
-            <QuickDASHForm onScoreChange={(score) => setScores({ ...scores, QuickDASH: score })} />
+            <QuickDASHForm onScoreChange={(score) => {
+              console.log("QuickDASH score changed:", score);
+              setScores({ ...scores, QuickDASH: score });
+            }} />
           )}
           
           {activeIndices.includes("LEFS") && (
-            <LEFSForm onScoreChange={(score) => setScores({ ...scores, LEFS: score })} />
+            <LEFSForm onScoreChange={(score) => {
+              console.log("LEFS score changed:", score);
+              setScores({ ...scores, LEFS: score });
+            }} />
           )}
         </div>
       )}

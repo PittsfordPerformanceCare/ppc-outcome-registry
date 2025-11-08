@@ -149,10 +149,19 @@ export default function PCPSummary() {
     );
   }
 
+  console.log("=== PCP Summary: Results Calculation Debug ===");
+  console.log("Episode data:", episode);
+  console.log("Episode indices:", episode.indices);
+  console.log("Baseline scores:", episode.baselineScores);
+  console.log("Discharge scores:", episode.dischargeScores);
+  console.log("Followup data:", followup);
+
   const results = episode.indices.map((index) => {
     const baseline = episode.baselineScores?.[index] || 0;
     const discharge = episode.dischargeScores?.[index] || 0;
     const followupScore = followup?.scores?.[index] || 0;
+    
+    console.log(`Index ${index}: baseline=${baseline}, discharge=${discharge}, followup=${followupScore}`);
     
     // Calculate discharge vs baseline
     const dischargeVsBaseline = calculateMCID(index as any, baseline, discharge);
