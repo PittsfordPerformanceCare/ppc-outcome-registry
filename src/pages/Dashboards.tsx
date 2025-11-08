@@ -279,6 +279,39 @@ export default function Dashboards() {
     }));
   }, [filteredOutcomes]);
 
+  // Chart data: Visit Count Distribution
+  const visitCountDistribution = useMemo(() => {
+    if (filteredOutcomes.length === 0) return { histogram: [], stats: null };
+
+    const visitCounts = filteredOutcomes.map(o => o.visitCount);
+    
+    // Calculate statistics
+    const sorted = [...visitCounts].sort((a, b) => a - b);
+    const min = sorted[0];
+    const max = sorted[sorted.length - 1];
+    const median = sorted[Math.floor(sorted.length / 2)];
+    const mean = Math.round(visitCounts.reduce((a, b) => a + b, 0) / visitCounts.length);
+    
+    // Calculate quartiles
+    const q1 = sorted[Math.floor(sorted.length * 0.25)];
+    const q3 = sorted[Math.floor(sorted.length * 0.75)];
+    
+    // Create histogram bins
+    const binMap = new Map<number, number>();
+    visitCounts.forEach(count => {
+      binMap.set(count, (binMap.get(count) || 0) + 1);
+    });
+
+    const histogram = Array.from(binMap.entries())
+      .map(([visits, count]) => ({ visits, count }))
+      .sort((a, b) => a.visits - b.visits);
+
+    return {
+      histogram,
+      stats: { min, max, median, mean, q1, q3 },
+    };
+  }, [filteredOutcomes]);
+
   // Quality Metrics: Anonymized Clinician Benchmarking
   const clinicianBenchmarkData = useMemo(() => {
     const clinicianMap = new Map<string, { total: number; mcidAchieved: number }>();
@@ -622,6 +655,113 @@ export default function Dashboards() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Visit Count Distribution */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Visit Count Distribution</CardTitle>
+              <CardDescription>
+                Treatment episode length patterns • Target: 3 visits typical
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {visitCountDistribution.histogram.length > 0 && visitCountDistribution.stats ? (
+                <div className="grid gap-6 lg:grid-cols-3">
+                  <div className="lg:col-span-2">
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={visitCountDistribution.histogram}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis 
+                          dataKey="visits" 
+                          label={{ value: 'Number of Visits', position: 'insideBottom', offset: -5 }}
+                        />
+                        <YAxis label={{ value: 'Episode Count', angle: -90, position: 'insideLeft' }} />
+                        <Tooltip content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const count = Number(payload[0].value) || 0;
+                            return (
+                              <div className="bg-background border rounded-lg p-3 shadow-lg">
+                                <p className="font-semibold">{payload[0].payload.visits} visits</p>
+                                <p className="text-sm">{count} episodes</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {Math.round((count / filteredOutcomes.length) * 100)}% of total
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }} />
+                        <Bar dataKey="count" fill={PPC_CONFIG.brandColor}>
+                          {visitCountDistribution.histogram.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`}
+                              fill={entry.visits === 3 ? '#16a34a' : entry.visits > 5 ? '#f59e0b' : PPC_CONFIG.brandColor}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold text-sm mb-3">Distribution Statistics</h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between p-2 rounded bg-muted/50">
+                          <span className="text-sm text-muted-foreground">Mean</span>
+                          <span className="font-semibold">{visitCountDistribution.stats.mean} visits</span>
+                        </div>
+                        <div className="flex justify-between p-2 rounded bg-muted/50">
+                          <span className="text-sm text-muted-foreground">Median</span>
+                          <span className="font-semibold">{visitCountDistribution.stats.median} visits</span>
+                        </div>
+                        <div className="flex justify-between p-2 rounded bg-muted/50">
+                          <span className="text-sm text-muted-foreground">Range</span>
+                          <span className="font-semibold">
+                            {visitCountDistribution.stats.min} - {visitCountDistribution.stats.max}
+                          </span>
+                        </div>
+                        <div className="flex justify-between p-2 rounded bg-muted/50">
+                          <span className="text-sm text-muted-foreground">Q1 - Q3</span>
+                          <span className="font-semibold">
+                            {visitCountDistribution.stats.q1} - {visitCountDistribution.stats.q3}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold text-sm mb-2">Interpretation</h4>
+                      <div className="space-y-2 text-xs">
+                        <div className="flex items-start gap-2">
+                          <div className="w-3 h-3 rounded-full bg-green-500 mt-0.5" />
+                          <span className="text-muted-foreground">
+                            <strong className="text-foreground">3 visits:</strong> Target benchmark (typical discharge)
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <div className="w-3 h-3 rounded-full mt-0.5" style={{ backgroundColor: PPC_CONFIG.brandColor }} />
+                          <span className="text-muted-foreground">
+                            <strong className="text-foreground">1-5 visits:</strong> Within normal range
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <div className="w-3 h-3 rounded-full bg-orange-500 mt-0.5" />
+                          <span className="text-muted-foreground">
+                            <strong className="text-foreground">6+ visits:</strong> Extended care (review for complexity)
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+                  <p>No visit count data available</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Monthly Trend Chart */}
           <Card>
