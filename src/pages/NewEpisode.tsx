@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
+import { NDIForm } from "@/components/forms/NDIForm";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -422,16 +423,28 @@ export default function NewEpisode() {
               </CardContent>
             </Card>
 
-            <Card className="mt-6">
-              <CardHeader>
-                <CardTitle>Outcome Measures</CardTitle>
-                <CardDescription>
-                  Select outcome indices and enter baseline scores (0-100)
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {(["NDI", "ODI", "QuickDASH", "LEFS"] as IndexType[]).map((index) => (
-                  <div key={index} className="flex items-start space-x-4 rounded-lg border p-4">
+            <div className="mt-6 space-y-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="NDI"
+                  checked={selectedIndices.includes("NDI")}
+                  onCheckedChange={(checked) => handleIndexToggle("NDI", checked as boolean)}
+                />
+                <Label htmlFor="NDI" className="text-lg font-semibold cursor-pointer">
+                  Complete Neck Disability Index (NDI)
+                </Label>
+              </div>
+              
+              {selectedIndices.includes("NDI") && (
+                <NDIForm
+                  onScoreChange={(score) => handleScoreChange("NDI", score.toString())}
+                  initialScore={parseFloat(baselineScores["NDI"] || "0")}
+                />
+              )}
+
+              {(["ODI", "QuickDASH", "LEFS"] as IndexType[]).map((index) => (
+                <div key={index}>
+                  <div className="flex items-start space-x-4 rounded-lg border p-4">
                     <Checkbox
                       id={index}
                       checked={selectedIndices.includes(index)}
@@ -461,9 +474,9 @@ export default function NewEpisode() {
                       )}
                     </div>
                   </div>
-                ))}
-              </CardContent>
-            </Card>
+                </div>
+              ))}
+            </div>
           </>
         )}
 
