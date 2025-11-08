@@ -153,8 +153,32 @@ All colors MUST be HSL.
 /* Print Styles */
 @media print {
   @page {
-    margin: 1cm;
+    margin: 0.75cm;
     size: letter portrait;
+  }
+
+  /* Reduce overall size by 25% */
+  body {
+    font-size: 12px !important; /* Reduced from default 16px */
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Scale down headings by 25% */
+  h1 {
+    font-size: 1.5rem !important; /* Reduced from ~2rem */
+  }
+
+  h2 {
+    font-size: 1.2rem !important; /* Reduced from ~1.6rem */
+  }
+
+  h3 {
+    font-size: 1rem !important; /* Reduced from ~1.3rem */
+  }
+
+  h4, h5, h6 {
+    font-size: 0.9rem !important;
   }
 
   /* Hide interactive elements */
@@ -164,12 +188,6 @@ All colors MUST be HSL.
   header nav,
   [role="navigation"] {
     display: none !important;
-  }
-
-  /* Reset backgrounds for print */
-  body {
-    background: white !important;
-    color: black !important;
   }
 
   /* Optimize cards for print */
@@ -194,13 +212,47 @@ All colors MUST be HSL.
     page-break-inside: avoid;
   }
 
-  /* Compact spacing for print */
+  /* Reduced spacing for print (25% smaller) */
   .space-y-8 > * + * {
-    margin-top: 1rem !important;
+    margin-top: 0.75rem !important; /* Reduced from 1rem */
   }
 
   .space-y-6 > * + * {
-    margin-top: 0.75rem !important;
+    margin-top: 0.56rem !important; /* Reduced from 0.75rem */
+  }
+
+  .space-y-4 > * + * {
+    margin-top: 0.37rem !important;
+  }
+
+  .space-y-3 > * + * {
+    margin-top: 0.28rem !important;
+  }
+
+  .space-y-2 > * + * {
+    margin-top: 0.19rem !important;
+  }
+
+  /* Reduce padding in cards and containers */
+  .card {
+    padding: 0.75rem !important;
+  }
+
+  .p-4 {
+    padding: 0.75rem !important; /* Reduced from 1rem */
+  }
+
+  .p-6 {
+    padding: 1.12rem !important; /* Reduced from 1.5rem */
+  }
+
+  .p-8 {
+    padding: 1.5rem !important; /* Reduced from 2rem */
+  }
+
+  /* Reduce badge and small element sizes */
+  .badge, .text-xs, .text-sm {
+    font-size: 0.7rem !important;
   }
 
   /* Episode summary print styles */
@@ -209,6 +261,19 @@ All colors MUST be HSL.
   }
 
   .print\\:text-sm {
-    font-size: 0.875rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Reduce gap spacing */
+  .gap-2 {
+    gap: 0.37rem !important;
+  }
+
+  .gap-4 {
+    gap: 0.75rem !important;
+  }
+
+  .gap-6 {
+    gap: 1.12rem !important;
   }
 }
