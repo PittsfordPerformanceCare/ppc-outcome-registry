@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import NewEpisode from "./pages/NewEpisode";
 import FollowUp from "./pages/FollowUp";
 import Discharge from "./pages/Discharge";
+import Dashboards from "./pages/Dashboards";
 import PCPSummary from "./pages/PCPSummary";
 import EpisodeSummary from "./pages/EpisodeSummary";
 import AdminManagement from "./pages/AdminManagement";
@@ -35,6 +36,7 @@ const App = () => (
                     <Route path="/new-episode" element={<NewEpisode />} />
                     <Route path="/follow-up" element={<FollowUp />} />
                     <Route path="/discharge" element={<Discharge />} />
+                    <Route path="/dashboards" element={<Dashboards />} />
                     <Route path="/pcp-summary" element={<PCPSummary />} />
                     <Route path="/episode-summary" element={<EpisodeSummary />} />
                     <Route path="/admin" element={<AdminManagement />} />
