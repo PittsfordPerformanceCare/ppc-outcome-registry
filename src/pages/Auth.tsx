@@ -185,6 +185,9 @@ const Auth = () => {
                     required
                     minLength={6}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    At least 6 characters required
+                  </p>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Creating account..." : "Sign Up"}
