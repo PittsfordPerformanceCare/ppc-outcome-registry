@@ -1,0 +1,132 @@
+// Top 12 Diagnoses per Anatomical Region
+export const REGION_DIAGNOSES: Record<string, string[]> = {
+  "Cervical": [
+    "Cervical strain/sprain",
+    "Cervical radiculopathy",
+    "Cervical spondylosis",
+    "Whiplash-associated disorder",
+    "Cervicogenic headache",
+    "Cervical disc herniation",
+    "Facet joint syndrome (cervical)",
+    "Acute torticollis (wry neck)",
+    "Myofascial neck pain",
+    "Cervical spinal stenosis",
+    "Cervical facet arthropathy",
+    "Thoracic outlet syndrome"
+  ],
+  "Thoracic": [
+    "Thoracic strain/sprain",
+    "Thoracic disc herniation",
+    "Costovertebral joint dysfunction",
+    "Rib dysfunction",
+    "Postural pain syndrome",
+    "Thoracic facet syndrome",
+    "Intercostal neuralgia",
+    "Scheuermann's kyphosis (pain)",
+    "Thoracic stiffness/hypomobility",
+    "Nonspecific mid-back pain",
+    "Scoliosis-related pain",
+    "Thoracic myofascial pain"
+  ],
+  "Lumbar": [
+    "Acute nonspecific low back pain",
+    "Lumbar strain/sprain",
+    "Lumbar radiculopathy (sciatica)",
+    "Lumbar disc herniation",
+    "Lumbar spinal stenosis",
+    "Degenerative disc disease (lumbar)",
+    "Facet joint syndrome (lumbar)",
+    "Sacroiliac joint dysfunction",
+    "Myofascial low back pain",
+    "Spondylolisthesis (low grade)",
+    "Piriformis syndrome",
+    "Recurrent mechanical low back pain"
+  ],
+  "Shoulder": [
+    "Rotator cuff tendinopathy",
+    "Rotator cuff tear (non-traumatic)",
+    "Subacromial impingement",
+    "Adhesive capsulitis (frozen shoulder)",
+    "Biceps tendinopathy",
+    "AC joint sprain/arthropathy",
+    "Labral tear / SLAP lesion",
+    "Glenohumeral instability",
+    "Scapular dyskinesis",
+    "Glenohumeral osteoarthritis",
+    "Calcific tendinitis",
+    "Post-op rotator cuff rehab"
+  ],
+  "Elbow": [
+    "Lateral epicondylitis (tennis elbow)",
+    "Medial epicondylitis (golfer's elbow)",
+    "UCL sprain (thrower's elbow)",
+    "Olecranon bursitis",
+    "Elbow osteoarthritis",
+    "Radial tunnel syndrome",
+    "Cubital tunnel syndrome",
+    "Distal biceps tendinopathy",
+    "Triceps tendinopathy",
+    "General elbow sprain/strain",
+    "Posterolateral rotatory instability",
+    "Post-immobilization stiffness"
+  ],
+  "Wrist/Hand": [
+    "De Quervain's tenosynovitis",
+    "Carpal tunnel syndrome",
+    "TFCC injury",
+    "Wrist sprain",
+    "Trigger finger",
+    "Thumb CMC osteoarthritis",
+    "Intersection syndrome",
+    "ECU tendinopathy",
+    "Symptomatic ganglion cyst",
+    "Dupuytren's contracture (early)",
+    "Guyon's canal ulnar neuropathy",
+    "Overuse tendinopathy (wrist/hand)"
+  ],
+  "Hip": [
+    "Hip osteoarthritis",
+    "Greater trochanteric pain syndrome",
+    "Femoroacetabular impingement (FAI)",
+    "Acetabular labral tear",
+    "Hip flexor strain",
+    "Adductor strain",
+    "Deep gluteal/piriformis syndrome",
+    "Trochanteric bursitis",
+    "Proximal hamstring tendinopathy",
+    "Iliotibial band syndrome (hip)",
+    "Snapping hip (internal/external)",
+    "Gluteal tendinopathy"
+  ],
+  "Knee": [
+    "Patellofemoral pain syndrome",
+    "Meniscal tear (degenerative)",
+    "ACL sprain/rehab (non-op)",
+    "MCL/LCL sprain",
+    "Patellar tendinopathy",
+    "Knee osteoarthritis",
+    "Iliotibial band friction syndrome",
+    "Pes anserine bursitis",
+    "Quadriceps strain",
+    "Hamstring strain (distal)",
+    "Baker's cyst (symptomatic)",
+    "Chondromalacia patella"
+  ],
+  "Ankle/Foot": [
+    "Lateral ankle sprain",
+    "Medial ankle sprain",
+    "Achilles tendinopathy",
+    "Plantar fasciitis/heel pain",
+    "Posterior tibial tendon dysfunction",
+    "Peroneal tendinopathy",
+    "Anterior ankle impingement",
+    "Ankle osteoarthritis",
+    "Metatarsalgia",
+    "Morton's neuroma",
+    "Stress reaction (metatarsal)",
+    "Hallux rigidus/limitus"
+  ]
+};
+
+export type RegionKey = keyof typeof REGION_DIAGNOSES;
+export type DiagnosisItem = { region: RegionKey; diagnosis: string };

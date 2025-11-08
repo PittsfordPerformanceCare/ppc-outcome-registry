@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Save } from "lucide-react";
 import { NDIForm } from "@/components/forms/NDIForm";
 import { MetricCard } from "@/components/MetricCard";
+import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -321,18 +322,23 @@ export default function NewEpisode() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="diagnosis">Primary Diagnosis *</Label>
-                  <Input
-                    id="diagnosis"
-                    placeholder="Enter primary diagnosis"
-                    value={diagnosis}
-                    onChange={(e) => setDiagnosis(e.target.value)}
-                    required
-                  />
-                </div>
               </CardContent>
             </Card>
+
+            {/* Smart Diagnosis Selector */}
+            <div className="mt-6">
+              <DiagnosisSelector
+                region={region}
+                diagnosis={diagnosis}
+                onChange={({ region: newRegion, diagnosis: newDiagnosis }) => {
+                  if (newRegion !== region) {
+                    setRegion(newRegion);
+                    handleRegionChange(newRegion);
+                  }
+                  setDiagnosis(newDiagnosis);
+                }}
+              />
+            </div>
 
             <Card className="mt-6">
               <CardHeader>

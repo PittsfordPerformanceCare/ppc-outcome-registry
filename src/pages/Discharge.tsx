@@ -18,6 +18,7 @@ import { ODIForm } from "@/components/forms/ODIForm";
 import { QuickDASHForm } from "@/components/forms/QuickDASHForm";
 import { LEFSForm } from "@/components/forms/LEFSForm";
 import { MetricCard } from "@/components/MetricCard";
+import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 
 interface DischargeScores {
   NDI?: number;
@@ -57,6 +58,7 @@ export default function Discharge() {
   const [cisPost, setCisPost] = useState<number | null>(null);
   const [painPre, setPainPre] = useState<number | null>(null);
   const [painPost, setPainPost] = useState<number | null>(null);
+  const [diagnosis, setDiagnosis] = useState("");
 
   useEffect(() => {
     // Load all available episodes for dropdown
@@ -93,6 +95,7 @@ export default function Discharge() {
         setCisPost(meta.cis_post ?? null);
         setPainPre(meta.pain_pre ?? null);
         setPainPost(meta.pain_post ?? null);
+        setDiagnosis(meta.diagnosis || "");
       }
     }
   }, [episodeId]);
@@ -148,6 +151,7 @@ export default function Discharge() {
       cis_delta: cisDelta,
       pain_post: painPost,
       pain_delta: painDelta,
+      diagnosis: diagnosis || existingMeta.diagnosis,
     };
     
     console.log("Meta to save:", meta);
@@ -323,6 +327,17 @@ export default function Discharge() {
 
         </CardContent>
       </Card>
+
+      {/* Smart Diagnosis Selector - Discharge Update */}
+      {episodeId && region && (
+        <DiagnosisSelector
+          region={region}
+          diagnosis={diagnosis}
+          onChange={({ diagnosis: newDiagnosis }) => {
+            setDiagnosis(newDiagnosis);
+          }}
+        />
+      )}
 
       {/* Discharge Outcome Assessments */}
       {region && (
