@@ -35,8 +35,8 @@ export default function Dashboards() {
   const [outcomes, setOutcomes] = useState<EpisodeOutcome[]>([]);
   const { toast } = useToast();
 
-  // Filters
-  const [dateFrom, setDateFrom] = useState(format(subMonths(new Date(), 6), "yyyy-MM-dd"));
+  // Filters (default to 12 months to capture all demo data)
+  const [dateFrom, setDateFrom] = useState(format(subMonths(new Date(), 12), "yyyy-MM-dd"));
   const [dateTo, setDateTo] = useState(format(new Date(), "yyyy-MM-dd"));
   const [filterRegion, setFilterRegion] = useState<string>("all");
   const [filterDiagnosis, setFilterDiagnosis] = useState<string>("all");
@@ -594,6 +594,7 @@ export default function Dashboards() {
           <Card>
             <CardHeader>
               <CardTitle>Filters</CardTitle>
+              <CardDescription>Default: Last 12 months • Adjust to refine results</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-4">
