@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PPC_STORE } from "@/lib/ppcStore";
+import { createEpisode, saveOutcomeScore } from "@/lib/dbOperations";
 import { PPC_CONFIG, IndexType } from "@/lib/ppcConfig";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,7 +80,7 @@ export default function NewEpisode() {
     setBaselineScores({ ...baselineScores, [index]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validation
@@ -132,60 +132,62 @@ export default function NewEpisode() {
       scores[index] = score;
     }
 
-    // Generate episode ID
-    const episodeId = `EP${Date.now()}`;
+    try {
+      // Generate episode ID
+      const episodeId = `EP${Date.now()}`;
 
-    // Calculate follow-up date (90 days from service date)
-    const serviceDate = new Date(dateOfService);
-    const followupDate = new Date(serviceDate);
-    followupDate.setDate(followupDate.getDate() + 90);
+      // Calculate follow-up date (90 days from service date)
+      const serviceDate = new Date(dateOfService);
+      const followupDate = new Date(serviceDate);
+      followupDate.setDate(followupDate.getDate() + 90);
 
-    // Calculate deltas for metrics
-    const cisDelta = cisPre != null && cisPost != null ? cisPost - cisPre : null;
-    const painDelta = painPre != null && painPost != null ? painPre - painPost : null;
+      // Calculate deltas for metrics
+      const cisDelta = cisPre != null && cisPost != null ? cisPost - cisPre : null;
+      const painDelta = painPre != null && painPost != null ? painPre - painPost : null;
 
-    // Save episode
-    PPC_STORE.setEpisodeMeta(episodeId, {
-      episodeId,
-      patientName: patientName.trim(),
-      region,
-      dateOfService,
-      indices: selectedIndices,
-      baselineScores: scores,
-      followupDate: followupDate.toISOString().split("T")[0],
-      dob: dob.trim(),
-      clinician: clinician.trim(),
-      diagnosis: diagnosis.trim(),
-      npi: npi.trim(),
-      start_date: dateOfService,
-      injuryDate,
-      injuryMechanism: injuryMechanism.trim(),
-      painLevel,
-      referringPhysician: referringPhysician.trim(),
-      insurance: insurance.trim(),
-      emergencyContact: emergencyContact.trim(),
-      emergencyPhone: emergencyPhone.trim(),
-      medications: medications.trim(),
-      medicalHistory: medicalHistory.trim(),
-      priorTreatments: priorTreatments.trim(),
-      functionalLimitations: functionalLimitations.trim(),
-      treatmentGoals: treatmentGoals.trim(),
-      cis_pre: cisPre,
-      cis_post: cisPost,
-      cis_delta: cisDelta,
-      pain_pre: painPre,
-      pain_post: painPost,
-      pain_delta: painDelta,
-      functional_limitation: functionalLimitation.trim(),
-      functional_limitations: functionalLimitationsArray,
-      prior_treatments: priorTreatmentsData,
-      prior_treatments_other: priorTreatmentsOther.trim(),
-      goals: goalsData,
-      goals_other: goalsOther.trim(),
-    });
+      // Save episode to database
+      await createEpisode({
+        id: episodeId,
+        patient_name: patientName.trim(),
+        date_of_birth: dob.trim(),
+        region,
+        diagnosis: diagnosis.trim(),
+        date_of_service: dateOfService,
+        injury_date: injuryDate,
+        injury_mechanism: injuryMechanism.trim(),
+        pain_level: painLevel,
+        referring_physician: referringPhysician.trim(),
+        insurance: insurance.trim(),
+        emergency_contact: emergencyContact.trim(),
+        emergency_phone: emergencyPhone.trim(),
+        medications: medications.trim(),
+        medical_history: medicalHistory.trim(),
+        prior_treatments: priorTreatmentsData,
+        prior_treatments_other: priorTreatmentsOther.trim(),
+        functional_limitations: functionalLimitationsArray,
+        functional_limitation: functionalLimitation.trim(),
+        treatment_goals: goalsData,
+        goals_other: goalsOther.trim(),
+        start_date: dateOfService,
+        followup_date: followupDate.toISOString().split("T")[0],
+        cis_pre: cisPre ?? undefined,
+        cis_post: cisPost ?? undefined,
+        cis_delta: cisDelta ?? undefined,
+        pain_pre: painPre ?? undefined,
+        pain_post: painPost ?? undefined,
+        pain_delta: painDelta ?? undefined,
+      });
 
-    toast.success("Episode created successfully!");
-    navigate("/");
+      // Save baseline scores to database
+      for (const [indexType, score] of Object.entries(scores)) {
+        await saveOutcomeScore(episodeId, indexType, "baseline", score);
+      }
+
+      toast.success("Episode created successfully!");
+      navigate("/");
+    } catch (error: any) {
+      toast.error(`Failed to create episode: ${error.message}`);
+    }
   };
 
   return (
