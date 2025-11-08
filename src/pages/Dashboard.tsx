@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { PPC_STORE, EpisodeMeta } from "@/lib/ppcStore";
+import { supabase } from "@/integrations/supabase/client";
+import { getAllEpisodes } from "@/lib/dbOperations";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,8 +18,23 @@ import { RegionalPerformanceChart } from "@/components/RegionalPerformanceChart"
 import { TreatmentEfficacyChart } from "@/components/TreatmentEfficacyChart";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 
+interface Episode {
+  id: string;
+  user_id: string;
+  patient_name: string;
+  date_of_birth?: string;
+  region: string;
+  diagnosis?: string;
+  date_of_service: string;
+  discharge_date?: string;
+  clinician?: string;
+  created_at: string;
+}
+
 export default function Dashboard() {
-  const [episodes, setEpisodes] = useState<EpisodeMeta[]>([]);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
   
   // Filter states
@@ -33,13 +49,38 @@ export default function Dashboard() {
   const [selectedEpisodes, setSelectedEpisodes] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const episodeIds = PPC_STORE.getAllEpisodes();
-    const episodeData = episodeIds
-      .map((id) => PPC_STORE.getEpisodeMeta(id))
-      .filter((ep): ep is EpisodeMeta => ep !== null)
-      .sort((a, b) => new Date(b.dateOfService).getTime() - new Date(a.dateOfService).getTime());
-    setEpisodes(episodeData);
+    loadEpisodes();
+    checkAdminStatus();
   }, []);
+
+  const checkAdminStatus = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from("user_roles")
+      .select()
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    
+    setIsAdmin(!!data);
+  };
+
+  const loadEpisodes = async () => {
+    try {
+      const data = await getAllEpisodes();
+      setEpisodes(data);
+    } catch (error: any) {
+      toast({
+        title: "Error loading episodes",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Get unique clinicians from episodes
   const uniqueClinicians = useMemo(() => {
@@ -54,8 +95,8 @@ export default function Dashboard() {
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         const matchesSearch = 
-          episode.patientName.toLowerCase().includes(query) ||
-          episode.episodeId.toLowerCase().includes(query) ||
+          episode.patient_name.toLowerCase().includes(query) ||
+          episode.id.toLowerCase().includes(query) ||
           (episode.diagnosis && episode.diagnosis.toLowerCase().includes(query));
         
         if (!matchesSearch) return false;
@@ -73,13 +114,13 @@ export default function Dashboard() {
 
       // Date range filter
       if (filterDateFrom) {
-        const episodeDate = new Date(episode.dateOfService);
+        const episodeDate = new Date(episode.date_of_service);
         const fromDate = new Date(filterDateFrom);
         if (episodeDate < fromDate) return false;
       }
 
       if (filterDateTo) {
-        const episodeDate = new Date(episode.dateOfService);
+        const episodeDate = new Date(episode.date_of_service);
         const toDate = new Date(filterDateTo);
         if (episodeDate > toDate) return false;
       }
@@ -103,7 +144,7 @@ export default function Dashboard() {
     if (selectedEpisodes.size === filteredEpisodes.length) {
       setSelectedEpisodes(new Set());
     } else {
-      setSelectedEpisodes(new Set(filteredEpisodes.map(ep => ep.episodeId)));
+      setSelectedEpisodes(new Set(filteredEpisodes.map(ep => ep.id)));
     }
   };
 
@@ -127,7 +168,7 @@ export default function Dashboard() {
       return;
     }
 
-    const selectedData = filteredEpisodes.filter(ep => selectedEpisodes.has(ep.episodeId));
+    const selectedData = filteredEpisodes.filter(ep => selectedEpisodes.has(ep.id));
     
     const headers = [
       "Episode ID",
@@ -143,25 +184,18 @@ export default function Dashboard() {
     ];
 
     const rows = selectedData.map(ep => {
-      const baselineScoresStr = ep.baselineScores 
-        ? Object.entries(ep.baselineScores).map(([idx, score]) => `${idx}:${score}`).join("; ")
-        : "";
-      const dischargeScoresStr = ep.dischargeScores
-        ? Object.entries(ep.dischargeScores).map(([idx, score]) => `${idx}:${score}`).join("; ")
-        : "";
-      
-      const status = ep.dischargeDate ? "Completed" : "Active";
+      const status = ep.discharge_date ? "Completed" : "Active";
 
       return [
-        ep.episodeId,
-        ep.patientName,
+        ep.id,
+        ep.patient_name,
         ep.region,
         ep.clinician || "",
-        format(new Date(ep.dateOfService), "MMM dd, yyyy"),
+        format(new Date(ep.date_of_service), "MMM dd, yyyy"),
         ep.diagnosis || "",
-        baselineScoresStr,
-        dischargeScoresStr,
-        ep.dischargeDate ? format(new Date(ep.dischargeDate), "MMM dd, yyyy") : "",
+        "", // baselineScores - TODO: fetch from outcome_scores table
+        "", // dischargeScores - TODO: fetch from outcome_scores table
+        ep.discharge_date ? format(new Date(ep.discharge_date), "MMM dd, yyyy") : "",
         status
       ];
     });
@@ -187,7 +221,7 @@ export default function Dashboard() {
     });
   };
 
-  const deleteSelectedEpisodes = () => {
+  const deleteSelectedEpisodes = async () => {
     if (selectedEpisodes.size === 0) {
       toast({
         title: "No episodes selected",
@@ -201,30 +235,30 @@ export default function Dashboard() {
       return;
     }
 
-    // Delete episodes from local storage
-    selectedEpisodes.forEach(episodeId => {
-      localStorage.removeItem(`ppc_episode_meta_${episodeId}`);
-      localStorage.removeItem(`ppc_followup_meta_${episodeId}`);
-      localStorage.removeItem(`ppc_followup_status_${episodeId}`);
-      localStorage.removeItem(`ppc_followup_completed_${episodeId}`);
-    });
+    try {
+      // Delete episodes from database
+      const { error } = await supabase
+        .from("episodes")
+        .delete()
+        .in("id", Array.from(selectedEpisodes));
 
-    // Update episodes list
-    const allEpisodeIds = PPC_STORE.getAllEpisodes().filter(id => !selectedEpisodes.has(id));
-    localStorage.setItem('ppc_episodes', JSON.stringify(allEpisodeIds));
+      if (error) throw error;
 
-    // Refresh episodes
-    const episodeData = allEpisodeIds
-      .map((id) => PPC_STORE.getEpisodeMeta(id))
-      .filter((ep): ep is EpisodeMeta => ep !== null)
-      .sort((a, b) => new Date(b.dateOfService).getTime() - new Date(a.dateOfService).getTime());
-    setEpisodes(episodeData);
-    setSelectedEpisodes(new Set());
+      // Refresh episodes
+      await loadEpisodes();
+      setSelectedEpisodes(new Set());
 
-    toast({
-      title: "Episodes deleted",
-      description: `Successfully deleted ${selectedEpisodes.size} episode${selectedEpisodes.size !== 1 ? 's' : ''}`,
-    });
+      toast({
+        title: "Episodes deleted",
+        description: `Successfully deleted ${selectedEpisodes.size} episode${selectedEpisodes.size !== 1 ? 's' : ''}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error deleting episodes",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   // Export to CSV
@@ -243,25 +277,18 @@ export default function Dashboard() {
     ];
 
     const rows = filteredEpisodes.map(ep => {
-      const baselineScoresStr = ep.baselineScores 
-        ? Object.entries(ep.baselineScores).map(([idx, score]) => `${idx}:${score}`).join("; ")
-        : "";
-      const dischargeScoresStr = ep.dischargeScores
-        ? Object.entries(ep.dischargeScores).map(([idx, score]) => `${idx}:${score}`).join("; ")
-        : "";
-      
-      const status = ep.dischargeDate ? "Completed" : "Active";
+      const status = ep.discharge_date ? "Completed" : "Active";
 
       return [
-        ep.episodeId,
-        ep.patientName,
+        ep.id,
+        ep.patient_name,
         ep.region,
         ep.clinician || "",
-        format(new Date(ep.dateOfService), "MMM dd, yyyy"),
+        format(new Date(ep.date_of_service), "MMM dd, yyyy"),
         ep.diagnosis || "",
-        baselineScoresStr,
-        dischargeScoresStr,
-        ep.dischargeDate ? format(new Date(ep.dischargeDate), "MMM dd, yyyy") : "",
+        "", // baselineScores - TODO: fetch from outcome_scores table
+        "", // dischargeScores - TODO: fetch from outcome_scores table
+        ep.discharge_date ? format(new Date(ep.discharge_date), "MMM dd, yyyy") : "",
         status
       ];
     });
@@ -287,48 +314,23 @@ export default function Dashboard() {
     window.print();
   };
 
-  const pendingFollowups = filteredEpisodes.filter((ep) => {
-    const followup = PPC_STORE.getFollowupMeta(ep.episodeId);
-    return followup && !PPC_STORE.isFollowupCompleted(ep.episodeId);
-  });
+  // TODO: Fetch followups from database
+  const pendingFollowups: Episode[] = [];
 
-  // Calculate average outcome improvement
+  // TODO: Calculate from outcome_scores table
   const calculateOutcomeImprovement = () => {
-    const completedEpisodes = episodes.filter(ep => 
-      ep.dischargeScores && ep.baselineScores && Object.keys(ep.dischargeScores).length > 0
-    );
-
-    if (completedEpisodes.length === 0) return 0;
-
-    let totalImprovement = 0;
-    let count = 0;
-
-    completedEpisodes.forEach(ep => {
-      Object.keys(ep.baselineScores || {}).forEach(index => {
-        const baseline = ep.baselineScores?.[index];
-        const discharge = ep.dischargeScores?.[index];
-        
-        if (baseline != null && discharge != null && baseline > 0) {
-          // Calculate percentage improvement (lower scores are better, so discharge < baseline = improvement)
-          const improvement = ((baseline - discharge) / baseline) * 100;
-          totalImprovement += improvement;
-          count++;
-        }
-      });
-    });
-
-    return count > 0 ? Math.max(0, Math.min(100, totalImprovement / count)) : 0;
+    return 0;
   };
 
   // Calculate average days to discharge
   const calculateAvgDaysToDischarge = () => {
-    const dischargedEpisodes = episodes.filter(ep => ep.dischargeDate && ep.dateOfService);
+    const dischargedEpisodes = episodes.filter(ep => ep.discharge_date && ep.date_of_service);
     
     if (dischargedEpisodes.length === 0) return 0;
 
     const totalDays = dischargedEpisodes.reduce((sum, ep) => {
-      const start = new Date(ep.dateOfService).getTime();
-      const end = new Date(ep.dischargeDate!).getTime();
+      const start = new Date(ep.date_of_service).getTime();
+      const end = new Date(ep.discharge_date!).getTime();
       const days = Math.round((end - start) / (1000 * 60 * 60 * 24));
       return sum + days;
     }, 0);
@@ -338,6 +340,16 @@ export default function Dashboard() {
 
   const avgOutcomeImprovement = calculateOutcomeImprovement();
   const avgDaysToDischarge = calculateAvgDaysToDischarge();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="text-lg">Loading episodes...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -376,7 +388,7 @@ export default function Dashboard() {
               strokeWidth={14}
               color="success"
               label="Improvement"
-              subtitle={`Based on ${episodes.filter(ep => ep.dischargeScores).length} completed episodes`}
+              subtitle={`Based on ${episodes.filter(ep => ep.discharge_date).length} completed episodes`}
             />
           </CardContent>
         </Card>
@@ -412,11 +424,11 @@ export default function Dashboard() {
         </div>
         
         <div className="grid gap-6 lg:grid-cols-2">
-          <TrendChart episodes={filteredEpisodes} />
-          <RegionalPerformanceChart episodes={filteredEpisodes} />
+              <TrendChart episodes={[]} />
+              <RegionalPerformanceChart episodes={[]} />
         </div>
         
-        <TreatmentEfficacyChart episodes={filteredEpisodes} />
+        <TreatmentEfficacyChart episodes={[]} />
       </div>
 
       {/* Search & Filter Section */}
@@ -710,52 +722,46 @@ export default function Dashboard() {
           ) : (
             <div className="space-y-4">
               {filteredEpisodes.slice(0, 10).map((episode) => {
-                const followup = PPC_STORE.getFollowupMeta(episode.episodeId);
-                const isCompleted = PPC_STORE.isFollowupCompleted(episode.episodeId);
-                const isSelected = selectedEpisodes.has(episode.episodeId);
+                const isSelected = selectedEpisodes.has(episode.id);
 
                 return (
                   <div
-                    key={episode.episodeId}
+                    key={episode.id}
                     className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-muted/50"
                   >
                     <Checkbox
                       checked={isSelected}
-                      onCheckedChange={() => toggleSelectEpisode(episode.episodeId)}
-                      aria-label={`Select episode ${episode.episodeId}`}
+                      onCheckedChange={() => toggleSelectEpisode(episode.id)}
+                      aria-label={`Select episode ${episode.id}`}
                     />
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium">{episode.patientName}</p>
+                        <p className="font-medium">{episode.patient_name}</p>
                         <Badge variant="outline" className="text-xs">
                           {episode.region}
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Episode ID: {episode.episodeId} | Service Date:{" "}
-                        {format(new Date(episode.dateOfService), "MMM dd, yyyy")}
+                        Episode ID: {episode.id} | Service Date:{" "}
+                        {format(new Date(episode.date_of_service), "MMM dd, yyyy")}
                       </p>
-                      <div className="flex gap-2">
-                        {episode.indices.map((index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {index}
-                          </Badge>
-                        ))}
-                      </div>
+                      {episode.diagnosis && (
+                        <p className="text-sm text-muted-foreground">
+                          Diagnosis: {episode.diagnosis}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
-                      {followup && (
-                        <Badge className={isCompleted ? "badge-complete" : "badge-warning"}>
-                          {isCompleted ? "Completed" : "Pending Follow-up"}
-                        </Badge>
+                      {episode.discharge_date && (
+                        <Badge className="badge-complete">Completed</Badge>
                       )}
-                      <Link to={`/episode-summary?id=${episode.episodeId}`}>
+                      <Link to={`/episode-summary?id=${episode.id}`}>
                         <Button size="sm" variant="outline">
                           View Details
                         </Button>
                       </Link>
-                      {!followup && (
-                        <Link to={`/follow-up?episode=${episode.episodeId}`}>
+                      {!episode.discharge_date && (
+                        <Link to={`/follow-up?episode=${episode.id}`}>
                           <Button size="sm" variant="outline">
                             Schedule Follow-up
                           </Button>

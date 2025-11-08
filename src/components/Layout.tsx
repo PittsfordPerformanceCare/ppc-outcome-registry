@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useSessionTimeout } from "@/hooks/useSessionTimeout";
+import { SessionTimeoutWarning } from "./SessionTimeoutWarning";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -21,6 +23,7 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { showWarning, extendSession } = useSessionTimeout();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -48,6 +51,7 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      <SessionTimeoutWarning open={showWarning} onExtend={extendSession} />
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
         <div className="container mx-auto flex h-16 items-center px-4">
