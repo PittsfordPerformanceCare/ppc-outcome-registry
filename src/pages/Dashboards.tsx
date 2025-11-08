@@ -231,6 +231,54 @@ export default function Dashboards() {
       .slice(0, 10);
   }, [filteredOutcomes]);
 
+  // Chart data: Monthly Discharges and MCID Rate (with rolling 3-month average)
+  const monthlyTrendData = useMemo(() => {
+    if (filteredOutcomes.length === 0) return [];
+
+    // Group by month
+    const monthMap = new Map<string, { total: number; mcidAchieved: number }>();
+
+    filteredOutcomes.forEach(outcome => {
+      const monthKey = format(new Date(outcome.dischargeDate), "yyyy-MM");
+      const current = monthMap.get(monthKey) || { total: 0, mcidAchieved: 0 };
+      current.total++;
+      if (outcome.mcidAchieved) current.mcidAchieved++;
+      monthMap.set(monthKey, current);
+    });
+
+    // Convert to array and sort by date
+    const monthlyData = Array.from(monthMap.entries())
+      .map(([month, stats]) => ({
+        month,
+        date: new Date(month + "-01"),
+        discharges: stats.total,
+        mcidRate: Math.round((stats.mcidAchieved / stats.total) * 100),
+      }))
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    // Calculate rolling 3-month average
+    const withRollingAvg = monthlyData.map((item, idx) => {
+      if (idx < 2) {
+        // Not enough data for 3-month average yet
+        return { ...item, rollingAvg: null };
+      }
+
+      const last3Months = monthlyData.slice(idx - 2, idx + 1);
+      const avgRate = last3Months.reduce((sum, m) => sum + m.mcidRate, 0) / 3;
+      
+      return {
+        ...item,
+        rollingAvg: Math.round(avgRate),
+      };
+    });
+
+    // Format month labels
+    return withRollingAvg.map(item => ({
+      ...item,
+      monthLabel: format(item.date, "MMM yyyy"),
+    }));
+  }, [filteredOutcomes]);
+
   // Export CSV
   const exportCSV = () => {
     const headers = [
@@ -480,6 +528,90 @@ export default function Dashboards() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Monthly Trend Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Monthly Discharge Trends</CardTitle>
+              <CardDescription>MCID achievement rate over time with rolling 3-month average</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {monthlyTrendData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={350}>
+                  <LineChart data={monthlyTrendData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis 
+                      dataKey="monthLabel" 
+                      angle={-45} 
+                      textAnchor="end" 
+                      height={80}
+                      tick={{ fontSize: 11 }}
+                    />
+                    <YAxis 
+                      yAxisId="left"
+                      label={{ value: '% MCID Achieved', angle: -90, position: 'insideLeft' }}
+                      domain={[0, 100]}
+                    />
+                    <YAxis 
+                      yAxisId="right" 
+                      orientation="right"
+                      label={{ value: 'Discharges', angle: 90, position: 'insideRight' }}
+                    />
+                    <Tooltip content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-background border rounded-lg p-3 shadow-lg">
+                            <p className="font-semibold mb-1">{payload[0].payload.monthLabel}</p>
+                            <p className="text-sm">MCID Rate: {payload[0].value}%</p>
+                            {payload[0].payload.rollingAvg && (
+                              <p className="text-sm">3-Month Avg: {payload[0].payload.rollingAvg}%</p>
+                            )}
+                            <p className="text-sm">Discharges: {payload[0].payload.discharges}</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }} />
+                    <Legend />
+                    <Line 
+                      yAxisId="left"
+                      type="monotone" 
+                      dataKey="mcidRate" 
+                      stroke={PPC_CONFIG.brandColor}
+                      strokeWidth={2}
+                      name="MCID Rate (%)"
+                      dot={{ fill: PPC_CONFIG.brandColor, r: 4 }}
+                    />
+                    {monthlyTrendData.some(d => d.rollingAvg !== null) && (
+                      <Line 
+                        yAxisId="left"
+                        type="monotone" 
+                        dataKey="rollingAvg" 
+                        stroke="#16a34a"
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        name="3-Month Rolling Avg (%)"
+                        dot={false}
+                      />
+                    )}
+                    <Line 
+                      yAxisId="right"
+                      type="monotone" 
+                      dataKey="discharges" 
+                      stroke="#6b7280"
+                      strokeWidth={2}
+                      name="Discharges"
+                      dot={{ fill: "#6b7280", r: 3 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex items-center justify-center h-[350px] text-muted-foreground">
+                  <p>No data available for trend analysis</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Data Table */}
           <Card>
