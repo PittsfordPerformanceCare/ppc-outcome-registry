@@ -279,6 +279,100 @@ export default function Dashboards() {
     }));
   }, [filteredOutcomes]);
 
+  // Quality Metrics: Anonymized Clinician Benchmarking
+  const clinicianBenchmarkData = useMemo(() => {
+    const clinicianMap = new Map<string, { total: number; mcidAchieved: number }>();
+
+    filteredOutcomes.forEach(outcome => {
+      const current = clinicianMap.get(outcome.clinicianId) || { total: 0, mcidAchieved: 0 };
+      current.total++;
+      if (outcome.mcidAchieved) current.mcidAchieved++;
+      clinicianMap.set(outcome.clinicianId, current);
+    });
+
+    // Filter clinicians with at least 5 episodes
+    const minEpisodes = 5;
+    const clinicians = Array.from(clinicianMap.entries())
+      .filter(([_, stats]) => stats.total >= minEpisodes)
+      .map(([id, stats], idx) => ({
+        id,
+        label: `Clinician ${String.fromCharCode(65 + idx)}`, // A, B, C, etc.
+        mcidRate: Math.round((stats.mcidAchieved / stats.total) * 100),
+        episodeCount: stats.total,
+      }))
+      .sort((a, b) => b.mcidRate - a.mcidRate);
+
+    return clinicians;
+  }, [filteredOutcomes]);
+
+  // Quality Metrics: Compliance Distribution (from episodes table)
+  const [complianceData, setComplianceData] = useState<Array<{ category: string; count: number; percentage: number }>>([]);
+
+  useEffect(() => {
+    const fetchComplianceData = async () => {
+      try {
+        const { data: episodes, error } = await supabase
+          .from("episodes")
+          .select("compliance_rating")
+          .not("discharge_date", "is", null);
+
+        if (error) throw error;
+
+        // Group by compliance rating
+        const complianceMap = new Map<string, number>();
+        episodes?.forEach(ep => {
+          const rating = ep.compliance_rating || "Unknown";
+          complianceMap.set(rating, (complianceMap.get(rating) || 0) + 1);
+        });
+
+        const total = episodes?.length || 1;
+        const data = Array.from(complianceMap.entries())
+          .map(([category, count]) => ({
+            category,
+            count,
+            percentage: Math.round((count / total) * 100),
+          }))
+          .sort((a, b) => b.count - a.count);
+
+        setComplianceData(data);
+      } catch (error) {
+        console.error("Error fetching compliance data:", error);
+      }
+    };
+
+    if (!loading) {
+      fetchComplianceData();
+    }
+  }, [loading]);
+
+  // Quality Metrics: Referral Source Breakdown
+  const referralSourceData = useMemo(() => {
+    const sourceMap = new Map<string, number>();
+
+    filteredOutcomes.forEach(outcome => {
+      const source = outcome.referralSource || "Unknown";
+      sourceMap.set(source, (sourceMap.get(source) || 0) + 1);
+    });
+
+    const total = filteredOutcomes.length || 1;
+    return Array.from(sourceMap.entries())
+      .map(([source, count]) => ({
+        source,
+        count,
+        percentage: Math.round((count / total) * 100),
+      }))
+      .sort((a, b) => b.count - a.count);
+  }, [filteredOutcomes]);
+
+  // Chart colors
+  const CHART_COLORS = ['#A51C30', '#16a34a', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6'];
+  const COMPLIANCE_COLORS = {
+    'High': '#16a34a',
+    'Moderate': '#f59e0b', 
+    'Low': '#ef4444',
+    'Unknown': '#6b7280',
+  };
+
   // Export CSV
   const exportCSV = () => {
     const headers = [
@@ -678,18 +772,213 @@ export default function Dashboards() {
         </TabsContent>
 
         <TabsContent value="quality" className="space-y-6">
+          {/* Quality KPI Cards */}
+          <div className="grid gap-4 md:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Overall MCID Rate</CardTitle>
+                <Target className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold" style={{ color: PPC_CONFIG.brandColor }}>{kpis.mcidRate}%</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Clinical effectiveness
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Clinicians Tracked</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{clinicianBenchmarkData.length}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  With 5+ episodes
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Compliance Data</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{complianceData.length > 0 ? complianceData.reduce((sum, c) => sum + c.count, 0) : 0}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Episodes rated
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Referral Sources</CardTitle>
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{referralSourceData.length}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Unique sources
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quality Charts Row 1 */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Anonymized Clinician Benchmarking */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Clinician Benchmarking (Anonymized)</CardTitle>
+                <CardDescription>MCID achievement rates by clinician (minimum 5 episodes)</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {clinicianBenchmarkData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={clinicianBenchmarkData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis dataKey="label" tick={{ fontSize: 12 }} />
+                      <YAxis label={{ value: '% MCID Achieved', angle: -90, position: 'insideLeft' }} domain={[0, 100]} />
+                      <Tooltip content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-background border rounded-lg p-3 shadow-lg">
+                              <p className="font-semibold">{payload[0].payload.label}</p>
+                              <p className="text-sm">MCID Rate: {payload[0].value}%</p>
+                              <p className="text-xs text-muted-foreground">Episodes: {payload[0].payload.episodeCount}</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }} />
+                      <Bar dataKey="mcidRate" fill={PPC_CONFIG.brandColor} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+                    <p>No clinicians with 5+ episodes in filtered data</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Compliance Distribution */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Compliance Distribution</CardTitle>
+                <CardDescription>Patient compliance ratings across episodes</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {complianceData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={complianceData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ category, percentage }) => `${category}: ${percentage}%`}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="count"
+                      >
+                        {complianceData.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={COMPLIANCE_COLORS[entry.category as keyof typeof COMPLIANCE_COLORS] || CHART_COLORS[index % CHART_COLORS.length]} 
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-background border rounded-lg p-3 shadow-lg">
+                              <p className="font-semibold">{payload[0].payload.category}</p>
+                              <p className="text-sm">Count: {payload[0].value}</p>
+                              <p className="text-xs text-muted-foreground">{payload[0].payload.percentage}%</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+                    <p>No compliance data available</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Referral Source Breakdown */}
           <Card>
             <CardHeader>
-              <CardTitle>Quality Metrics Dashboard</CardTitle>
-              <CardDescription>Coming soon - Compliance tracking, follow-up rates, and clinician benchmarking</CardDescription>
+              <CardTitle>Referral Source Distribution</CardTitle>
+              <CardDescription>Where patients are coming from</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-center h-64 text-muted-foreground">
-                <div className="text-center">
-                  <BarChart3 className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                  <p>Quality metrics dashboard under development</p>
+              {referralSourceData.length > 0 ? (
+                <div className="grid gap-4 lg:grid-cols-2">
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={referralSourceData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ source, percentage }) => `${source}: ${percentage}%`}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="count"
+                      >
+                        {referralSourceData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-background border rounded-lg p-3 shadow-lg">
+                              <p className="font-semibold">{payload[0].payload.source}</p>
+                              <p className="text-sm">Count: {payload[0].value}</p>
+                              <p className="text-xs text-muted-foreground">{payload[0].payload.percentage}%</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm mb-3">Referral Breakdown</h4>
+                    {referralSourceData.map((source, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-2 rounded border">
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }}
+                          />
+                          <span className="text-sm">{source.source}</span>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold text-sm">{source.count}</div>
+                          <div className="text-xs text-muted-foreground">{source.percentage}%</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex items-center justify-center h-[300px] text-muted-foreground">
+                  <p>No referral source data available</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
