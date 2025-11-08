@@ -1,9 +1,10 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home, LogOut, User } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,21 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("user_roles")
+        .select()
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      setIsAdmin(!!data);
+    };
+    checkAdmin();
+  }, [user]);
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: Home },
@@ -27,6 +43,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "Follow-up", href: "/follow-up", icon: Activity },
     { name: "Discharge", href: "/discharge", icon: LogOut },
     { name: "PCP Summary", href: "/pcp-summary", icon: FileText },
+    ...(isAdmin ? [{ name: "Admin", href: "/admin", icon: Shield }] : []),
   ];
 
   return (
