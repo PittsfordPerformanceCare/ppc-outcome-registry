@@ -94,21 +94,18 @@ export function RegionalPerformanceChart({ episodes }: RegionalPerformanceChartP
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={320}>
-          <BarChart data={regionalData} layout="horizontal">
+          <BarChart data={regionalData}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis 
-              type="number"
+              dataKey="region" 
+              className="text-xs"
+              stroke="hsl(var(--muted-foreground))"
+            />
+            <YAxis 
               domain={[0, 100]}
               className="text-xs"
               stroke="hsl(var(--muted-foreground))"
-              label={{ value: 'Improvement %', position: 'insideBottom', offset: -5 }}
-            />
-            <YAxis 
-              type="category"
-              dataKey="region"
-              className="text-xs"
-              stroke="hsl(var(--muted-foreground))"
-              width={100}
+              label={{ value: 'Improvement %', angle: -90, position: 'insideLeft' }}
             />
             <Tooltip 
               contentStyle={{ 
@@ -127,7 +124,7 @@ export function RegionalPerformanceChart({ episodes }: RegionalPerformanceChartP
             <Bar 
               dataKey="avgImprovement" 
               name="Average Improvement"
-              radius={[0, 8, 8, 0]}
+              radius={[8, 8, 0, 0]}
             >
               {regionalData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
