@@ -1304,48 +1304,89 @@ export default function Dashboards() {
           {/* Treatment Goal Achievement */}
           <Card>
             <CardHeader>
-              <CardTitle>Treatment Goal Achievement Rates</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                Treatment Goal Achievement Rates
+              </CardTitle>
               <CardDescription>Success rates by goal type (goals with 3+ episodes)</CardDescription>
             </CardHeader>
             <CardContent>
               {goalAchievementData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={goalAchievementData} layout="horizontal">
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis type="number" domain={[0, 100]} label={{ value: '% Achievement', position: 'insideBottom', offset: -5 }} />
-                    <YAxis dataKey="goal" type="category" width={180} tick={{ fontSize: 11 }} />
-                    <Tooltip content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        return (
-                          <div className="bg-background border rounded-lg p-3 shadow-lg">
-                            <p className="font-semibold text-sm mb-2">{data.goal}</p>
-                            <div className="space-y-1 text-xs">
-                              <div className="flex justify-between gap-4">
-                                <span className="text-green-600">✓ Achieved:</span>
-                                <span className="font-semibold">{data.achieved} ({Math.round((data.achieved / data.total) * 100)}%)</span>
-                              </div>
-                              <div className="flex justify-between gap-4">
-                                <span className="text-orange-600">◐ Partial:</span>
-                                <span className="font-semibold">{data.partial} ({Math.round((data.partial / data.total) * 100)}%)</span>
-                              </div>
-                              <div className="flex justify-between gap-4">
-                                <span className="text-gray-600">○ Not Yet:</span>
-                                <span className="font-semibold">{data.notYet} ({Math.round((data.notYet / data.total) * 100)}%)</span>
-                              </div>
-                              <div className="border-t pt-1 mt-1">
-                                <span className="text-muted-foreground">Total: {data.total} episodes</span>
-                              </div>
-                            </div>
+                <div className="space-y-4">
+                  {/* Legend */}
+                  <div className="flex flex-wrap gap-4 justify-center pb-2 border-b">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded bg-emerald-500"></div>
+                      <span className="text-sm font-medium">Achieved</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded bg-amber-500"></div>
+                      <span className="text-sm font-medium">Partial</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded bg-slate-400"></div>
+                      <span className="text-sm font-medium">Not Yet</span>
+                    </div>
+                  </div>
+
+                  {/* Stacked horizontal bars */}
+                  <div className="space-y-3">
+                    {goalAchievementData.map((item, idx) => {
+                      const achievedPct = Math.round((item.achieved / item.total) * 100);
+                      const partialPct = Math.round((item.partial / item.total) * 100);
+                      const notYetPct = 100 - achievedPct - partialPct;
+
+                      return (
+                        <div key={idx} className="space-y-1">
+                          <div className="flex justify-between items-baseline">
+                            <span className="text-sm font-medium">{item.goal}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {item.total} episode{item.total !== 1 ? 's' : ''}
+                            </span>
                           </div>
-                        );
-                      }
-                      return null;
-                    }} />
-                    <Legend />
-                    <Bar dataKey="achievementRate" fill="#16a34a" name="Achievement Rate (%)" />
-                  </BarChart>
-                </ResponsiveContainer>
+                          <div className="flex h-8 rounded-lg overflow-hidden border shadow-sm">
+                            {/* Achieved */}
+                            {achievedPct > 0 && (
+                              <div
+                                className="bg-emerald-500 flex items-center justify-center text-white text-xs font-semibold transition-all hover:bg-emerald-600"
+                                style={{ width: `${achievedPct}%` }}
+                                title={`Achieved: ${item.achieved} (${achievedPct}%)`}
+                              >
+                                {achievedPct >= 10 && `${achievedPct}%`}
+                              </div>
+                            )}
+                            {/* Partial */}
+                            {partialPct > 0 && (
+                              <div
+                                className="bg-amber-500 flex items-center justify-center text-white text-xs font-semibold transition-all hover:bg-amber-600"
+                                style={{ width: `${partialPct}%` }}
+                                title={`Partial: ${item.partial} (${partialPct}%)`}
+                              >
+                                {partialPct >= 10 && `${partialPct}%`}
+                              </div>
+                            )}
+                            {/* Not Yet */}
+                            {notYetPct > 0 && (
+                              <div
+                                className="bg-slate-400 flex items-center justify-center text-white text-xs font-semibold transition-all hover:bg-slate-500"
+                                style={{ width: `${notYetPct}%` }}
+                                title={`Not Yet: ${item.notYet} (${notYetPct}%)`}
+                              >
+                                {notYetPct >= 10 && `${notYetPct}%`}
+                              </div>
+                            )}
+                          </div>
+                          {/* Detailed breakdown on hover */}
+                          <div className="flex gap-4 text-xs text-muted-foreground pl-1">
+                            <span className="text-emerald-600">✓ {item.achieved}</span>
+                            <span className="text-amber-600">◐ {item.partial}</span>
+                            <span className="text-slate-600">○ {item.notYet}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               ) : (
                 <div className="flex items-center justify-center h-[400px] text-muted-foreground">
                   <div className="text-center">
