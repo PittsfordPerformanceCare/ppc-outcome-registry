@@ -486,15 +486,26 @@ export default function PCPSummary() {
                   <div className="mt-4 pt-4 border-t">
                     <p className="text-sm font-medium text-muted-foreground mb-2">Clinical Interpretation</p>
                     <p className="text-base">
-                      {episode.painPost === 0 ? (
-                        "Patient achieved complete pain resolution."
-                      ) : episode.painPre - episode.painPost >= 2 ? (
-                        "Significant pain reduction achieved. Patient reports clinically meaningful improvement in pain levels."
-                      ) : episode.painPre - episode.painPost > 0 ? (
-                        "Moderate pain reduction observed. Patient shows improvement but may benefit from continued management."
-                      ) : (
-                        "No significant change in pain levels reported."
-                      )}
+                      {(() => {
+                        const reduction = episode.painPre - episode.painPost;
+                        const percentReduction = (reduction / episode.painPre * 100).toFixed(0);
+                        
+                        if (episode.painPost === 0) {
+                          return `Patient achieved complete pain resolution, demonstrating a ${reduction}-point reduction from the initial pain rating of ${episode.painPre}/10. This represents a 100% improvement and indicates excellent treatment response with full symptom resolution.`;
+                        } else if (reduction >= 5) {
+                          return `Patient experienced substantial pain reduction of ${reduction} points (${percentReduction}% improvement), decreasing from ${episode.painPre}/10 at intake to ${episode.painPost}/10 at discharge. This clinically significant improvement indicates highly effective pain management and strong treatment response.`;
+                        } else if (reduction >= 3) {
+                          return `Patient demonstrated significant pain improvement with a ${reduction}-point reduction (${percentReduction}% improvement), progressing from ${episode.painPre}/10 to ${episode.painPost}/10. This represents a meaningful clinical improvement that typically correlates with enhanced function and quality of life.`;
+                        } else if (reduction >= 2) {
+                          return `Patient showed moderate pain reduction of ${reduction} points (${percentReduction}% improvement). Pain decreased from ${episode.painPre}/10 at intake to ${episode.painPost}/10 at discharge. While this represents positive progress, the patient may benefit from continued pain management strategies.`;
+                        } else if (reduction >= 1) {
+                          return `Patient reported mild pain reduction of ${reduction} point(s) (${percentReduction}% improvement), with pain levels decreasing from ${episode.painPre}/10 to ${episode.painPost}/10. This modest improvement suggests partial treatment response; additional interventions may be warranted.`;
+                        } else if (reduction === 0) {
+                          return `Pain levels remained stable at ${episode.painPre}/10 throughout treatment. The absence of improvement may indicate a need for treatment plan modification or consideration of alternative therapeutic approaches.`;
+                        } else {
+                          return `Pain levels increased by ${Math.abs(reduction)} point(s) from ${episode.painPre}/10 to ${episode.painPost}/10 during treatment. This finding warrants clinical attention and may require further diagnostic evaluation or treatment plan reassessment.`;
+                        }
+                      })()}
                     </p>
                   </div>
                 )}
