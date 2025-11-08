@@ -4,6 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import { Activity, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface MetricCardProps {
   title: string;
@@ -16,6 +18,7 @@ interface MetricCardProps {
   onPostChange?: (value: number | null) => void;
   isIntake: boolean;
   deltaInverted?: boolean; // true for pain (reduction is good), false for CIS (increase is good)
+  icon?: "activity" | "alert"; // Icon type for the card
 }
 
 export function MetricCard({
@@ -29,6 +32,7 @@ export function MetricCard({
   onPostChange,
   isIntake,
   deltaInverted = false,
+  icon = "activity",
 }: MetricCardProps) {
   const [localPre, setLocalPre] = useState<string>(preValue?.toString() || "");
   const [localPost, setLocalPost] = useState<string>(postValue?.toString() || "");
@@ -89,16 +93,36 @@ export function MetricCard({
   const preDisabled = false;
   const postDisabled = false;
 
+  const Icon = icon === "activity" ? Activity : AlertCircle;
+  
+  // Border color based on delta status
+  const borderAccentClass = 
+    deltaStatus === "good" ? "border-l-4 border-l-success" :
+    deltaStatus === "bad" ? "border-l-4 border-l-warning" :
+    "border-l-4 border-l-muted";
+
   return (
-    <Card>
+    <Card className={cn(
+      "transition-all duration-300 hover:shadow-md",
+      "bg-gradient-to-br from-card to-card/80",
+      borderAccentClass
+    )}>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <div className="flex items-center gap-2">
+          <Icon className="h-5 w-5 text-primary" />
+          <CardTitle>{title}</CardTitle>
+        </div>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Pre Value */}
-        <div className="space-y-3">
-          <Label htmlFor={`${title}-pre`}>{preLabel}</Label>
+        <div className={cn(
+          "space-y-3 p-3 rounded-lg transition-colors",
+          preDisabled && "bg-muted/30"
+        )}>
+          <Label htmlFor={`${title}-pre`} className="text-sm font-medium">
+            {preLabel}
+          </Label>
           <div className="flex items-center gap-4">
             <Slider
               id={`${title}-pre`}
@@ -108,7 +132,7 @@ export function MetricCard({
               value={[preValue ?? 0]}
               onValueChange={handlePreSliderChange}
               disabled={preDisabled}
-              className="flex-1"
+              className="flex-1 hover:opacity-90 transition-opacity"
             />
             <Input
               type="number"
@@ -124,8 +148,13 @@ export function MetricCard({
         </div>
 
         {/* Post Value */}
-        <div className="space-y-3">
-          <Label htmlFor={`${title}-post`}>{postLabel}</Label>
+        <div className={cn(
+          "space-y-3 p-3 rounded-lg transition-colors",
+          postDisabled && "bg-muted/30"
+        )}>
+          <Label htmlFor={`${title}-post`} className="text-sm font-medium">
+            {postLabel}
+          </Label>
           <div className="flex items-center gap-4">
             <Slider
               id={`${title}-post`}
@@ -135,7 +164,7 @@ export function MetricCard({
               value={[postValue ?? 0]}
               onValueChange={handlePostSliderChange}
               disabled={postDisabled}
-              className="flex-1"
+              className="flex-1 hover:opacity-90 transition-opacity"
             />
             <Input
               type="number"
@@ -151,11 +180,17 @@ export function MetricCard({
         </div>
 
         {/* Delta */}
-        <div className="flex items-center justify-between border-t pt-4">
-          <Label>Change (Δ)</Label>
+        <div className="flex items-center justify-between border-t pt-4 mt-2">
+          <Label className="text-base font-semibold">Change (Δ)</Label>
           <Badge
-            variant={deltaStatus === "good" ? "default" : deltaStatus === "bad" ? "destructive" : "secondary"}
-            className="text-base font-semibold"
+            className={cn(
+              "text-lg font-bold px-4 py-1.5 transition-all duration-300",
+              deltaStatus === "good" && "bg-success/15 text-success border-success/30 animate-in zoom-in-50",
+              deltaStatus === "bad" && "bg-warning/15 text-warning border-warning/30 animate-in zoom-in-50",
+              deltaStatus === "neutral" && "bg-secondary text-secondary-foreground",
+              deltaStatus === "good" && delta !== null && delta > 0 && "animate-pulse"
+            )}
+            variant="outline"
           >
             {deltaText}
           </Badge>

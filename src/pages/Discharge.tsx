@@ -345,6 +345,7 @@ export default function Discharge() {
               onPostChange={setCisPost}
               isIntake={false}
               deltaInverted={false}
+              icon="activity"
             />
             <MetricCard
               title="Patient Verbal Pain Scale"
@@ -357,6 +358,7 @@ export default function Discharge() {
               onPostChange={setPainPost}
               isIntake={false}
               deltaInverted={true}
+              icon="alert"
             />
           </div>
           

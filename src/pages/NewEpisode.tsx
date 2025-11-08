@@ -451,6 +451,7 @@ export default function NewEpisode() {
                 onPostChange={setCisPost}
                 isIntake={true}
                 deltaInverted={false}
+                icon="activity"
               />
               <MetricCard
                 title="Patient Verbal Pain Scale"
@@ -463,6 +464,7 @@ export default function NewEpisode() {
                 onPostChange={setPainPost}
                 isIntake={true}
                 deltaInverted={true}
+                icon="alert"
               />
             </div>
 
