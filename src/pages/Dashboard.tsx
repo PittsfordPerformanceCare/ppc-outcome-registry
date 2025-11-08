@@ -4,8 +4,9 @@ import { PPC_STORE, EpisodeMeta } from "@/lib/ppcStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ClipboardPlus, TrendingUp, Users } from "lucide-react";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock } from "lucide-react";
 import { format } from "date-fns";
+import { CircularProgress } from "@/components/CircularProgress";
 
 export default function Dashboard() {
   const [episodes, setEpisodes] = useState<EpisodeMeta[]>([]);
@@ -24,6 +25,53 @@ export default function Dashboard() {
     return followup && !PPC_STORE.isFollowupCompleted(ep.episodeId);
   });
 
+  // Calculate average outcome improvement
+  const calculateOutcomeImprovement = () => {
+    const completedEpisodes = episodes.filter(ep => 
+      ep.dischargeScores && ep.baselineScores && Object.keys(ep.dischargeScores).length > 0
+    );
+
+    if (completedEpisodes.length === 0) return 0;
+
+    let totalImprovement = 0;
+    let count = 0;
+
+    completedEpisodes.forEach(ep => {
+      Object.keys(ep.baselineScores || {}).forEach(index => {
+        const baseline = ep.baselineScores?.[index];
+        const discharge = ep.dischargeScores?.[index];
+        
+        if (baseline != null && discharge != null && baseline > 0) {
+          // Calculate percentage improvement (lower scores are better, so discharge < baseline = improvement)
+          const improvement = ((baseline - discharge) / baseline) * 100;
+          totalImprovement += improvement;
+          count++;
+        }
+      });
+    });
+
+    return count > 0 ? Math.max(0, Math.min(100, totalImprovement / count)) : 0;
+  };
+
+  // Calculate average days to discharge
+  const calculateAvgDaysToDischarge = () => {
+    const dischargedEpisodes = episodes.filter(ep => ep.dischargeDate && ep.dateOfService);
+    
+    if (dischargedEpisodes.length === 0) return 0;
+
+    const totalDays = dischargedEpisodes.reduce((sum, ep) => {
+      const start = new Date(ep.dateOfService).getTime();
+      const end = new Date(ep.dischargeDate!).getTime();
+      const days = Math.round((end - start) / (1000 * 60 * 60 * 24));
+      return sum + days;
+    }, 0);
+
+    return Math.round(totalDays / dischargedEpisodes.length);
+  };
+
+  const avgOutcomeImprovement = calculateOutcomeImprovement();
+  const avgDaysToDischarge = calculateAvgDaysToDischarge();
+
   return (
     <div className="space-y-8">
       {/* Hero Section */}
@@ -40,6 +88,53 @@ export default function Dashboard() {
             </Button>
           </Link>
         </div>
+      </div>
+
+      {/* Performance Dials */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+        <Card className="relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-bl-full" />
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-primary" />
+              <CardTitle>Outcome Improvement</CardTitle>
+            </div>
+            <CardDescription>Average patient improvement across all indices</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center py-6">
+            <CircularProgress
+              value={avgOutcomeImprovement}
+              max={100}
+              size={180}
+              strokeWidth={14}
+              color="success"
+              label="Improvement"
+              subtitle={`Based on ${episodes.filter(ep => ep.dischargeScores).length} completed episodes`}
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-transparent rounded-bl-full" />
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-blue-500" />
+              <CardTitle>Time to Discharge</CardTitle>
+            </div>
+            <CardDescription>Average days from intake to discharge</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center py-6">
+            <CircularProgress
+              value={avgDaysToDischarge}
+              max={90}
+              size={180}
+              strokeWidth={14}
+              color="info"
+              label="Days"
+              subtitle={`Target: ≤ 45 days | Actual: ${avgDaysToDischarge} days avg`}
+            />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Stats Cards */}
