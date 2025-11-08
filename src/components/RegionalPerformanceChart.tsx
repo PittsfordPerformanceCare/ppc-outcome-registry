@@ -18,34 +18,47 @@ export function RegionalPerformanceChart({ episodes }: RegionalPerformanceChartP
     );
 
     if (regionEpisodes.length === 0) {
-      return {
-        region,
-        avgImprovement: 0,
-        count: 0,
-        avgDays: 0,
-      };
+      return null;
     }
 
     const totalImprovement = regionEpisodes.reduce((sum, ep) => {
-      const baseline = Object.values(ep.baselineScores || {}).reduce((s, v) => s + v, 0) / Object.keys(ep.baselineScores || {}).length;
-      const discharge = Object.values(ep.dischargeScores || {}).reduce((s, v) => s + v, 0) / Object.keys(ep.dischargeScores || {}).length;
+      const baselineValues = Object.values(ep.baselineScores || {});
+      const dischargeValues = Object.values(ep.dischargeScores || {});
+      
+      if (baselineValues.length === 0 || dischargeValues.length === 0) return sum;
+      
+      const baseline = baselineValues.reduce((s, v) => s + v, 0) / baselineValues.length;
+      const discharge = dischargeValues.reduce((s, v) => s + v, 0) / dischargeValues.length;
       const improvement = baseline > 0 ? ((baseline - discharge) / baseline) * 100 : 0;
+      
+      // Skip if NaN
+      if (isNaN(improvement) || !isFinite(improvement)) return sum;
+      
       return sum + Math.max(0, Math.min(100, improvement));
     }, 0);
 
     const totalDays = regionEpisodes.reduce((sum, ep) => {
       const start = new Date(ep.dateOfService).getTime();
       const end = new Date(ep.dischargeDate!).getTime();
-      return sum + Math.round((end - start) / (1000 * 60 * 60 * 24));
+      const days = Math.round((end - start) / (1000 * 60 * 60 * 24));
+      return sum + (isNaN(days) ? 0 : days);
     }, 0);
+
+    const avgImprovement = totalImprovement / regionEpisodes.length;
+    const avgDays = Math.round(totalDays / regionEpisodes.length);
+
+    // Skip if calculations resulted in NaN
+    if (isNaN(avgImprovement) || !isFinite(avgImprovement) || isNaN(avgDays) || !isFinite(avgDays)) {
+      return null;
+    }
 
     return {
       region,
-      avgImprovement: totalImprovement / regionEpisodes.length,
+      avgImprovement,
       count: regionEpisodes.length,
-      avgDays: Math.round(totalDays / regionEpisodes.length),
+      avgDays,
     };
-  }).filter(data => data.count > 0);
+  }).filter((data): data is NonNullable<typeof data> => data !== null && data.count > 0);
 
   if (regionalData.length === 0) {
     return (

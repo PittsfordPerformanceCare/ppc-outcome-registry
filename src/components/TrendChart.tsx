@@ -12,9 +12,17 @@ export function TrendChart({ episodes }: TrendChartProps) {
   const chartData = episodes
     .filter(ep => ep.dischargeScores && ep.baselineScores && ep.dischargeDate)
     .map(ep => {
-      const baseline = Object.values(ep.baselineScores || {}).reduce((sum, val) => sum + val, 0) / Object.keys(ep.baselineScores || {}).length;
-      const discharge = Object.values(ep.dischargeScores || {}).reduce((sum, val) => sum + val, 0) / Object.keys(ep.dischargeScores || {}).length;
+      const baselineValues = Object.values(ep.baselineScores || {});
+      const dischargeValues = Object.values(ep.dischargeScores || {});
+      
+      if (baselineValues.length === 0 || dischargeValues.length === 0) return null;
+      
+      const baseline = baselineValues.reduce((sum, val) => sum + val, 0) / baselineValues.length;
+      const discharge = dischargeValues.reduce((sum, val) => sum + val, 0) / dischargeValues.length;
       const improvement = baseline > 0 ? ((baseline - discharge) / baseline) * 100 : 0;
+      
+      // Ensure no NaN values
+      if (isNaN(improvement) || !isFinite(improvement)) return null;
       
       return {
         date: ep.dischargeDate!,
@@ -24,6 +32,7 @@ export function TrendChart({ episodes }: TrendChartProps) {
         patientName: ep.patientName,
       };
     })
+    .filter((item): item is NonNullable<typeof item> => item !== null)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .reduce((acc, curr) => {
       const monthKey = format(parseISO(curr.date), 'MMM yyyy');
