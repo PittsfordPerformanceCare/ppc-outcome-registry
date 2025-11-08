@@ -1,15 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { PPC_STORE, EpisodeMeta } from "@/lib/ppcStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X } from "lucide-react";
 import { format } from "date-fns";
 import { CircularProgress } from "@/components/CircularProgress";
+import { PPC_CONFIG } from "@/lib/ppcConfig";
 
 export default function Dashboard() {
   const [episodes, setEpisodes] = useState<EpisodeMeta[]>([]);
+  
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterRegion, setFilterRegion] = useState<string>("all");
+  const [filterClinician, setFilterClinician] = useState<string>("all");
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     const episodeIds = PPC_STORE.getAllEpisodes();
@@ -20,7 +32,64 @@ export default function Dashboard() {
     setEpisodes(episodeData);
   }, []);
 
-  const pendingFollowups = episodes.filter((ep) => {
+  // Get unique clinicians from episodes
+  const uniqueClinicians = useMemo(() => {
+    const clinicians = new Set(episodes.map(ep => ep.clinician).filter(Boolean));
+    return Array.from(clinicians).sort();
+  }, [episodes]);
+
+  // Filtered episodes
+  const filteredEpisodes = useMemo(() => {
+    return episodes.filter(episode => {
+      // Search query filter (patient name, episode ID, diagnosis)
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = 
+          episode.patientName.toLowerCase().includes(query) ||
+          episode.episodeId.toLowerCase().includes(query) ||
+          (episode.diagnosis && episode.diagnosis.toLowerCase().includes(query));
+        
+        if (!matchesSearch) return false;
+      }
+
+      // Region filter
+      if (filterRegion !== "all" && episode.region !== filterRegion) {
+        return false;
+      }
+
+      // Clinician filter
+      if (filterClinician !== "all" && episode.clinician !== filterClinician) {
+        return false;
+      }
+
+      // Date range filter
+      if (filterDateFrom) {
+        const episodeDate = new Date(episode.dateOfService);
+        const fromDate = new Date(filterDateFrom);
+        if (episodeDate < fromDate) return false;
+      }
+
+      if (filterDateTo) {
+        const episodeDate = new Date(episode.dateOfService);
+        const toDate = new Date(filterDateTo);
+        if (episodeDate > toDate) return false;
+      }
+
+      return true;
+    });
+  }, [episodes, searchQuery, filterRegion, filterClinician, filterDateFrom, filterDateTo]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setFilterRegion("all");
+    setFilterClinician("all");
+    setFilterDateFrom("");
+    setFilterDateTo("");
+  };
+
+  const hasActiveFilters = searchQuery || filterRegion !== "all" || filterClinician !== "all" || filterDateFrom || filterDateTo;
+
+  const pendingFollowups = filteredEpisodes.filter((ep) => {
     const followup = PPC_STORE.getFollowupMeta(ep.episodeId);
     return followup && !PPC_STORE.isFollowupCompleted(ep.episodeId);
   });
@@ -137,16 +206,167 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      {/* Search & Filter Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Search className="h-5 w-5 text-muted-foreground" />
+              <CardTitle>Search & Filter Episodes</CardTitle>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowFilters(!showFilters)}
+              className="gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              {showFilters ? "Hide Filters" : "Show Filters"}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Search by patient name, episode ID, or diagnosis..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Advanced Filters */}
+          {showFilters && (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="space-y-2">
+                <Label htmlFor="filter-region">Region</Label>
+                <Select value={filterRegion} onValueChange={setFilterRegion}>
+                  <SelectTrigger id="filter-region">
+                    <SelectValue placeholder="All regions" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Regions</SelectItem>
+                    {PPC_CONFIG.regionEnum.map((region) => (
+                      <SelectItem key={region} value={region}>
+                        {region}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="filter-clinician">Clinician</Label>
+                <Select value={filterClinician} onValueChange={setFilterClinician}>
+                  <SelectTrigger id="filter-clinician">
+                    <SelectValue placeholder="All clinicians" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Clinicians</SelectItem>
+                    {uniqueClinicians.map((clinician) => (
+                      <SelectItem key={clinician} value={clinician}>
+                        {clinician}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="filter-date-from">Date From</Label>
+                <Input
+                  id="filter-date-from"
+                  type="date"
+                  value={filterDateFrom}
+                  onChange={(e) => setFilterDateFrom(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="filter-date-to">Date To</Label>
+                <Input
+                  id="filter-date-to"
+                  type="date"
+                  value={filterDateTo}
+                  onChange={(e) => setFilterDateTo(e.target.value)}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Active Filters Summary */}
+          {hasActiveFilters && (
+            <div className="flex items-center justify-between rounded-md bg-muted p-3 animate-in fade-in slide-in-from-top-1 duration-200">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm font-medium">Active Filters:</span>
+                {searchQuery && (
+                  <Badge variant="secondary">
+                    Search: {searchQuery}
+                  </Badge>
+                )}
+                {filterRegion !== "all" && (
+                  <Badge variant="secondary">
+                    Region: {filterRegion}
+                  </Badge>
+                )}
+                {filterClinician !== "all" && (
+                  <Badge variant="secondary">
+                    Clinician: {filterClinician}
+                  </Badge>
+                )}
+                {filterDateFrom && (
+                  <Badge variant="secondary">
+                    From: {format(new Date(filterDateFrom), "MMM dd, yyyy")}
+                  </Badge>
+                )}
+                {filterDateTo && (
+                  <Badge variant="secondary">
+                    To: {format(new Date(filterDateTo), "MMM dd, yyyy")}
+                  </Badge>
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearFilters}
+                className="gap-2"
+              >
+                <X className="h-4 w-4" />
+                Clear All
+              </Button>
+            </div>
+          )}
+
+          {/* Results Count */}
+          <div className="text-sm text-muted-foreground">
+            Showing <span className="font-semibold text-foreground">{filteredEpisodes.length}</span> of{" "}
+            <span className="font-semibold text-foreground">{episodes.length}</span> episodes
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Stats Cards */}
       <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total Episodes</CardTitle>
+            <CardTitle className="text-sm font-medium">Filtered Episodes</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{episodes.length}</div>
-            <p className="text-xs text-muted-foreground">All patient episodes</p>
+            <div className="text-2xl font-bold">{filteredEpisodes.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {filteredEpisodes.length === episodes.length ? "All episodes" : `Filtered from ${episodes.length} total`}
+            </p>
           </CardContent>
         </Card>
 
@@ -178,11 +398,18 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Recent Episodes */}
+      {/* Episodes List */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Episodes</CardTitle>
-          <CardDescription>Your most recent patient outcome episodes</CardDescription>
+          <CardTitle>
+            {hasActiveFilters ? "Filtered Episodes" : "Recent Episodes"}
+          </CardTitle>
+          <CardDescription>
+            {hasActiveFilters 
+              ? `${filteredEpisodes.length} episode${filteredEpisodes.length !== 1 ? "s" : ""} match your search criteria`
+              : "Your most recent patient outcome episodes"
+            }
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {episodes.length === 0 ? (
@@ -195,9 +422,17 @@ export default function Dashboard() {
                 </Button>
               </Link>
             </div>
+          ) : filteredEpisodes.length === 0 ? (
+            <div className="py-12 text-center">
+              <p className="text-muted-foreground">No episodes match your search criteria.</p>
+              <Button className="mt-4" variant="outline" onClick={clearFilters}>
+                <X className="mr-2 h-4 w-4" />
+                Clear Filters
+              </Button>
+            </div>
           ) : (
             <div className="space-y-4">
-              {episodes.slice(0, 10).map((episode) => {
+              {filteredEpisodes.slice(0, 10).map((episode) => {
                 const followup = PPC_STORE.getFollowupMeta(episode.episodeId);
                 const isCompleted = PPC_STORE.isFollowupCompleted(episode.episodeId);
 
