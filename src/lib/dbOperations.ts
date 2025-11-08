@@ -33,6 +33,8 @@ export interface Episode {
   referral_reason?: string;
   discharge_date?: string;
   followup_date?: string;
+  clinician?: string;
+  npi?: string;
   cis_pre?: number;
   cis_post?: number;
   cis_delta?: number;

@@ -296,6 +296,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          clinician_name: string | null
           created_at: string
           email: string | null
           full_name: string | null
@@ -304,6 +305,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          clinician_name?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -312,6 +314,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          clinician_name?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null

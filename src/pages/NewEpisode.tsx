@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { createEpisode, saveOutcomeScore } from "@/lib/dbOperations";
 import { PPC_CONFIG, IndexType } from "@/lib/ppcConfig";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,26 @@ export default function NewEpisode() {
   const [cisPost, setCisPost] = useState<number | null>(null);
   const [painPre, setPainPre] = useState<number | null>(null);
   const [painPost, setPainPost] = useState<number | null>(null);
+
+  // Auto-populate clinician from logged-in user
+  useEffect(() => {
+    const loadClinicianInfo = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, clinician_name, npi")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        setClinician(profile.clinician_name || profile.full_name || "");
+        setNpi(profile.npi || "");
+      }
+    };
+    loadClinicianInfo();
+  }, []);
 
   const handleRegionChange = (value: string) => {
     setRegion(value);
@@ -170,6 +191,8 @@ export default function NewEpisode() {
         goals_other: goalsOther.trim(),
         start_date: dateOfService,
         followup_date: followupDate.toISOString().split("T")[0],
+        clinician: clinician.trim(),
+        npi: npi.trim(),
         cis_pre: cisPre ?? undefined,
         cis_post: cisPost ?? undefined,
         cis_delta: cisDelta ?? undefined,
