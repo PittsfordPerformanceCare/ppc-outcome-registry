@@ -40,6 +40,7 @@ export default function NewEpisode() {
   const [functionalLimitations, setFunctionalLimitations] = useState("");
   const [treatmentGoals, setTreatmentGoals] = useState("");
   const [functionalLimitation, setFunctionalLimitation] = useState("");
+  const [functionalLimitationsArray, setFunctionalLimitationsArray] = useState<string[]>([]);
   const [priorTreatmentsData, setPriorTreatmentsData] = useState<PriorTreatment[]>([]);
   const [priorTreatmentsOther, setPriorTreatmentsOther] = useState("");
   const [cisPre, setCisPre] = useState<number | null>(null);
@@ -173,6 +174,7 @@ export default function NewEpisode() {
       pain_post: painPost,
       pain_delta: painDelta,
       functional_limitation: functionalLimitation.trim(),
+      functional_limitations: functionalLimitationsArray,
       prior_treatments: priorTreatmentsData,
       prior_treatments_other: priorTreatmentsOther.trim(),
     });
@@ -354,8 +356,8 @@ export default function NewEpisode() {
             <div className="mt-6">
               <FunctionalLimitationSelector
                 region={region}
-                initialLimitation={functionalLimitation}
-                onChange={setFunctionalLimitation}
+                initialLimitations={functionalLimitationsArray}
+                onChange={setFunctionalLimitationsArray}
               />
             </div>
 

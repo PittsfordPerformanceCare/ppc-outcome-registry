@@ -2,22 +2,21 @@ import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { REGION_LIMITATIONS, type LimitationRegionKey } from "@/lib/regionLimitations";
 
 interface FunctionalLimitationSelectorProps {
   region?: string;
-  initialLimitation?: string;
-  onChange?: (limitation: string) => void;
+  initialLimitations?: string[];
+  onChange?: (limitations: string[]) => void;
 }
 
 export function FunctionalLimitationSelector({
   region = "",
-  initialLimitation = "",
+  initialLimitations = [],
   onChange,
 }: FunctionalLimitationSelectorProps) {
-  const [limitation, setLimitation] = useState(initialLimitation);
+  const [selected, setSelected] = useState<string[]>(initialLimitations);
   const [query, setQuery] = useState("");
 
   const baseList = useMemo(
@@ -32,32 +31,45 @@ export function FunctionalLimitationSelector({
 
   useEffect(() => {
     if (onChange) {
-      onChange(limitation);
+      onChange(selected);
     }
-  }, [limitation, onChange]);
+  }, [selected, onChange]);
 
-  // Reset limitation when region changes
+  // Reset limitations when region changes
   useEffect(() => {
-    if (region && !baseList.includes(limitation)) {
-      setLimitation("");
+    if (region) {
+      // Keep only limitations that are valid for the new region
+      const validLimitations = selected.filter(l => baseList.includes(l));
+      if (validLimitations.length !== selected.length) {
+        setSelected(validLimitations);
+      }
       setQuery("");
     }
-  }, [region, baseList, limitation]);
+  }, [region, baseList]);
+
+  function toggle(name: string) {
+    setSelected((prev) => {
+      if (prev.includes(name)) {
+        return prev.filter((l) => l !== name);
+      }
+      return [...prev, name];
+    });
+  }
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Functional Limitation</CardTitle>
+          <CardTitle>Functional Limitations (Multi-Select)</CardTitle>
           <Badge variant="secondary">Intake & Final</Badge>
         </div>
         <CardDescription>
-          Select the primary limitation related to the patient's complaint
+          Select all limitations related to the patient's complaint
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="limitation-search">Search Limitations</Label>
+          <Label htmlFor="limitation-search">Filter Limitations</Label>
           <Input
             id="limitation-search"
             placeholder={
@@ -73,25 +85,28 @@ export function FunctionalLimitationSelector({
 
         {region && (
           <div className="space-y-2">
-            <Label htmlFor="limitation-select">Select Limitation *</Label>
-            <Select value={limitation} onValueChange={setLimitation}>
-              <SelectTrigger id="limitation-select">
-                <SelectValue placeholder="Choose a functional limitation..." />
-              </SelectTrigger>
-              <SelectContent>
-                {filtered.length > 0 ? (
-                  filtered.map((item, i) => (
-                    <SelectItem key={i} value={item}>
-                      {item}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <div className="px-2 py-4 text-sm text-muted-foreground">
-                    No matches found. Try a different search term.
-                  </div>
-                )}
-              </SelectContent>
-            </Select>
+            <Label>Select Limitations</Label>
+            <div className="flex flex-wrap gap-2">
+              {filtered.map((name) => {
+                const isOn = selected.includes(name);
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground ${
+                      isOn
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background border-border"
+                    }`}
+                    onClick={() => toggle(name)}
+                    title={isOn ? "Remove" : "Add"}
+                  >
+                    {isOn ? "✓ " : "+ "}
+                    {name}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
 
@@ -101,12 +116,24 @@ export function FunctionalLimitationSelector({
           </div>
         )}
 
-        {region && limitation && (
-          <div className="flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Selected:</span>
-            <Badge variant="outline">{region}</Badge>
-            <span className="text-muted-foreground">→</span>
-            <Badge>{limitation}</Badge>
+        {selected.length > 0 && (
+          <div className="space-y-2">
+            <Label>Selected Limitations ({selected.length})</Label>
+            <div className="flex flex-wrap gap-2">
+              {selected.map((item) => (
+                <Badge key={item} variant="outline" className="gap-1">
+                  {item}
+                  <button
+                    type="button"
+                    className="ml-1 hover:text-destructive"
+                    onClick={() => toggle(item)}
+                    aria-label="Remove"
+                  >
+                    ×
+                  </button>
+                </Badge>
+              ))}
+            </div>
           </div>
         )}
       </CardContent>

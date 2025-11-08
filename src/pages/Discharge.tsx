@@ -62,6 +62,7 @@ export default function Discharge() {
   const [painPost, setPainPost] = useState<number | null>(null);
   const [diagnosis, setDiagnosis] = useState("");
   const [functionalLimitation, setFunctionalLimitation] = useState("");
+  const [functionalLimitationsArray, setFunctionalLimitationsArray] = useState<string[]>([]);
   const [priorTreatmentsData, setPriorTreatmentsData] = useState<PriorTreatment[]>([]);
   const [priorTreatmentsOther, setPriorTreatmentsOther] = useState("");
 
@@ -102,6 +103,7 @@ export default function Discharge() {
         setPainPost(meta.pain_post ?? null);
         setDiagnosis(meta.diagnosis || "");
         setFunctionalLimitation(meta.functional_limitation || "");
+        setFunctionalLimitationsArray(meta.functional_limitations || []);
         setPriorTreatmentsData(meta.prior_treatments || []);
         setPriorTreatmentsOther(meta.prior_treatments_other || "");
       }
@@ -161,6 +163,7 @@ export default function Discharge() {
       pain_delta: painDelta,
       diagnosis: diagnosis || existingMeta.diagnosis,
       functional_limitation: functionalLimitation || existingMeta.functional_limitation,
+      functional_limitations: functionalLimitationsArray,
       prior_treatments: priorTreatmentsData,
       prior_treatments_other: priorTreatmentsOther,
     };
@@ -354,8 +357,8 @@ export default function Discharge() {
           <div className="mt-6">
             <FunctionalLimitationSelector
               region={region}
-              initialLimitation={functionalLimitation}
-              onChange={setFunctionalLimitation}
+              initialLimitations={functionalLimitationsArray}
+              onChange={setFunctionalLimitationsArray}
             />
           </div>
 
