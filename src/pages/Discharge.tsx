@@ -316,28 +316,28 @@ export default function Discharge() {
           {activeIndices.includes("NDI") && (
             <NDIForm onScoreChange={(score) => {
               console.log("NDI score changed:", score);
-              setScores({ ...scores, NDI: score });
+              setScores(prev => ({ ...prev, NDI: score }));
             }} />
           )}
           
           {activeIndices.includes("ODI") && (
             <ODIForm onScoreChange={(score) => {
               console.log("ODI score changed:", score);
-              setScores({ ...scores, ODI: score });
+              setScores(prev => ({ ...prev, ODI: score }));
             }} />
           )}
           
           {activeIndices.includes("QuickDASH") && (
             <QuickDASHForm onScoreChange={(score) => {
               console.log("QuickDASH score changed:", score);
-              setScores({ ...scores, QuickDASH: score });
+              setScores(prev => ({ ...prev, QuickDASH: score }));
             }} />
           )}
           
           {activeIndices.includes("LEFS") && (
             <LEFSForm onScoreChange={(score) => {
               console.log("LEFS score changed:", score);
-              setScores({ ...scores, LEFS: score });
+              setScores(prev => ({ ...prev, LEFS: score }));
             }} />
           )}
         </div>
