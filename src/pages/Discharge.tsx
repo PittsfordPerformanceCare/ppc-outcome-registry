@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { PPC_STORE, EpisodeMeta } from "@/lib/ppcStore";
+import { getAllEpisodes, getEpisode, updateEpisode, saveOutcomeScore, createFollowup } from "@/lib/dbOperations";
+import type { Episode } from "@/lib/dbOperations";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -56,7 +57,7 @@ export default function Discharge() {
   const [complianceNotes, setComplianceNotes] = useState("");
   const [referredOut, setReferredOut] = useState(false);
   const [referralReason, setReferralReason] = useState("");
-  const [availableEpisodes, setAvailableEpisodes] = useState<EpisodeMeta[]>([]);
+  const [availableEpisodes, setAvailableEpisodes] = useState<Episode[]>([]);
   const [cisPre, setCisPre] = useState<number | null>(null);
   const [cisPost, setCisPost] = useState<number | null>(null);
   const [painPre, setPainPre] = useState<number | null>(null);
@@ -71,47 +72,53 @@ export default function Discharge() {
 
   useEffect(() => {
     // Load all available episodes for dropdown
-    const episodeIds = PPC_STORE.getAllEpisodes();
-    const episodes = episodeIds
-      .map((id) => PPC_STORE.getEpisodeMeta(id))
-      .filter((ep): ep is EpisodeMeta => ep !== null)
-      .sort((a, b) => new Date(b.dateOfService).getTime() - new Date(a.dateOfService).getTime());
-    setAvailableEpisodes(episodes);
+    const loadEpisodes = async () => {
+      try {
+        const episodes = await getAllEpisodes();
+        setAvailableEpisodes(episodes);
+      } catch (error) {
+        console.error("Error loading episodes:", error);
+      }
+    };
+    loadEpisodes();
   }, []);
 
   useEffect(() => {
     if (episodeId) {
-      const meta = PPC_STORE.getEpisodeMeta(episodeId);
-      if (meta) {
-        setPatientName(meta.patientName || "");
-        setRegion(meta.region || "");
-        setDob(meta.dob || "");
-        setClinician(meta.clinician || "");
-        
-        // Load discharge scores if they exist
-        if (meta.dischargeScores) {
-          setScores(meta.dischargeScores as DischargeScores);
-        }
-        
-        // Load compliance and referral info
-        setComplianceRating(meta.compliance_rating || "");
-        setComplianceNotes(meta.compliance_notes || "");
-        setReferredOut(meta.referred_out || false);
-        setReferralReason(meta.referral_reason || "");
+      const loadEpisode = async () => {
+        try {
+          const episode = await getEpisode(episodeId);
+          if (episode) {
+            setPatientName(episode.patient_name || "");
+            setRegion(episode.region || "");
+            setDob(episode.date_of_birth || "");
+            setClinician(episode.clinician || "");
+            
+            // Load compliance and referral info
+            setComplianceRating(episode.compliance_rating || "");
+            setComplianceNotes(episode.compliance_notes || "");
+            setReferredOut(episode.referred_out || false);
+            setReferralReason(episode.referral_reason || "");
 
-        // Load metrics
-        setCisPre(meta.cis_pre ?? null);
-        setCisPost(meta.cis_post ?? null);
-        setPainPre(meta.pain_pre ?? null);
-        setPainPost(meta.pain_post ?? null);
-        setDiagnosis(meta.diagnosis || "");
-        setFunctionalLimitation(meta.functional_limitation || "");
-        setFunctionalLimitationsArray(meta.functional_limitations || []);
-        setPriorTreatmentsData(meta.prior_treatments || []);
-        setPriorTreatmentsOther(meta.prior_treatments_other || "");
-        setGoalsData(meta.goals || []);
-        setGoalsOther(meta.goals_other || "");
-      }
+            // Load metrics
+            setCisPre(episode.cis_pre ?? null);
+            setCisPost(episode.cis_post ?? null);
+            setPainPre(episode.pain_pre ?? null);
+            setPainPost(episode.pain_post ?? null);
+            setDiagnosis(episode.diagnosis || "");
+            setFunctionalLimitation(episode.functional_limitation || "");
+            setFunctionalLimitationsArray(episode.functional_limitations || []);
+            setPriorTreatmentsData((episode.prior_treatments as PriorTreatment[]) || []);
+            setPriorTreatmentsOther(episode.prior_treatments_other || "");
+            setGoalsData((episode.treatment_goals as GoalItem[]) || []);
+            setGoalsOther(episode.goals_other || "");
+          }
+        } catch (error) {
+          console.error("Error loading episode:", error);
+          toast.error("Failed to load episode");
+        }
+      };
+      loadEpisode();
     }
   }, [episodeId]);
 
@@ -122,68 +129,51 @@ export default function Discharge() {
     return scoresValid && pcpName && pcpContact && pcpConsent;
   };
 
-  const handleGeneratePCP = () => {
+  const handleGeneratePCP = async () => {
     if (!canGeneratePCP()) {
       toast.error("Please complete all required fields");
       return;
     }
 
-    const dischargeScores: Record<string, number> = {};
-    Object.entries(scores).forEach(([key, value]) => {
-      if (value != null) dischargeScores[key] = value;
-    });
+    try {
+      // Calculate deltas for metrics
+      const cisDelta = cisPre != null && cisPost != null ? cisPost - cisPre : null;
+      const painDelta = painPre != null && painPost != null ? painPre - painPost : null;
 
-    console.log("=== Discharge: Generate PCP Debug ===");
-    console.log("Current scores state:", scores);
-    console.log("Discharge scores to save:", dischargeScores);
+      // Update episode with discharge information
+      await updateEpisode(episodeId, {
+        discharge_date: new Date().toISOString().split("T")[0],
+        compliance_rating: complianceRating,
+        compliance_notes: complianceNotes,
+        referred_out: referredOut,
+        referral_reason: referralReason,
+        date_of_birth: dob,
+        clinician: clinician,
+        cis_post: cisPost ?? undefined,
+        cis_delta: cisDelta ?? undefined,
+        pain_post: painPost ?? undefined,
+        pain_delta: painDelta ?? undefined,
+        diagnosis: diagnosis,
+        functional_limitation: functionalLimitation,
+        functional_limitations: functionalLimitationsArray,
+        prior_treatments: priorTreatmentsData,
+        prior_treatments_other: priorTreatmentsOther,
+        treatment_goals: goalsData,
+        goals_other: goalsOther,
+      });
 
-    // Load existing episode data and preserve ALL fields
-    const existingMeta = PPC_STORE.getEpisodeMeta(episodeId);
-    if (!existingMeta) {
-      toast.error("Episode data not found");
-      return;
+      // Save discharge scores to database
+      for (const [indexType, score] of Object.entries(scores)) {
+        if (score != null) {
+          await saveOutcomeScore(episodeId, indexType, "discharge", score);
+        }
+      }
+
+      navigate(`/pcp-summary?episode=${episodeId}`);
+      toast.success("Opening PCP Summary...");
+    } catch (error: any) {
+      toast.error(`Failed to save discharge: ${error.message}`);
     }
-
-    console.log("Existing episode meta:", existingMeta);
-    console.log("Existing baseline scores:", existingMeta.baselineScores);
-
-    // Calculate deltas for metrics
-    const cisDelta = cisPre != null && cisPost != null ? cisPost - cisPre : null;
-    const painDelta = painPre != null && painPost != null ? painPre - painPost : null;
-
-    // Only update discharge-specific fields, preserve all intake/treatment data
-    const meta: EpisodeMeta = {
-      ...existingMeta, // Preserve ALL existing fields
-      dischargeScores,
-      dischargeDate: new Date().toISOString().split("T")[0],
-      compliance_rating: complianceRating,
-      compliance_notes: complianceNotes,
-      referred_out: referredOut,
-      referral_reason: referralReason,
-      dob: dob || existingMeta.dob,
-      clinician: clinician || existingMeta.clinician,
-      cis_post: cisPost,
-      cis_delta: cisDelta,
-      pain_post: painPost,
-      pain_delta: painDelta,
-      diagnosis: diagnosis || existingMeta.diagnosis,
-      functional_limitation: functionalLimitation || existingMeta.functional_limitation,
-      functional_limitations: functionalLimitationsArray,
-      prior_treatments: priorTreatmentsData,
-      prior_treatments_other: priorTreatmentsOther,
-      goals: goalsData,
-      goals_other: goalsOther,
-    };
-    
-    console.log("Meta to save:", meta);
-    PPC_STORE.setEpisodeMeta(episodeId, meta);
-    
-    // Verify it was saved
-    const savedMeta = PPC_STORE.getEpisodeMeta(episodeId);
-    console.log("Verified saved meta:", savedMeta);
-
-    navigate(`/pcp-summary?episode=${episodeId}`);
-    toast.success("Opening PCP Summary...");
   };
 
   const handleSendToPCP = () => {
@@ -210,7 +200,7 @@ export default function Discharge() {
     }, 1000);
   };
 
-  const generateFollowupLink = () => {
+  const generateFollowupLink = async () => {
     if (!enrollFollowup) {
       toast.error("Enable 90-day enrollment first");
       return;
@@ -220,36 +210,20 @@ export default function Discharge() {
       return;
     }
 
-    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const scheduledDate = new Date();
-    scheduledDate.setDate(scheduledDate.getDate() + 90);
+    try {
+      const scheduledDate = new Date();
+      scheduledDate.setDate(scheduledDate.getDate() + 90);
 
-    PPC_STORE.setFollowupMeta(episodeId, {
-      episodeId,
-      scheduledDate: scheduledDate.toISOString().split("T")[0],
-      scores: undefined,
-      status: undefined,
-    });
+      // Create followup record in database
+      await createFollowup(episodeId, scheduledDate.toISOString().split("T")[0]);
 
-    const baselineScores: Record<string, number> = {};
-    Object.entries(scores).forEach(([key, value]) => {
-      if (value != null) baselineScores[key] = value;
-    });
-
-    const meta = PPC_STORE.getEpisodeMeta(episodeId) || {
-      episodeId,
-      patientName,
-      region,
-      dateOfService: new Date().toISOString().split("T")[0],
-      indices: activeIndices,
-      baselineScores,
-    };
-    PPC_STORE.setEpisodeMeta(episodeId, meta);
-
-    const link = `${window.location.origin}/follow-up?episode=${encodeURIComponent(episodeId)}`;
-    setFollowupLink(link);
-    navigator.clipboard.writeText(link);
-    toast.success("Follow-up link created and copied to clipboard");
+      const link = `${window.location.origin}/follow-up?episode=${encodeURIComponent(episodeId)}`;
+      setFollowupLink(link);
+      navigator.clipboard.writeText(link);
+      toast.success("Follow-up link created and copied to clipboard");
+    } catch (error: any) {
+      toast.error(`Failed to create follow-up: ${error.message}`);
+    }
   };
 
   const handleMailInvite = () => {
@@ -296,11 +270,11 @@ export default function Discharge() {
                     </div>
                   ) : (
                     availableEpisodes.map((ep) => (
-                      <SelectItem key={ep.episodeId} value={ep.episodeId}>
+                      <SelectItem key={ep.id} value={ep.id}>
                         <div className="flex flex-col">
-                          <span className="font-medium">{ep.patientName}</span>
+                          <span className="font-medium">{ep.patient_name}</span>
                           <span className="text-xs text-muted-foreground">
-                            {ep.episodeId} • {ep.region} • {ep.dateOfService}
+                            {ep.id} • {ep.region} • {ep.date_of_service}
                           </span>
                         </div>
                       </SelectItem>
