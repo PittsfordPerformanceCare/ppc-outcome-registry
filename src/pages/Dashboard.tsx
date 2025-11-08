@@ -359,9 +359,33 @@ export default function Dashboard() {
   // TODO: Fetch followups from database
   const pendingFollowups: Episode[] = [];
 
-  // TODO: Calculate from outcome_scores table
+  // Calculate average patient improvement from outcome scores
   const calculateOutcomeImprovement = () => {
-    return 0;
+    const completedEpisodes = episodesWithScores.filter(ep => 
+      ep.dischargeScores && 
+      ep.baselineScores && 
+      ep.dischargeDate
+    );
+    
+    if (completedEpisodes.length === 0) return 0;
+    
+    const totalImprovement = completedEpisodes.reduce((sum, ep) => {
+      const baselineValues = Object.values(ep.baselineScores || {});
+      const dischargeValues = Object.values(ep.dischargeScores || {});
+      
+      if (baselineValues.length === 0 || dischargeValues.length === 0) return sum;
+      
+      const baseline = baselineValues.reduce((s, v) => s + v, 0) / baselineValues.length;
+      const discharge = dischargeValues.reduce((s, v) => s + v, 0) / dischargeValues.length;
+      const improvement = baseline > 0 ? ((baseline - discharge) / baseline) * 100 : 0;
+      
+      // Skip if NaN or not finite
+      if (isNaN(improvement) || !isFinite(improvement)) return sum;
+      
+      return sum + Math.max(0, Math.min(100, improvement));
+    }, 0);
+    
+    return Math.round(totalImprovement / completedEpisodes.length);
   };
 
   // Calculate average days to discharge
