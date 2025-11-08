@@ -31,7 +31,6 @@ export default function NewEpisode() {
   const [npi, setNpi] = useState("");
   const [injuryDate, setInjuryDate] = useState("");
   const [injuryMechanism, setInjuryMechanism] = useState("");
-  const [painLevel, setPainLevel] = useState("");
   const [referringPhysician, setReferringPhysician] = useState("");
   const [insurance, setInsurance] = useState("");
   const [emergencyContact, setEmergencyContact] = useState("");
@@ -133,10 +132,6 @@ export default function NewEpisode() {
       toast.error("Please enter injury/onset date");
       return;
     }
-    if (!painLevel) {
-      toast.error("Please rate current pain level");
-      return;
-    }
     if (selectedIndices.length === 0) {
       toast.error("Please select at least one outcome index");
       return;
@@ -176,7 +171,6 @@ export default function NewEpisode() {
         date_of_service: dateOfService,
         injury_date: injuryDate,
         injury_mechanism: injuryMechanism.trim(),
-        pain_level: painLevel,
         referring_physician: referringPhysician.trim(),
         insurance: insurance.trim(),
         emergency_contact: emergencyContact.trim(),
@@ -407,21 +401,6 @@ export default function NewEpisode() {
                       onChange={(e) => setInjuryDate(e.target.value)}
                       required
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="painLevel">Current Pain Level (0-10) *</Label>
-                    <Select value={painLevel} onValueChange={setPainLevel} required>
-                      <SelectTrigger id="painLevel">
-                        <SelectValue placeholder="Select pain level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((level) => (
-                          <SelectItem key={level} value={level.toString()}>
-                            {level} {level === 0 && "- No pain"} {level === 10 && "- Worst pain"}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
 
