@@ -452,6 +452,135 @@ export default function PCPSummary() {
             )}
           </div>
 
+          {/* Side-by-Side Comparison: Intake vs Discharge */}
+          <div className="space-y-4 border-t pt-6">
+            <h3 className="text-lg font-semibold">Intake vs Discharge Comparison</h3>
+            <div className="rounded-lg border bg-card overflow-hidden">
+              <div className="grid grid-cols-2">
+                {/* Header Row */}
+                <div className="bg-muted/50 p-4 border-r border-b font-semibold text-center">
+                  Initial Assessment (Intake)
+                </div>
+                <div className="bg-muted/50 p-4 border-b font-semibold text-center">
+                  Final Assessment (Discharge)
+                </div>
+                
+                {/* Pain Level */}
+                {episode.painPre !== undefined && episode.painPost !== undefined && (
+                  <>
+                    <div className="p-6 border-r border-b">
+                      <p className="text-sm font-medium text-muted-foreground mb-3">Pain Level</p>
+                      <div className="flex items-center justify-center mb-3">
+                        <span className="text-5xl font-bold text-destructive">{episode.painPre}</span>
+                        <span className="text-2xl text-muted-foreground ml-2">/10</span>
+                      </div>
+                      <div className="h-3 w-full bg-muted rounded-full overflow-hidden mb-2">
+                        <div 
+                          className="h-full bg-destructive"
+                          style={{ width: `${(episode.painPre / 10) * 100}%` }}
+                        />
+                      </div>
+                      <Badge variant="outline" className="w-full justify-center border-destructive/30 text-destructive">
+                        {episode.painPre >= 8 ? "Severe" : episode.painPre >= 5 ? "Moderate" : episode.painPre >= 3 ? "Mild" : "Minimal"}
+                      </Badge>
+                    </div>
+                    <div className="p-6 border-b bg-success/5">
+                      <p className="text-sm font-medium text-muted-foreground mb-3">Pain Level</p>
+                      <div className="flex items-center justify-center mb-3">
+                        <span className={`text-5xl font-bold ${episode.painPost === 0 ? "text-success" : episode.painPost <= 3 ? "text-warning" : "text-destructive"}`}>
+                          {episode.painPost}
+                        </span>
+                        <span className="text-2xl text-muted-foreground ml-2">/10</span>
+                      </div>
+                      <div className="h-3 w-full bg-muted rounded-full overflow-hidden mb-2">
+                        <div 
+                          className={episode.painPost === 0 ? "h-full bg-success" : episode.painPost <= 3 ? "h-full bg-warning" : "h-full bg-destructive"}
+                          style={{ width: `${(episode.painPost / 10) * 100}%` }}
+                        />
+                      </div>
+                      <Badge variant="outline" className={`w-full justify-center ${
+                        episode.painPost === 0 ? "border-success/30 text-success" :
+                        episode.painPost <= 3 ? "border-warning/30 text-warning" :
+                        "border-destructive/30 text-destructive"
+                      }`}>
+                        {episode.painPost === 0 ? "No Pain" : episode.painPost >= 8 ? "Severe" : episode.painPost >= 5 ? "Moderate" : episode.painPost >= 3 ? "Mild" : "Minimal"}
+                      </Badge>
+                      {episode.painPre > 0 && (
+                        <div className="mt-4 pt-4 border-t text-center">
+                          <Badge className="bg-success/15 text-success border-success/30 text-lg px-4 py-2">
+                            {((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0)}% Improvement
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Outcome Measures */}
+                {results.length > 0 && results.map((result, idx) => (
+                  result.baseline > 0 || result.discharge > 0 ? (
+                    <div key={result.index} className="contents">
+                      <div className="p-6 border-r border-b">
+                        <p className="text-sm font-medium text-muted-foreground mb-3">{result.index} Score</p>
+                        <div className="flex items-center justify-center mb-3">
+                          <span className="text-4xl font-bold text-primary">{result.baseline.toFixed(1)}</span>
+                        </div>
+                        <div className="text-center">
+                          <Badge variant="outline">Baseline</Badge>
+                        </div>
+                      </div>
+                      <div className="p-6 border-b bg-success/5">
+                        <p className="text-sm font-medium text-muted-foreground mb-3">{result.index} Score</p>
+                        <div className="flex items-center justify-center mb-3">
+                          <span className="text-4xl font-bold text-success">{result.discharge.toFixed(1)}</span>
+                        </div>
+                        <div className="text-center mb-3">
+                          <Badge className={`${
+                            result.dischargeStatus === "improving" ? "bg-success/15 text-success border-success/30" :
+                            result.dischargeStatus === "declining" ? "bg-destructive/15 text-destructive border-destructive/30" :
+                            "bg-muted text-muted-foreground"
+                          }`}>
+                            {result.dischargeStatus === "improving" ? "Improved" : 
+                             result.dischargeStatus === "declining" ? "Declined" : "Stable"}
+                          </Badge>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-semibold text-success">
+                            {result.dischargeChange > 0 ? "+" : ""}{result.dischargeChange.toFixed(1)} points
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {Math.abs(result.dischargePercentage).toFixed(0)}% change
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null
+                ))}
+
+                {/* Functional Status */}
+                {episode.functionalLimitations && (
+                  <>
+                    <div className="p-6 border-r">
+                      <p className="text-sm font-medium text-muted-foreground mb-3">Functional Status</p>
+                      <p className="text-base whitespace-pre-wrap">{episode.functionalLimitations}</p>
+                    </div>
+                    <div className="p-6 bg-success/5">
+                      <p className="text-sm font-medium text-muted-foreground mb-3">Functional Status</p>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge className="bg-success/15 text-success border-success/30">
+                          Improved Function
+                        </Badge>
+                      </div>
+                      <p className="text-base text-muted-foreground">
+                        Patient demonstrated functional gains across measured domains. See outcome measures above for specific improvements.
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Pain Level Changes */}
           {(episode.painPre !== undefined || episode.painPost !== undefined) && (
             <div className="space-y-4 border-t pt-6">
