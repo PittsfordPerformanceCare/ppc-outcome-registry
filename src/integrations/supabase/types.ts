@@ -66,6 +66,7 @@ export type Database = {
           cis_delta: number | null
           cis_post: number | null
           cis_pre: number | null
+          clinician: string | null
           compliance_notes: string | null
           compliance_rating: string | null
           created_at: string
@@ -85,6 +86,7 @@ export type Database = {
           insurance: string | null
           medical_history: string | null
           medications: string | null
+          npi: string | null
           pain_delta: number | null
           pain_level: string | null
           pain_post: number | null
@@ -107,6 +109,7 @@ export type Database = {
           cis_delta?: number | null
           cis_post?: number | null
           cis_pre?: number | null
+          clinician?: string | null
           compliance_notes?: string | null
           compliance_rating?: string | null
           created_at?: string
@@ -126,6 +129,7 @@ export type Database = {
           insurance?: string | null
           medical_history?: string | null
           medications?: string | null
+          npi?: string | null
           pain_delta?: number | null
           pain_level?: string | null
           pain_post?: number | null
@@ -148,6 +152,7 @@ export type Database = {
           cis_delta?: number | null
           cis_post?: number | null
           cis_pre?: number | null
+          clinician?: string | null
           compliance_notes?: string | null
           compliance_rating?: string | null
           created_at?: string
@@ -167,6 +172,7 @@ export type Database = {
           insurance?: string | null
           medical_history?: string | null
           medications?: string | null
+          npi?: string | null
           pain_delta?: number | null
           pain_level?: string | null
           pain_post?: number | null
