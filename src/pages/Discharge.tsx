@@ -12,6 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FileText, Send, Link2, Mail, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { NDIForm } from "@/components/forms/NDIForm";
+import { ODIForm } from "@/components/forms/ODIForm";
+import { QuickDASHForm } from "@/components/forms/QuickDASHForm";
+import { LEFSForm } from "@/components/forms/LEFSForm";
 
 interface DischargeScores {
   NDI?: number;
@@ -233,34 +237,30 @@ export default function Discharge() {
         </CardContent>
       </Card>
 
-      {/* Discharge Scores */}
+      {/* Discharge Outcome Assessments */}
       {region && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Discharge Outcome Scores</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {activeIndices.map((idx) => (
-                <div key={idx}>
-                  <Label htmlFor={`score-${idx}`}>
-                    {idx} Score * <Badge variant="outline">{region}</Badge>
-                  </Label>
-                  <Input
-                    id={`score-${idx}`}
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    value={scores[idx as keyof DischargeScores] ?? ""}
-                    onChange={(e) => setScores({ ...scores, [idx]: parseFloat(e.target.value) || 0 })}
-                    placeholder="0-100"
-                  />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold">Discharge Outcome Assessments</h2>
+            <Badge variant="outline">{region}</Badge>
+          </div>
+          
+          {activeIndices.includes("NDI") && (
+            <NDIForm onScoreChange={(score) => setScores({ ...scores, NDI: score })} />
+          )}
+          
+          {activeIndices.includes("ODI") && (
+            <ODIForm onScoreChange={(score) => setScores({ ...scores, ODI: score })} />
+          )}
+          
+          {activeIndices.includes("QuickDASH") && (
+            <QuickDASHForm onScoreChange={(score) => setScores({ ...scores, QuickDASH: score })} />
+          )}
+          
+          {activeIndices.includes("LEFS") && (
+            <LEFSForm onScoreChange={(score) => setScores({ ...scores, LEFS: score })} />
+          )}
+        </div>
       )}
 
       {/* PCP Summary */}
