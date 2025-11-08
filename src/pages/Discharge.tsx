@@ -366,9 +366,9 @@ export default function Discharge() {
           <div className="grid gap-6 md:grid-cols-2">
             <MetricCard
               title="CIS Standing"
-              description="Neurologic readiness (0–10)"
+              description="Neurologic readiness (0-10)"
               preLabel="Pre (from Intake)"
-              postLabel="Post (0–10)"
+              postLabel="Post (0-10)"
               preValue={cisPre}
               postValue={cisPost}
               onPreChange={setCisPre}
@@ -379,9 +379,9 @@ export default function Discharge() {
             />
             <MetricCard
               title="Patient Verbal Pain Scale"
-              description="Self-reported 0–10"
+              description="Self-reported 0-10"
               preLabel="Pre (from Intake)"
-              postLabel="Post (0–10)"
+              postLabel="Post (0-10)"
               preValue={painPre}
               postValue={painPost}
               onPreChange={setPainPre}

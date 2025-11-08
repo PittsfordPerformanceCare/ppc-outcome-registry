@@ -462,8 +462,8 @@ export default function NewEpisode() {
             <div className="mt-6 grid gap-6 md:grid-cols-2">
               <MetricCard
                 title="CIS Standing"
-                description="Neurologic readiness (0–10)"
-                preLabel="Pre (0–10)"
+                description="Neurologic readiness (0-10)"
+                preLabel="Pre (0-10)"
                 postLabel="Post (captured at Final)"
                 preValue={cisPre}
                 postValue={cisPost}
@@ -475,8 +475,8 @@ export default function NewEpisode() {
               />
               <MetricCard
                 title="Patient Verbal Pain Scale"
-                description="Self-reported 0–10"
-                preLabel="Pre (0–10)"
+                description="Self-reported 0-10"
+                preLabel="Pre (0-10)"
                 postLabel="Post (captured at Final)"
                 preValue={painPre}
                 postValue={painPost}
