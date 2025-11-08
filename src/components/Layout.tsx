@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LayoutProps {
@@ -14,6 +14,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "Dashboard", href: "/", icon: Home },
     { name: "New Episode", href: "/new-episode", icon: ClipboardList },
     { name: "Follow-up", href: "/follow-up", icon: Activity },
+    { name: "Discharge", href: "/discharge", icon: LogOut },
     { name: "PCP Summary", href: "/pcp-summary", icon: FileText },
   ];
 

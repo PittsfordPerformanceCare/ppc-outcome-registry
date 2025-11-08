@@ -7,6 +7,7 @@ import { Layout } from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import NewEpisode from "./pages/NewEpisode";
 import FollowUp from "./pages/FollowUp";
+import Discharge from "./pages/Discharge";
 import PCPSummary from "./pages/PCPSummary";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/new-episode" element={<NewEpisode />} />
             <Route path="/follow-up" element={<FollowUp />} />
+            <Route path="/discharge" element={<Discharge />} />
             <Route path="/pcp-summary" element={<PCPSummary />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
