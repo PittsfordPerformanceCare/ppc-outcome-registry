@@ -33,6 +33,9 @@ interface ProcessedEpisode {
   injuryDate?: string;
   injuryMechanism?: string;
   painLevel?: string;
+  painPre?: number;
+  painPost?: number;
+  painDelta?: number;
   referringPhysician?: string;
   insurance?: string;
   emergencyContact?: string;
@@ -41,7 +44,13 @@ interface ProcessedEpisode {
   medicalHistory?: string;
   priorTreatments?: string;
   functionalLimitations?: string;
-  treatmentGoals?: string;
+  treatmentGoals?: Array<{
+    name: string;
+    result?: string;
+    priority?: number;
+    timeframe_weeks?: number;
+    notes?: string;
+  }>;
   start_date?: string;
   visits?: string;
   resolution_days?: string;
@@ -123,6 +132,9 @@ export default function PCPSummary() {
         injuryDate: episodeData.injury_date || undefined,
         injuryMechanism: episodeData.injury_mechanism || undefined,
         painLevel: episodeData.pain_level || undefined,
+        painPre: episodeData.pain_pre || undefined,
+        painPost: episodeData.pain_post || undefined,
+        painDelta: episodeData.pain_delta || undefined,
         referringPhysician: episodeData.referring_physician || undefined,
         insurance: episodeData.insurance || undefined,
         emergencyContact: episodeData.emergency_contact || undefined,
@@ -131,7 +143,7 @@ export default function PCPSummary() {
         medicalHistory: episodeData.medical_history || undefined,
         priorTreatments: episodeData.prior_treatments_other || undefined,
         functionalLimitations: episodeData.functional_limitations?.join("\n") || undefined,
-        treatmentGoals: episodeData.goals_other || undefined,
+        treatmentGoals: episodeData.treatment_goals as any || undefined,
         start_date: episodeData.start_date || undefined,
         visits: episodeData.visits || undefined,
         resolution_days: episodeData.resolution_days || undefined,
@@ -438,14 +450,171 @@ export default function PCPSummary() {
                 <p className="text-base whitespace-pre-wrap">{episode.functionalLimitations}</p>
               </div>
             )}
-            
-            {episode.treatmentGoals && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Treatment Goals</p>
-                <p className="text-base whitespace-pre-wrap">{episode.treatmentGoals}</p>
+          </div>
+
+          {/* Pain Level Changes */}
+          {(episode.painPre !== undefined || episode.painPost !== undefined) && (
+            <div className="space-y-4 border-t pt-6">
+              <h3 className="text-lg font-semibold">Pain Level Changes</h3>
+              <div className="rounded-lg border bg-card p-4">
+                <div className="grid gap-4 sm:grid-cols-3">
+                  {episode.painPre !== undefined && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Initial Pain Level</p>
+                      <p className="text-2xl font-bold">{episode.painPre}/10</p>
+                    </div>
+                  )}
+                  {episode.painPost !== undefined && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Discharge Pain Level</p>
+                      <p className="text-2xl font-bold">{episode.painPost}/10</p>
+                    </div>
+                  )}
+                  {episode.painPre !== undefined && episode.painPost !== undefined && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Change</p>
+                      <p className="text-2xl font-bold text-success">
+                        {episode.painPre - episode.painPost} points
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0)}% reduction
+                      </p>
+                    </div>
+                  )}
+                </div>
+                {episode.painPre !== undefined && episode.painPost !== undefined && (
+                  <div className="mt-4 pt-4 border-t">
+                    <p className="text-sm font-medium text-muted-foreground mb-2">Clinical Interpretation</p>
+                    <p className="text-base">
+                      {episode.painPost === 0 ? (
+                        "Patient achieved complete pain resolution."
+                      ) : episode.painPre - episode.painPost >= 2 ? (
+                        "Significant pain reduction achieved. Patient reports clinically meaningful improvement in pain levels."
+                      ) : episode.painPre - episode.painPost > 0 ? (
+                        "Moderate pain reduction observed. Patient shows improvement but may benefit from continued management."
+                      ) : (
+                        "No significant change in pain levels reported."
+                      )}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Functional Improvement Summary */}
+          <div className="space-y-4 border-t pt-6">
+            <h3 className="text-lg font-semibold">Functional Improvement Summary</h3>
+            {results.length > 0 && (episode.baselineScores && Object.keys(episode.baselineScores).length > 0) && (episode.dischargeScores && Object.keys(episode.dischargeScores).length > 0) ? (
+              <div className="rounded-lg border bg-card p-4 space-y-3">
+                {results.map((result) => {
+                  if (result.baseline === 0 && result.discharge === 0) return null;
+                  
+                  const improvement = result.baseline - result.discharge;
+                  const percentChange = Math.abs(result.dischargePercentage);
+                  
+                  return (
+                    <div key={result.index} className="pb-3 border-b last:border-b-0 last:pb-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="font-medium">{result.index}</p>
+                        <Badge
+                          className={`clinical-badge text-xs ${
+                            result.dischargeStatus === "improving"
+                              ? "badge-improving"
+                              : result.dischargeStatus === "declining"
+                              ? "badge-declining"
+                              : "badge-stable"
+                          }`}
+                        >
+                          {result.dischargeStatus === "improving" ? "Improved" : 
+                           result.dischargeStatus === "declining" ? "Declined" : "Stable"}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {improvement > 0 ? (
+                          <>Patient demonstrated a {improvement.toFixed(1)}-point improvement ({percentChange.toFixed(0)}% change), 
+                          indicating {percentChange >= 50 ? "substantial" : percentChange >= 30 ? "significant" : "moderate"} functional gains 
+                          in this domain.</>
+                        ) : improvement < 0 ? (
+                          <>Scores indicate a {Math.abs(improvement).toFixed(1)}-point decline, suggesting potential areas for continued monitoring.</>
+                        ) : (
+                          <>Scores remained stable with no significant change from baseline.</>
+                        )}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+                Complete baseline and discharge assessments to view functional improvement analysis.
               </div>
             )}
           </div>
+
+          {/* Treatment Goals Assessment */}
+          {episode.treatmentGoals && episode.treatmentGoals.length > 0 && (
+            <div className="space-y-4 border-t pt-6">
+              <h3 className="text-lg font-semibold">Treatment Goals Assessment</h3>
+              <div className="space-y-3">
+                {episode.treatmentGoals.map((goal, idx) => (
+                  <div key={idx} className="rounded-lg border bg-card p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <p className="font-medium">{goal.name}</p>
+                        {goal.notes && (
+                          <p className="text-sm text-muted-foreground mt-1">{goal.notes}</p>
+                        )}
+                      </div>
+                      <Badge
+                        className={`ml-2 ${
+                          goal.result === "achieved"
+                            ? "bg-success/15 text-success border-success/30"
+                            : goal.result === "partial"
+                            ? "bg-warning/15 text-warning border-warning/30"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {goal.result === "achieved" ? "✓ Achieved" :
+                         goal.result === "partial" ? "◐ Partially Achieved" :
+                         "○ In Progress"}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {goal.result === "achieved" ? (
+                        <>Patient successfully met this treatment objective within the established timeframe.</>
+                      ) : goal.result === "partial" ? (
+                        <>Patient made progress toward this goal but did not fully achieve the target outcome. Continued therapeutic intervention may be beneficial.</>
+                      ) : (
+                        <>This goal remains an active treatment target.</>
+                      )}
+                    </p>
+                  </div>
+                ))}
+                <div className="rounded-lg bg-muted/50 p-4">
+                  <p className="text-sm font-medium mb-2">Overall Goal Achievement</p>
+                  <p className="text-sm text-muted-foreground">
+                    {(() => {
+                      const achieved = episode.treatmentGoals.filter(g => g.result === "achieved").length;
+                      const partial = episode.treatmentGoals.filter(g => g.result === "partial").length;
+                      const total = episode.treatmentGoals.length;
+                      const percentage = ((achieved + partial * 0.5) / total * 100).toFixed(0);
+                      
+                      return (
+                        <>Patient achieved {achieved} of {total} treatment goals ({percentage}% success rate).
+                        {partial > 0 && ` ${partial} goal(s) were partially met.`}
+                        {achieved === total ? " Excellent treatment outcomes with all goals successfully achieved." :
+                         parseInt(percentage) >= 70 ? " Good overall progress with majority of goals met." :
+                         parseInt(percentage) >= 50 ? " Moderate progress toward treatment objectives." :
+                         " Patient may benefit from continued care or alternative treatment approaches."}
+                        </>
+                      );
+                    })()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Treatment Summary */}
           <div className="space-y-4 border-t pt-6">
