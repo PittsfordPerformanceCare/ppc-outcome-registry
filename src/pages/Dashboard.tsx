@@ -7,8 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3 } from "lucide-react";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare } from "lucide-react";
 import { format } from "date-fns";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
 import { CircularProgress } from "@/components/CircularProgress";
 import { TrendChart } from "@/components/TrendChart";
 import { RegionalPerformanceChart } from "@/components/RegionalPerformanceChart";
@@ -17,6 +19,7 @@ import { PPC_CONFIG } from "@/lib/ppcConfig";
 
 export default function Dashboard() {
   const [episodes, setEpisodes] = useState<EpisodeMeta[]>([]);
+  const { toast } = useToast();
   
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,6 +28,9 @@ export default function Dashboard() {
   const [filterDateFrom, setFilterDateFrom] = useState("");
   const [filterDateTo, setFilterDateTo] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Bulk action states
+  const [selectedEpisodes, setSelectedEpisodes] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const episodeIds = PPC_STORE.getAllEpisodes();
@@ -91,6 +97,135 @@ export default function Dashboard() {
   };
 
   const hasActiveFilters = searchQuery || filterRegion !== "all" || filterClinician !== "all" || filterDateFrom || filterDateTo;
+
+  // Bulk action handlers
+  const toggleSelectAll = () => {
+    if (selectedEpisodes.size === filteredEpisodes.length) {
+      setSelectedEpisodes(new Set());
+    } else {
+      setSelectedEpisodes(new Set(filteredEpisodes.map(ep => ep.episodeId)));
+    }
+  };
+
+  const toggleSelectEpisode = (episodeId: string) => {
+    const newSelected = new Set(selectedEpisodes);
+    if (newSelected.has(episodeId)) {
+      newSelected.delete(episodeId);
+    } else {
+      newSelected.add(episodeId);
+    }
+    setSelectedEpisodes(newSelected);
+  };
+
+  const exportSelectedToCSV = () => {
+    if (selectedEpisodes.size === 0) {
+      toast({
+        title: "No episodes selected",
+        description: "Please select at least one episode to export",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const selectedData = filteredEpisodes.filter(ep => selectedEpisodes.has(ep.episodeId));
+    
+    const headers = [
+      "Episode ID",
+      "Patient Name",
+      "Region",
+      "Clinician",
+      "Date of Service",
+      "Diagnosis",
+      "Baseline Scores",
+      "Discharge Scores",
+      "Discharge Date",
+      "Status"
+    ];
+
+    const rows = selectedData.map(ep => {
+      const baselineScoresStr = ep.baselineScores 
+        ? Object.entries(ep.baselineScores).map(([idx, score]) => `${idx}:${score}`).join("; ")
+        : "";
+      const dischargeScoresStr = ep.dischargeScores
+        ? Object.entries(ep.dischargeScores).map(([idx, score]) => `${idx}:${score}`).join("; ")
+        : "";
+      
+      const status = ep.dischargeDate ? "Completed" : "Active";
+
+      return [
+        ep.episodeId,
+        ep.patientName,
+        ep.region,
+        ep.clinician || "",
+        format(new Date(ep.dateOfService), "MMM dd, yyyy"),
+        ep.diagnosis || "",
+        baselineScoresStr,
+        dischargeScoresStr,
+        ep.dischargeDate ? format(new Date(ep.dischargeDate), "MMM dd, yyyy") : "",
+        status
+      ];
+    });
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `selected-episodes-${format(new Date(), "yyyy-MM-dd")}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Export successful",
+      description: `Exported ${selectedEpisodes.size} episode${selectedEpisodes.size !== 1 ? 's' : ''}`,
+    });
+  };
+
+  const deleteSelectedEpisodes = () => {
+    if (selectedEpisodes.size === 0) {
+      toast({
+        title: "No episodes selected",
+        description: "Please select at least one episode to delete",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete ${selectedEpisodes.size} episode${selectedEpisodes.size !== 1 ? 's' : ''}? This action cannot be undone.`)) {
+      return;
+    }
+
+    // Delete episodes from local storage
+    selectedEpisodes.forEach(episodeId => {
+      localStorage.removeItem(`ppc_episode_meta_${episodeId}`);
+      localStorage.removeItem(`ppc_followup_meta_${episodeId}`);
+      localStorage.removeItem(`ppc_followup_status_${episodeId}`);
+      localStorage.removeItem(`ppc_followup_completed_${episodeId}`);
+    });
+
+    // Update episodes list
+    const allEpisodeIds = PPC_STORE.getAllEpisodes().filter(id => !selectedEpisodes.has(id));
+    localStorage.setItem('ppc_episodes', JSON.stringify(allEpisodeIds));
+
+    // Refresh episodes
+    const episodeData = allEpisodeIds
+      .map((id) => PPC_STORE.getEpisodeMeta(id))
+      .filter((ep): ep is EpisodeMeta => ep !== null)
+      .sort((a, b) => new Date(b.dateOfService).getTime() - new Date(a.dateOfService).getTime());
+    setEpisodes(episodeData);
+    setSelectedEpisodes(new Set());
+
+    toast({
+      title: "Episodes deleted",
+      description: `Successfully deleted ${selectedEpisodes.size} episode${selectedEpisodes.size !== 1 ? 's' : ''}`,
+    });
+  };
 
   // Export to CSV
   const exportToCSV = () => {
@@ -501,15 +636,57 @@ export default function Dashboard() {
       {/* Episodes List */}
       <Card>
         <CardHeader>
-          <CardTitle>
-            {hasActiveFilters ? "Filtered Episodes" : "Recent Episodes"}
-          </CardTitle>
-          <CardDescription>
-            {hasActiveFilters 
-              ? `${filteredEpisodes.length} episode${filteredEpisodes.length !== 1 ? "s" : ""} match your search criteria`
-              : "Your most recent patient outcome episodes"
-            }
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>
+                {hasActiveFilters ? "Filtered Episodes" : "Recent Episodes"}
+              </CardTitle>
+              <CardDescription>
+                {hasActiveFilters 
+                  ? `${filteredEpisodes.length} episode${filteredEpisodes.length !== 1 ? "s" : ""} match your search criteria`
+                  : "Your most recent patient outcome episodes"
+                }
+              </CardDescription>
+            </div>
+            {filteredEpisodes.length > 0 && (
+              <div className="flex items-center gap-2">
+                {selectedEpisodes.size > 0 && (
+                  <>
+                    <Badge variant="secondary" className="h-8 px-3">
+                      {selectedEpisodes.size} selected
+                    </Badge>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={exportSelectedToCSV}
+                      className="gap-2"
+                    >
+                      <Download className="h-4 w-4" />
+                      Export Selected
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={deleteSelectedEpisodes}
+                      className="gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </Button>
+                  </>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleSelectAll}
+                  className="gap-2"
+                >
+                  <CheckSquare className="h-4 w-4" />
+                  {selectedEpisodes.size === filteredEpisodes.length ? "Deselect All" : "Select All"}
+                </Button>
+              </div>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {episodes.length === 0 ? (
@@ -535,13 +712,19 @@ export default function Dashboard() {
               {filteredEpisodes.slice(0, 10).map((episode) => {
                 const followup = PPC_STORE.getFollowupMeta(episode.episodeId);
                 const isCompleted = PPC_STORE.isFollowupCompleted(episode.episodeId);
+                const isSelected = selectedEpisodes.has(episode.episodeId);
 
                 return (
                   <div
                     key={episode.episodeId}
-                    className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50"
+                    className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-muted/50"
                   >
-                    <div className="space-y-1">
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={() => toggleSelectEpisode(episode.episodeId)}
+                      aria-label={`Select episode ${episode.episodeId}`}
+                    />
+                    <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
                         <p className="font-medium">{episode.patientName}</p>
                         <Badge variant="outline" className="text-xs">
