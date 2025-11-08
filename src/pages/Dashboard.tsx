@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X } from "lucide-react";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer } from "lucide-react";
 import { format } from "date-fns";
 import { CircularProgress } from "@/components/CircularProgress";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
@@ -88,6 +88,66 @@ export default function Dashboard() {
   };
 
   const hasActiveFilters = searchQuery || filterRegion !== "all" || filterClinician !== "all" || filterDateFrom || filterDateTo;
+
+  // Export to CSV
+  const exportToCSV = () => {
+    const headers = [
+      "Episode ID",
+      "Patient Name",
+      "Region",
+      "Clinician",
+      "Date of Service",
+      "Diagnosis",
+      "Baseline Scores",
+      "Discharge Scores",
+      "Discharge Date",
+      "Status"
+    ];
+
+    const rows = filteredEpisodes.map(ep => {
+      const baselineScoresStr = ep.baselineScores 
+        ? Object.entries(ep.baselineScores).map(([idx, score]) => `${idx}:${score}`).join("; ")
+        : "";
+      const dischargeScoresStr = ep.dischargeScores
+        ? Object.entries(ep.dischargeScores).map(([idx, score]) => `${idx}:${score}`).join("; ")
+        : "";
+      
+      const status = ep.dischargeDate ? "Completed" : "Active";
+
+      return [
+        ep.episodeId,
+        ep.patientName,
+        ep.region,
+        ep.clinician || "",
+        format(new Date(ep.dateOfService), "MMM dd, yyyy"),
+        ep.diagnosis || "",
+        baselineScoresStr,
+        dischargeScoresStr,
+        ep.dischargeDate ? format(new Date(ep.dischargeDate), "MMM dd, yyyy") : "",
+        status
+      ];
+    });
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `ppc-episodes-${format(new Date(), "yyyy-MM-dd")}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Print function
+  const handlePrint = () => {
+    window.print();
+  };
 
   const pendingFollowups = filteredEpisodes.filter((ep) => {
     const followup = PPC_STORE.getFollowupMeta(ep.episodeId);
@@ -209,20 +269,42 @@ export default function Dashboard() {
       {/* Search & Filter Section */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-2">
               <Search className="h-5 w-5 text-muted-foreground" />
               <CardTitle>Search & Filter Episodes</CardTitle>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-              className="gap-2"
-            >
-              <Filter className="h-4 w-4" />
-              {showFilters ? "Hide Filters" : "Show Filters"}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={exportToCSV}
+                disabled={filteredEpisodes.length === 0}
+                className="gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Export CSV
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrint}
+                disabled={filteredEpisodes.length === 0}
+                className="gap-2 print:hidden"
+              >
+                <Printer className="h-4 w-4" />
+                Print
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+                className="gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                {showFilters ? "Hide Filters" : "Show Filters"}
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">

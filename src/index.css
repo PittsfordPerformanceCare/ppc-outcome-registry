@@ -149,3 +149,57 @@ All colors MUST be HSL.
     @apply bg-[hsl(var(--badge-complete))] text-blue-700 border border-blue-200;
   }
 }
+
+/* Print Styles */
+@media print {
+  @page {
+    margin: 1cm;
+    size: letter portrait;
+  }
+
+  /* Hide interactive elements */
+  .print\\:hidden,
+  button,
+  nav,
+  header nav,
+  [role="navigation"] {
+    display: none !important;
+  }
+
+  /* Reset backgrounds for print */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Optimize cards for print */
+  .bg-gradient-to-br,
+  .bg-gradient-to-r {
+    background: white !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Ensure good contrast */
+  .text-muted-foreground {
+    color: #6b7280 !important;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-after: always;
+  }
+
+  /* Avoid breaking inside cards */
+  .card, .clinical-card {
+    page-break-inside: avoid;
+  }
+
+  /* Compact spacing for print */
+  .space-y-8 > * + * {
+    margin-top: 1rem !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 0.75rem !important;
+  }
+}
