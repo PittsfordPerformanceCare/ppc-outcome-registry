@@ -36,6 +36,14 @@ export interface EpisodeMeta {
   functional_limitation?: string;
   functional_limitations?: string[];
   treatmentGoals?: string;
+  goals?: {
+    name: string;
+    priority?: 1 | 2 | 3;
+    timeframe_weeks?: number;
+    notes?: string;
+    result?: "achieved" | "partial" | "not_yet";
+  }[];
+  goals_other?: string;
   cis_pre?: number | null;
   cis_post?: number | null;
   cis_delta?: number | null;

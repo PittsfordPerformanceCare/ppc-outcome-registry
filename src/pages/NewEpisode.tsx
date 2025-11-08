@@ -15,6 +15,7 @@ import { MetricCard } from "@/components/MetricCard";
 import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
 import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorTreatmentSelector";
+import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoalsSelector";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -43,6 +44,8 @@ export default function NewEpisode() {
   const [functionalLimitationsArray, setFunctionalLimitationsArray] = useState<string[]>([]);
   const [priorTreatmentsData, setPriorTreatmentsData] = useState<PriorTreatment[]>([]);
   const [priorTreatmentsOther, setPriorTreatmentsOther] = useState("");
+  const [goalsData, setGoalsData] = useState<GoalItem[]>([]);
+  const [goalsOther, setGoalsOther] = useState("");
   const [cisPre, setCisPre] = useState<number | null>(null);
   const [cisPost, setCisPost] = useState<number | null>(null);
   const [painPre, setPainPre] = useState<number | null>(null);
@@ -177,6 +180,8 @@ export default function NewEpisode() {
       functional_limitations: functionalLimitationsArray,
       prior_treatments: priorTreatmentsData,
       prior_treatments_other: priorTreatmentsOther.trim(),
+      goals: goalsData,
+      goals_other: goalsOther.trim(),
     });
 
     toast.success("Episode created successfully!");
@@ -454,18 +459,21 @@ export default function NewEpisode() {
                     onChange={(e) => setMedications(e.target.value)}
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="treatmentGoals">Treatment Goals</Label>
-                  <Input
-                    id="treatmentGoals"
-                    placeholder="What are the patient's goals for treatment?"
-                    value={treatmentGoals}
-                    onChange={(e) => setTreatmentGoals(e.target.value)}
-                  />
-                </div>
               </CardContent>
             </Card>
+
+            {/* Smart Treatment Goals Selector */}
+            <div className="mt-6">
+              <TreatmentGoalsSelector
+                stage="Intake"
+                initialGoals={goalsData}
+                initialOther={goalsOther}
+                onChange={({ goals, goals_other }) => {
+                  setGoalsData(goals);
+                  setGoalsOther(goals_other);
+                }}
+              />
+            </div>
 
             {/* Intake Metrics: CIS Standing and Pain Scale */}
             <div className="mt-6 grid gap-6 md:grid-cols-2">

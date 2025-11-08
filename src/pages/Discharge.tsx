@@ -21,6 +21,7 @@ import { MetricCard } from "@/components/MetricCard";
 import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
 import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorTreatmentSelector";
+import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoalsSelector";
 
 interface DischargeScores {
   NDI?: number;
@@ -65,6 +66,8 @@ export default function Discharge() {
   const [functionalLimitationsArray, setFunctionalLimitationsArray] = useState<string[]>([]);
   const [priorTreatmentsData, setPriorTreatmentsData] = useState<PriorTreatment[]>([]);
   const [priorTreatmentsOther, setPriorTreatmentsOther] = useState("");
+  const [goalsData, setGoalsData] = useState<GoalItem[]>([]);
+  const [goalsOther, setGoalsOther] = useState("");
 
   useEffect(() => {
     // Load all available episodes for dropdown
@@ -106,6 +109,8 @@ export default function Discharge() {
         setFunctionalLimitationsArray(meta.functional_limitations || []);
         setPriorTreatmentsData(meta.prior_treatments || []);
         setPriorTreatmentsOther(meta.prior_treatments_other || "");
+        setGoalsData(meta.goals || []);
+        setGoalsOther(meta.goals_other || "");
       }
     }
   }, [episodeId]);
@@ -166,6 +171,8 @@ export default function Discharge() {
       functional_limitations: functionalLimitationsArray,
       prior_treatments: priorTreatmentsData,
       prior_treatments_other: priorTreatmentsOther,
+      goals: goalsData,
+      goals_other: goalsOther,
     };
     
     console.log("Meta to save:", meta);
@@ -370,6 +377,19 @@ export default function Discharge() {
               onChange={({ prior_treatments, prior_treatments_other }) => {
                 setPriorTreatmentsData(prior_treatments);
                 setPriorTreatmentsOther(prior_treatments_other);
+              }}
+            />
+          </div>
+
+          {/* Smart Treatment Goals Selector */}
+          <div className="mt-6">
+            <TreatmentGoalsSelector
+              stage="Final"
+              initialGoals={goalsData}
+              initialOther={goalsOther}
+              onChange={({ goals, goals_other }) => {
+                setGoalsData(goals);
+                setGoalsOther(goals_other);
               }}
             />
           </div>
