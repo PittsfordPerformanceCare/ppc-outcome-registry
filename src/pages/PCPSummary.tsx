@@ -277,9 +277,9 @@ export default function PCPSummary() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">PCP Summary Report</h1>
-          <p className="mt-2 text-muted-foreground">Primary Care Provider Outcome Summary</p>
+          <p className="mt-2 text-muted-foreground print:hidden">Primary Care Provider Outcome Summary</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 print:hidden">
           <Button variant="outline" onClick={handleExport} className="gap-2">
             <Download className="h-4 w-4" />
             Export
