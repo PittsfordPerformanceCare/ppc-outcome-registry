@@ -6,6 +6,8 @@ export interface EpisodeMeta {
   dateOfService: string;
   indices: string[];
   baselineScores?: Record<string, number>;
+  dischargeScores?: Record<string, number>;
+  dischargeDate?: string;
   followupDate?: string;
   dob?: string;
   clinician?: string;

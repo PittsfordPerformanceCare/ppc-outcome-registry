@@ -71,6 +71,17 @@ export default function Discharge() {
         setRegion(meta.region || "");
         setDob(meta.dob || "");
         setClinician(meta.clinician || "");
+        
+        // Load discharge scores if they exist
+        if (meta.dischargeScores) {
+          setScores(meta.dischargeScores as DischargeScores);
+        }
+        
+        // Load compliance and referral info
+        setComplianceRating(meta.compliance_rating || "");
+        setComplianceNotes(meta.compliance_notes || "");
+        setReferredOut(meta.referred_out || false);
+        setReferralReason(meta.referral_reason || "");
       }
     }
   }, [episodeId]);
@@ -88,18 +99,27 @@ export default function Discharge() {
       return;
     }
 
-    const baselineScores: Record<string, number> = {};
+    const dischargeScores: Record<string, number> = {};
     Object.entries(scores).forEach(([key, value]) => {
-      if (value != null) baselineScores[key] = value;
+      if (value != null) dischargeScores[key] = value;
     });
 
+    // Load existing episode data or create new
+    const existingMeta = PPC_STORE.getEpisodeMeta(episodeId);
     const meta: EpisodeMeta = {
+      ...existingMeta,
       episodeId,
       patientName,
       region,
-      dateOfService: new Date().toISOString().split("T")[0],
+      dateOfService: existingMeta?.dateOfService || new Date().toISOString().split("T")[0],
       indices: activeIndices,
-      baselineScores,
+      baselineScores: existingMeta?.baselineScores,
+      dischargeScores,
+      dischargeDate: new Date().toISOString().split("T")[0],
+      compliance_rating: complianceRating,
+      compliance_notes: complianceNotes,
+      referred_out: referredOut,
+      referral_reason: referralReason,
     };
     PPC_STORE.setEpisodeMeta(episodeId, meta);
 

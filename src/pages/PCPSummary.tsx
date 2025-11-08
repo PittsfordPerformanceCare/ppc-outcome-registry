@@ -45,6 +45,8 @@ export default function PCPSummary() {
       npi: "1234567890",
       indices: ["NDI"],
       baselineScores: { NDI: 48 },
+      dischargeScores: { NDI: 16 },
+      dischargeDate: "2024-04-15",
       injuryDate: "2023-12-28",
       injuryMechanism: "Motor vehicle accident - rear-end collision. Patient reports immediate onset of neck pain with radiation to right shoulder and arm.",
       painLevel: "8",
@@ -68,8 +70,8 @@ export default function PCPSummary() {
     // Create demo follow-up data
     const demoFollowup: FollowupMeta = {
       episodeId: demoEpisodeId,
-      scheduledDate: "2024-04-15",
-      completedDate: "2024-04-15",
+      scheduledDate: "2024-07-15",
+      completedDate: "2024-07-15",
       scores: { NDI: 12 },
       status: "improving",
     };
@@ -86,27 +88,33 @@ export default function PCPSummary() {
   };
 
   const handleExport = () => {
-    if (!episode || !followup) return;
+    if (!episode) return;
 
     const summary = {
       patient: episode.patientName,
       episodeId: episode.episodeId,
       region: episode.region,
       dateOfService: episode.dateOfService,
-      followupDate: followup.completedDate,
-      status: followup.status,
+      dischargeDate: episode.dischargeDate,
+      followupDate: followup?.completedDate,
+      status: followup?.status,
       results: episode.indices.map((index) => {
         const baseline = episode.baselineScores?.[index] || 0;
-        const followupScore = followup.scores?.[index] || 0;
-        const mcid = calculateMCID(index as any, baseline, followupScore);
+        const discharge = episode.dischargeScores?.[index] || 0;
+        const followupScore = followup?.scores?.[index] || 0;
+        const dischargeVsBaseline = calculateMCID(index as any, baseline, discharge);
+        const followupVsDischarge = calculateMCID(index as any, discharge, followupScore);
         return {
           index,
           baseline,
+          discharge,
           followup: followupScore,
-          change: mcid.change,
-          percentage: mcid.percentage,
-          status: mcid.status,
-          clinicallySignificant: mcid.isClinicallySignificant,
+          dischargeChange: dischargeVsBaseline.change,
+          dischargePercentage: dischargeVsBaseline.percentage,
+          followupChange: followupVsDischarge.change,
+          followupPercentage: followupVsDischarge.percentage,
+          overallStatus: followupScore ? followupVsDischarge.status : dischargeVsBaseline.status,
+          clinicallySignificant: followupScore ? followupVsDischarge.isClinicallySignificant : dischargeVsBaseline.isClinicallySignificant,
         };
       }),
     };
@@ -122,14 +130,14 @@ export default function PCPSummary() {
     toast.success("Summary exported successfully!");
   };
 
-  if (!episode || !followup) {
+  if (!episode) {
     return (
       <div className="mx-auto max-w-4xl">
         <Card>
           <CardContent className="py-12 text-center space-y-4">
             <FileText className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
             <p className="text-muted-foreground">
-              No follow-up data available. Please complete a follow-up assessment first.
+              No episode data available. Please complete a discharge assessment first.
             </p>
             <Button onClick={handleLoadDemo} variant="outline" className="gap-2">
               <FileText className="h-4 w-4" />
@@ -143,12 +151,27 @@ export default function PCPSummary() {
 
   const results = episode.indices.map((index) => {
     const baseline = episode.baselineScores?.[index] || 0;
-    const followupScore = followup.scores?.[index] || 0;
+    const discharge = episode.dischargeScores?.[index] || 0;
+    const followupScore = followup?.scores?.[index] || 0;
+    
+    // Calculate discharge vs baseline
+    const dischargeVsBaseline = calculateMCID(index as any, baseline, discharge);
+    
+    // Calculate 90-day vs discharge (if available)
+    const followupVsDischarge = followupScore ? calculateMCID(index as any, discharge, followupScore) : null;
+
     return {
       index,
-      ...calculateMCID(index as any, baseline, followupScore),
       baseline,
+      discharge,
       followup: followupScore,
+      dischargeChange: dischargeVsBaseline.change,
+      dischargePercentage: dischargeVsBaseline.percentage,
+      dischargeStatus: dischargeVsBaseline.status,
+      followupChange: followupVsDischarge?.change || 0,
+      followupPercentage: followupVsDischarge?.percentage || 0,
+      followupStatus: followupVsDischarge?.status || 'stable',
+      hasFollowup: !!followupScore,
     };
   });
 
@@ -197,28 +220,38 @@ export default function PCPSummary() {
                 {episode.region}
               </Badge>
             </div>
+            {followup?.status && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Overall Status</p>
+                <Badge
+                  className={`clinical-badge mt-1 ${
+                    followup.status === "improving"
+                      ? "badge-improving"
+                      : followup.status === "declining"
+                      ? "badge-declining"
+                      : "badge-stable"
+                  }`}
+                >
+                  {followup.status?.charAt(0).toUpperCase() + (followup.status?.slice(1) || "")}
+                </Badge>
+              </div>
+            )}
             <div>
-              <p className="text-sm font-medium text-muted-foreground">Overall Status</p>
-              <Badge
-                className={`clinical-badge mt-1 ${
-                  followup.status === "improving"
-                    ? "badge-improving"
-                    : followup.status === "declining"
-                    ? "badge-declining"
-                    : "badge-stable"
-                }`}
-              >
-                {followup.status?.charAt(0).toUpperCase() + (followup.status?.slice(1) || "")}
-              </Badge>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Date of Service</p>
+              <p className="text-sm font-medium text-muted-foreground">Initial Evaluation</p>
               <p className="text-lg">{episode.dateOfService}</p>
             </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Follow-up Date</p>
-              <p className="text-lg">{followup.completedDate}</p>
-            </div>
+            {episode.dischargeDate && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Discharge Date</p>
+                <p className="text-lg">{episode.dischargeDate}</p>
+              </div>
+            )}
+            {followup?.completedDate && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">90-Day Follow-up</p>
+                <p className="text-lg">{followup.completedDate}</p>
+              </div>
+            )}
           </div>
 
           {/* Intake Information */}
@@ -371,51 +404,91 @@ export default function PCPSummary() {
             <h3 className="text-lg font-semibold">Outcome Measures</h3>
             {results.map((result) => (
               <div key={result.index} className="rounded-lg border bg-card p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <h4 className="font-medium">{result.index}</h4>
-                  <Badge
-                    className={`clinical-badge ${
-                      result.status === "improving"
-                        ? "badge-improving"
-                        : result.status === "declining"
-                        ? "badge-declining"
-                        : "badge-stable"
-                    }`}
-                  >
-                    {result.status.charAt(0).toUpperCase() + result.status.slice(1)}
-                  </Badge>
+                <h4 className="mb-4 font-medium">{result.index}</h4>
+
+                {/* Baseline to Discharge */}
+                <div className="mb-4 rounded-md bg-muted/50 p-3">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-sm font-medium">Baseline → Discharge</p>
+                    <Badge
+                      className={`clinical-badge text-xs ${
+                        result.dischargeStatus === "improving"
+                          ? "badge-improving"
+                          : result.dischargeStatus === "declining"
+                          ? "badge-declining"
+                          : "badge-stable"
+                      }`}
+                    >
+                      {result.dischargeStatus.charAt(0).toUpperCase() + result.dischargeStatus.slice(1)}
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-4 gap-3 text-center">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Baseline</p>
+                      <p className="text-base font-semibold">{result.baseline.toFixed(1)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Discharge</p>
+                      <p className="text-base font-semibold">{result.discharge.toFixed(1)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Change</p>
+                      <p className="text-base font-semibold">
+                        {result.dischargeChange > 0 ? "+" : ""}
+                        {result.dischargeChange.toFixed(1)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">% Change</p>
+                      <p className="text-base font-semibold">
+                        {result.dischargePercentage > 0 ? "+" : ""}
+                        {result.dischargePercentage.toFixed(1)}%
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-4 text-center">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Baseline</p>
-                    <p className="text-lg font-semibold">{result.baseline.toFixed(1)}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Discharge</p>
-                    <p className="text-lg font-semibold">{result.followup.toFixed(1)}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">Change</p>
-                    <p className="text-lg font-semibold">
-                      {result.change > 0 ? "+" : ""}
-                      {result.change.toFixed(1)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground">% Change</p>
-                    <p className="text-lg font-semibold">
-                      {result.percentage > 0 ? "+" : ""}
-                      {result.percentage.toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-
-                {result.isClinicallySignificant && (
-                  <div className="mt-3 rounded-md bg-success/10 px-3 py-2">
-                    <p className="text-xs font-medium text-success">
-                      ✓ Clinically significant change (MCID: {result.mcidThreshold})
-                    </p>
+                {/* 90-Day Follow-up (if available) */}
+                {result.hasFollowup && (
+                  <div className="rounded-md bg-muted/30 p-3">
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="text-sm font-medium">Discharge → 90-Day Follow-up</p>
+                      <Badge
+                        className={`clinical-badge text-xs ${
+                          result.followupStatus === "improving"
+                            ? "badge-improving"
+                            : result.followupStatus === "declining"
+                            ? "badge-declining"
+                            : "badge-stable"
+                        }`}
+                      >
+                        {result.followupStatus.charAt(0).toUpperCase() + result.followupStatus.slice(1)}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-4 gap-3 text-center">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Discharge</p>
+                        <p className="text-base font-semibold">{result.discharge.toFixed(1)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">90-Day</p>
+                        <p className="text-base font-semibold">{result.followup.toFixed(1)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">Change</p>
+                        <p className="text-base font-semibold">
+                          {result.followupChange > 0 ? "+" : ""}
+                          {result.followupChange.toFixed(1)}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">% Change</p>
+                        <p className="text-base font-semibold">
+                          {result.followupPercentage > 0 ? "+" : ""}
+                          {result.followupPercentage.toFixed(1)}%
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
