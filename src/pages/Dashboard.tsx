@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getAllEpisodes } from "@/lib/dbOperations";
+import { EpisodeMeta } from "@/lib/ppcStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,7 @@ interface Episode {
 
 export default function Dashboard() {
   const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [episodesWithScores, setEpisodesWithScores] = useState<EpisodeMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
@@ -71,6 +73,46 @@ export default function Dashboard() {
     try {
       const data = await getAllEpisodes();
       setEpisodes(data);
+      
+      // Fetch outcome scores for chart components
+      const { data: scores, error } = await supabase
+        .from("outcome_scores")
+        .select("*")
+        .order("recorded_at", { ascending: true });
+      
+      if (error) throw error;
+      
+      // Transform to EpisodeMeta format
+      const episodesWithScoresData: EpisodeMeta[] = data
+        .filter(ep => ep.discharge_date) // Only completed episodes for charts
+        .map(ep => {
+          const episodeScores = scores?.filter(s => s.episode_id === ep.id) || [];
+          
+          // Build baselineScores and dischargeScores
+          const baselineScores: Record<string, number> = {};
+          const dischargeScores: Record<string, number> = {};
+          
+          episodeScores.forEach(score => {
+            if (score.score_type === "baseline") {
+              baselineScores[score.index_type] = score.score;
+            } else if (score.score_type === "discharge") {
+              dischargeScores[score.index_type] = score.score;
+            }
+          });
+          
+          return {
+            episodeId: ep.id,
+            patientName: ep.patient_name,
+            region: ep.region,
+            dateOfService: ep.date_of_service,
+            indices: Object.keys(baselineScores),
+            baselineScores: Object.keys(baselineScores).length > 0 ? baselineScores : undefined,
+            dischargeScores: Object.keys(dischargeScores).length > 0 ? dischargeScores : undefined,
+            dischargeDate: ep.discharge_date || undefined,
+          };
+        });
+      
+      setEpisodesWithScores(episodesWithScoresData);
     } catch (error: any) {
       toast({
         title: "Error loading episodes",
@@ -424,11 +466,11 @@ export default function Dashboard() {
         </div>
         
         <div className="grid gap-6 lg:grid-cols-2">
-              <TrendChart episodes={[]} />
-              <RegionalPerformanceChart episodes={[]} />
+              <TrendChart episodes={episodesWithScores} />
+              <RegionalPerformanceChart episodes={episodesWithScores} />
         </div>
         
-        <TreatmentEfficacyChart episodes={[]} />
+        <TreatmentEfficacyChart episodes={episodesWithScores} />
       </div>
 
       {/* Search & Filter Section */}
