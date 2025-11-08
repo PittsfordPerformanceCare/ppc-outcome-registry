@@ -104,22 +104,24 @@ export default function Discharge() {
       if (value != null) dischargeScores[key] = value;
     });
 
-    // Load existing episode data or create new
+    // Load existing episode data and preserve ALL fields
     const existingMeta = PPC_STORE.getEpisodeMeta(episodeId);
+    if (!existingMeta) {
+      toast.error("Episode data not found");
+      return;
+    }
+
+    // Only update discharge-specific fields, preserve all intake/treatment data
     const meta: EpisodeMeta = {
-      ...existingMeta,
-      episodeId,
-      patientName,
-      region,
-      dateOfService: existingMeta?.dateOfService || new Date().toISOString().split("T")[0],
-      indices: activeIndices,
-      baselineScores: existingMeta?.baselineScores,
+      ...existingMeta, // Preserve ALL existing fields
       dischargeScores,
       dischargeDate: new Date().toISOString().split("T")[0],
       compliance_rating: complianceRating,
       compliance_notes: complianceNotes,
       referred_out: referredOut,
       referral_reason: referralReason,
+      dob: dob || existingMeta.dob,
+      clinician: clinician || existingMeta.clinician,
     };
     PPC_STORE.setEpisodeMeta(episodeId, meta);
 
