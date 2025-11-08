@@ -7,9 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer } from "lucide-react";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3 } from "lucide-react";
 import { format } from "date-fns";
 import { CircularProgress } from "@/components/CircularProgress";
+import { TrendChart } from "@/components/TrendChart";
+import { RegionalPerformanceChart } from "@/components/RegionalPerformanceChart";
+import { TreatmentEfficacyChart } from "@/components/TreatmentEfficacyChart";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 
 export default function Dashboard() {
@@ -264,6 +267,21 @@ export default function Dashboard() {
             />
           </CardContent>
         </Card>
+      </div>
+
+      {/* Data Visualization Section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-2">
+          <BarChart3 className="h-6 w-6 text-primary" />
+          <h2 className="text-2xl font-bold text-primary">Analytics & Insights</h2>
+        </div>
+        
+        <div className="grid gap-6 lg:grid-cols-2">
+          <TrendChart episodes={filteredEpisodes} />
+          <RegionalPerformanceChart episodes={filteredEpisodes} />
+        </div>
+        
+        <TreatmentEfficacyChart episodes={filteredEpisodes} />
       </div>
 
       {/* Search & Filter Section */}
