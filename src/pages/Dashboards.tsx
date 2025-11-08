@@ -414,6 +414,16 @@ export default function Dashboards() {
     recommendation: string;
   }>>([]);
 
+  // Treatment Goal Achievement Data
+  const [goalAchievementData, setGoalAchievementData] = useState<Array<{
+    goal: string;
+    achieved: number;
+    partial: number;
+    notYet: number;
+    total: number;
+    achievementRate: number;
+  }>>([]);
+
   useEffect(() => {
     const fetchAtRiskEpisodes = async () => {
       try {
@@ -497,8 +507,71 @@ export default function Dashboards() {
       }
     };
 
+    const fetchGoalAchievement = async () => {
+      try {
+        const { data: episodes, error } = await supabase
+          .from("episodes")
+          .select("treatment_goals")
+          .not("treatment_goals", "is", null)
+          .not("discharge_date", "is", null);
+
+        if (error) throw error;
+        if (!episodes) return;
+
+        // Aggregate goal achievement data
+        const goalMap = new Map<string, { achieved: number; partial: number; notYet: number }>();
+
+        episodes.forEach(ep => {
+          const goals = ep.treatment_goals as Array<{
+            name: string;
+            result?: "achieved" | "partial" | "not_yet";
+          }>;
+
+          if (!goals || !Array.isArray(goals)) return;
+
+          goals.forEach(goal => {
+            const current = goalMap.get(goal.name) || { achieved: 0, partial: 0, notYet: 0 };
+            
+            if (goal.result === "achieved") {
+              current.achieved++;
+            } else if (goal.result === "partial") {
+              current.partial++;
+            } else if (goal.result === "not_yet") {
+              current.notYet++;
+            }
+
+            goalMap.set(goal.name, current);
+          });
+        });
+
+        // Convert to array and calculate rates
+        const goalData = Array.from(goalMap.entries())
+          .map(([goal, stats]) => {
+            const total = stats.achieved + stats.partial + stats.notYet;
+            const achievementRate = total > 0 ? Math.round((stats.achieved / total) * 100) : 0;
+            
+            return {
+              goal: goal.length > 30 ? goal.substring(0, 30) + "..." : goal,
+              achieved: stats.achieved,
+              partial: stats.partial,
+              notYet: stats.notYet,
+              total,
+              achievementRate,
+            };
+          })
+          .filter(g => g.total >= 3) // Only show goals with 3+ occurrences
+          .sort((a, b) => b.achievementRate - a.achievementRate);
+
+        setGoalAchievementData(goalData);
+
+      } catch (error) {
+        console.error("Error fetching goal achievement data:", error);
+      }
+    };
+
     if (!loading && outcomes.length > 0) {
       fetchAtRiskEpisodes();
+      fetchGoalAchievement();
     }
   }, [loading, outcomes]);
 
@@ -1223,6 +1296,63 @@ export default function Dashboards() {
               ) : (
                 <div className="flex items-center justify-center h-[300px] text-muted-foreground">
                   <p>No referral source data available</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Treatment Goal Achievement */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Treatment Goal Achievement Rates</CardTitle>
+              <CardDescription>Success rates by goal type (goals with 3+ episodes)</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {goalAchievementData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart data={goalAchievementData} layout="horizontal">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis type="number" domain={[0, 100]} label={{ value: '% Achievement', position: 'insideBottom', offset: -5 }} />
+                    <YAxis dataKey="goal" type="category" width={180} tick={{ fontSize: 11 }} />
+                    <Tooltip content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        return (
+                          <div className="bg-background border rounded-lg p-3 shadow-lg">
+                            <p className="font-semibold text-sm mb-2">{data.goal}</p>
+                            <div className="space-y-1 text-xs">
+                              <div className="flex justify-between gap-4">
+                                <span className="text-green-600">✓ Achieved:</span>
+                                <span className="font-semibold">{data.achieved} ({Math.round((data.achieved / data.total) * 100)}%)</span>
+                              </div>
+                              <div className="flex justify-between gap-4">
+                                <span className="text-orange-600">◐ Partial:</span>
+                                <span className="font-semibold">{data.partial} ({Math.round((data.partial / data.total) * 100)}%)</span>
+                              </div>
+                              <div className="flex justify-between gap-4">
+                                <span className="text-gray-600">○ Not Yet:</span>
+                                <span className="font-semibold">{data.notYet} ({Math.round((data.notYet / data.total) * 100)}%)</span>
+                              </div>
+                              <div className="border-t pt-1 mt-1">
+                                <span className="text-muted-foreground">Total: {data.total} episodes</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }} />
+                    <Legend />
+                    <Bar dataKey="achievementRate" fill="#16a34a" name="Achievement Rate (%)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex items-center justify-center h-[400px] text-muted-foreground">
+                  <div className="text-center">
+                    <Target className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p>No goal achievement data yet</p>
+                    <p className="text-xs mt-1">Goals must be marked at discharge to appear here</p>
+                  </div>
                 </div>
               )}
             </CardContent>
