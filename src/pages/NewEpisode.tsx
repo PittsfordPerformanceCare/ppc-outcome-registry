@@ -18,6 +18,10 @@ export default function NewEpisode() {
   const [dateOfService, setDateOfService] = useState("");
   const [selectedIndices, setSelectedIndices] = useState<IndexType[]>([]);
   const [baselineScores, setBaselineScores] = useState<Record<string, string>>({});
+  const [dob, setDob] = useState("");
+  const [clinician, setClinician] = useState("");
+  const [diagnosis, setDiagnosis] = useState("");
+  const [npi, setNpi] = useState("");
 
   const handleRegionChange = (value: string) => {
     setRegion(value);
@@ -64,6 +68,18 @@ export default function NewEpisode() {
       toast.error("Please enter date of service");
       return;
     }
+    if (!dob.trim()) {
+      toast.error("Please enter date of birth");
+      return;
+    }
+    if (!clinician.trim()) {
+      toast.error("Please enter clinician name");
+      return;
+    }
+    if (!diagnosis.trim()) {
+      toast.error("Please enter diagnosis");
+      return;
+    }
     if (selectedIndices.length === 0) {
       toast.error("Please select at least one outcome index");
       return;
@@ -97,6 +113,11 @@ export default function NewEpisode() {
       indices: selectedIndices,
       baselineScores: scores,
       followupDate: followupDate.toISOString().split("T")[0],
+      dob: dob.trim(),
+      clinician: clinician.trim(),
+      diagnosis: diagnosis.trim(),
+      npi: npi.trim(),
+      start_date: dateOfService,
     });
 
     toast.success("Episode created successfully!");
@@ -162,48 +183,102 @@ export default function NewEpisode() {
         </Card>
 
         {region && (
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Outcome Indices</CardTitle>
-              <CardDescription>
-                Select outcome measures and enter baseline scores (0-100)
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {(["NDI", "ODI", "QuickDASH", "LEFS"] as IndexType[]).map((index) => (
-                <div key={index} className="flex items-start space-x-4 rounded-lg border p-4">
-                  <Checkbox
-                    id={index}
-                    checked={selectedIndices.includes(index)}
-                    onCheckedChange={(checked) => handleIndexToggle(index, checked as boolean)}
-                  />
-                  <div className="flex-1 space-y-2">
-                    <Label htmlFor={index} className="text-base font-medium">
-                      {index}
-                    </Label>
-                    {selectedIndices.includes(index) && (
-                      <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          step="0.1"
-                          placeholder="Enter baseline score"
-                          value={baselineScores[index] || ""}
-                          onChange={(e) => handleScoreChange(index, e.target.value)}
-                          className="max-w-xs"
-                          required
-                        />
-                        <span className="text-sm text-muted-foreground">
-                          MCID: {PPC_CONFIG.mcid[index]}
-                        </span>
-                      </div>
-                    )}
+          <>
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Clinical Details</CardTitle>
+                <CardDescription>Additional patient and clinical information</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="dob">Date of Birth *</Label>
+                    <Input
+                      id="dob"
+                      type="date"
+                      value={dob}
+                      onChange={(e) => setDob(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="clinician">Clinician Name *</Label>
+                    <Input
+                      id="clinician"
+                      placeholder="Enter clinician name"
+                      value={clinician}
+                      onChange={(e) => setClinician(e.target.value)}
+                      required
+                    />
                   </div>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
+
+                <div className="space-y-2">
+                  <Label htmlFor="diagnosis">Diagnosis *</Label>
+                  <Input
+                    id="diagnosis"
+                    placeholder="Enter primary diagnosis"
+                    value={diagnosis}
+                    onChange={(e) => setDiagnosis(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="npi">Provider NPI</Label>
+                  <Input
+                    id="npi"
+                    placeholder="Enter NPI number (optional)"
+                    value={npi}
+                    onChange={(e) => setNpi(e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Outcome Indices</CardTitle>
+                <CardDescription>
+                  Select outcome measures and enter baseline scores (0-100)
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {(["NDI", "ODI", "QuickDASH", "LEFS"] as IndexType[]).map((index) => (
+                  <div key={index} className="flex items-start space-x-4 rounded-lg border p-4">
+                    <Checkbox
+                      id={index}
+                      checked={selectedIndices.includes(index)}
+                      onCheckedChange={(checked) => handleIndexToggle(index, checked as boolean)}
+                    />
+                    <div className="flex-1 space-y-2">
+                      <Label htmlFor={index} className="text-base font-medium">
+                        {index}
+                      </Label>
+                      {selectedIndices.includes(index) && (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            placeholder="Enter baseline score"
+                            value={baselineScores[index] || ""}
+                            onChange={(e) => handleScoreChange(index, e.target.value)}
+                            className="max-w-xs"
+                            required
+                          />
+                          <span className="text-sm text-muted-foreground">
+                            MCID: {PPC_CONFIG.mcid[index]}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </>
         )}
 
         <div className="mt-6 flex justify-end gap-4">

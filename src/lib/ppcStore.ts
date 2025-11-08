@@ -7,6 +7,17 @@ export interface EpisodeMeta {
   indices: string[];
   baselineScores?: Record<string, number>;
   followupDate?: string;
+  dob?: string;
+  clinician?: string;
+  diagnosis?: string;
+  npi?: string;
+  start_date?: string;
+  visits?: string;
+  resolution_days?: string;
+  compliance_rating?: string;
+  compliance_notes?: string;
+  referred_out?: boolean;
+  referral_reason?: string;
 }
 
 export interface FollowupMeta {
