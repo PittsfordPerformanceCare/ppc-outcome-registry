@@ -162,9 +162,154 @@ export default function PCPSummary() {
             </div>
           </div>
 
+          {/* Intake Information */}
+          <div className="space-y-4 border-t pt-6">
+            <h3 className="text-lg font-semibold">Intake Information</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {episode.dob && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Date of Birth</p>
+                  <p className="text-base">{episode.dob}</p>
+                </div>
+              )}
+              {episode.diagnosis && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Diagnosis</p>
+                  <p className="text-base">{episode.diagnosis}</p>
+                </div>
+              )}
+              {episode.clinician && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Treating Clinician</p>
+                  <p className="text-base">{episode.clinician}</p>
+                </div>
+              )}
+              {episode.npi && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">NPI</p>
+                  <p className="text-base">{episode.npi}</p>
+                </div>
+              )}
+              {episode.injuryDate && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Injury Date</p>
+                  <p className="text-base">{episode.injuryDate}</p>
+                </div>
+              )}
+              {episode.painLevel && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Initial Pain Level</p>
+                  <p className="text-base">{episode.painLevel}/10</p>
+                </div>
+              )}
+              {episode.referringPhysician && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Referring Physician</p>
+                  <p className="text-base">{episode.referringPhysician}</p>
+                </div>
+              )}
+              {episode.insurance && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Insurance</p>
+                  <p className="text-base">{episode.insurance}</p>
+                </div>
+              )}
+            </div>
+            
+            {episode.injuryMechanism && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Injury Mechanism</p>
+                <p className="text-base">{episode.injuryMechanism}</p>
+              </div>
+            )}
+            
+            {episode.medications && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Medications</p>
+                <p className="text-base whitespace-pre-wrap">{episode.medications}</p>
+              </div>
+            )}
+            
+            {episode.medicalHistory && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Medical History</p>
+                <p className="text-base whitespace-pre-wrap">{episode.medicalHistory}</p>
+              </div>
+            )}
+            
+            {episode.priorTreatments && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Prior Treatments</p>
+                <p className="text-base whitespace-pre-wrap">{episode.priorTreatments}</p>
+              </div>
+            )}
+            
+            {episode.functionalLimitations && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Functional Limitations</p>
+                <p className="text-base whitespace-pre-wrap">{episode.functionalLimitations}</p>
+              </div>
+            )}
+            
+            {episode.treatmentGoals && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Treatment Goals</p>
+                <p className="text-base whitespace-pre-wrap">{episode.treatmentGoals}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Treatment Summary */}
+          <div className="space-y-4 border-t pt-6">
+            <h3 className="text-lg font-semibold">Treatment Summary</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {episode.start_date && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Treatment Start Date</p>
+                  <p className="text-base">{episode.start_date}</p>
+                </div>
+              )}
+              {episode.visits && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Total Visits</p>
+                  <p className="text-base">{episode.visits}</p>
+                </div>
+              )}
+              {episode.resolution_days && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Days to Resolution</p>
+                  <p className="text-base">{episode.resolution_days} days</p>
+                </div>
+              )}
+              {episode.compliance_rating && (
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Compliance Rating</p>
+                  <p className="text-base">{episode.compliance_rating}</p>
+                </div>
+              )}
+            </div>
+            
+            {episode.compliance_notes && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Compliance Notes</p>
+                <p className="text-base whitespace-pre-wrap">{episode.compliance_notes}</p>
+              </div>
+            )}
+            
+            {episode.referred_out && (
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Referral Status</p>
+                <Badge variant="outline" className="mt-1">Referred Out</Badge>
+                {episode.referral_reason && (
+                  <p className="text-base mt-2">{episode.referral_reason}</p>
+                )}
+              </div>
+            )}
+          </div>
+
           {/* Clinical Findings */}
           <div className="space-y-4 border-t pt-6">
-            <h3 className="text-lg font-semibold">Clinical Findings</h3>
+            <h3 className="text-lg font-semibold">Outcome Measures</h3>
             {results.map((result) => (
               <div key={result.index} className="rounded-lg border bg-card p-4">
                 <div className="mb-3 flex items-center justify-between">
@@ -188,7 +333,7 @@ export default function PCPSummary() {
                     <p className="text-lg font-semibold">{result.baseline.toFixed(1)}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">Follow-up</p>
+                    <p className="text-xs text-muted-foreground">Discharge</p>
                     <p className="text-lg font-semibold">{result.followup.toFixed(1)}</p>
                   </div>
                   <div>
