@@ -86,8 +86,8 @@ export function MetricCard({
     deltaStatus = delta >= 0 ? "good" : "bad";
   }
 
-  const preDisabled = !isIntake && preValue != null;
-  const postDisabled = isIntake;
+  const preDisabled = false;
+  const postDisabled = false;
 
   return (
     <Card>
