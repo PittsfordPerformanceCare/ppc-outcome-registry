@@ -17,10 +17,12 @@ import {
   CheckCircle2,
   Clock,
   FileText,
-  AlertCircle
+  AlertCircle,
+  Printer
 } from "lucide-react";
 import { format } from "date-fns";
 import { getMCIDThreshold } from "@/lib/mcidUtils";
+import { toast } from "sonner";
 
 interface ProcessedEpisode {
   episodeId: string;
@@ -142,6 +144,11 @@ export default function EpisodeSummary() {
     loadEpisodeData();
   }, [episodeId]);
 
+  const handlePrint = () => {
+    window.print();
+    toast.success("Opening print dialog...");
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto max-w-5xl py-8">
@@ -208,9 +215,13 @@ export default function EpisodeSummary() {
             </Link>
           </div>
           <h1 className="text-3xl font-bold text-primary">Episode Summary</h1>
-          <p className="text-muted-foreground">Complete patient journey and outcomes</p>
+          <p className="text-muted-foreground print:hidden">Complete patient journey and outcomes</p>
         </div>
         <div className="flex items-center gap-2">
+          <Button onClick={handlePrint} className="gap-2 print:hidden">
+            <Printer className="h-4 w-4" />
+            Print
+          </Button>
           {isCompleted ? (
             <Badge className="bg-success/15 text-success border-success/30 h-8 px-4">
               <CheckCircle2 className="mr-1 h-4 w-4" />
