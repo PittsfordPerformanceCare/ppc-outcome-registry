@@ -1,9 +1,10 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
+import { useDarkMode } from "@/hooks/useDarkMode";
 import { SessionTimeoutWarning } from "./SessionTimeoutWarning";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +25,7 @@ export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { showWarning, extendSession } = useSessionTimeout();
+  const { isDark, toggleDarkMode } = useDarkMode();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -85,6 +87,16 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
               );
             })}
+            
+            {/* Dark Mode Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleDarkMode}
+              className="ml-2"
+            >
+              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
             
             {/* User Menu */}
             <DropdownMenu>
