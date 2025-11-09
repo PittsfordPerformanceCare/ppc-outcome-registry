@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3 } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
@@ -47,7 +47,10 @@ export function Layout({ children }: LayoutProps) {
     { name: "Discharge", href: "/discharge", icon: LogOut },
     { name: "Dashboards", href: "/dashboards", icon: BarChart3 },
     { name: "PCP Summary", href: "/pcp-summary", icon: FileText },
-    ...(isAdmin ? [{ name: "Admin", href: "/admin", icon: Shield }] : []),
+    ...(isAdmin ? [
+      { name: "Admin", href: "/admin", icon: Shield },
+      { name: "Compliance", href: "/compliance", icon: FileCheck }
+    ] : []),
   ];
 
   return (

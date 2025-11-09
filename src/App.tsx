@@ -13,6 +13,7 @@ import Dashboards from "./pages/Dashboards";
 import PCPSummary from "./pages/PCPSummary";
 import EpisodeSummary from "./pages/EpisodeSummary";
 import AdminManagement from "./pages/AdminManagement";
+import ComplianceAudit from "./pages/ComplianceAudit";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -40,6 +41,7 @@ const App = () => (
                     <Route path="/pcp-summary" element={<PCPSummary />} />
                     <Route path="/episode-summary" element={<EpisodeSummary />} />
                     <Route path="/admin" element={<AdminManagement />} />
+                    <Route path="/compliance" element={<ComplianceAudit />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
