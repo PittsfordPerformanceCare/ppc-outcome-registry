@@ -17,12 +17,10 @@ import {
   CheckCircle2,
   Clock,
   FileText,
-  AlertCircle,
-  FileDown
+  AlertCircle
 } from "lucide-react";
 import { format } from "date-fns";
 import { getMCIDThreshold } from "@/lib/mcidUtils";
-import { usePdfExport } from "@/hooks/usePdfExport";
 
 interface ProcessedEpisode {
   episodeId: string;
@@ -62,7 +60,6 @@ export default function EpisodeSummary() {
   const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
-  const { exportToPdf, isExporting } = usePdfExport();
 
   useEffect(() => {
     const loadEpisodeData = async () => {
@@ -199,7 +196,6 @@ export default function EpisodeSummary() {
 
   return (
     <div className="container mx-auto max-w-5xl space-y-6 py-8">
-      <div id="episode-summary-content">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
@@ -629,15 +625,6 @@ export default function EpisodeSummary() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
-            <Button 
-              variant="outline" 
-              onClick={handleExportPdf} 
-              disabled={isExporting}
-              className="gap-2"
-            >
-              <FileDown className="h-4 w-4" />
-              {isExporting ? "Exporting..." : "Export PDF"}
-            </Button>
             {!hasFollowup && !isCompleted && (
               <Link to={`/follow-up?episodeId=${episode.episodeId}`}>
                 <Button>Schedule Follow-up</Button>
@@ -657,7 +644,6 @@ export default function EpisodeSummary() {
           </div>
         </CardContent>
       </Card>
-      </div>
     </div>
   );
 }
