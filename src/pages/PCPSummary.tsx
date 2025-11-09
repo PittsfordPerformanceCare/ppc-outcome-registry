@@ -6,9 +6,10 @@ import { calculateMCID } from "@/lib/mcidUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Printer, AlertCircle, ArrowRight } from "lucide-react";
+import { FileText, Download, Printer, AlertCircle, ArrowRight, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
+import { usePdfExport } from "@/hooks/usePdfExport";
 
 interface OutcomeScore {
   index_type: string;
@@ -74,6 +75,7 @@ export default function PCPSummary() {
   const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { exportToPdf, isExporting } = usePdfExport();
 
   useEffect(() => {
     if (episodeId) {
@@ -178,7 +180,7 @@ export default function PCPSummary() {
     toast.success("Opening print dialog...");
   };
 
-  const handleExport = () => {
+  const handleExportJson = () => {
     if (!episode) return;
 
     const summary = {
@@ -219,6 +221,15 @@ export default function PCPSummary() {
     URL.revokeObjectURL(url);
 
     toast.success("Summary exported successfully!");
+  };
+
+  const handleExportPdf = async () => {
+    if (!episode) return;
+    await exportToPdf(
+      "pcp-summary-content",
+      `PCP_Summary_${episode.patientName}_${episode.episodeId}.pdf`,
+      { orientation: "portrait" }
+    );
   };
 
   if (loading) {
@@ -292,9 +303,18 @@ export default function PCPSummary() {
           <p className="mt-2 text-muted-foreground print:hidden">Primary Care Provider Outcome Summary</p>
         </div>
         <div className="flex gap-2 print:hidden">
-          <Button variant="outline" onClick={handleExport} className="gap-2">
+          <Button 
+            variant="outline" 
+            onClick={handleExportPdf} 
+            disabled={isExporting}
+            className="gap-2"
+          >
+            <FileDown className="h-4 w-4" />
+            {isExporting ? "Exporting..." : "Export PDF"}
+          </Button>
+          <Button variant="outline" onClick={handleExportJson} className="gap-2">
             <Download className="h-4 w-4" />
-            Export
+            Export JSON
           </Button>
           <Button onClick={handlePrint} className="gap-2">
             <Printer className="h-4 w-4" />
@@ -302,6 +322,8 @@ export default function PCPSummary() {
           </Button>
         </div>
       </div>
+
+      <div id="pcp-summary-content">
 
       {/* Summary Card */}
       <Card className="print:shadow-none">
@@ -1084,6 +1106,7 @@ export default function PCPSummary() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
