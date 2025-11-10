@@ -12,6 +12,7 @@ import { Loader2, Save, AlertCircle, Send, Mail, MessageSquare, Bell, Clock } fr
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { ReminderStatusPanel } from "@/components/ReminderStatusPanel";
 
 export default function ClinicSettings() {
   const navigate = useNavigate();
