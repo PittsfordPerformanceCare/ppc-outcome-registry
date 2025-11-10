@@ -10,9 +10,10 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy } from "lucide-react";
+import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square } from "lucide-react";
 import { format } from "date-fns";
 import { ExportTemplateManager } from "./ExportTemplateManager";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ScheduledExport {
   id: string;
@@ -35,6 +36,7 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingExport, setEditingExport] = useState<ScheduledExport | null>(null);
+  const [selectedExports, setSelectedExports] = useState<string[]>([]);
   const { toast } = useToast();
 
   // Form state
@@ -273,6 +275,106 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
     setUseCurrentFilters(true);
   };
 
+  // Bulk selection handlers
+  const toggleSelectExport = (id: string) => {
+    setSelectedExports(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedExports.length === exports.length) {
+      setSelectedExports([]);
+    } else {
+      setSelectedExports(exports.map(exp => exp.id));
+    }
+  };
+
+  const handleBulkEnable = async () => {
+    if (selectedExports.length === 0) return;
+    
+    try {
+      const { error } = await supabase
+        .from("scheduled_exports" as any)
+        .update({ enabled: true })
+        .in("id", selectedExports);
+
+      if (error) throw error;
+
+      toast({
+        title: "Exports enabled",
+        description: `${selectedExports.length} export(s) have been enabled`,
+      });
+      
+      setSelectedExports([]);
+      loadScheduledExports();
+    } catch (error: any) {
+      toast({
+        title: "Error enabling exports",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBulkDisable = async () => {
+    if (selectedExports.length === 0) return;
+    
+    try {
+      const { error } = await supabase
+        .from("scheduled_exports" as any)
+        .update({ enabled: false })
+        .in("id", selectedExports);
+
+      if (error) throw error;
+
+      toast({
+        title: "Exports disabled",
+        description: `${selectedExports.length} export(s) have been disabled`,
+      });
+      
+      setSelectedExports([]);
+      loadScheduledExports();
+    } catch (error: any) {
+      toast({
+        title: "Error disabling exports",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedExports.length === 0) return;
+    
+    if (!confirm(`Are you sure you want to delete ${selectedExports.length} scheduled export(s)?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from("scheduled_exports" as any)
+        .delete()
+        .in("id", selectedExports);
+
+      if (error) throw error;
+
+      toast({
+        title: "Exports deleted",
+        description: `${selectedExports.length} export(s) have been removed`,
+      });
+      
+      setSelectedExports([]);
+      loadScheduledExports();
+    } catch (error: any) {
+      toast({
+        title: "Error deleting exports",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const getFrequencyBadgeVariant = (freq: string) => {
     switch (freq) {
       case "daily": return "default";
@@ -410,12 +512,75 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                 No scheduled exports yet. Create one to get started!
               </p>
             ) : (
-              <div className="space-y-3">
+              <>
+                {/* Bulk Actions Bar */}
+                {selectedExports.length > 0 && (
+                  <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50 mb-3">
+                    <p className="text-sm font-medium">
+                      {selectedExports.length} export{selectedExports.length !== 1 ? 's' : ''} selected
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleBulkEnable}
+                        className="gap-2"
+                      >
+                        <CheckSquare className="h-3 w-3" />
+                        Enable
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleBulkDisable}
+                        className="gap-2"
+                      >
+                        <Square className="h-3 w-3" />
+                        Disable
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleBulkDelete}
+                        className="gap-2"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        Delete
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedExports([])}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Select All */}
+                <div className="flex items-center gap-2 p-2 border-b">
+                  <Checkbox
+                    checked={selectedExports.length === exports.length && exports.length > 0}
+                    onCheckedChange={toggleSelectAll}
+                    id="select-all"
+                  />
+                  <Label htmlFor="select-all" className="text-sm cursor-pointer">
+                    Select all ({exports.length})
+                  </Label>
+                </div>
+
+                <div className="space-y-3">
                 {exports.map((exp) => (
                   <div
                     key={exp.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                    className="flex items-center gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                   >
+                    <Checkbox
+                      checked={selectedExports.includes(exp.id)}
+                      onCheckedChange={() => toggleSelectExport(exp.id)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium">{exp.name}</h4>
@@ -478,6 +643,7 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                   </div>
                 ))}
               </div>
+              </>
             )}
           </TabsContent>
 
