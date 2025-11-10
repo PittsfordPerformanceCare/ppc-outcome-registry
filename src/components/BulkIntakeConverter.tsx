@@ -186,6 +186,22 @@ export function BulkIntakeConverter({
 
           if (updateError) throw updateError;
 
+          // Send notification to patient
+          try {
+            await supabase.functions.invoke('send-intake-notification', {
+              body: {
+                episodeId: createdEpisode.id,
+                patientName: intake.patient_name,
+                patientEmail: intake.email,
+                patientPhone: intake.phone,
+                clinicianName: profile?.clinician_name || profile?.full_name || "Your Clinician",
+              }
+            });
+          } catch (notifError) {
+            console.error('Failed to send notification:', notifError);
+            // Don't fail the conversion if notification fails
+          }
+
           successCount++;
         } catch (error: any) {
           failedCount++;

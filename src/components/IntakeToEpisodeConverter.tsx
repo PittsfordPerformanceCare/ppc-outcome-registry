@@ -241,6 +241,23 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
 
       if (updateError) throw updateError;
 
+      // Send notification to patient
+      try {
+        await supabase.functions.invoke('send-intake-notification', {
+          body: {
+            episodeId,
+            patientName: intakeForm.patient_name,
+            patientEmail: intakeForm.email,
+            patientPhone: intakeForm.phone,
+            clinicianName: profile?.clinician_name || profile?.full_name || "Your Clinician",
+          }
+        });
+        console.log('Notification sent to patient');
+      } catch (notifError) {
+        console.error('Failed to send notification:', notifError);
+        // Don't fail the whole conversion if notification fails
+      }
+
       toast.success(
         <div className="flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4" />
