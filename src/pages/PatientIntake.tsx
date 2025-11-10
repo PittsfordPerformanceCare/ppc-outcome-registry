@@ -28,9 +28,16 @@ const COMPLAINT_CATEGORIES = [
   "Other"
 ] as const;
 
+const SEVERITY_LEVELS = [
+  "Mild",
+  "Moderate",
+  "Severe"
+] as const;
+
 const complaintSchema = z.object({
   text: z.string().min(5, "Please describe this concern (at least 5 characters)").max(1000, "Description is too long"),
   category: z.string().min(1, "Please select a body region/category"),
+  severity: z.string().min(1, "Please select a severity level"),
   isPrimary: z.boolean(),
 });
 
@@ -102,7 +109,7 @@ export default function PatientIntake() {
       currentMedications: "",
       allergies: "",
       medicalHistory: "",
-      complaints: [{ text: "", category: "", isPrimary: true }],
+      complaints: [{ text: "", category: "", severity: "", isPrimary: true }],
       injuryDate: "",
       injuryMechanism: "",
       painLevel: 5,
@@ -631,30 +638,57 @@ export default function PatientIntake() {
                         )}
                       </div>
 
-                      <FormField
-                        control={form.control}
-                        name={`complaints.${index}.category`}
-                        render={({ field: categoryField }) => (
-                          <FormItem>
-                            <FormLabel>Body Region/Category *</FormLabel>
-                            <Select onValueChange={categoryField.onChange} value={categoryField.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select the body region for this concern" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {COMPLAINT_CATEGORIES.map((category) => (
-                                  <SelectItem key={category} value={category}>
-                                    {category}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <FormField
+                          control={form.control}
+                          name={`complaints.${index}.category`}
+                          render={({ field: categoryField }) => (
+                            <FormItem>
+                              <FormLabel>Body Region/Category *</FormLabel>
+                              <Select onValueChange={categoryField.onChange} value={categoryField.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select body region" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {COMPLAINT_CATEGORIES.map((category) => (
+                                    <SelectItem key={category} value={category}>
+                                      {category}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name={`complaints.${index}.severity`}
+                          render={({ field: severityField }) => (
+                            <FormItem>
+                              <FormLabel>Severity *</FormLabel>
+                              <Select onValueChange={severityField.onChange} value={severityField.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select severity" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {SEVERITY_LEVELS.map((severity) => (
+                                    <SelectItem key={severity} value={severity}>
+                                      {severity}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
 
                       <FormField
                         control={form.control}
@@ -680,7 +714,7 @@ export default function PatientIntake() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => append({ text: "", category: "", isPrimary: false })}
+                    onClick={() => append({ text: "", category: "", severity: "", isPrimary: false })}
                     className="w-full"
                   >
                     <Plus className="h-4 w-4 mr-2" />
