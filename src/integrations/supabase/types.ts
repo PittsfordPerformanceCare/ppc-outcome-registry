@@ -537,14 +537,57 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_link_clicks: {
+        Row: {
+          clicked_at: string
+          created_at: string
+          id: string
+          ip_address: unknown
+          link_label: string | null
+          link_url: string
+          notification_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          link_label?: string | null
+          link_url: string
+          notification_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          link_label?: string | null
+          link_url?: string
+          notification_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_link_clicks_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications_history"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications_history: {
         Row: {
+          click_count: number | null
           clinic_id: string | null
           clinician_name: string
           created_at: string
           delivery_details: Json | null
           episode_id: string
           error_message: string | null
+          first_clicked_at: string | null
           id: string
           notification_type: string
           open_count: number | null
@@ -558,12 +601,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          click_count?: number | null
           clinic_id?: string | null
           clinician_name: string
           created_at?: string
           delivery_details?: Json | null
           episode_id: string
           error_message?: string | null
+          first_clicked_at?: string | null
           id?: string
           notification_type: string
           open_count?: number | null
@@ -577,12 +622,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          click_count?: number | null
           clinic_id?: string | null
           clinician_name?: string
           created_at?: string
           delivery_details?: Json | null
           episode_id?: string
           error_message?: string | null
+          first_clicked_at?: string | null
           id?: string
           notification_type?: string
           open_count?: number | null

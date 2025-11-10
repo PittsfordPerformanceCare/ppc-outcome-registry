@@ -79,11 +79,32 @@ const handler = async (req: Request): Promise<Response> => {
         .replace(/\{\{appointment_time\}\}/g, appointmentTime || '');
     };
 
+    // Helper function to wrap links with tracking
+    const wrapLinksWithTracking = (html: string, notificationId: string) => {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      // Match all anchor tags with href attributes
+      return html.replace(
+        /<a\s+([^>]*?)href=["']([^"']+)["']([^>]*?)>(.*?)<\/a>/gi,
+        (match, before, url, after, text) => {
+          // Skip tracking pixel and mailto links
+          if (url.includes('track-email-open') || url.startsWith('mailto:') || url.startsWith('tel:')) {
+            return match;
+          }
+          const encodedUrl = encodeURIComponent(url);
+          const encodedLabel = encodeURIComponent(text.replace(/<[^>]*>/g, '').trim());
+          const trackingUrl = `${supabaseUrl}/functions/v1/track-link-click?nid=${notificationId}&url=${encodedUrl}&label=${encodedLabel}`;
+          return `<a ${before}href="${trackingUrl}"${after}>${text}</a>`;
+        }
+      );
+    };
+
     // Send Email Notification
     if (patientEmail) {
       const resendApiKey = Deno.env.get('RESEND_API_KEY');
       
       if (resendApiKey) {
+        let notificationId: string | null = null;
+        
         try {
           // Generate tracking ID for email open tracking
           const trackingId = crypto.randomUUID();
@@ -111,10 +132,35 @@ const handler = async (req: Request): Promise<Response> => {
                     <p><strong>Episode ID:</strong> {{episode_id}}</p>
                   </div>
                   <p>Your clinician will be working with you to develop a personalized treatment plan to help you achieve your recovery goals.</p>
-                  <p>If you have any questions, please call us at {{clinic_phone}}.</p>
+                  <p>If you have any questions, please call us at <a href="tel:{{clinic_phone}}">{{clinic_phone}}</a>.</p>
                   <p style="margin-top: 30px;">Best regards,<br/>{{clinic_name}} Team</p>
                 </div>
               `);
+          
+          // Pre-insert notification record to get ID for link tracking (skip for test notifications)
+          let notificationId = null;
+          if (!isTest) {
+            const { data: insertedNotification } = await supabase.from('notifications_history').insert({
+              episode_id: episodeId,
+              patient_name: patientName,
+              patient_email: patientEmail,
+              clinician_name: clinicianName,
+              notification_type: 'email',
+              status: 'pending',
+              tracking_id: trackingId,
+              user_id: userId,
+              clinic_id: clinicId
+            }).select().single();
+            
+            if (insertedNotification) {
+              notificationId = insertedNotification.id;
+            }
+          }
+          
+          // Wrap links with tracking if we have a notification ID
+          if (notificationId) {
+            emailHtml = wrapLinksWithTracking(emailHtml, notificationId);
+          }
           
           // Add tracking pixel to email HTML
           const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -140,58 +186,42 @@ const handler = async (req: Request): Promise<Response> => {
             results.email.message = 'Email sent successfully';
             console.log('Email sent to:', patientEmail);
             
-            // Log to history (skip for test notifications)
-            if (!isTest) {
-              await supabase.from('notifications_history').insert({
-              episode_id: episodeId,
-              patient_name: patientName,
-              patient_email: patientEmail,
-              clinician_name: clinicianName,
-              notification_type: 'email',
-              status: 'sent',
-              delivery_details: { message_id: responseData.id },
-              tracking_id: trackingId,
-              user_id: userId,
-              clinic_id: clinicId
-              });
+            // Update notification status to sent
+            if (notificationId) {
+              await supabase.from('notifications_history')
+                .update({
+                  status: 'sent',
+                  delivery_details: { message_id: responseData.id }
+                })
+                .eq('id', notificationId);
             }
           } else {
             const errorData = await emailResponse.text();
             results.email.message = `Email failed: ${errorData}`;
             console.error('Email send failed:', errorData);
             
-            // Log failure to history (skip for test notifications)
-            if (!isTest) {
-              await supabase.from('notifications_history').insert({
-              episode_id: episodeId,
-              patient_name: patientName,
-              patient_email: patientEmail,
-              clinician_name: clinicianName,
-              notification_type: 'email',
-              status: 'failed',
-              error_message: errorData,
-              user_id: userId,
-              clinic_id: clinicId
-              });
+            // Update notification status to failed
+            if (notificationId) {
+              await supabase.from('notifications_history')
+                .update({
+                  status: 'failed',
+                  error_message: errorData
+                })
+                .eq('id', notificationId);
             }
           }
         } catch (error: any) {
           results.email.message = `Email error: ${error.message}`;
           console.error('Email error:', error);
           
-          // Log error to history (skip for test notifications)
-          if (!isTest) {
-            await supabase.from('notifications_history').insert({
-            episode_id: episodeId,
-            patient_name: patientName,
-            patient_email: patientEmail,
-            clinician_name: clinicianName,
-            notification_type: 'email',
-            status: 'failed',
-            error_message: error.message,
-            user_id: userId,
-            clinic_id: clinicId
-            });
+          // Update notification status to failed
+          if (notificationId) {
+            await supabase.from('notifications_history')
+              .update({
+                status: 'failed',
+                error_message: error.message
+              })
+              .eq('id', notificationId);
           }
         }
       } else {

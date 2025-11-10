@@ -22,6 +22,8 @@ interface NotificationHistoryRecord {
   sent_at: string;
   opened_at: string | null;
   open_count: number | null;
+  click_count: number | null;
+  first_clicked_at: string | null;
   error_message: string | null;
   delivery_details: any;
 }
@@ -185,13 +187,57 @@ export default function NotificationHistory() {
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-2xl font-bold text-red-600">
-              {filteredNotifications.filter(n => n.status === 'failed').length}
+            <div className="text-2xl font-bold text-purple-600">
+              {filteredNotifications.filter(n => n.notification_type === 'email' && n.click_count && n.click_count > 0).length}
             </div>
-            <p className="text-xs text-muted-foreground">Failed Deliveries</p>
+            <p className="text-xs text-muted-foreground">Emails with Clicks</p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Email Engagement Summary */}
+      <Card className="bg-gradient-to-br from-blue-50 to-purple-50">
+        <CardHeader>
+          <CardTitle>Email Engagement Summary</CardTitle>
+          <CardDescription>Click-through and open rate metrics</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {(() => {
+              const emailsSent = filteredNotifications.filter(n => n.notification_type === 'email' && n.status === 'sent').length;
+              const emailsOpened = filteredNotifications.filter(n => n.notification_type === 'email' && n.opened_at).length;
+              const emailsClicked = filteredNotifications.filter(n => n.notification_type === 'email' && n.click_count && n.click_count > 0).length;
+              const totalClicks = filteredNotifications
+                .filter(n => n.notification_type === 'email')
+                .reduce((sum, n) => sum + (n.click_count || 0), 0);
+              
+              const openRate = emailsSent > 0 ? ((emailsOpened / emailsSent) * 100).toFixed(1) : '0.0';
+              const clickRate = emailsSent > 0 ? ((emailsClicked / emailsSent) * 100).toFixed(1) : '0.0';
+              const clickToOpenRate = emailsOpened > 0 ? ((emailsClicked / emailsOpened) * 100).toFixed(1) : '0.0';
+              
+              return (
+                <>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-blue-600">{openRate}%</div>
+                    <p className="text-sm text-muted-foreground mt-1">Open Rate</p>
+                    <p className="text-xs text-muted-foreground">{emailsOpened} of {emailsSent} opened</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-600">{clickRate}%</div>
+                    <p className="text-sm text-muted-foreground mt-1">Click-Through Rate</p>
+                    <p className="text-xs text-muted-foreground">{emailsClicked} of {emailsSent} clicked</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-indigo-600">{clickToOpenRate}%</div>
+                    <p className="text-sm text-muted-foreground mt-1">Click-to-Open Rate</p>
+                    <p className="text-xs text-muted-foreground">{totalClicks} total clicks</p>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Notification Table */}
       <Card>
@@ -260,28 +306,44 @@ export default function NotificationHistory() {
                       </TableCell>
                       <TableCell>
                         {notification.notification_type === 'email' ? (
-                          notification.opened_at ? (
-                            <div className="space-y-1">
-                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                <Eye className="h-3 w-3 mr-1" />
-                                Opened
-                              </Badge>
-                              <div className="text-xs text-muted-foreground">
-                                {format(new Date(notification.opened_at), "MMM dd, h:mm a")}
-                              </div>
-                              {notification.open_count && notification.open_count > 1 && (
-                                <div className="text-xs text-blue-600 font-medium">
-                                  Opened {notification.open_count}x
+                          <div className="space-y-2">
+                            {notification.opened_at ? (
+                              <div className="space-y-1">
+                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  Opened
+                                </Badge>
+                                <div className="text-xs text-muted-foreground">
+                                  {format(new Date(notification.opened_at), "MMM dd, h:mm a")}
                                 </div>
-                              )}
-                            </div>
-                          ) : notification.status === 'sent' ? (
-                            <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
-                              Not Opened
-                            </Badge>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">N/A</span>
-                          )
+                                {notification.open_count && notification.open_count > 1 && (
+                                  <div className="text-xs text-blue-600 font-medium">
+                                    Opened {notification.open_count}x
+                                  </div>
+                                )}
+                              </div>
+                            ) : notification.status === 'sent' ? (
+                              <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+                                Not Opened
+                              </Badge>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">N/A</span>
+                            )}
+                            
+                            {notification.click_count && notification.click_count > 0 && (
+                              <div className="space-y-1">
+                                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                  {notification.click_count} Click{notification.click_count > 1 ? 's' : ''}
+                                </Badge>
+                                {notification.first_clicked_at && (
+                                  <div className="text-xs text-muted-foreground">
+                                    First: {format(new Date(notification.first_clicked_at), "MMM dd, h:mm a")}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         ) : (
                           <span className="text-xs text-muted-foreground">SMS</span>
                         )}

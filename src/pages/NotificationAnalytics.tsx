@@ -14,6 +14,8 @@ interface NotificationRecord {
   sent_at: string;
   opened_at: string | null;
   open_count: number | null;
+  click_count: number | null;
+  first_clicked_at: string | null;
 }
 
 interface DailyStats {
@@ -46,7 +48,7 @@ export default function NotificationAnalytics() {
 
       const { data, error } = await supabase
         .from("notifications_history")
-        .select("id, notification_type, status, sent_at, opened_at, open_count")
+        .select("id, notification_type, status, sent_at, opened_at, open_count, click_count, first_clicked_at")
         .gte("sent_at", startDate.toISOString())
         .order("sent_at", { ascending: true });
 
@@ -102,6 +104,15 @@ export default function NotificationAnalytics() {
     // Calculate email open rate
     const emailsOpened = notifications.filter((n) => n.notification_type === "email" && n.opened_at).length;
     const emailOpenRate = emailsSent > 0 ? ((emailsOpened / emailsSent) * 100).toFixed(1) : "0.0";
+    
+    // Calculate email click rate
+    const emailsClicked = notifications.filter((n) => n.notification_type === "email" && n.click_count && n.click_count > 0).length;
+    const emailClickRate = emailsSent > 0 ? ((emailsClicked / emailsSent) * 100).toFixed(1) : "0.0";
+    const clickToOpenRate = emailsOpened > 0 ? ((emailsClicked / emailsOpened) * 100).toFixed(1) : "0.0";
+    
+    const totalClicks = notifications
+      .filter((n) => n.notification_type === "email")
+      .reduce((sum, n) => sum + (n.click_count || 0), 0);
 
     const deliveryRate = total > 0 ? ((sent / total) * 100).toFixed(1) : "0.0";
     const emailDeliveryRate = emails > 0 ? ((emailsSent / emails) * 100).toFixed(1) : "0.0";
@@ -116,10 +127,14 @@ export default function NotificationAnalytics() {
       emailsSent,
       smsSent,
       emailsOpened,
+      emailsClicked,
+      totalClicks,
       deliveryRate,
       emailDeliveryRate,
       smsDeliveryRate,
       emailOpenRate,
+      emailClickRate,
+      clickToOpenRate,
     };
   };
 
@@ -223,7 +238,7 @@ export default function NotificationAnalytics() {
       </div>
 
       {/* Email Engagement Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card className="border-blue-200 bg-blue-50/50">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Email Open Rate</CardTitle>
@@ -236,6 +251,38 @@ export default function NotificationAnalytics() {
             </p>
             <p className="text-xs text-blue-600 mt-2 font-medium">
               Tracked via pixel analytics
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-purple-200 bg-purple-50/50">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Click-Through Rate</CardTitle>
+            <Activity className="h-4 w-4 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-600">{metrics.emailClickRate}%</div>
+            <p className="text-xs text-muted-foreground">
+              {metrics.emailsClicked} of {metrics.emailsSent} emails clicked
+            </p>
+            <p className="text-xs text-purple-600 mt-2 font-medium">
+              {metrics.totalClicks} total clicks
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-indigo-200 bg-indigo-50/50">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Click-to-Open Rate</CardTitle>
+            <TrendingUp className="h-4 w-4 text-indigo-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-indigo-600">{metrics.clickToOpenRate}%</div>
+            <p className="text-xs text-muted-foreground">
+              Of opened emails, {metrics.emailsClicked} were clicked
+            </p>
+            <p className="text-xs text-indigo-600 mt-2 font-medium">
+              Engagement quality metric
             </p>
           </CardContent>
         </Card>
