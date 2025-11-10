@@ -846,6 +846,88 @@ export type Database = {
           },
         ]
       }
+      rate_limit_config: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          enabled: boolean
+          id: string
+          limit_type: string
+          max_requests: number
+          service_type: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          limit_type: string
+          max_requests: number
+          service_type: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          limit_type?: string
+          max_requests?: number
+          service_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_limit_config_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rate_limit_tracking: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          episode_id: string | null
+          id: string
+          request_timestamp: string
+          service_type: string
+          success: boolean
+          user_id: string | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          request_timestamp?: string
+          service_type: string
+          success?: boolean
+          user_id?: string | null
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          request_timestamp?: string
+          service_type?: string
+          success?: boolean
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rate_limit_tracking_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -876,6 +958,16 @@ export type Database = {
         Args: { base_delay_minutes?: number; current_retry_count: number }
         Returns: string
       }
+      check_rate_limit: {
+        Args: { p_clinic_id?: string; p_service_type: string }
+        Returns: {
+          allowed: boolean
+          current_count: number
+          limit_type: string
+          max_allowed: number
+          reset_at: string
+        }[]
+      }
       get_user_clinic_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -885,6 +977,16 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      record_rate_limit_usage: {
+        Args: {
+          p_clinic_id?: string
+          p_episode_id?: string
+          p_service_type: string
+          p_success: boolean
+          p_user_id?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "clinician"

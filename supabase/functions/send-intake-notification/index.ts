@@ -106,6 +106,69 @@ const handler = async (req: Request): Promise<Response> => {
         let notificationId: string | null = null;
         
         try {
+          // Check rate limit for email (skip for test notifications)
+          if (!isTest) {
+            const { data: rateLimitCheck, error: rateLimitError } = await supabase
+              .rpc('check_rate_limit', {
+                p_service_type: 'email',
+                p_clinic_id: clinicId || null
+              });
+
+            if (rateLimitError) {
+              console.error('Rate limit check error:', rateLimitError);
+            } else if (rateLimitCheck && rateLimitCheck.length > 0) {
+              const result = rateLimitCheck[0];
+              if (!result.allowed) {
+                const resetTime = new Date(result.reset_at).toLocaleString();
+                results.email.message = `Rate limit exceeded: ${result.current_count}/${result.max_allowed} ${result.limit_type}. Resets at ${resetTime}`;
+                console.log('Email rate limit exceeded:', results.email.message);
+                
+                // Log rate limit exceeded in notifications history
+                await supabase.from('notifications_history').insert({
+                  episode_id: episodeId,
+                  patient_name: patientName,
+                  patient_email: patientEmail,
+                  clinician_name: clinicianName,
+                  notification_type: 'email',
+                  status: 'failed',
+                  error_message: results.email.message,
+                  user_id: userId,
+                  clinic_id: clinicId
+                });
+                
+                // Continue to SMS check if available
+                if (!patientPhone) {
+                  return new Response(
+                    JSON.stringify({
+                      success: false,
+                      results,
+                      error: 'Rate limit exceeded'
+                    }),
+                    {
+                      status: 429,
+                      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+                    }
+                  );
+                }
+                // Skip email and continue to SMS
+                if (patientPhone) {
+                  // Jump to SMS section below
+                } else {
+                  return new Response(
+                    JSON.stringify({
+                      success: false,
+                      results,
+                      error: 'Rate limit exceeded'
+                    }),
+                    {
+                      status: 429,
+                      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+                    }
+                  );
+                }
+              }
+            }
+          }
           // Generate tracking ID for email open tracking
           const trackingId = crypto.randomUUID();
           
@@ -186,6 +249,17 @@ const handler = async (req: Request): Promise<Response> => {
             results.email.message = 'Email sent successfully';
             console.log('Email sent to:', patientEmail);
             
+            // Record rate limit usage for successful email (skip for test notifications)
+            if (!isTest) {
+              await supabase.rpc('record_rate_limit_usage', {
+                p_service_type: 'email',
+                p_success: true,
+                p_clinic_id: clinicId || null,
+                p_user_id: userId,
+                p_episode_id: episodeId
+              });
+            }
+            
             // Update notification status to sent
             if (notificationId) {
               await supabase.from('notifications_history')
@@ -199,6 +273,17 @@ const handler = async (req: Request): Promise<Response> => {
             const errorData = await emailResponse.text();
             results.email.message = `Email failed: ${errorData}`;
             console.error('Email send failed:', errorData);
+            
+            // Record rate limit usage for failed email (skip for test notifications)
+            if (!isTest) {
+              await supabase.rpc('record_rate_limit_usage', {
+                p_service_type: 'email',
+                p_success: false,
+                p_clinic_id: clinicId || null,
+                p_user_id: userId,
+                p_episode_id: episodeId
+              });
+            }
             
             // Update notification status to failed
             if (notificationId) {
@@ -238,6 +323,50 @@ const handler = async (req: Request): Promise<Response> => {
 
       if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
         try {
+          // Check rate limit for SMS (skip for test notifications)
+          if (!isTest) {
+            const { data: rateLimitCheck, error: rateLimitError } = await supabase
+              .rpc('check_rate_limit', {
+                p_service_type: 'sms',
+                p_clinic_id: clinicId || null
+              });
+
+            if (rateLimitError) {
+              console.error('SMS rate limit check error:', rateLimitError);
+            } else if (rateLimitCheck && rateLimitCheck.length > 0) {
+              const result = rateLimitCheck[0];
+              if (!result.allowed) {
+                const resetTime = new Date(result.reset_at).toLocaleString();
+                results.sms.message = `Rate limit exceeded: ${result.current_count}/${result.max_allowed} ${result.limit_type}. Resets at ${resetTime}`;
+                console.log('SMS rate limit exceeded:', results.sms.message);
+                
+                // Log rate limit exceeded in notifications history
+                await supabase.from('notifications_history').insert({
+                  episode_id: episodeId,
+                  patient_name: patientName,
+                  patient_phone: patientPhone,
+                  clinician_name: clinicianName,
+                  notification_type: 'sms',
+                  status: 'failed',
+                  error_message: results.sms.message,
+                  user_id: userId,
+                  clinic_id: clinicId
+                });
+                
+                return new Response(
+                  JSON.stringify({
+                    success: !results.email.sent ? false : true,
+                    results,
+                    error: 'SMS rate limit exceeded'
+                  }),
+                  {
+                    status: results.email.sent ? 200 : 429,
+                    headers: { 'Content-Type': 'application/json', ...corsHeaders },
+                  }
+                );
+              }
+            }
+          }
           // Get custom SMS template or use default
           let smsMessage = clinicSettings?.sms_template
             ? replacePlaceholders(clinicSettings.sms_template)
@@ -271,18 +400,27 @@ const handler = async (req: Request): Promise<Response> => {
             results.sms.message = 'SMS sent successfully';
             console.log('SMS sent to:', patientPhone);
             
-            // Log to history (skip for test notifications)
+            // Record rate limit usage for successful SMS (skip for test notifications)
             if (!isTest) {
+              await supabase.rpc('record_rate_limit_usage', {
+                p_service_type: 'sms',
+                p_success: true,
+                p_clinic_id: clinicId || null,
+                p_user_id: userId,
+                p_episode_id: episodeId
+              });
+              
+              // Log to history
               await supabase.from('notifications_history').insert({
-              episode_id: episodeId,
-              patient_name: patientName,
-              patient_phone: patientPhone,
-              clinician_name: clinicianName,
-              notification_type: 'sms',
-              status: 'sent',
-              delivery_details: { sid: responseData.sid },
-              user_id: userId,
-              clinic_id: clinicId
+                episode_id: episodeId,
+                patient_name: patientName,
+                patient_phone: patientPhone,
+                clinician_name: clinicianName,
+                notification_type: 'sms',
+                status: 'sent',
+                delivery_details: { sid: responseData.sid },
+                user_id: userId,
+                clinic_id: clinicId
               });
             }
           } else {
@@ -290,18 +428,27 @@ const handler = async (req: Request): Promise<Response> => {
             results.sms.message = `SMS failed: ${errorData}`;
             console.error('SMS send failed:', errorData);
             
-            // Log failure to history (skip for test notifications)
+            // Record rate limit usage for failed SMS (skip for test notifications)
             if (!isTest) {
+              await supabase.rpc('record_rate_limit_usage', {
+                p_service_type: 'sms',
+                p_success: false,
+                p_clinic_id: clinicId || null,
+                p_user_id: userId,
+                p_episode_id: episodeId
+              });
+              
+              // Log failure to history
               await supabase.from('notifications_history').insert({
-              episode_id: episodeId,
-              patient_name: patientName,
-              patient_phone: patientPhone,
-              clinician_name: clinicianName,
-              notification_type: 'sms',
-              status: 'failed',
-              error_message: errorData,
-              user_id: userId,
-              clinic_id: clinicId
+                episode_id: episodeId,
+                patient_name: patientName,
+                patient_phone: patientPhone,
+                clinician_name: clinicianName,
+                notification_type: 'sms',
+                status: 'failed',
+                error_message: errorData,
+                user_id: userId,
+                clinic_id: clinicId
               });
             }
           }
