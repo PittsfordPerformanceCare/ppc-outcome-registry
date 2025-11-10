@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2 } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -19,7 +19,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState as useReactState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import confetti from "canvas-confetti";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -244,40 +243,10 @@ export default function PatientIntake() {
       const percentage = Math.round((completedSections / totalSections) * 100);
       setCompletionPercentage(percentage);
       
-      // Trigger confetti when 100% complete (only once)
+      // Trigger celebration when 100% complete (only once)
       if (percentage === 100 && !hasTriggeredConfetti) {
         setHasTriggeredConfetti(true);
-        // Fire confetti
-        const duration = 3000;
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-        const randomInRange = (min: number, max: number) => {
-          return Math.random() * (max - min) + min;
-        };
-
-        const interval = setInterval(() => {
-          const timeLeft = animationEnd - Date.now();
-
-          if (timeLeft <= 0) {
-            return clearInterval(interval);
-          }
-
-          const particleCount = 50 * (timeLeft / duration);
-          
-          confetti({
-            ...defaults,
-            particleCount,
-            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-          });
-          confetti({
-            ...defaults,
-            particleCount,
-            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-          });
-        }, 250);
-
-        toast.success("🎉 Form 100% complete! You're all set!");
+        toast.success("🎉 Amazing! Your form is 100% complete!");
       }
       
       setSectionCompletion({
@@ -504,13 +473,29 @@ export default function PatientIntake() {
           <CardContent className="pt-6">
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="font-medium">Form Completion</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">Form Completion</span>
+                  {completionPercentage === 100 && (
+                    <PartyPopper className="h-4 w-4 text-success animate-scale-in" />
+                  )}
+                </div>
                 <span className="text-muted-foreground">{completionPercentage}%</span>
               </div>
-              <Progress value={completionPercentage} className="h-2" />
-              <p className="text-xs text-muted-foreground">
-                Complete all sections for the best care experience
-              </p>
+              <Progress 
+                value={completionPercentage} 
+                className={`h-2 transition-all duration-500 ${
+                  completionPercentage === 100 ? 'animate-pulse' : ''
+                }`}
+              />
+              {completionPercentage === 100 ? (
+                <p className="text-xs text-success font-medium animate-fade-in">
+                  ✨ Perfect! Your form is complete and ready to submit
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Complete all sections for the best care experience
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
