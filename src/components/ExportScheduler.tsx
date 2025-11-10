@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play } from "lucide-react";
+import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy } from "lucide-react";
 import { format } from "date-fns";
 import { ExportTemplateManager } from "./ExportTemplateManager";
 
@@ -238,6 +238,20 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
     setDialogOpen(true);
   };
 
+  const handleDuplicateExport = (exp: ScheduledExport) => {
+    setEditingExport(null); // Not editing, creating new
+    setName(`Copy of ${exp.name}`);
+    setExportType(exp.export_type as "csv" | "pdf");
+    setFrequency(exp.frequency as "daily" | "weekly" | "monthly");
+    setRecipientEmails(exp.recipient_emails.join(", "));
+    setUseCurrentFilters(Object.keys(exp.filters).length > 0);
+    setDialogOpen(true);
+    toast({
+      title: "Duplicating export",
+      description: "Modify the settings and save to create a copy",
+    });
+  };
+
   const handleApplyTemplate = (template: any) => {
     setName(template.name);
     setExportType(template.export_type);
@@ -439,7 +453,16 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                       <Button
                         variant="ghost"
                         size="icon"
+                        onClick={() => handleDuplicateExport(exp)}
+                        title="Duplicate export"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         onClick={() => handleEditExport(exp)}
+                        title="Edit export"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -447,6 +470,7 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteExport(exp.id)}
+                        title="Delete export"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
