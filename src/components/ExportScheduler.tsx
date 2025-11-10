@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Mail, Trash2, Plus, Edit } from "lucide-react";
+import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play } from "lucide-react";
 import { format } from "date-fns";
 
 interface ScheduledExport {
@@ -196,6 +196,36 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
     }
   };
 
+  const handleRunNow = async (exportId: string) => {
+    try {
+      toast({
+        title: "Running export...",
+        description: "Your export is being processed and will be emailed shortly",
+      });
+
+      const { data, error } = await supabase.functions.invoke('process-scheduled-exports', {
+        body: { export_id: exportId }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Export completed",
+        description: data?.results?.[0]?.status === 'success' 
+          ? "Export has been sent successfully"
+          : "Export processing completed",
+      });
+
+      loadScheduledExports();
+    } catch (error: any) {
+      toast({
+        title: "Export failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleEditExport = (exp: ScheduledExport) => {
     setEditingExport(exp);
     setName(exp.name);
@@ -372,6 +402,15 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRunNow(exp.id)}
+                    className="gap-2"
+                  >
+                    <Play className="h-3 w-3" />
+                    Run Now
+                  </Button>
                   <Switch
                     checked={exp.enabled}
                     onCheckedChange={(checked) => handleToggleEnabled(exp.id, checked)}

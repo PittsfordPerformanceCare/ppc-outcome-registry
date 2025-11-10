@@ -32,12 +32,32 @@ const handler = async (req: Request): Promise<Response> => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Find all scheduled exports that are due
-    const { data: dueExports, error: fetchError } = await supabase
+    // Check if a specific export ID was provided (manual run)
+    let requestBody: any = {};
+    try {
+      requestBody = await req.json();
+    } catch {
+      // No body provided, process all due exports
+    }
+
+    const specificExportId = requestBody.export_id;
+
+    // Find scheduled exports to process
+    let query = supabase
       .from("scheduled_exports")
       .select("*")
-      .eq("enabled", true)
-      .lte("next_run_at", new Date().toISOString());
+      .eq("enabled", true);
+
+    if (specificExportId) {
+      // Manual run: process specific export regardless of schedule
+      query = query.eq("id", specificExportId);
+      console.log(`Manual run requested for export: ${specificExportId}`);
+    } else {
+      // Automatic run: process only due exports
+      query = query.lte("next_run_at", new Date().toISOString());
+    }
+
+    const { data: dueExports, error: fetchError } = await query;
 
     if (fetchError) {
       console.error("Error fetching scheduled exports:", fetchError);
@@ -45,9 +65,12 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     if (!dueExports || dueExports.length === 0) {
-      console.log("No scheduled exports due at this time");
+      const message = specificExportId 
+        ? "Export not found or disabled"
+        : "No scheduled exports due at this time";
+      console.log(message);
       return new Response(
-        JSON.stringify({ message: "No scheduled exports due", processed: 0 }),
+        JSON.stringify({ message, processed: 0 }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -76,15 +99,20 @@ const handler = async (req: Request): Promise<Response> => {
         
         if (emailResult.success) {
           // Update the scheduled export record
-          const nextRunAt = calculateNextRunAt(exportJob.frequency);
+          // For manual runs, don't update next_run_at, only last_run_at
+          const updateData: any = {
+            last_run_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+          
+          // Only update next_run_at for automatic scheduled runs
+          if (!specificExportId) {
+            updateData.next_run_at = calculateNextRunAt(exportJob.frequency).toISOString();
+          }
           
           await supabase
             .from("scheduled_exports")
-            .update({
-              last_run_at: new Date().toISOString(),
-              next_run_at: nextRunAt.toISOString(),
-              updated_at: new Date().toISOString(),
-            })
+            .update(updateData)
             .eq("id", exportJob.id);
           
           results.push({ id: exportJob.id, name: exportJob.name, status: "success" });
