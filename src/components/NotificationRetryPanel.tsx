@@ -39,7 +39,7 @@ export function NotificationRetryPanel() {
         .from('notifications_history')
         .select('id, patient_name, notification_type, error_message, sent_at, retry_count, max_retries, last_retry_at, next_retry_at')
         .eq('status', 'failed')
-        .lt('retry_count', supabase.rpc('max_retries'))
+        .filter('retry_count', 'lt', 'max_retries')
         .order('sent_at', { ascending: false })
         .limit(20);
 

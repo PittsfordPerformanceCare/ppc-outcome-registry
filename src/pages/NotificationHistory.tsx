@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, Search, Mail, MessageSquare, CheckCircle, XCircle, Eye, Clock, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { NotificationRetryPanel } from "@/components/NotificationRetryPanel";
 
 interface NotificationHistoryRecord {
   id: string;
@@ -116,6 +117,9 @@ export default function NotificationHistory() {
           Detailed delivery logs and email engagement tracking for all notifications
         </p>
       </div>
+
+      {/* Retry Management Panel */}
+      <NotificationRetryPanel />
 
       {/* Filters */}
       <Card>
