@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
-import { ClipboardCheck, Plus, X, Printer } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -216,6 +216,18 @@ export default function PatientIntake() {
               <p className="text-xs text-muted-foreground mt-2">
                 Please save this code. Our staff will use it to process your information.
               </p>
+              <Button
+                onClick={() => {
+                  navigator.clipboard.writeText(accessCode);
+                  toast.success("Access code copied to clipboard!");
+                }}
+                variant="outline"
+                size="sm"
+                className="mt-3 print:hidden"
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Access Code
+              </Button>
             </div>
 
             <div className="space-y-4">
