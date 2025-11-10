@@ -13,9 +13,24 @@ import { toast } from "sonner";
 import { ClipboardCheck, Plus, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const COMPLAINT_CATEGORIES = [
+  "Neck/Cervical",
+  "Upper Back/Thoracic", 
+  "Lower Back/Lumbar",
+  "Shoulder",
+  "Elbow",
+  "Wrist/Hand",
+  "Hip",
+  "Knee",
+  "Ankle/Foot",
+  "Other"
+] as const;
 
 const complaintSchema = z.object({
-  text: z.string().min(5, "Please describe the complaint (at least 5 characters)").max(1000, "Description is too long"),
+  text: z.string().min(5, "Please describe this concern (at least 5 characters)").max(1000, "Description is too long"),
+  category: z.string().min(1, "Please select a body region/category"),
   isPrimary: z.boolean(),
 });
 
@@ -87,7 +102,7 @@ export default function PatientIntake() {
       currentMedications: "",
       allergies: "",
       medicalHistory: "",
-      complaints: [{ text: "", isPrimary: true }],
+      complaints: [{ text: "", category: "", isPrimary: true }],
       injuryDate: "",
       injuryMechanism: "",
       painLevel: 5,
@@ -559,18 +574,18 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
-            {/* Reason for Visit */}
+            {/* Areas of Concern */}
             <Card>
               <CardHeader>
-                <CardTitle>Reason for Visit</CardTitle>
+                <CardTitle>Areas of Concern - What Would You Like Us to Evaluate?</CardTitle>
                 <CardDescription>
-                  List all concerns that bring you in today. Select which one is your primary concern.
+                  Please describe each separate issue or condition you'd like evaluated. Use the category dropdown to specify the body region. Then select which concern you want us to prioritize and treat first.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-4">
                   {fields.map((field, index) => (
-                    <div key={field.id} className="space-y-4 p-4 border rounded-lg relative">
+                    <div key={field.id} className="space-y-4 p-4 border rounded-lg relative bg-card">
                       <div className="flex items-start justify-between gap-2">
                         <FormField
                           control={form.control}
@@ -591,7 +606,7 @@ export default function PatientIntake() {
                                     className="h-4 w-4"
                                   />
                                   <FormLabel className="font-normal cursor-pointer">
-                                    {radioField.value ? "Primary Concern" : "Set as Primary"}
+                                    {radioField.value ? "🎯 Treat this concern first" : "Set as priority"}
                                   </FormLabel>
                                 </div>
                               </FormControl>
@@ -605,7 +620,7 @@ export default function PatientIntake() {
                             size="sm"
                             onClick={() => {
                               if (form.getValues(`complaints.${index}.isPrimary`)) {
-                                toast.error("Cannot remove the primary complaint. Please set another complaint as primary first.");
+                                toast.error("Cannot remove the primary concern. Please set another concern as priority first.");
                                 return;
                               }
                               remove(index);
@@ -618,13 +633,38 @@ export default function PatientIntake() {
 
                       <FormField
                         control={form.control}
+                        name={`complaints.${index}.category`}
+                        render={({ field: categoryField }) => (
+                          <FormItem>
+                            <FormLabel>Body Region/Category *</FormLabel>
+                            <Select onValueChange={categoryField.onChange} value={categoryField.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select the body region for this concern" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {COMPLAINT_CATEGORIES.map((category) => (
+                                  <SelectItem key={category} value={category}>
+                                    {category}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
                         name={`complaints.${index}.text`}
                         render={({ field: textField }) => (
                           <FormItem>
-                            <FormLabel>Complaint {index + 1} *</FormLabel>
+                            <FormLabel>Description *</FormLabel>
                             <FormControl>
                               <Textarea 
-                                placeholder="Describe your concern or reason for seeking treatment" 
+                                placeholder="Describe this specific concern in detail..." 
                                 rows={3} 
                                 {...textField} 
                               />
@@ -640,11 +680,11 @@ export default function PatientIntake() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => append({ text: "", isPrimary: false })}
+                    onClick={() => append({ text: "", category: "", isPrimary: false })}
                     className="w-full"
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Another Complaint
+                    Add Another Concern
                   </Button>
 
                   {form.formState.errors.complaints?.root && (
