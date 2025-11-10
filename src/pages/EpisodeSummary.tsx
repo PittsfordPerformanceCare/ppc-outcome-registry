@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { getEpisode, getOutcomeScores, getFollowup } from "@/lib/dbOperations";
+import { supabase } from "@/integrations/supabase/client";
+import { calculatePatientJourney } from "@/lib/journeyMilestones";
+import { PatientJourneyTimeline } from "@/components/PatientJourneyTimeline";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,6 +65,7 @@ export default function EpisodeSummary() {
   const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [journey, setJourney] = useState<ReturnType<typeof calculatePatientJourney> | null>(null);
 
   useEffect(() => {
     const loadEpisodeData = async () => {
@@ -82,6 +86,19 @@ export default function EpisodeSummary() {
           setLoading(false);
           return;
         }
+
+        // Fetch intake form and all followups for journey tracking
+        const { data: intakeForm } = await supabase
+          .from('intake_forms')
+          .select('*')
+          .eq('converted_to_episode_id', episodeId)
+          .maybeSingle();
+
+        const { data: allFollowups } = await supabase
+          .from('followups')
+          .select('*')
+          .eq('episode_id', episodeId)
+          .order('scheduled_date', { ascending: true });
 
         // Process baseline and discharge scores
         const baselineScores: Record<string, number> = {};
@@ -124,6 +141,15 @@ export default function EpisodeSummary() {
         };
 
         setEpisode(processedEpisode);
+
+        // Calculate patient journey
+        const patientJourney = calculatePatientJourney(
+          episodeData,
+          intakeForm || undefined,
+          allFollowups || [],
+          scoresData || []
+        );
+        setJourney(patientJourney);
 
         if (followupData) {
           setFollowup({
@@ -235,6 +261,17 @@ export default function EpisodeSummary() {
           )}
         </div>
       </div>
+
+      {/* Patient Journey Timeline */}
+      {journey && (
+        <PatientJourneyTimeline 
+          journey={journey}
+          onActionClick={(milestoneType) => {
+            console.log('Action clicked:', milestoneType);
+            // Could navigate to relevant page based on milestone type
+          }}
+        />
+      )}
 
       {/* Patient Demographics */}
       <Card>
