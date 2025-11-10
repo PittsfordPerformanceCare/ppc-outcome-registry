@@ -14,6 +14,7 @@ import { ClipboardCheck, Plus, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -93,6 +94,7 @@ type IntakeFormValues = z.infer<typeof intakeFormSchema>;
 export default function PatientIntake() {
   const [submitted, setSubmitted] = useState(false);
   const [accessCode, setAccessCode] = useState("");
+  const [submittedComplaints, setSubmittedComplaints] = useState<z.infer<typeof complaintSchema>[]>([]);
 
   const form = useForm<IntakeFormValues>({
     resolver: zodResolver(intakeFormSchema),
@@ -185,6 +187,7 @@ export default function PatientIntake() {
       if (error) throw error;
 
       setAccessCode(code);
+      setSubmittedComplaints(data.complaints);
       setSubmitted(true);
       toast.success("Intake form submitted successfully!");
     } catch (error: any) {
@@ -193,9 +196,12 @@ export default function PatientIntake() {
   };
 
   if (submitted) {
+    const primaryComplaint = submittedComplaints.find(c => c.isPrimary);
+    const otherComplaints = submittedComplaints.filter(c => !c.isPrimary);
+    
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-2xl">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
               <ClipboardCheck className="h-8 w-8 text-primary" />
@@ -211,6 +217,53 @@ export default function PatientIntake() {
                 Please save this code. Our staff will use it to process your information.
               </p>
             </div>
+
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Summary of Your Concerns</h3>
+              
+              {primaryComplaint && (
+                <div className="border rounded-lg p-4 bg-primary/5 border-primary/20">
+                  <div className="flex items-start gap-2 mb-2">
+                    <Badge className="bg-primary text-primary-foreground">🎯 Priority</Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <Badge variant="outline">{primaryComplaint.category}</Badge>
+                    <Badge variant={
+                      primaryComplaint.severity === "Severe" ? "destructive" : 
+                      primaryComplaint.severity === "Moderate" ? "default" : 
+                      "secondary"
+                    }>
+                      {primaryComplaint.severity}
+                    </Badge>
+                    <Badge variant="outline">{primaryComplaint.duration}</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{primaryComplaint.text}</p>
+                </div>
+              )}
+
+              {otherComplaints.length > 0 && (
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-muted-foreground">Additional Concerns:</p>
+                  {otherComplaints.map((complaint, index) => (
+                    <div key={index} className="border rounded-lg p-4 bg-card">
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        <Badge variant="outline">{complaint.category}</Badge>
+                        <Badge variant={
+                          complaint.severity === "Severe" ? "destructive" : 
+                          complaint.severity === "Moderate" ? "default" : 
+                          "secondary"
+                        }>
+                          {complaint.severity}
+                        </Badge>
+                        <Badge variant="outline">{complaint.duration}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">{complaint.text}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <p className="text-sm text-center text-muted-foreground">
               A staff member will review your information shortly.
             </p>
