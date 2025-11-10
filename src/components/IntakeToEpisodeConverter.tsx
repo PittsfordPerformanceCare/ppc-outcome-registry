@@ -250,6 +250,8 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
             patientEmail: intakeForm.email,
             patientPhone: intakeForm.phone,
             clinicianName: profile?.clinician_name || profile?.full_name || "Your Clinician",
+            userId: user.id,
+            clinicId: profile?.clinic_id || null,
           }
         });
         console.log('Notification sent to patient');

@@ -14,6 +14,8 @@ interface NotificationRequest {
   clinicianName: string;
   appointmentDate?: string;
   appointmentTime?: string;
+  userId: string;
+  clinicId?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -30,7 +32,9 @@ const handler = async (req: Request): Promise<Response> => {
       patientPhone,
       clinicianName,
       appointmentDate,
-      appointmentTime
+      appointmentTime,
+      userId,
+      clinicId
     }: NotificationRequest = await req.json();
 
     console.log('Notification request received:', {
@@ -117,17 +121,57 @@ const handler = async (req: Request): Promise<Response> => {
           });
 
           if (emailResponse.ok) {
+            const responseData = await emailResponse.json();
             results.email.sent = true;
             results.email.message = 'Email sent successfully';
             console.log('Email sent to:', patientEmail);
+            
+            // Log to history
+            await supabase.from('notifications_history').insert({
+              episode_id: episodeId,
+              patient_name: patientName,
+              patient_email: patientEmail,
+              clinician_name: clinicianName,
+              notification_type: 'email',
+              status: 'sent',
+              delivery_details: { message_id: responseData.id },
+              user_id: userId,
+              clinic_id: clinicId
+            });
           } else {
             const errorData = await emailResponse.text();
             results.email.message = `Email failed: ${errorData}`;
             console.error('Email send failed:', errorData);
+            
+            // Log failure to history
+            await supabase.from('notifications_history').insert({
+              episode_id: episodeId,
+              patient_name: patientName,
+              patient_email: patientEmail,
+              clinician_name: clinicianName,
+              notification_type: 'email',
+              status: 'failed',
+              error_message: errorData,
+              user_id: userId,
+              clinic_id: clinicId
+            });
           }
         } catch (error: any) {
           results.email.message = `Email error: ${error.message}`;
           console.error('Email error:', error);
+          
+          // Log error to history
+          await supabase.from('notifications_history').insert({
+            episode_id: episodeId,
+            patient_name: patientName,
+            patient_email: patientEmail,
+            clinician_name: clinicianName,
+            notification_type: 'email',
+            status: 'failed',
+            error_message: error.message,
+            user_id: userId,
+            clinic_id: clinicId
+          });
         }
       } else {
         results.email.message = 'Email API key not configured';
@@ -166,17 +210,57 @@ const handler = async (req: Request): Promise<Response> => {
           );
 
           if (smsResponse.ok) {
+            const responseData = await smsResponse.json();
             results.sms.sent = true;
             results.sms.message = 'SMS sent successfully';
             console.log('SMS sent to:', patientPhone);
+            
+            // Log to history
+            await supabase.from('notifications_history').insert({
+              episode_id: episodeId,
+              patient_name: patientName,
+              patient_phone: patientPhone,
+              clinician_name: clinicianName,
+              notification_type: 'sms',
+              status: 'sent',
+              delivery_details: { sid: responseData.sid },
+              user_id: userId,
+              clinic_id: clinicId
+            });
           } else {
             const errorData = await smsResponse.text();
             results.sms.message = `SMS failed: ${errorData}`;
             console.error('SMS send failed:', errorData);
+            
+            // Log failure to history
+            await supabase.from('notifications_history').insert({
+              episode_id: episodeId,
+              patient_name: patientName,
+              patient_phone: patientPhone,
+              clinician_name: clinicianName,
+              notification_type: 'sms',
+              status: 'failed',
+              error_message: errorData,
+              user_id: userId,
+              clinic_id: clinicId
+            });
           }
         } catch (error: any) {
           results.sms.message = `SMS error: ${error.message}`;
           console.error('SMS error:', error);
+          
+          // Log error to history
+          await supabase.from('notifications_history').insert({
+            episode_id: episodeId,
+            patient_name: patientName,
+            patient_phone: patientPhone,
+            clinician_name: clinicianName,
+            notification_type: 'sms',
+            status: 'failed',
+            error_message: error.message,
+            user_id: userId,
+            clinic_id: clinicId
+          });
         }
       } else {
         results.sms.message = 'SMS API not configured';

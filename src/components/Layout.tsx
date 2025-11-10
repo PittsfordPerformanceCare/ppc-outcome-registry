@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
@@ -53,6 +53,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "Intake Validation", href: "/intake-validation", icon: ClipboardCheck },
     { name: "Dashboards", href: "/dashboards", icon: BarChart3 },
     { name: "PCP Summary", href: "/pcp-summary", icon: FileText },
+    { name: "Notifications", href: "/notification-history", icon: Bell },
     ...(isAdmin ? [
       { name: "Admin", href: "/admin", icon: Shield },
       { name: "Compliance", href: "/compliance", icon: FileCheck },

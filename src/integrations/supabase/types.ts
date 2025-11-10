@@ -510,6 +510,57 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications_history: {
+        Row: {
+          clinic_id: string | null
+          clinician_name: string
+          created_at: string
+          delivery_details: Json | null
+          episode_id: string
+          error_message: string | null
+          id: string
+          notification_type: string
+          patient_email: string | null
+          patient_name: string
+          patient_phone: string | null
+          sent_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          clinician_name: string
+          created_at?: string
+          delivery_details?: Json | null
+          episode_id: string
+          error_message?: string | null
+          id?: string
+          notification_type: string
+          patient_email?: string | null
+          patient_name: string
+          patient_phone?: string | null
+          sent_at?: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          clinician_name?: string
+          created_at?: string
+          delivery_details?: Json | null
+          episode_id?: string
+          error_message?: string | null
+          id?: string
+          notification_type?: string
+          patient_email?: string | null
+          patient_name?: string
+          patient_phone?: string | null
+          sent_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       outcome_scores: {
         Row: {
           clinic_id: string | null

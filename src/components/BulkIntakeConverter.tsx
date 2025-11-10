@@ -195,6 +195,8 @@ export function BulkIntakeConverter({
                 patientEmail: intake.email,
                 patientPhone: intake.phone,
                 clinicianName: profile?.clinician_name || profile?.full_name || "Your Clinician",
+                userId: user.id,
+                clinicId: profile?.clinic_id || null,
               }
             });
           } catch (notifError) {
