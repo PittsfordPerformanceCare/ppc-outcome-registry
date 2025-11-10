@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
-import { ClipboardCheck, Plus, X } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -267,6 +267,15 @@ export default function PatientIntake() {
             <p className="text-sm text-center text-muted-foreground">
               A staff member will review your information shortly.
             </p>
+
+            <Button 
+              onClick={() => window.print()} 
+              className="w-full"
+              variant="outline"
+            >
+              <Printer className="h-4 w-4 mr-2" />
+              Print Summary for Your Records
+            </Button>
           </CardContent>
         </Card>
       </div>
