@@ -27,6 +27,7 @@ import NotificationAnalytics from "./pages/NotificationAnalytics";
 import RetryAnalytics from "./pages/RetryAnalytics";
 import LinkAnalytics from "./pages/LinkAnalytics";
 import AlertHistory from "./pages/AlertHistory";
+import ExportHistory from "./pages/ExportHistory";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => (
                     <Route path="/retry-analytics" element={<RetryAnalytics />} />
                     <Route path="/link-analytics" element={<LinkAnalytics />} />
                     <Route path="/alert-history" element={<AlertHistory />} />
+                    <Route path="/export-history" element={<ExportHistory />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

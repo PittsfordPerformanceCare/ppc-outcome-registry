@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
@@ -57,6 +57,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "Analytics", href: "/notification-analytics", icon: TrendingUp },
     { name: "Link Analytics", href: "/link-analytics", icon: Link2 },
     { name: "Alert History", href: "/alert-history", icon: AlertTriangle },
+    { name: "Export History", href: "/export-history", icon: History },
     ...(isAdmin ? [
       { name: "Admin", href: "/admin", icon: Shield },
       { name: "Compliance", href: "/compliance", icon: FileCheck },
