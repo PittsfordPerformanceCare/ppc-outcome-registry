@@ -680,12 +680,16 @@ export type Database = {
           error_message: string | null
           first_clicked_at: string | null
           id: string
+          last_retry_at: string | null
+          max_retries: number | null
+          next_retry_at: string | null
           notification_type: string
           open_count: number | null
           opened_at: string | null
           patient_email: string | null
           patient_name: string
           patient_phone: string | null
+          retry_count: number | null
           sent_at: string
           status: string
           tracking_id: string | null
@@ -701,12 +705,16 @@ export type Database = {
           error_message?: string | null
           first_clicked_at?: string | null
           id?: string
+          last_retry_at?: string | null
+          max_retries?: number | null
+          next_retry_at?: string | null
           notification_type: string
           open_count?: number | null
           opened_at?: string | null
           patient_email?: string | null
           patient_name: string
           patient_phone?: string | null
+          retry_count?: number | null
           sent_at?: string
           status: string
           tracking_id?: string | null
@@ -722,12 +730,16 @@ export type Database = {
           error_message?: string | null
           first_clicked_at?: string | null
           id?: string
+          last_retry_at?: string | null
+          max_retries?: number | null
+          next_retry_at?: string | null
           notification_type?: string
           open_count?: number | null
           opened_at?: string | null
           patient_email?: string | null
           patient_name?: string
           patient_phone?: string | null
+          retry_count?: number | null
           sent_at?: string
           status?: string
           tracking_id?: string | null
@@ -860,6 +872,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_next_retry: {
+        Args: { base_delay_minutes?: number; current_retry_count: number }
+        Returns: string
+      }
       get_user_clinic_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
