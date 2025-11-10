@@ -16,6 +16,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Progress } from "@/components/ui/progress";
+import { useEffect, useState as useReactState } from "react";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -150,6 +152,7 @@ export default function PatientIntake() {
   const [accessCode, setAccessCode] = useState("");
   const [submittedComplaints, setSubmittedComplaints] = useState<z.infer<typeof complaintSchema>[]>([]);
   const [submittedReviewOfSystems, setSubmittedReviewOfSystems] = useState<string[]>([]);
+  const [completionPercentage, setCompletionPercentage] = useState(0);
 
   const form = useForm<IntakeFormValues>({
     resolver: zodResolver(intakeFormSchema),
@@ -192,6 +195,57 @@ export default function PatientIntake() {
     control: form.control,
     name: "complaints",
   });
+
+  // Calculate form completion percentage
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      let completedSections = 0;
+      let totalSections = 7;
+
+      // 1. Personal Information (required fields)
+      if (values.patientName && values.dateOfBirth) {
+        completedSections += 1;
+      }
+
+      // 2. Insurance Information (at least one field)
+      if (values.insuranceProvider || values.insuranceId) {
+        completedSections += 1;
+      }
+
+      // 3. Emergency Contact (at least name)
+      if (values.emergencyContactName) {
+        completedSections += 1;
+      }
+
+      // 4. Medical Information (at least one field)
+      if (values.primaryCarePhysician || values.currentMedications || values.allergies || values.medicalHistory) {
+        completedSections += 1;
+      }
+
+      // 5. Review of Systems (at least one selected)
+      if (values.reviewOfSystems && values.reviewOfSystems.length > 0) {
+        completedSections += 1;
+      }
+
+      // 6. Areas of Concern (at least one complete complaint)
+      const hasCompleteComplaint = values.complaints?.some(
+        (c) => c.text && c.category && c.severity && c.duration
+      );
+      if (hasCompleteComplaint) {
+        completedSections += 1;
+      }
+
+      // 7. Pain/Symptoms (pain level is always set, check for symptoms or injury info)
+      if (values.symptoms || values.injuryDate || values.injuryMechanism) {
+        completedSections += 1;
+      }
+
+      const percentage = Math.round((completedSections / totalSections) * 100);
+      setCompletionPercentage(percentage);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const generateAccessCode = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -397,6 +451,22 @@ export default function PatientIntake() {
               Please complete this form to help us prepare for your visit
             </CardDescription>
           </CardHeader>
+        </Card>
+
+        {/* Progress Indicator */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium">Form Completion</span>
+                <span className="text-muted-foreground">{completionPercentage}%</span>
+              </div>
+              <Progress value={completionPercentage} className="h-2" />
+              <p className="text-xs text-muted-foreground">
+                Complete all sections for the best care experience
+              </p>
+            </div>
+          </CardContent>
         </Card>
 
         <Form {...form}>
