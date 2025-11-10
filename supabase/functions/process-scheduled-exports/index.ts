@@ -83,6 +83,23 @@ const handler = async (req: Request): Promise<Response> => {
       try {
         console.log(`Processing export: ${exportJob.name} (${exportJob.id})`);
         
+        // Log export start
+        const { data: historyRecord } = await supabase
+          .from("export_history")
+          .insert({
+            export_id: exportJob.id,
+            export_name: exportJob.name,
+            export_type: exportJob.export_type,
+            status: 'processing',
+            recipient_emails: exportJob.recipient_emails,
+            user_id: exportJob.user_id,
+            clinic_id: exportJob.clinic_id,
+          })
+          .select()
+          .single();
+        
+        const historyId = historyRecord?.id;
+        
         // Fetch the data based on export type and filters
         const exportData = await fetchExportData(supabase, exportJob);
         
@@ -98,6 +115,17 @@ const handler = async (req: Request): Promise<Response> => {
         );
         
         if (emailResult.success) {
+          // Update export history to success
+          if (historyId) {
+            await supabase
+              .from("export_history")
+              .update({
+                status: 'success',
+                record_count: exportData.length,
+              })
+              .eq("id", historyId);
+          }
+          
           // Update the scheduled export record
           // For manual runs, don't update next_run_at, only last_run_at
           const updateData: any = {
@@ -118,6 +146,17 @@ const handler = async (req: Request): Promise<Response> => {
           results.push({ id: exportJob.id, name: exportJob.name, status: "success" });
           console.log(`Successfully processed export: ${exportJob.name}`);
         } else {
+          // Update export history to failed
+          if (historyId) {
+            await supabase
+              .from("export_history")
+              .update({
+                status: 'failed',
+                error_message: emailResult.error,
+              })
+              .eq("id", historyId);
+          }
+          
           results.push({ id: exportJob.id, name: exportJob.name, status: "failed", error: emailResult.error });
           console.error(`Failed to send email for export: ${exportJob.name}`, emailResult.error);
         }

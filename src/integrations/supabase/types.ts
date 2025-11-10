@@ -320,6 +320,51 @@ export type Database = {
           },
         ]
       }
+      export_history: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          error_message: string | null
+          executed_at: string
+          export_id: string
+          export_name: string
+          export_type: string
+          id: string
+          recipient_emails: string[]
+          record_count: number | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          executed_at?: string
+          export_id: string
+          export_name: string
+          export_type: string
+          id?: string
+          recipient_emails: string[]
+          record_count?: number | null
+          status: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          executed_at?: string
+          export_id?: string
+          export_name?: string
+          export_type?: string
+          id?: string
+          recipient_emails?: string[]
+          record_count?: number | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       followups: {
         Row: {
           clinic_id: string | null
@@ -927,6 +972,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      scheduled_exports: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          enabled: boolean
+          export_type: string
+          filters: Json
+          frequency: string
+          id: string
+          last_run_at: string | null
+          name: string
+          next_run_at: string
+          recipient_emails: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          export_type: string
+          filters?: Json
+          frequency: string
+          id?: string
+          last_run_at?: string | null
+          name: string
+          next_run_at: string
+          recipient_emails?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          export_type?: string
+          filters?: Json
+          frequency?: string
+          id?: string
+          last_run_at?: string | null
+          name?: string
+          next_run_at?: string
+          recipient_emails?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
