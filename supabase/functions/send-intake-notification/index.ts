@@ -16,6 +16,7 @@ interface NotificationRequest {
   appointmentTime?: string;
   userId: string;
   clinicId?: string;
+  isTest?: boolean;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -34,7 +35,8 @@ const handler = async (req: Request): Promise<Response> => {
       appointmentDate,
       appointmentTime,
       userId,
-      clinicId
+      clinicId,
+      isTest = false
     }: NotificationRequest = await req.json();
 
     console.log('Notification request received:', {
@@ -84,9 +86,14 @@ const handler = async (req: Request): Promise<Response> => {
       if (resendApiKey) {
         try {
           // Get custom templates or use defaults
-          const emailSubject = clinicSettings?.email_subject 
+          let emailSubject = clinicSettings?.email_subject 
             ? replacePlaceholders(clinicSettings.email_subject)
             : 'Your Physical Therapy Episode Has Been Created';
+          
+          // Add TEST prefix for test emails
+          if (isTest) {
+            emailSubject = `[TEST] ${emailSubject}`;
+          }
           
           const emailHtml = clinicSettings?.email_template
             ? replacePlaceholders(clinicSettings.email_template)
@@ -126,8 +133,9 @@ const handler = async (req: Request): Promise<Response> => {
             results.email.message = 'Email sent successfully';
             console.log('Email sent to:', patientEmail);
             
-            // Log to history
-            await supabase.from('notifications_history').insert({
+            // Log to history (skip for test notifications)
+            if (!isTest) {
+              await supabase.from('notifications_history').insert({
               episode_id: episodeId,
               patient_name: patientName,
               patient_email: patientEmail,
@@ -137,14 +145,16 @@ const handler = async (req: Request): Promise<Response> => {
               delivery_details: { message_id: responseData.id },
               user_id: userId,
               clinic_id: clinicId
-            });
+              });
+            }
           } else {
             const errorData = await emailResponse.text();
             results.email.message = `Email failed: ${errorData}`;
             console.error('Email send failed:', errorData);
             
-            // Log failure to history
-            await supabase.from('notifications_history').insert({
+            // Log failure to history (skip for test notifications)
+            if (!isTest) {
+              await supabase.from('notifications_history').insert({
               episode_id: episodeId,
               patient_name: patientName,
               patient_email: patientEmail,
@@ -154,14 +164,16 @@ const handler = async (req: Request): Promise<Response> => {
               error_message: errorData,
               user_id: userId,
               clinic_id: clinicId
-            });
+              });
+            }
           }
         } catch (error: any) {
           results.email.message = `Email error: ${error.message}`;
           console.error('Email error:', error);
           
-          // Log error to history
-          await supabase.from('notifications_history').insert({
+          // Log error to history (skip for test notifications)
+          if (!isTest) {
+            await supabase.from('notifications_history').insert({
             episode_id: episodeId,
             patient_name: patientName,
             patient_email: patientEmail,
@@ -171,7 +183,8 @@ const handler = async (req: Request): Promise<Response> => {
             error_message: error.message,
             user_id: userId,
             clinic_id: clinicId
-          });
+            });
+          }
         }
       } else {
         results.email.message = 'Email API key not configured';
@@ -188,9 +201,14 @@ const handler = async (req: Request): Promise<Response> => {
       if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
         try {
           // Get custom SMS template or use default
-          const smsMessage = clinicSettings?.sms_template
+          let smsMessage = clinicSettings?.sms_template
             ? replacePlaceholders(clinicSettings.sms_template)
             : replacePlaceholders(`{{clinic_name}}: Your PT episode has been created with {{clinician_name}}. Call {{clinic_phone}} with questions.`);
+          
+          // Add TEST prefix for test SMS
+          if (isTest) {
+            smsMessage = `[TEST] ${smsMessage}`;
+          }
 
           const auth = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
           const smsResponse = await fetch(
@@ -215,8 +233,9 @@ const handler = async (req: Request): Promise<Response> => {
             results.sms.message = 'SMS sent successfully';
             console.log('SMS sent to:', patientPhone);
             
-            // Log to history
-            await supabase.from('notifications_history').insert({
+            // Log to history (skip for test notifications)
+            if (!isTest) {
+              await supabase.from('notifications_history').insert({
               episode_id: episodeId,
               patient_name: patientName,
               patient_phone: patientPhone,
@@ -226,14 +245,16 @@ const handler = async (req: Request): Promise<Response> => {
               delivery_details: { sid: responseData.sid },
               user_id: userId,
               clinic_id: clinicId
-            });
+              });
+            }
           } else {
             const errorData = await smsResponse.text();
             results.sms.message = `SMS failed: ${errorData}`;
             console.error('SMS send failed:', errorData);
             
-            // Log failure to history
-            await supabase.from('notifications_history').insert({
+            // Log failure to history (skip for test notifications)
+            if (!isTest) {
+              await supabase.from('notifications_history').insert({
               episode_id: episodeId,
               patient_name: patientName,
               patient_phone: patientPhone,
@@ -243,14 +264,16 @@ const handler = async (req: Request): Promise<Response> => {
               error_message: errorData,
               user_id: userId,
               clinic_id: clinicId
-            });
+              });
+            }
           }
         } catch (error: any) {
           results.sms.message = `SMS error: ${error.message}`;
           console.error('SMS error:', error);
           
-          // Log error to history
-          await supabase.from('notifications_history').insert({
+          // Log error to history (skip for test notifications)
+          if (!isTest) {
+            await supabase.from('notifications_history').insert({
             episode_id: episodeId,
             patient_name: patientName,
             patient_phone: patientPhone,
@@ -260,7 +283,8 @@ const handler = async (req: Request): Promise<Response> => {
             error_message: error.message,
             user_id: userId,
             clinic_id: clinicId
-          });
+            });
+          }
         }
       } else {
         results.sms.message = 'SMS API not configured';

@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Loader2, Save, AlertCircle } from "lucide-react";
+import { Loader2, Save, AlertCircle, Send, Mail, MessageSquare } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 
 export default function ClinicSettings() {
   const navigate = useNavigate();
@@ -21,6 +22,10 @@ export default function ClinicSettings() {
   const [emailSubject, setEmailSubject] = useState("");
   const [emailTemplate, setEmailTemplate] = useState("");
   const [smsTemplate, setSmsTemplate] = useState("");
+  
+  const [testEmail, setTestEmail] = useState("");
+  const [testPhone, setTestPhone] = useState("");
+  const [sendingTest, setSendingTest] = useState(false);
 
   useEffect(() => {
     const checkAdminAndLoadSettings = async () => {
@@ -57,6 +62,11 @@ export default function ClinicSettings() {
           setEmailTemplate(settings.email_template || "");
           setSmsTemplate(settings.sms_template || "");
         }
+        
+        // Load user email for test notifications
+        if (user?.email) {
+          setTestEmail(user.email);
+        }
       } catch (error: any) {
         console.error("Error loading settings:", error);
         toast.error("Failed to load settings");
@@ -91,6 +101,70 @@ export default function ClinicSettings() {
     }
   };
 
+  const handleSendTestEmail = async () => {
+    if (!testEmail) {
+      toast.error("Please enter an email address");
+      return;
+    }
+
+    setSendingTest(true);
+    try {
+      const { error } = await supabase.functions.invoke('send-intake-notification', {
+        body: {
+          episodeId: 'TEST-12345',
+          patientName: 'John Doe (Test Patient)',
+          patientEmail: testEmail,
+          clinicianName: 'Dr. Smith (Test Clinician)',
+          appointmentDate: new Date().toLocaleDateString(),
+          appointmentTime: '10:00 AM',
+          userId: user?.id,
+          isTest: true
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success(`Test email sent to ${testEmail}! Check your inbox.`);
+    } catch (error: any) {
+      console.error("Error sending test email:", error);
+      toast.error(`Failed to send test email: ${error.message}`);
+    } finally {
+      setSendingTest(false);
+    }
+  };
+
+  const handleSendTestSMS = async () => {
+    if (!testPhone) {
+      toast.error("Please enter a phone number");
+      return;
+    }
+
+    setSendingTest(true);
+    try {
+      const { error } = await supabase.functions.invoke('send-intake-notification', {
+        body: {
+          episodeId: 'TEST-12345',
+          patientName: 'John Doe (Test Patient)',
+          patientPhone: testPhone,
+          clinicianName: 'Dr. Smith (Test Clinician)',
+          appointmentDate: new Date().toLocaleDateString(),
+          appointmentTime: '10:00 AM',
+          userId: user?.id,
+          isTest: true
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success(`Test SMS sent to ${testPhone}!`);
+    } catch (error: any) {
+      console.error("Error sending test SMS:", error);
+      toast.error(`Failed to send test SMS: ${error.message}`);
+    } finally {
+      setSendingTest(false);
+    }
+  };
+
   if (authLoading || checkingAdmin) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -118,6 +192,106 @@ export default function ClinicSettings() {
           <strong>Available placeholders:</strong> {`{{patient_name}}, {{clinician_name}}, {{episode_id}}, {{clinic_name}}, {{clinic_phone}}, {{clinic_email}}`}
         </AlertDescription>
       </Alert>
+
+      {/* Test Notifications */}
+      <Card className="border-blue-200 dark:border-blue-800">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Send className="h-5 w-5 text-blue-500" />
+            Test Notifications
+          </CardTitle>
+          <CardDescription>
+            Send test notifications to yourself to preview templates with sample data
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Test Email */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-blue-500" />
+              <h3 className="font-semibold">Test Email</h3>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="test-email">Your Email Address</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="test-email"
+                  type="email"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  placeholder="your.email@example.com"
+                  className="flex-1"
+                />
+                <Button 
+                  onClick={handleSendTestEmail} 
+                  disabled={sendingTest || !testEmail}
+                  variant="outline"
+                >
+                  {sendingTest ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Send Test
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Test data: Patient "John Doe", Episode "TEST-12345", Clinician "Dr. Smith"
+              </p>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Test SMS */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4 text-green-500" />
+              <h3 className="font-semibold">Test SMS</h3>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="test-phone">Your Phone Number</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="test-phone"
+                  type="tel"
+                  value={testPhone}
+                  onChange={(e) => setTestPhone(e.target.value)}
+                  placeholder="+1234567890"
+                  className="flex-1"
+                />
+                <Button 
+                  onClick={handleSendTestSMS} 
+                  disabled={sendingTest || !testPhone}
+                  variant="outline"
+                >
+                  {sendingTest ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      Send Test
+                    </>
+                  )}
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Include country code (e.g., +1 for US). Requires Twilio API configuration.
+              </p>
+            </div>
+          </div>
+
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              <strong>Note:</strong> Test notifications use [TEST] prefix and won't be logged in notification history. 
+              Make sure to save your templates before testing to see the latest changes.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
 
       {/* Email Settings */}
       <Card>
