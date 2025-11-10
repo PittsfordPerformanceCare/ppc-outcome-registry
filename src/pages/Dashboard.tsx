@@ -22,6 +22,10 @@ import { MCIDStatisticsCard } from "@/components/MCIDStatisticsCard";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { generateBatchMCIDReports } from "@/lib/batchPDFExport";
 import { useClinicSettings } from "@/hooks/useClinicSettings";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ExportScheduler } from "@/components/ExportScheduler";
+import { AdvancedFilters, FilterState } from "@/components/AdvancedFilters";
+import { DateRangeComparison } from "@/components/DateRangeComparison";
 
 interface Episode {
   id: string;
@@ -52,6 +56,13 @@ export default function Dashboard() {
   const [filterDateFrom, setFilterDateFrom] = useState("");
   const [filterDateTo, setFilterDateTo] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<FilterState>({
+    statuses: [],
+    diagnoses: [],
+    regions: [],
+    scoreRange: [0, 100],
+    hasOutcomeScores: null,
+  });
   
   // Bulk action states
   const [selectedEpisodes, setSelectedEpisodes] = useState<Set<string>>(new Set());
@@ -136,6 +147,18 @@ export default function Dashboard() {
     return Array.from(clinicians).sort();
   }, [episodes]);
 
+  // Get unique diagnoses from episodes
+  const uniqueDiagnoses = useMemo(() => {
+    const diagnoses = new Set(episodes.map(ep => ep.diagnosis).filter(Boolean));
+    return Array.from(diagnoses).sort();
+  }, [episodes]);
+
+  // Get unique regions from episodes
+  const uniqueRegions = useMemo(() => {
+    const regions = new Set(episodes.map(ep => ep.region).filter(Boolean));
+    return Array.from(regions).sort();
+  }, [episodes]);
+
   // Filtered episodes
   const filteredEpisodes = useMemo(() => {
     return episodes.filter(episode => {
@@ -183,6 +206,13 @@ export default function Dashboard() {
     setFilterClinician("all");
     setFilterDateFrom("");
     setFilterDateTo("");
+    setAdvancedFilters({
+      statuses: [],
+      diagnoses: [],
+      regions: [],
+      scoreRange: [0, 100],
+      hasOutcomeScores: null,
+    });
   };
 
   const hasActiveFilters = searchQuery || filterRegion !== "all" || filterClinician !== "all" || filterDateFrom || filterDateTo;
@@ -532,19 +562,55 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Data Visualization Section */}
+      {/* Data Visualization & Analytics Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-6 w-6 text-primary" />
           <h2 className="text-2xl font-bold text-primary">Analytics & Insights</h2>
         </div>
         
-        <div className="grid gap-6 lg:grid-cols-2">
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="advanced-filters">Advanced Filters</TabsTrigger>
+            <TabsTrigger value="comparison">Date Comparison</TabsTrigger>
+            <TabsTrigger value="scheduler">Export Scheduler</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid gap-6 lg:grid-cols-2">
               <TrendChart episodes={episodesWithScores} />
               <RegionalPerformanceChart episodes={episodesWithScores} />
-        </div>
-        
-        <TreatmentEfficacyChart episodes={episodesWithScores} />
+            </div>
+            
+            <TreatmentEfficacyChart episodes={episodesWithScores} />
+          </TabsContent>
+
+          <TabsContent value="advanced-filters">
+            <AdvancedFilters
+              availableDiagnoses={uniqueDiagnoses}
+              availableRegions={uniqueRegions}
+              onFiltersChange={setAdvancedFilters}
+              initialFilters={advancedFilters}
+            />
+          </TabsContent>
+
+          <TabsContent value="comparison">
+            <DateRangeComparison episodes={episodes} />
+          </TabsContent>
+
+          <TabsContent value="scheduler">
+            <ExportScheduler 
+              currentFilters={{
+                region: filterRegion !== "all" ? filterRegion : undefined,
+                clinician: filterClinician !== "all" ? filterClinician : undefined,
+                dateFrom: filterDateFrom || undefined,
+                dateTo: filterDateTo || undefined,
+                ...advancedFilters,
+              }}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Search & Filter Section */}
