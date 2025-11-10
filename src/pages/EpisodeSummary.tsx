@@ -3,7 +3,10 @@ import { useSearchParams, Link } from "react-router-dom";
 import { getEpisode, getOutcomeScores, getFollowup } from "@/lib/dbOperations";
 import { supabase } from "@/integrations/supabase/client";
 import { calculatePatientJourney } from "@/lib/journeyMilestones";
+import { calculateMCIDSummary } from "@/lib/mcidTracking";
 import { PatientJourneyTimeline } from "@/components/PatientJourneyTimeline";
+import { MCIDSummaryCard } from "@/components/MCIDSummaryCard";
+import { MCIDAchievementCard } from "@/components/MCIDAchievementCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -604,6 +607,25 @@ export default function EpisodeSummary() {
           </div>
         </CardContent>
       </Card>
+
+      {/* MCID Achievement Analysis */}
+      {isCompleted && episode.baselineScores && episode.dischargeScores && (
+        <>
+          <MCIDSummaryCard 
+            summary={calculateMCIDSummary(episode.baselineScores, episode.dischargeScores)}
+          />
+
+          <div className="grid gap-6 md:grid-cols-2">
+            {calculateMCIDSummary(episode.baselineScores, episode.dischargeScores).achievements.map((achievement, idx) => (
+              <MCIDAchievementCard 
+                key={idx}
+                achievement={achievement}
+                showDetails={true}
+              />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Outcome Summary */}
       {isCompleted && (

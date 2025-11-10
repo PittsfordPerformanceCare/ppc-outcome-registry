@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getAllEpisodes } from "@/lib/dbOperations";
+import { calculateMCIDSummary } from "@/lib/mcidTracking";
 import { EpisodeMeta } from "@/lib/ppcStore";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,7 @@ import { CircularProgress } from "@/components/CircularProgress";
 import { TrendChart } from "@/components/TrendChart";
 import { RegionalPerformanceChart } from "@/components/RegionalPerformanceChart";
 import { TreatmentEfficacyChart } from "@/components/TreatmentEfficacyChart";
+import { MCIDStatisticsCard } from "@/components/MCIDStatisticsCard";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 
 interface Episode {
@@ -669,7 +671,49 @@ export default function Dashboard() {
       </Card>
 
       {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {/* MCID Success Rate */}
+        <MCIDStatisticsCard 
+          statistics={useMemo(() => {
+            const completedEpisodes = episodesWithScores.filter(e => 
+              e.dischargeScores && Object.keys(e.dischargeScores).length > 0
+            );
+            
+            let totalAchieved = 0;
+            let totalImprovementSum = 0;
+            let measurementCount = 0;
+
+            completedEpisodes.forEach(episode => {
+              if (episode.baselineScores && episode.dischargeScores) {
+                const summary = calculateMCIDSummary(
+                  episode.baselineScores,
+                  episode.dischargeScores
+                );
+                if (summary.achievedMCID > 0) {
+                  totalAchieved++;
+                }
+                totalImprovementSum += summary.averageImprovement;
+                measurementCount++;
+              }
+            });
+
+            const achievementRate = completedEpisodes.length > 0
+              ? (totalAchieved / completedEpisodes.length) * 100
+              : 0;
+            
+            const averageImprovement = measurementCount > 0
+              ? totalImprovementSum / measurementCount
+              : 0;
+
+            return {
+              totalCompletedEpisodes: completedEpisodes.length,
+              episodesAchievingMCID: totalAchieved,
+              achievementRate,
+              averageImprovement
+            };
+          }, [episodesWithScores])}
+        />
+        
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Filtered Episodes</CardTitle>
