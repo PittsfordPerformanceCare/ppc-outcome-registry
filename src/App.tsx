@@ -19,6 +19,7 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import PatientIntake from "./pages/PatientIntake";
 import IntakeReview from "./pages/IntakeReview";
+import IntakeStart from "./pages/IntakeStart";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
         <Routes>
           <Route path="/auth" element={<Auth />} />
           <Route path="/patient-intake" element={<PatientIntake />} />
+          <Route path="/intake-start" element={<IntakeStart />} />
           <Route
             path="/*"
             element={
