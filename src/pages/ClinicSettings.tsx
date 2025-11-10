@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Loader2, Save, AlertCircle, Send, Mail, MessageSquare } from "lucide-react";
+import { Loader2, Save, AlertCircle, Send, Mail, MessageSquare, Bell, Clock } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 
 export default function ClinicSettings() {
   const navigate = useNavigate();
@@ -26,6 +27,12 @@ export default function ClinicSettings() {
   const [testEmail, setTestEmail] = useState("");
   const [testPhone, setTestPhone] = useState("");
   const [sendingTest, setSendingTest] = useState(false);
+  
+  const [reminderEnabled, setReminderEnabled] = useState(true);
+  const [reminderHoursBefore, setReminderHoursBefore] = useState(24);
+  const [reminderEmailSubject, setReminderEmailSubject] = useState("");
+  const [reminderEmailTemplate, setReminderEmailTemplate] = useState("");
+  const [reminderSmsTemplate, setReminderSmsTemplate] = useState("");
 
   useEffect(() => {
     const checkAdminAndLoadSettings = async () => {
@@ -52,7 +59,7 @@ export default function ClinicSettings() {
         // Load clinic settings
         const { data: settings, error } = await supabase
           .from("clinic_settings")
-          .select("email_subject, email_template, sms_template")
+          .select("email_subject, email_template, sms_template, reminder_enabled, reminder_hours_before, reminder_email_subject, reminder_email_template, reminder_sms_template")
           .single();
         
         if (error) throw error;
@@ -61,6 +68,11 @@ export default function ClinicSettings() {
           setEmailSubject(settings.email_subject || "");
           setEmailTemplate(settings.email_template || "");
           setSmsTemplate(settings.sms_template || "");
+          setReminderEnabled(settings.reminder_enabled ?? true);
+          setReminderHoursBefore(settings.reminder_hours_before || 24);
+          setReminderEmailSubject(settings.reminder_email_subject || "");
+          setReminderEmailTemplate(settings.reminder_email_template || "");
+          setReminderSmsTemplate(settings.reminder_sms_template || "");
         }
         
         // Load user email for test notifications
@@ -87,6 +99,11 @@ export default function ClinicSettings() {
           email_subject: emailSubject,
           email_template: emailTemplate,
           sms_template: smsTemplate,
+          reminder_enabled: reminderEnabled,
+          reminder_hours_before: reminderHoursBefore,
+          reminder_email_subject: reminderEmailSubject,
+          reminder_email_template: reminderEmailTemplate,
+          reminder_sms_template: reminderSmsTemplate,
         })
         .eq("id", (await supabase.from("clinic_settings").select("id").single()).data?.id);
 
@@ -189,9 +206,111 @@ export default function ClinicSettings() {
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          <strong>Available placeholders:</strong> {`{{patient_name}}, {{clinician_name}}, {{episode_id}}, {{clinic_name}}, {{clinic_phone}}, {{clinic_email}}`}
+          <strong>Available placeholders:</strong> {`{{patient_name}}, {{clinician_name}}, {{episode_id}}, {{appointment_date}}, {{appointment_time}}, {{clinic_name}}, {{clinic_phone}}`}
         </AlertDescription>
       </Alert>
+
+      {/* Appointment Reminder Settings */}
+      <Card className="border-purple-200 dark:border-purple-800">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-5 w-5 text-purple-500" />
+            Appointment Reminders
+          </CardTitle>
+          <CardDescription>
+            Configure automated reminders sent before scheduled appointments
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Enable/Disable Toggle */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="reminder-enabled">Enable Appointment Reminders</Label>
+              <p className="text-sm text-muted-foreground">
+                Automatically send reminders before appointments
+              </p>
+            </div>
+            <Switch
+              id="reminder-enabled"
+              checked={reminderEnabled}
+              onCheckedChange={setReminderEnabled}
+            />
+          </div>
+
+          {/* Hours Before Reminder */}
+          <div className="space-y-2">
+            <Label htmlFor="reminder-hours" className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Hours Before Appointment
+            </Label>
+            <Input
+              id="reminder-hours"
+              type="number"
+              min="1"
+              max="168"
+              value={reminderHoursBefore}
+              onChange={(e) => setReminderHoursBefore(parseInt(e.target.value) || 24)}
+              disabled={!reminderEnabled}
+            />
+            <p className="text-xs text-muted-foreground">
+              Send reminder {reminderHoursBefore} hours ({Math.round(reminderHoursBefore / 24 * 10) / 10} days) before the appointment
+            </p>
+          </div>
+
+          <Separator />
+
+          {/* Reminder Email Subject */}
+          <div className="space-y-2">
+            <Label htmlFor="reminder-email-subject">Reminder Email Subject</Label>
+            <Input
+              id="reminder-email-subject"
+              value={reminderEmailSubject}
+              onChange={(e) => setReminderEmailSubject(e.target.value)}
+              placeholder="Appointment Reminder: {{patient_name}}"
+              disabled={!reminderEnabled}
+            />
+          </div>
+
+          {/* Reminder Email Template */}
+          <div className="space-y-2">
+            <Label htmlFor="reminder-email-template">Reminder Email Template (HTML)</Label>
+            <Textarea
+              id="reminder-email-template"
+              value={reminderEmailTemplate}
+              onChange={(e) => setReminderEmailTemplate(e.target.value)}
+              rows={12}
+              className="font-mono text-sm"
+              placeholder="Enter HTML email template..."
+              disabled={!reminderEnabled}
+            />
+          </div>
+
+          <Separator />
+
+          {/* Reminder SMS Template */}
+          <div className="space-y-2">
+            <Label htmlFor="reminder-sms-template">Reminder SMS Template</Label>
+            <Textarea
+              id="reminder-sms-template"
+              value={reminderSmsTemplate}
+              onChange={(e) => setReminderSmsTemplate(e.target.value)}
+              rows={4}
+              placeholder="Enter SMS reminder template..."
+              disabled={!reminderEnabled}
+            />
+            <p className="text-xs text-muted-foreground">
+              Current length: {reminderSmsTemplate.length} characters
+            </p>
+          </div>
+
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              Reminders are checked hourly. A scheduled task will automatically send reminders to patients based on their appointment dates/times.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
 
       {/* Test Notifications */}
       <Card className="border-blue-200 dark:border-blue-800">

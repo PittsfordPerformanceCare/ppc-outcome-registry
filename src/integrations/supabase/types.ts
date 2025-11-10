@@ -82,6 +82,11 @@ export type Database = {
           id: string
           logo_url: string | null
           phone: string | null
+          reminder_email_subject: string | null
+          reminder_email_template: string | null
+          reminder_enabled: boolean | null
+          reminder_hours_before: number | null
+          reminder_sms_template: string | null
           sms_template: string | null
           tagline: string | null
           updated_at: string
@@ -97,6 +102,11 @@ export type Database = {
           id?: string
           logo_url?: string | null
           phone?: string | null
+          reminder_email_subject?: string | null
+          reminder_email_template?: string | null
+          reminder_enabled?: boolean | null
+          reminder_hours_before?: number | null
+          reminder_sms_template?: string | null
           sms_template?: string | null
           tagline?: string | null
           updated_at?: string
@@ -112,6 +122,11 @@ export type Database = {
           id?: string
           logo_url?: string | null
           phone?: string | null
+          reminder_email_subject?: string | null
+          reminder_email_template?: string | null
+          reminder_enabled?: boolean | null
+          reminder_hours_before?: number | null
+          reminder_sms_template?: string | null
           sms_template?: string | null
           tagline?: string | null
           updated_at?: string
@@ -166,6 +181,7 @@ export type Database = {
           emergency_contact: string | null
           emergency_phone: string | null
           followup_date: string | null
+          followup_time: string | null
           functional_limitation: string | null
           functional_limitations: string[] | null
           goals_other: string | null
@@ -187,6 +203,7 @@ export type Database = {
           referred_out: boolean | null
           referring_physician: string | null
           region: string
+          reminder_sent_at: string | null
           resolution_days: string | null
           start_date: string | null
           treatment_goals: Json | null
@@ -210,6 +227,7 @@ export type Database = {
           emergency_contact?: string | null
           emergency_phone?: string | null
           followup_date?: string | null
+          followup_time?: string | null
           functional_limitation?: string | null
           functional_limitations?: string[] | null
           goals_other?: string | null
@@ -231,6 +249,7 @@ export type Database = {
           referred_out?: boolean | null
           referring_physician?: string | null
           region: string
+          reminder_sent_at?: string | null
           resolution_days?: string | null
           start_date?: string | null
           treatment_goals?: Json | null
@@ -254,6 +273,7 @@ export type Database = {
           emergency_contact?: string | null
           emergency_phone?: string | null
           followup_date?: string | null
+          followup_time?: string | null
           functional_limitation?: string | null
           functional_limitations?: string[] | null
           goals_other?: string | null
@@ -275,6 +295,7 @@ export type Database = {
           referred_out?: boolean | null
           referring_physician?: string | null
           region?: string
+          reminder_sent_at?: string | null
           resolution_days?: string | null
           start_date?: string | null
           treatment_goals?: Json | null
@@ -307,7 +328,9 @@ export type Database = {
           created_at: string
           episode_id: string
           id: string
+          reminder_sent_at: string | null
           scheduled_date: string
+          scheduled_time: string | null
           status: string | null
           updated_at: string
           user_id: string
@@ -319,7 +342,9 @@ export type Database = {
           created_at?: string
           episode_id: string
           id?: string
+          reminder_sent_at?: string | null
           scheduled_date: string
+          scheduled_time?: string | null
           status?: string | null
           updated_at?: string
           user_id: string
@@ -331,7 +356,9 @@ export type Database = {
           created_at?: string
           episode_id?: string
           id?: string
+          reminder_sent_at?: string | null
           scheduled_date?: string
+          scheduled_time?: string | null
           status?: string | null
           updated_at?: string
           user_id?: string
