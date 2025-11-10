@@ -321,6 +321,9 @@ export type Database = {
           chief_complaint: string
           complaints: Json | null
           consent_clinic_updates: boolean | null
+          consent_date: string | null
+          consent_signature: string | null
+          consent_signed_name: string | null
           converted_to_episode_id: string | null
           created_at: string | null
           current_medications: string | null
@@ -330,6 +333,9 @@ export type Database = {
           emergency_contact_phone: string | null
           emergency_contact_relationship: string | null
           guardian_phone: string | null
+          hipaa_acknowledged: boolean | null
+          hipaa_date: string | null
+          hipaa_signed_name: string | null
           hospitalization_history: string | null
           id: string
           injury_date: string | null
@@ -364,6 +370,9 @@ export type Database = {
           chief_complaint: string
           complaints?: Json | null
           consent_clinic_updates?: boolean | null
+          consent_date?: string | null
+          consent_signature?: string | null
+          consent_signed_name?: string | null
           converted_to_episode_id?: string | null
           created_at?: string | null
           current_medications?: string | null
@@ -373,6 +382,9 @@ export type Database = {
           emergency_contact_phone?: string | null
           emergency_contact_relationship?: string | null
           guardian_phone?: string | null
+          hipaa_acknowledged?: boolean | null
+          hipaa_date?: string | null
+          hipaa_signed_name?: string | null
           hospitalization_history?: string | null
           id?: string
           injury_date?: string | null
@@ -407,6 +419,9 @@ export type Database = {
           chief_complaint?: string
           complaints?: Json | null
           consent_clinic_updates?: boolean | null
+          consent_date?: string | null
+          consent_signature?: string | null
+          consent_signed_name?: string | null
           converted_to_episode_id?: string | null
           created_at?: string | null
           current_medications?: string | null
@@ -416,6 +431,9 @@ export type Database = {
           emergency_contact_phone?: string | null
           emergency_contact_relationship?: string | null
           guardian_phone?: string | null
+          hipaa_acknowledged?: boolean | null
+          hipaa_date?: string | null
+          hipaa_signed_name?: string | null
           hospitalization_history?: string | null
           id?: string
           injury_date?: string | null
