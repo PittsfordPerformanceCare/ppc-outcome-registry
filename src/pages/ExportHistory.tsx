@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,8 @@ export default function ExportHistory() {
   const [history, setHistory] = useState<ExportHistoryRecord[]>([]);
   const [filteredHistory, setFilteredHistory] = useState<ExportHistoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRecord, setSelectedRecord] = useState<ExportHistoryRecord | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const { toast } = useToast();
 
   // Filter states
@@ -311,6 +314,11 @@ export default function ExportHistory() {
   const handleItemsPerPageChange = (value: string) => {
     setItemsPerPage(Number(value));
     setCurrentPage(1); // Reset to first page when changing items per page
+  };
+
+  const openDetailsModal = (record: ExportHistoryRecord) => {
+    setSelectedRecord(record);
+    setDetailsOpen(true);
   };
 
   return (
@@ -593,7 +601,11 @@ export default function ExportHistory() {
                   </TableHeader>
                   <TableBody>
                     {paginatedHistory.map((record) => (
-                      <TableRow key={record.id}>
+                      <TableRow 
+                        key={record.id}
+                        className="cursor-pointer hover:bg-muted/50"
+                        onClick={() => openDetailsModal(record)}
+                      >
                         <TableCell>
                           <div className="flex items-center gap-2">
                             {getStatusIcon(record.status)}
@@ -755,6 +767,119 @@ export default function ExportHistory() {
           )}
         </CardContent>
       </Card>
+
+      {/* Details Modal */}
+      <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <History className="h-5 w-5" />
+              Export Details
+            </DialogTitle>
+            <DialogDescription>
+              Complete information about this export execution
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedRecord && (
+            <div className="space-y-6">
+              {/* Status Section */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold flex items-center gap-2">
+                  Status
+                </h3>
+                <div className="flex items-center gap-2">
+                  {getStatusIcon(selectedRecord.status)}
+                  <Badge variant={getStatusBadgeVariant(selectedRecord.status)} className="text-base">
+                    {selectedRecord.status}
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Export Information */}
+              <div className="space-y-3 rounded-lg border p-4 bg-muted/50">
+                <h3 className="text-sm font-semibold">Export Information</h3>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Name:</span>
+                    <p className="font-medium mt-1">{selectedRecord.export_name}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Type:</span>
+                    <p className="font-medium mt-1">
+                      <Badge variant="outline">{selectedRecord.export_type.toUpperCase()}</Badge>
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Records Exported:</span>
+                    <p className="font-medium mt-1">
+                      {selectedRecord.record_count !== null 
+                        ? selectedRecord.record_count.toLocaleString() 
+                        : "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Executed At:</span>
+                    <p className="font-medium mt-1">
+                      {format(new Date(selectedRecord.executed_at), "MMM d, yyyy h:mm:ss a")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recipients Section */}
+              <div className="space-y-3 rounded-lg border p-4">
+                <h3 className="text-sm font-semibold flex items-center gap-2">
+                  <Download className="h-4 w-4" />
+                  Recipients ({selectedRecord.recipient_emails.length})
+                </h3>
+                <div className="space-y-2">
+                  {selectedRecord.recipient_emails.map((email, index) => (
+                    <div 
+                      key={index} 
+                      className="flex items-center gap-2 text-sm bg-background p-2 rounded"
+                    >
+                      <Badge variant="secondary">{index + 1}</Badge>
+                      <span className="font-mono">{email}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Error Message Section */}
+              {selectedRecord.error_message && (
+                <div className="space-y-3 rounded-lg border border-destructive/50 p-4 bg-destructive/5">
+                  <h3 className="text-sm font-semibold flex items-center gap-2 text-destructive">
+                    <XCircle className="h-4 w-4" />
+                    Error Message
+                  </h3>
+                  <div className="text-sm bg-background p-3 rounded font-mono text-destructive whitespace-pre-wrap break-words">
+                    {selectedRecord.error_message}
+                  </div>
+                </div>
+              )}
+
+              {/* Success Message */}
+              {selectedRecord.status === "success" && !selectedRecord.error_message && (
+                <div className="space-y-3 rounded-lg border border-green-500/50 p-4 bg-green-500/5">
+                  <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="text-sm font-medium">
+                      Export completed successfully and sent to all recipients
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDetailsOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
