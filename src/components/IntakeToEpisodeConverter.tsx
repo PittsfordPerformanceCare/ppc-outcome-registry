@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { createEpisode, saveOutcomeScore } from "@/lib/dbOperations";
 import { PPC_CONFIG, IndexType } from "@/lib/ppcConfig";
+import { getOutcomeToolRecommendations, getPrimaryOutcomeTool } from "@/lib/outcomeToolRecommendations";
+import { OutcomeToolRecommendations } from "@/components/OutcomeToolRecommendations";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface IntakeForm {
   id: string;
@@ -236,7 +239,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Convert to Episode</DialogTitle>
           <DialogDescription>
@@ -244,67 +247,70 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          {/* Patient Info */}
-          <div className="rounded-lg bg-muted p-4">
-            <h3 className="font-semibold mb-2">Patient Information</h3>
-            <div className="space-y-1 text-sm">
-              <div><span className="text-muted-foreground">Name:</span> {intakeForm.patient_name}</div>
-              <div><span className="text-muted-foreground">DOB:</span> {new Date(intakeForm.date_of_birth).toLocaleDateString()}</div>
-            </div>
-          </div>
-
-          {/* Region Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="region">Body Region *</Label>
-            <Select value={selectedRegion} onValueChange={(value) => {
-              setSelectedRegion(value);
-              if (preview) {
-                setPreview({
-                  ...preview,
-                  region: value,
-                  indices: getIndicesForRegion(value)
-                });
-              }
-            }}>
-              <SelectTrigger id="region">
-                <SelectValue placeholder="Select body region" />
-              </SelectTrigger>
-              <SelectContent>
-                {PPC_CONFIG.regionEnum.map((region) => (
-                  <SelectItem key={region} value={region}>
-                    {region}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {!selectedRegion && (
-              <p className="text-xs text-amber-600 flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                Please select a body region to continue
-              </p>
-            )}
-          </div>
-
-          {/* Diagnosis */}
-          <div className="space-y-2">
-            <Label htmlFor="diagnosis">Diagnosis / Chief Complaint</Label>
-            <div className="rounded-lg bg-muted p-3 text-sm">
-              {intakeForm.chief_complaint}
-            </div>
-          </div>
-
-          {/* Outcome Indices */}
-          {preview && preview.indices.length > 0 && (
-            <div className="space-y-2">
-              <Label>Recommended Outcome Measures</Label>
-              <div className="flex flex-wrap gap-2">
-                {preview.indices.map((index) => (
-                  <Badge key={index} variant="secondary">{index}</Badge>
-                ))}
+        <ScrollArea className="max-h-[calc(90vh-180px)] pr-4">
+          <div className="space-y-4 py-4">
+            {/* Patient Info */}
+            <div className="rounded-lg bg-muted p-4">
+              <h3 className="font-semibold mb-2">Patient Information</h3>
+              <div className="space-y-1 text-sm">
+                <div><span className="text-muted-foreground">Name:</span> {intakeForm.patient_name}</div>
+                <div><span className="text-muted-foreground">DOB:</span> {new Date(intakeForm.date_of_birth).toLocaleDateString()}</div>
               </div>
             </div>
-          )}
+
+            {/* Region Selection */}
+            <div className="space-y-2">
+              <Label htmlFor="region">Body Region *</Label>
+              <Select value={selectedRegion} onValueChange={(value) => {
+                setSelectedRegion(value);
+                if (preview) {
+                  setPreview({
+                    ...preview,
+                    region: value,
+                    indices: getIndicesForRegion(value)
+                  });
+                }
+              }}>
+                <SelectTrigger id="region">
+                  <SelectValue placeholder="Select body region" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PPC_CONFIG.regionEnum.map((region) => (
+                    <SelectItem key={region} value={region}>
+                      {region}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {!selectedRegion && (
+                <p className="text-xs text-amber-600 flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  Please select a body region to continue
+                </p>
+              )}
+            </div>
+
+            {/* Diagnosis */}
+            <div className="space-y-2">
+              <Label htmlFor="diagnosis">Diagnosis / Chief Complaint</Label>
+              <div className="rounded-lg bg-muted p-3 text-sm">
+                {intakeForm.chief_complaint}
+              </div>
+            </div>
+
+            {/* Smart Outcome Measure Recommendations */}
+            {selectedRegion && (
+              <div className="space-y-2">
+                <OutcomeToolRecommendations 
+                  recommendations={getOutcomeToolRecommendations(
+                    selectedRegion,
+                    selectedDiagnosis || intakeForm.chief_complaint
+                  )}
+                  selectedTools={preview?.indices || []}
+                />
+              </div>
+            )}
+
 
           {/* Functional Limitations */}
           {preview && preview.functionalLimitations.length > 0 && (
@@ -340,6 +346,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
             </div>
           )}
         </div>
+        </ScrollArea>
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={converting}>

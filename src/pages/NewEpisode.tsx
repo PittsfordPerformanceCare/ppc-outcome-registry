@@ -17,6 +17,7 @@ import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
 import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorTreatmentSelector";
 import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoalsSelector";
+import { SmartOutcomeMeasureSelector } from "@/components/SmartOutcomeMeasureSelector";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -297,6 +298,15 @@ export default function NewEpisode() {
 
         {region && (
           <>
+            {/* Smart Outcome Measure Recommendations */}
+            <div className="mt-6">
+              <SmartOutcomeMeasureSelector 
+                region={region}
+                diagnosis={diagnosis}
+                showFullDetails={true}
+              />
+            </div>
+
             <Card className="mt-6">
               <CardHeader>
                 <CardTitle>Patient Demographics</CardTitle>
