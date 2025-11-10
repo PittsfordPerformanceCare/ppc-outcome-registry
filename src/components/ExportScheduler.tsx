@@ -9,8 +9,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square } from "lucide-react";
+import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square, ChevronDown, History, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ExportTemplateManager } from "./ExportTemplateManager";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,6 +28,18 @@ interface ScheduledExport {
   last_run_at?: string;
 }
 
+interface ExportHistoryRecord {
+  id: string;
+  export_id: string;
+  export_name: string;
+  export_type: string;
+  status: string;
+  record_count: number | null;
+  error_message: string | null;
+  executed_at: string;
+  recipient_emails: string[];
+}
+
 interface ExportSchedulerProps {
   currentFilters?: Record<string, any>;
 }
@@ -37,6 +50,8 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingExport, setEditingExport] = useState<ScheduledExport | null>(null);
   const [selectedExports, setSelectedExports] = useState<string[]>([]);
+  const [exportHistories, setExportHistories] = useState<Record<string, ExportHistoryRecord[]>>({});
+  const [loadingHistory, setLoadingHistory] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
 
   // Form state
@@ -70,6 +85,36 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadExportHistory = async (exportId: string) => {
+    if (exportHistories[exportId]) return; // Already loaded
+    
+    setLoadingHistory(prev => ({ ...prev, [exportId]: true }));
+    
+    try {
+      const { data, error } = await supabase
+        .from("export_history")
+        .select("*")
+        .eq("export_id", exportId)
+        .order("executed_at", { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      
+      setExportHistories(prev => ({
+        ...prev,
+        [exportId]: (data as any) || []
+      }));
+    } catch (error: any) {
+      toast({
+        title: "Error loading export history",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoadingHistory(prev => ({ ...prev, [exportId]: false }));
     }
   };
 
@@ -384,6 +429,28 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
     }
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "success":
+        return <CheckCircle2 className="h-4 w-4 text-green-600" />;
+      case "failed":
+        return <XCircle className="h-4 w-4 text-red-600" />;
+      case "partial":
+        return <AlertCircle className="h-4 w-4 text-yellow-600" />;
+      default:
+        return <Clock className="h-4 w-4 text-muted-foreground" />;
+    }
+  };
+
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case "success": return "default";
+      case "failed": return "destructive";
+      case "partial": return "secondary";
+      default: return "outline";
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -572,75 +639,149 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
 
                 <div className="space-y-3">
                 {exports.map((exp) => (
-                  <div
-                    key={exp.id}
-                    className="flex items-center gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                  >
-                    <Checkbox
-                      checked={selectedExports.includes(exp.id)}
-                      onCheckedChange={() => toggleSelectExport(exp.id)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-medium">{exp.name}</h4>
-                        <Badge variant={getFrequencyBadgeVariant(exp.frequency)}>
-                          {exp.frequency}
-                        </Badge>
-                        <Badge variant="outline">{exp.export_type.toUpperCase()}</Badge>
+                  <Collapsible key={exp.id}>
+                    <div className="flex items-center gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                      <Checkbox
+                        checked={selectedExports.includes(exp.id)}
+                        onCheckedChange={() => toggleSelectExport(exp.id)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium">{exp.name}</h4>
+                          <Badge variant={getFrequencyBadgeVariant(exp.frequency)}>
+                            {exp.frequency}
+                          </Badge>
+                          <Badge variant="outline">{exp.export_type.toUpperCase()}</Badge>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Mail className="h-3 w-3" />
+                            {exp.recipient_emails.length} recipient{exp.recipient_emails.length !== 1 ? 's' : ''}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            Next: {format(new Date(exp.next_run_at), "MMM d, h:mm a")}
+                          </span>
+                          {exp.last_run_at && (
+                            <span className="flex items-center gap-1">
+                              <History className="h-3 w-3" />
+                              Last: {format(new Date(exp.last_run_at), "MMM d, h:mm a")}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Mail className="h-3 w-3" />
-                          {exp.recipient_emails.length} recipient{exp.recipient_emails.length !== 1 ? 's' : ''}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          Next: {format(new Date(exp.next_run_at), "MMM d, h:mm a")}
-                        </span>
+
+                      <div className="flex items-center gap-2">
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => loadExportHistory(exp.id)}
+                            className="gap-2"
+                          >
+                            <History className="h-4 w-4" />
+                            History
+                            <ChevronDown className="h-3 w-3" />
+                          </Button>
+                        </CollapsibleTrigger>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRunNow(exp.id)}
+                          className="gap-2"
+                        >
+                          <Play className="h-3 w-3" />
+                          Run Now
+                        </Button>
+                        <Switch
+                          checked={exp.enabled}
+                          onCheckedChange={(checked) => handleToggleEnabled(exp.id, checked)}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDuplicateExport(exp)}
+                          title="Duplicate export"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditExport(exp)}
+                          title="Edit export"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteExport(exp.id)}
+                          title="Delete export"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleRunNow(exp.id)}
-                        className="gap-2"
-                      >
-                        <Play className="h-3 w-3" />
-                        Run Now
-                      </Button>
-                      <Switch
-                        checked={exp.enabled}
-                        onCheckedChange={(checked) => handleToggleEnabled(exp.id, checked)}
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDuplicateExport(exp)}
-                        title="Duplicate export"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditExport(exp)}
-                        title="Edit export"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteExport(exp.id)}
-                        title="Delete export"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
+                    <CollapsibleContent>
+                      <div className="ml-10 mr-4 mb-3 p-4 border border-t-0 rounded-b-lg bg-muted/20">
+                        <div className="flex items-center gap-2 mb-3">
+                          <History className="h-4 w-4" />
+                          <h5 className="font-semibold text-sm">Export Run History</h5>
+                        </div>
+                        
+                        {loadingHistory[exp.id] ? (
+                          <p className="text-sm text-muted-foreground text-center py-4">
+                            Loading history...
+                          </p>
+                        ) : !exportHistories[exp.id] || exportHistories[exp.id].length === 0 ? (
+                          <p className="text-sm text-muted-foreground text-center py-4">
+                            No run history yet
+                          </p>
+                        ) : (
+                          <div className="space-y-2">
+                            {exportHistories[exp.id].map((record) => (
+                              <div
+                                key={record.id}
+                                className="flex items-center justify-between p-3 bg-background rounded-lg border"
+                              >
+                                <div className="flex items-center gap-3 flex-1">
+                                  {getStatusIcon(record.status)}
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant={getStatusBadgeVariant(record.status)}>
+                                        {record.status}
+                                      </Badge>
+                                      <span className="text-sm text-muted-foreground">
+                                        {format(new Date(record.executed_at), "MMM d, yyyy 'at' h:mm a")}
+                                      </span>
+                                    </div>
+                                    {record.error_message && (
+                                      <p className="text-xs text-red-600 mt-1">
+                                        Error: {record.error_message}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-4 text-sm">
+                                  {record.record_count !== null && (
+                                    <span className="text-muted-foreground">
+                                      {record.record_count} records
+                                    </span>
+                                  )}
+                                  <Badge variant="outline">
+                                    {record.recipient_emails.length} recipients
+                                  </Badge>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 ))}
               </div>
               </>
