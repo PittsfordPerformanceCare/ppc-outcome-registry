@@ -223,11 +223,14 @@ async function sendReminderNotification(
   // Send Email
   if (patientEmail && resendApiKey) {
     try {
+      // Generate tracking ID for email open tracking
+      const trackingId = crypto.randomUUID();
+      
       const emailSubject = clinicSettings?.reminder_email_subject
         ? replacePlaceholders(clinicSettings.reminder_email_subject)
         : `Appointment Reminder: ${patientName}`;
 
-      const emailHtml = clinicSettings?.reminder_email_template
+      let emailHtml = clinicSettings?.reminder_email_template
         ? replacePlaceholders(clinicSettings.reminder_email_template)
         : replacePlaceholders(`
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -244,6 +247,10 @@ async function sendReminderNotification(
               <p style="margin-top: 30px;">See you soon!<br/>{{clinic_name}} Team</p>
             </div>
           `);
+      
+      // Add tracking pixel to email HTML
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      emailHtml += `<img src="${supabaseUrl}/functions/v1/track-email-open?id=${trackingId}" width="1" height="1" alt="" style="display:block;border:0;" />`;
 
       const emailResponse = await fetch('https://api.resend.com/emails', {
         method: 'POST',
@@ -272,6 +279,7 @@ async function sendReminderNotification(
           notification_type: 'email',
           status: 'sent',
           delivery_details: { message_id: responseData.id, type: 'appointment_reminder' },
+          tracking_id: trackingId,
           user_id: userId,
           clinic_id: clinicId
         });

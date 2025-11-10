@@ -12,6 +12,8 @@ interface NotificationRecord {
   notification_type: 'email' | 'sms';
   status: 'sent' | 'failed' | 'pending';
   sent_at: string;
+  opened_at: string | null;
+  open_count: number | null;
 }
 
 interface DailyStats {
@@ -44,7 +46,7 @@ export default function NotificationAnalytics() {
 
       const { data, error } = await supabase
         .from("notifications_history")
-        .select("id, notification_type, status, sent_at")
+        .select("id, notification_type, status, sent_at, opened_at, open_count")
         .gte("sent_at", startDate.toISOString())
         .order("sent_at", { ascending: true });
 
@@ -96,6 +98,10 @@ export default function NotificationAnalytics() {
     const sms = notifications.filter((n) => n.notification_type === "sms").length;
     const emailsSent = notifications.filter((n) => n.notification_type === "email" && n.status === "sent").length;
     const smsSent = notifications.filter((n) => n.notification_type === "sms" && n.status === "sent").length;
+    
+    // Calculate email open rate
+    const emailsOpened = notifications.filter((n) => n.notification_type === "email" && n.opened_at).length;
+    const emailOpenRate = emailsSent > 0 ? ((emailsOpened / emailsSent) * 100).toFixed(1) : "0.0";
 
     const deliveryRate = total > 0 ? ((sent / total) * 100).toFixed(1) : "0.0";
     const emailDeliveryRate = emails > 0 ? ((emailsSent / emails) * 100).toFixed(1) : "0.0";
@@ -109,9 +115,11 @@ export default function NotificationAnalytics() {
       sms,
       emailsSent,
       smsSent,
+      emailsOpened,
       deliveryRate,
       emailDeliveryRate,
       smsDeliveryRate,
+      emailOpenRate,
     };
   };
 
@@ -209,6 +217,51 @@ export default function NotificationAnalytics() {
             <div className="text-2xl font-bold text-purple-600">{metrics.smsDeliveryRate}%</div>
             <p className="text-xs text-muted-foreground">
               {metrics.smsSent} of {metrics.sms} delivered
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Email Engagement Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="border-blue-200 bg-blue-50/50">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Email Open Rate</CardTitle>
+            <CheckCircle className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">{metrics.emailOpenRate}%</div>
+            <p className="text-xs text-muted-foreground">
+              {metrics.emailsOpened} of {metrics.emailsSent} emails opened
+            </p>
+            <p className="text-xs text-blue-600 mt-2 font-medium">
+              Tracked via pixel analytics
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Email Deliveries</CardTitle>
+            <Mail className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.emailsSent}</div>
+            <p className="text-xs text-muted-foreground">
+              Successfully delivered emails
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">SMS Deliveries</CardTitle>
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.smsSent}</div>
+            <p className="text-xs text-muted-foreground">
+              Successfully delivered SMS
             </p>
           </CardContent>
         </Card>

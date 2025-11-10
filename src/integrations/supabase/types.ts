@@ -547,11 +547,14 @@ export type Database = {
           error_message: string | null
           id: string
           notification_type: string
+          open_count: number | null
+          opened_at: string | null
           patient_email: string | null
           patient_name: string
           patient_phone: string | null
           sent_at: string
           status: string
+          tracking_id: string | null
           user_id: string
         }
         Insert: {
@@ -563,11 +566,14 @@ export type Database = {
           error_message?: string | null
           id?: string
           notification_type: string
+          open_count?: number | null
+          opened_at?: string | null
           patient_email?: string | null
           patient_name: string
           patient_phone?: string | null
           sent_at?: string
           status: string
+          tracking_id?: string | null
           user_id: string
         }
         Update: {
@@ -579,11 +585,14 @@ export type Database = {
           error_message?: string | null
           id?: string
           notification_type?: string
+          open_count?: number | null
+          opened_at?: string | null
           patient_email?: string | null
           patient_name?: string
           patient_phone?: string | null
           sent_at?: string
           status?: string
+          tracking_id?: string | null
           user_id?: string
         }
         Relationships: []

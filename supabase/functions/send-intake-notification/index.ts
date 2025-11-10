@@ -85,6 +85,9 @@ const handler = async (req: Request): Promise<Response> => {
       
       if (resendApiKey) {
         try {
+          // Generate tracking ID for email open tracking
+          const trackingId = crypto.randomUUID();
+          
           // Get custom templates or use defaults
           let emailSubject = clinicSettings?.email_subject 
             ? replacePlaceholders(clinicSettings.email_subject)
@@ -95,7 +98,7 @@ const handler = async (req: Request): Promise<Response> => {
             emailSubject = `[TEST] ${emailSubject}`;
           }
           
-          const emailHtml = clinicSettings?.email_template
+          let emailHtml = clinicSettings?.email_template
             ? replacePlaceholders(clinicSettings.email_template)
             : replacePlaceholders(`
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -112,6 +115,10 @@ const handler = async (req: Request): Promise<Response> => {
                   <p style="margin-top: 30px;">Best regards,<br/>{{clinic_name}} Team</p>
                 </div>
               `);
+          
+          // Add tracking pixel to email HTML
+          const supabaseUrl = Deno.env.get('SUPABASE_URL');
+          emailHtml += `<img src="${supabaseUrl}/functions/v1/track-email-open?id=${trackingId}" width="1" height="1" alt="" style="display:block;border:0;" />`;
           
           const emailResponse = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -143,6 +150,7 @@ const handler = async (req: Request): Promise<Response> => {
               notification_type: 'email',
               status: 'sent',
               delivery_details: { message_id: responseData.id },
+              tracking_id: trackingId,
               user_id: userId,
               clinic_id: clinicId
               });
