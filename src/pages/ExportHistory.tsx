@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { History, Download, CheckCircle, XCircle, Clock, Filter, X } from "lucide-react";
+import { History, Download, CheckCircle, XCircle, Clock, Filter, X, FileDown } from "lucide-react";
 import { format } from "date-fns";
 
 interface ExportHistoryRecord {
@@ -105,6 +105,63 @@ export default function ExportHistory() {
     setEndDate("");
   };
 
+  const exportToCSV = () => {
+    try {
+      // CSV Headers
+      const headers = [
+        "Status",
+        "Export Name",
+        "Type",
+        "Records",
+        "Recipients",
+        "Recipient Emails",
+        "Executed At",
+        "Error Message"
+      ];
+
+      // Convert data to CSV rows
+      const csvRows = [
+        headers.join(","),
+        ...filteredHistory.map((record) => {
+          const row = [
+            record.status,
+            `"${record.export_name.replace(/"/g, '""')}"`, // Escape quotes
+            record.export_type.toUpperCase(),
+            record.record_count !== null ? record.record_count : "",
+            record.recipient_emails.length,
+            `"${record.recipient_emails.join("; ").replace(/"/g, '""')}"`, // Escape quotes
+            format(new Date(record.executed_at), "yyyy-MM-dd HH:mm:ss"),
+            record.error_message ? `"${record.error_message.replace(/"/g, '""')}"` : ""
+          ];
+          return row.join(",");
+        })
+      ];
+
+      // Create CSV content
+      const csvContent = csvRows.join("\n");
+
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `export-history-${format(new Date(), "yyyy-MM-dd-HHmmss")}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      toast({
+        title: "Export successful",
+        description: `Downloaded ${filteredHistory.length} records`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Export failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "success":
@@ -145,6 +202,10 @@ export default function ExportHistory() {
             View and track all past export executions
           </p>
         </div>
+        <Button onClick={exportToCSV} disabled={filteredHistory.length === 0}>
+          <FileDown className="h-4 w-4 mr-2" />
+          Export to CSV
+        </Button>
       </div>
 
       {/* Filters Card */}
