@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { ReminderStatusPanel } from "@/components/ReminderStatusPanel";
+import { NotificationAlertSettings } from "@/components/NotificationAlertSettings";
 
 export default function ClinicSettings() {
   const navigate = useNavigate();
@@ -530,6 +531,9 @@ export default function ClinicSettings() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Notification Failure Alerts */}
+      <NotificationAlertSettings />
 
       {/* Save Button */}
       <div className="flex justify-end">

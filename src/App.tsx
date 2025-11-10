@@ -25,6 +25,7 @@ import ClinicSettings from "./pages/ClinicSettings";
 import NotificationHistory from "./pages/NotificationHistory";
 import NotificationAnalytics from "./pages/NotificationAnalytics";
 import LinkAnalytics from "./pages/LinkAnalytics";
+import AlertHistory from "./pages/AlertHistory";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
                     <Route path="/notification-history" element={<NotificationHistory />} />
                     <Route path="/notification-analytics" element={<NotificationAnalytics />} />
                     <Route path="/link-analytics" element={<LinkAnalytics />} />
+                    <Route path="/alert-history" element={<AlertHistory />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

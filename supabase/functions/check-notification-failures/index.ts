@@ -70,7 +70,7 @@ const handler = async (req: Request): Promise<Response> => {
       // Get notifications in the time window
       const { data: notifications, error: notifError } = await supabase
         .from('notifications_history')
-        .select('status')
+        .select('status, notification_type')
         .gte('sent_at', windowStart.toISOString());
 
       if (notifError) {
