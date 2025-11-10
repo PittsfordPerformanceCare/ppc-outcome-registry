@@ -365,6 +365,56 @@ export type Database = {
         }
         Relationships: []
       }
+      export_templates: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          description: string | null
+          export_type: string
+          filters: Json
+          id: string
+          is_shared: boolean
+          name: string
+          recipient_emails: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          description?: string | null
+          export_type: string
+          filters?: Json
+          id?: string
+          is_shared?: boolean
+          name: string
+          recipient_emails?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          description?: string | null
+          export_type?: string
+          filters?: Json
+          id?: string
+          is_shared?: boolean
+          name?: string
+          recipient_emails?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "export_templates_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       followups: {
         Row: {
           clinic_id: string | null

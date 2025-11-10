@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play } from "lucide-react";
 import { format } from "date-fns";
+import { ExportTemplateManager } from "./ExportTemplateManager";
 
 interface ScheduledExport {
   id: string;
@@ -236,6 +238,18 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
     setDialogOpen(true);
   };
 
+  const handleApplyTemplate = (template: any) => {
+    setName(template.name);
+    setExportType(template.export_type);
+    setRecipientEmails(template.recipient_emails.join(", "));
+    setUseCurrentFilters(Object.keys(template.filters || {}).length > 0);
+    setDialogOpen(true);
+    toast({
+      title: "Template applied",
+      description: `Using "${template.name}" configuration`,
+    });
+  };
+
   const resetForm = () => {
     setEditingExport(null);
     setName("");
@@ -261,10 +275,10 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Scheduled Exports
+              Export Automation
             </CardTitle>
             <CardDescription>
-              Automate data exports and delivery to your team
+              Manage templates and scheduled exports
             </CardDescription>
           </div>
           <Dialog open={dialogOpen} onOpenChange={(open) => {
@@ -368,72 +382,90 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
       </CardHeader>
 
       <CardContent>
-        {loading ? (
-          <p className="text-muted-foreground text-center py-8">Loading...</p>
-        ) : exports.length === 0 ? (
-          <p className="text-muted-foreground text-center py-8">
-            No scheduled exports yet. Create one to get started!
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {exports.map((exp) => (
-              <div
-                key={exp.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h4 className="font-medium">{exp.name}</h4>
-                    <Badge variant={getFrequencyBadgeVariant(exp.frequency)}>
-                      {exp.frequency}
-                    </Badge>
-                    <Badge variant="outline">{exp.export_type.toUpperCase()}</Badge>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Mail className="h-3 w-3" />
-                      {exp.recipient_emails.length} recipient{exp.recipient_emails.length !== 1 ? 's' : ''}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      Next: {format(new Date(exp.next_run_at), "MMM d, h:mm a")}
-                    </span>
-                  </div>
-                </div>
+        <Tabs defaultValue="schedules" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="schedules">Scheduled Exports</TabsTrigger>
+            <TabsTrigger value="templates">Templates</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="schedules" className="mt-4">
+            {loading ? (
+              <p className="text-muted-foreground text-center py-8">Loading...</p>
+            ) : exports.length === 0 ? (
+              <p className="text-muted-foreground text-center py-8">
+                No scheduled exports yet. Create one to get started!
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {exports.map((exp) => (
+                  <div
+                    key={exp.id}
+                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium">{exp.name}</h4>
+                        <Badge variant={getFrequencyBadgeVariant(exp.frequency)}>
+                          {exp.frequency}
+                        </Badge>
+                        <Badge variant="outline">{exp.export_type.toUpperCase()}</Badge>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          {exp.recipient_emails.length} recipient{exp.recipient_emails.length !== 1 ? 's' : ''}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          Next: {format(new Date(exp.next_run_at), "MMM d, h:mm a")}
+                        </span>
+                      </div>
+                    </div>
 
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleRunNow(exp.id)}
-                    className="gap-2"
-                  >
-                    <Play className="h-3 w-3" />
-                    Run Now
-                  </Button>
-                  <Switch
-                    checked={exp.enabled}
-                    onCheckedChange={(checked) => handleToggleEnabled(exp.id, checked)}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEditExport(exp)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDeleteExport(exp.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleRunNow(exp.id)}
+                        className="gap-2"
+                      >
+                        <Play className="h-3 w-3" />
+                        Run Now
+                      </Button>
+                      <Switch
+                        checked={exp.enabled}
+                        onCheckedChange={(checked) => handleToggleEnabled(exp.id, checked)}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleEditExport(exp)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteExport(exp.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
+          </TabsContent>
+
+          <TabsContent value="templates" className="mt-4">
+            <ExportTemplateManager
+              onApplyTemplate={handleApplyTemplate}
+              currentFilters={currentFilters}
+              currentType={exportType}
+              currentRecipients={recipientEmails.split(",").map(e => e.trim()).filter(e => e)}
+            />
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
