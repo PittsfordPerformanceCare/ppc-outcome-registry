@@ -537,6 +537,97 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_alert_config: {
+        Row: {
+          alert_recipients: string[]
+          check_window_hours: number
+          clinic_id: string | null
+          cooldown_hours: number
+          created_at: string
+          enabled: boolean
+          failure_rate_threshold: number
+          id: string
+          min_notifications_required: number
+          updated_at: string
+        }
+        Insert: {
+          alert_recipients?: string[]
+          check_window_hours?: number
+          clinic_id?: string | null
+          cooldown_hours?: number
+          created_at?: string
+          enabled?: boolean
+          failure_rate_threshold?: number
+          id?: string
+          min_notifications_required?: number
+          updated_at?: string
+        }
+        Update: {
+          alert_recipients?: string[]
+          check_window_hours?: number
+          clinic_id?: string | null
+          cooldown_hours?: number
+          created_at?: string
+          enabled?: boolean
+          failure_rate_threshold?: number
+          id?: string
+          min_notifications_required?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_alert_config_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_alert_history: {
+        Row: {
+          alert_details: Json | null
+          alert_sent_to: string[]
+          config_id: string | null
+          created_at: string
+          failed_notifications: number
+          failure_rate: number
+          id: string
+          total_notifications: number
+          triggered_at: string
+        }
+        Insert: {
+          alert_details?: Json | null
+          alert_sent_to: string[]
+          config_id?: string | null
+          created_at?: string
+          failed_notifications: number
+          failure_rate: number
+          id?: string
+          total_notifications: number
+          triggered_at?: string
+        }
+        Update: {
+          alert_details?: Json | null
+          alert_sent_to?: string[]
+          config_id?: string | null
+          created_at?: string
+          failed_notifications?: number
+          failure_rate?: number
+          id?: string
+          total_notifications?: number
+          triggered_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_alert_history_config_id_fkey"
+            columns: ["config_id"]
+            isOneToOne: false
+            referencedRelation: "notification_alert_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_link_clicks: {
         Row: {
           clicked_at: string
