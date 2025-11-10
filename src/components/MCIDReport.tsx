@@ -29,6 +29,12 @@ interface MCIDReportProps {
   referringPhysician?: string;
   summary: MCIDSummary;
   daysInCare: number;
+  clinicName?: string;
+  clinicTagline?: string;
+  clinicPhone?: string;
+  clinicEmail?: string;
+  clinicAddress?: string;
+  clinicLogoUrl?: string;
 }
 
 export function MCIDReport({
@@ -42,7 +48,13 @@ export function MCIDReport({
   clinicianNPI,
   referringPhysician,
   summary,
-  daysInCare
+  daysInCare,
+  clinicName = "PPC Outcome Registry",
+  clinicTagline = "NeuroEdvance",
+  clinicPhone = "(555) 123-4567",
+  clinicEmail = "contact@clinic.com",
+  clinicAddress,
+  clinicLogoUrl,
 }: MCIDReportProps) {
   const formatDate = (dateString: string) => {
     try {
@@ -67,8 +79,8 @@ export function MCIDReport({
     <div className="mcid-report bg-white text-black">
       {/* Header with Clinic Branding */}
       <div className="report-header border-b-4 border-primary pb-6 mb-6">
-        <div className="flex items-start justify-between">
-          <div>
+        <div className="flex items-start justify-between gap-6">
+          <div className="flex-1">
             <h1 className="text-3xl font-bold text-primary mb-2">
               Patient Outcome Report
             </h1>
@@ -77,18 +89,42 @@ export function MCIDReport({
             </p>
           </div>
           <div className="text-right">
+            {clinicLogoUrl && (
+              <div className="mb-4">
+                <img
+                  src={clinicLogoUrl}
+                  alt="Clinic logo"
+                  className="h-16 w-auto ml-auto object-contain"
+                />
+              </div>
+            )}
             <div className="text-2xl font-bold text-primary mb-1">
-              PPC Outcome Registry
+              {clinicName}
             </div>
-            <div className="text-sm text-gray-600">NeuroEdvance</div>
-            <div className="text-sm text-gray-600 mt-2">
-              <Phone className="inline h-3 w-3 mr-1" />
-              (555) 123-4567
-            </div>
-            <div className="text-sm text-gray-600">
-              <Mail className="inline h-3 w-3 mr-1" />
-              contact@clinic.com
-            </div>
+            {clinicTagline && (
+              <div className="text-sm text-gray-600">{clinicTagline}</div>
+            )}
+            {(clinicPhone || clinicEmail || clinicAddress) && (
+              <div className="text-sm text-gray-600 mt-2 space-y-1">
+                {clinicPhone && (
+                  <div>
+                    <Phone className="inline h-3 w-3 mr-1" />
+                    {clinicPhone}
+                  </div>
+                )}
+                {clinicEmail && (
+                  <div>
+                    <Mail className="inline h-3 w-3 mr-1" />
+                    {clinicEmail}
+                  </div>
+                )}
+                {clinicAddress && (
+                  <div className="whitespace-pre-line">
+                    {clinicAddress}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

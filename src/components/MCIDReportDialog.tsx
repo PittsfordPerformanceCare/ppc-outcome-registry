@@ -13,6 +13,7 @@ import { FileText, Printer, Download } from "lucide-react";
 import { MCIDReport } from "./MCIDReport";
 import { MCIDSummary } from "@/lib/mcidTracking";
 import { toast } from "sonner";
+import { useClinicSettings } from "@/hooks/useClinicSettings";
 
 interface MCIDReportDialogProps {
   patientName: string;
@@ -30,6 +31,7 @@ interface MCIDReportDialogProps {
 
 export function MCIDReportDialog(props: MCIDReportDialogProps) {
   const [open, setOpen] = useState(false);
+  const { settings } = useClinicSettings();
 
   const handlePrint = () => {
     // Create a new window for printing
@@ -230,7 +232,15 @@ export function MCIDReportDialog(props: MCIDReportDialogProps) {
 
         <ScrollArea className="h-[calc(90vh-200px)]">
           <div className="pr-4">
-            <MCIDReport {...props} />
+            <MCIDReport
+              {...props}
+              clinicName={settings?.clinic_name}
+              clinicTagline={settings?.tagline || undefined}
+              clinicPhone={settings?.phone || undefined}
+              clinicEmail={settings?.email || undefined}
+              clinicAddress={settings?.address || undefined}
+              clinicLogoUrl={settings?.logo_url || undefined}
+            />
           </div>
         </ScrollArea>
       </DialogContent>

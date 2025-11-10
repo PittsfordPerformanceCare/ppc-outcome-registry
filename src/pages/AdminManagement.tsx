@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, ShieldOff } from "lucide-react";
+import { Shield, ShieldOff, Users, Building2 } from "lucide-react";
+import { ClinicBrandingSettings } from "@/components/ClinicBrandingSettings";
 
 interface UserWithRole {
   id: string;
@@ -137,64 +139,83 @@ const AdminManagement = () => {
       <div>
         <h1 className="text-3xl font-bold">Admin Management</h1>
         <p className="text-muted-foreground mt-2">
-          Manage user roles and permissions
+          Manage user roles, permissions, and clinic settings
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Users</CardTitle>
-          <CardDescription>
-            View and manage user roles. Admins can access all patient data.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.full_name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge variant={user.role === "admin" ? "default" : "secondary"}>
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {user.role === "admin" ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removeAdmin(user.id)}
-                      >
-                        <ShieldOff className="h-4 w-4 mr-2" />
-                        Remove Admin
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={() => promoteToAdmin(user.id)}
-                      >
-                        <Shield className="h-4 w-4 mr-2" />
-                        Make Admin
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="users" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsTrigger value="users" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Users
+          </TabsTrigger>
+          <TabsTrigger value="branding" className="flex items-center gap-2">
+            <Building2 className="h-4 w-4" />
+            Clinic Branding
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="users" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Users</CardTitle>
+              <CardDescription>
+                View and manage user roles. Admins can access all patient data.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">{user.full_name}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <Badge variant={user.role === "admin" ? "default" : "secondary"}>
+                          {user.role}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {user.role === "admin" ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeAdmin(user.id)}
+                          >
+                            <ShieldOff className="h-4 w-4 mr-2" />
+                            Remove Admin
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => promoteToAdmin(user.id)}
+                          >
+                            <Shield className="h-4 w-4 mr-2" />
+                            Make Admin
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="branding">
+          <ClinicBrandingSettings />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
