@@ -19,6 +19,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState as useReactState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import confetti from "canvas-confetti";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -154,6 +155,7 @@ export default function PatientIntake() {
   const [submittedComplaints, setSubmittedComplaints] = useState<z.infer<typeof complaintSchema>[]>([]);
   const [submittedReviewOfSystems, setSubmittedReviewOfSystems] = useState<string[]>([]);
   const [completionPercentage, setCompletionPercentage] = useState(0);
+  const [hasTriggeredConfetti, setHasTriggeredConfetti] = useState(false);
   const [sectionCompletion, setSectionCompletion] = useState({
     personal: false,
     insurance: false,
@@ -242,6 +244,42 @@ export default function PatientIntake() {
       const percentage = Math.round((completedSections / totalSections) * 100);
       setCompletionPercentage(percentage);
       
+      // Trigger confetti when 100% complete (only once)
+      if (percentage === 100 && !hasTriggeredConfetti) {
+        setHasTriggeredConfetti(true);
+        // Fire confetti
+        const duration = 3000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        const randomInRange = (min: number, max: number) => {
+          return Math.random() * (max - min) + min;
+        };
+
+        const interval = setInterval(() => {
+          const timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          const particleCount = 50 * (timeLeft / duration);
+          
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+          });
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+          });
+        }, 250);
+
+        toast.success("🎉 Form 100% complete! You're all set!");
+      }
+      
       setSectionCompletion({
         personal: personalComplete,
         insurance: insuranceComplete,
@@ -253,7 +291,7 @@ export default function PatientIntake() {
     });
 
     return () => subscription.unsubscribe();
-  }, [form]);
+  }, [form, hasTriggeredConfetti]);
 
   const generateAccessCode = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
