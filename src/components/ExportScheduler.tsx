@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square, ChevronDown, History, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
+import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square, ChevronDown, History, CheckCircle2, XCircle, AlertCircle, TrendingUp, Target, Database } from "lucide-react";
 import { format } from "date-fns";
 import { ExportTemplateManager } from "./ExportTemplateManager";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -451,6 +451,42 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
     }
   };
 
+  const calculateMetrics = (history: ExportHistoryRecord[]) => {
+    if (history.length === 0) {
+      return {
+        successRate: 0,
+        totalRecords: 0,
+        averageRecords: 0,
+        totalRuns: 0,
+        successfulRuns: 0,
+        failedRuns: 0,
+      };
+    }
+
+    const successfulRuns = history.filter(h => h.status === "success").length;
+    const failedRuns = history.filter(h => h.status === "failed").length;
+    const totalRuns = history.length;
+    const successRate = (successfulRuns / totalRuns) * 100;
+    
+    const recordCounts = history
+      .filter(h => h.status === "success" && h.record_count !== null)
+      .map(h => h.record_count as number);
+    
+    const totalRecords = recordCounts.reduce((sum, count) => sum + count, 0);
+    const averageRecords = recordCounts.length > 0 
+      ? Math.round(totalRecords / recordCounts.length)
+      : 0;
+
+    return {
+      successRate: Math.round(successRate),
+      totalRecords,
+      averageRecords,
+      totalRuns,
+      successfulRuns,
+      failedRuns,
+    };
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -727,9 +763,9 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
 
                     <CollapsibleContent>
                       <div className="ml-10 mr-4 mb-3 p-4 border border-t-0 rounded-b-lg bg-muted/20">
-                        <div className="flex items-center gap-2 mb-3">
+                        <div className="flex items-center gap-2 mb-4">
                           <History className="h-4 w-4" />
-                          <h5 className="font-semibold text-sm">Export Run History</h5>
+                          <h5 className="font-semibold text-sm">Export Performance & History</h5>
                         </div>
                         
                         {loadingHistory[exp.id] ? (
@@ -741,43 +777,111 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                             No run history yet
                           </p>
                         ) : (
-                          <div className="space-y-2">
-                            {exportHistories[exp.id].map((record) => (
-                              <div
-                                key={record.id}
-                                className="flex items-center justify-between p-3 bg-background rounded-lg border"
-                              >
-                                <div className="flex items-center gap-3 flex-1">
-                                  {getStatusIcon(record.status)}
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2">
-                                      <Badge variant={getStatusBadgeVariant(record.status)}>
-                                        {record.status}
-                                      </Badge>
-                                      <span className="text-sm text-muted-foreground">
-                                        {format(new Date(record.executed_at), "MMM d, yyyy 'at' h:mm a")}
-                                      </span>
+                          <>
+                            {/* Performance Metrics */}
+                            {(() => {
+                              const metrics = calculateMetrics(exportHistories[exp.id]);
+                              return (
+                                <div className="grid grid-cols-4 gap-3 mb-4">
+                                  <Card className="p-3">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <Target className="h-4 w-4 text-green-600" />
+                                      <p className="text-xs font-medium text-muted-foreground">Success Rate</p>
                                     </div>
-                                    {record.error_message && (
-                                      <p className="text-xs text-red-600 mt-1">
-                                        Error: {record.error_message}
-                                      </p>
-                                    )}
+                                    <p className="text-2xl font-bold">
+                                      {metrics.successRate}%
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      {metrics.successfulRuns} of {metrics.totalRuns} runs
+                                    </p>
+                                  </Card>
+
+                                  <Card className="p-3">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <Database className="h-4 w-4 text-blue-600" />
+                                      <p className="text-xs font-medium text-muted-foreground">Total Records</p>
+                                    </div>
+                                    <p className="text-2xl font-bold">
+                                      {metrics.totalRecords.toLocaleString()}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      All successful exports
+                                    </p>
+                                  </Card>
+
+                                  <Card className="p-3">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <TrendingUp className="h-4 w-4 text-purple-600" />
+                                      <p className="text-xs font-medium text-muted-foreground">Avg Records</p>
+                                    </div>
+                                    <p className="text-2xl font-bold">
+                                      {metrics.averageRecords.toLocaleString()}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      Per successful export
+                                    </p>
+                                  </Card>
+
+                                  <Card className="p-3">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <XCircle className="h-4 w-4 text-red-600" />
+                                      <p className="text-xs font-medium text-muted-foreground">Failed Runs</p>
+                                    </div>
+                                    <p className="text-2xl font-bold">
+                                      {metrics.failedRuns}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                      Require attention
+                                    </p>
+                                  </Card>
+                                </div>
+                              );
+                            })()}
+
+                            {/* Run History */}
+                            <div>
+                              <h6 className="text-xs font-semibold text-muted-foreground mb-2">
+                                Recent Runs (Last 10)
+                              </h6>
+                              <div className="space-y-2">
+                                {exportHistories[exp.id].map((record) => (
+                                  <div
+                                    key={record.id}
+                                    className="flex items-center justify-between p-3 bg-background rounded-lg border"
+                                  >
+                                    <div className="flex items-center gap-3 flex-1">
+                                      {getStatusIcon(record.status)}
+                                      <div className="flex-1">
+                                        <div className="flex items-center gap-2">
+                                          <Badge variant={getStatusBadgeVariant(record.status)}>
+                                            {record.status}
+                                          </Badge>
+                                          <span className="text-sm text-muted-foreground">
+                                            {format(new Date(record.executed_at), "MMM d, yyyy 'at' h:mm a")}
+                                          </span>
+                                        </div>
+                                        {record.error_message && (
+                                          <p className="text-xs text-red-600 mt-1">
+                                            Error: {record.error_message}
+                                          </p>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-4 text-sm">
+                                      {record.record_count !== null && (
+                                        <span className="text-muted-foreground">
+                                          {record.record_count.toLocaleString()} records
+                                        </span>
+                                      )}
+                                      <Badge variant="outline">
+                                        {record.recipient_emails.length} recipients
+                                      </Badge>
+                                    </div>
                                   </div>
-                                </div>
-                                <div className="flex items-center gap-4 text-sm">
-                                  {record.record_count !== null && (
-                                    <span className="text-muted-foreground">
-                                      {record.record_count} records
-                                    </span>
-                                  )}
-                                  <Badge variant="outline">
-                                    {record.recipient_emails.length} recipients
-                                  </Badge>
-                                </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            </div>
+                          </>
                         )}
                       </div>
                     </CollapsibleContent>
