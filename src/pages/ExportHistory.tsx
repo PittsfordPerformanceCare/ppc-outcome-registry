@@ -392,6 +392,23 @@ export default function ExportHistory() {
     }
   };
 
+  const copyIndividualEmail = async (email: string) => {
+    try {
+      await navigator.clipboard.writeText(email);
+      
+      toast({
+        title: "Copied",
+        description: `${email} copied to clipboard`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Copy failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -919,10 +936,20 @@ export default function ExportHistory() {
                   {selectedRecord.recipient_emails.map((email, index) => (
                     <div 
                       key={index} 
-                      className="flex items-center gap-2 text-sm bg-background p-2 rounded"
+                      className="flex items-center justify-between gap-2 text-sm bg-background p-2 rounded group"
                     >
-                      <Badge variant="secondary">{index + 1}</Badge>
-                      <span className="font-mono">{email}</span>
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <Badge variant="secondary" className="shrink-0">{index + 1}</Badge>
+                        <span className="font-mono truncate">{email}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => copyIndividualEmail(email)}
+                        className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
                     </div>
                   ))}
                 </div>
