@@ -11,7 +11,7 @@ import { ArrowLeft } from "lucide-react";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
   const [clinicianName, setClinicianName] = useState("");
   const [npi, setNpi] = useState("");
@@ -74,6 +74,30 @@ export default function Profile() {
       setLoading(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="container mx-auto py-8 max-w-2xl">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-center text-muted-foreground">Loading profile...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="container mx-auto py-8 max-w-2xl">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-center text-destructive">Not authenticated. Please log in.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8 max-w-2xl">
