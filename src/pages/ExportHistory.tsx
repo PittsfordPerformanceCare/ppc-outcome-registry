@@ -273,6 +273,17 @@ export default function ExportHistory() {
     }
   };
 
+  const resetDateFilters = () => {
+    setStartDate("");
+    setEndDate("");
+    toast({
+      title: "Date filters cleared",
+      description: "Showing all exports",
+    });
+  };
+
+  const hasDateFilters = startDate || endDate;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -365,12 +376,25 @@ export default function ExportHistory() {
                 Success and failure rates over time (click any point to filter)
               </CardDescription>
             </div>
-            <Tabs value={chartPeriod} onValueChange={(v) => setChartPeriod(v as "daily" | "weekly")}>
-              <TabsList>
-                <TabsTrigger value="daily">Daily</TabsTrigger>
-                <TabsTrigger value="weekly">Weekly</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <div className="flex items-center gap-2">
+              {hasDateFilters && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={resetDateFilters}
+                  className="gap-2"
+                >
+                  <X className="h-3 w-3" />
+                  Reset Date Filter
+                </Button>
+              )}
+              <Tabs value={chartPeriod} onValueChange={(v) => setChartPeriod(v as "daily" | "weekly")}>
+                <TabsList>
+                  <TabsTrigger value="daily">Daily</TabsTrigger>
+                  <TabsTrigger value="weekly">Weekly</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
