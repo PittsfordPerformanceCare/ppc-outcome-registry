@@ -7,6 +7,7 @@ import { calculateMCIDSummary } from "@/lib/mcidTracking";
 import { PatientJourneyTimeline } from "@/components/PatientJourneyTimeline";
 import { MCIDSummaryCard } from "@/components/MCIDSummaryCard";
 import { MCIDAchievementCard } from "@/components/MCIDAchievementCard";
+import { MCIDReportDialog } from "@/components/MCIDReportDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -247,6 +248,24 @@ export default function EpisodeSummary() {
           <p className="text-muted-foreground print:hidden">Complete patient journey and outcomes</p>
         </div>
         <div className="flex items-center gap-2">
+          {isCompleted && episode.baselineScores && episode.dischargeScores && (
+            <MCIDReportDialog
+              patientName={episode.patientName}
+              dateOfBirth={episode.dob}
+              region={episode.region}
+              diagnosis={episode.diagnosis}
+              startDate={episode.dateOfService}
+              dischargeDate={episode.dischargeDate!}
+              clinicianName={episode.clinician}
+              clinicianNPI={episode.npi}
+              referringPhysician={episode.diagnosis}
+              summary={calculateMCIDSummary(episode.baselineScores, episode.dischargeScores)}
+              daysInCare={Math.floor(
+                (new Date(episode.dischargeDate!).getTime() - new Date(episode.dateOfService).getTime()) / 
+                (1000 * 60 * 60 * 24)
+              )}
+            />
+          )}
           <Button onClick={handlePrint} className="gap-2 print:hidden">
             <Printer className="h-4 w-4" />
             Print
