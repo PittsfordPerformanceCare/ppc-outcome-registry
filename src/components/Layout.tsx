@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { SessionTimeoutWarning } from "./SessionTimeoutWarning";
+import { IntakeNotificationsPanel } from "./IntakeNotificationsPanel";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -89,6 +90,9 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
               );
             })}
+            
+            {/* Intake Notifications */}
+            <IntakeNotificationsPanel />
             
             {/* Dark Mode Toggle */}
             <Button

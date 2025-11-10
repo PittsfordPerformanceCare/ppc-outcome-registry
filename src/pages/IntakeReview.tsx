@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,6 +42,7 @@ interface IntakeForm {
 
 export default function IntakeReview() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [intakeForms, setIntakeForms] = useState<IntakeForm[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedForm, setSelectedForm] = useState<IntakeForm | null>(null);
@@ -51,6 +52,18 @@ export default function IntakeReview() {
   useEffect(() => {
     loadIntakeForms();
   }, []);
+
+  // Auto-select form if coming from notification
+  useEffect(() => {
+    if (location.state?.intakeId && intakeForms.length > 0) {
+      const form = intakeForms.find(f => f.id === location.state.intakeId);
+      if (form) {
+        setSelectedForm(form);
+        // Clear the state to prevent re-opening on navigation
+        navigate(location.pathname, { replace: true });
+      }
+    }
+  }, [location.state, intakeForms, navigate, location.pathname]);
 
   const loadIntakeForms = async () => {
     try {
