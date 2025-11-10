@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react";
+import { SessionManagement } from "@/components/SessionManagement";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -100,7 +101,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="container mx-auto py-8 max-w-2xl">
+    <div className="container mx-auto py-8 max-w-2xl space-y-6">
       <Button
         variant="ghost"
         onClick={() => navigate("/")}
@@ -146,6 +147,8 @@ export default function Profile() {
           </form>
         </CardContent>
       </Card>
+
+      <SessionManagement />
     </div>
   );
 }
