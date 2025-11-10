@@ -164,6 +164,65 @@ export type Database = {
         }
         Relationships: []
       }
+      comparison_report_schedules: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          enabled: boolean
+          export_ids: string[]
+          frequency: string
+          id: string
+          last_sent_at: string | null
+          name: string
+          next_send_at: string
+          recipient_emails: string[]
+          send_day: string
+          send_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          export_ids: string[]
+          frequency: string
+          id?: string
+          last_sent_at?: string | null
+          name: string
+          next_send_at: string
+          recipient_emails?: string[]
+          send_day: string
+          send_time?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          export_ids?: string[]
+          frequency?: string
+          id?: string
+          last_sent_at?: string | null
+          name?: string
+          next_send_at?: string
+          recipient_emails?: string[]
+          send_day?: string
+          send_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comparison_report_schedules_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       episodes: {
         Row: {
           cis_delta: number | null

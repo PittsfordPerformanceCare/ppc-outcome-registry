@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import jsPDF from "jspdf";
+import { ComparisonReportScheduler } from "./ComparisonReportScheduler";
 
 interface ScheduledExport {
   id: string;
@@ -898,9 +899,10 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
 
       <CardContent>
         <Tabs defaultValue="schedules" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="schedules">Scheduled Exports</TabsTrigger>
             <TabsTrigger value="templates">Templates</TabsTrigger>
+            <TabsTrigger value="reports">Comparison Reports</TabsTrigger>
           </TabsList>
           
           <TabsContent value="schedules" className="mt-4">
@@ -1444,6 +1446,13 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
               currentFilters={currentFilters}
               currentType={exportType}
               currentRecipients={recipientEmails.split(",").map(e => e.trim()).filter(e => e)}
+            />
+          </TabsContent>
+
+          <TabsContent value="reports" className="mt-4">
+            <ComparisonReportScheduler
+              availableExports={exports.map(exp => ({ id: exp.id, name: exp.name }))}
+              selectedExportIds={compareSelected}
             />
           </TabsContent>
         </Tabs>
