@@ -17,8 +17,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
-import { useEffect, useState as useReactState } from "react";
+import { useEffect, useState as useReactState, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import SignatureCanvas from "react-signature-canvas";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -142,6 +143,12 @@ const intakeFormSchema = z.object({
   painLevel: z.number().min(0).max(10),
   symptoms: z.string().max(1000, "Description is too long").optional(),
   reviewOfSystems: z.array(z.string()).default([]),
+  consentSignature: z.string().min(1, "Signature is required"),
+  consentSignedName: z.string().min(2, "Please type your full name").max(100, "Name is too long"),
+  consentDate: z.string().min(1, "Date is required"),
+  hipaaAcknowledged: z.boolean().refine(val => val === true, "You must acknowledge the HIPAA Privacy Notice"),
+  hipaaSignedName: z.string().min(2, "Please type your full name").max(100, "Name is too long"),
+  hipaaDate: z.string().min(1, "Date is required"),
   consentClinicUpdates: z.boolean().default(false),
   optOutNewsletter: z.boolean().default(false),
 });
@@ -162,7 +169,11 @@ export default function PatientIntake() {
     medical: false,
     reviewOfSystems: false,
     concerns: false,
+    consent: false,
+    hipaa: false,
   });
+  
+  const signatureRef = useRef<SignatureCanvas>(null);
 
   const form = useForm<IntakeFormValues>({
     resolver: zodResolver(intakeFormSchema),
@@ -196,6 +207,12 @@ export default function PatientIntake() {
       painLevel: 5,
       symptoms: "",
       reviewOfSystems: [],
+      consentSignature: "",
+      consentSignedName: "",
+      consentDate: new Date().toISOString().split('T')[0],
+      hipaaAcknowledged: false,
+      hipaaSignedName: "",
+      hipaaDate: new Date().toISOString().split('T')[0],
       consentClinicUpdates: false,
       optOutNewsletter: false,
     },
@@ -210,7 +227,7 @@ export default function PatientIntake() {
   useEffect(() => {
     const subscription = form.watch((values) => {
       let completedSections = 0;
-      let totalSections = 6;
+      let totalSections = 8;
 
       // 1. Personal Information (required fields)
       const personalComplete = !!(values.patientName && values.dateOfBirth);
@@ -240,6 +257,14 @@ export default function PatientIntake() {
       const concernsComplete = !!(hasCompleteComplaint && hasSymptomInfo);
       if (concernsComplete) completedSections += 1;
 
+      // 7. Informed Consent (signature and name)
+      const consentComplete = !!(values.consentSignature && values.consentSignedName);
+      if (consentComplete) completedSections += 1;
+
+      // 8. HIPAA Acknowledgment (checked and name)
+      const hipaaComplete = !!(values.hipaaAcknowledged && values.hipaaSignedName);
+      if (hipaaComplete) completedSections += 1;
+
       const percentage = Math.round((completedSections / totalSections) * 100);
       setCompletionPercentage(percentage);
       
@@ -256,6 +281,8 @@ export default function PatientIntake() {
         medical: medicalComplete,
         reviewOfSystems: rosComplete,
         concerns: concernsComplete,
+        consent: consentComplete,
+        hipaa: hipaaComplete,
       });
     });
 
@@ -305,6 +332,12 @@ export default function PatientIntake() {
           pain_level: data.painLevel,
           symptoms: data.symptoms || null,
           review_of_systems: data.reviewOfSystems,
+          consent_signature: data.consentSignature,
+          consent_signed_name: data.consentSignedName,
+          consent_date: data.consentDate,
+          hipaa_acknowledged: data.hipaaAcknowledged,
+          hipaa_signed_name: data.hipaaSignedName,
+          hipaa_date: data.hipaaDate,
           consent_clinic_updates: data.consentClinicUpdates,
           opt_out_newsletter: data.optOutNewsletter,
           status: "pending"
@@ -1236,6 +1269,229 @@ export default function PatientIntake() {
                     </FormItem>
                   )}
                 />
+              </CardContent>
+            </Card>
+
+            {/* Informed Consent */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <CardTitle>Informed Consent for Treatment</CardTitle>
+                  {sectionCompletion.consent && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2 className="h-5 w-5 text-success animate-scale-in cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Section complete: Signature and consent provided</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+                <CardDescription>
+                  Please read and sign the informed consent below
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-muted p-4 rounded-lg text-sm space-y-3 max-h-60 overflow-y-auto">
+                  <p className="font-semibold">CONSENT FOR TREATMENT</p>
+                  <p>
+                    I hereby request and consent to physical therapy treatment and related healthcare services. 
+                    I understand that the practice of physical therapy involves the assessment, treatment, and prevention 
+                    of physical impairments, functional limitations, and disabilities.
+                  </p>
+                  <p>
+                    I understand that various forms of treatment may be used during my care, including but not limited to: 
+                    manual therapy, therapeutic exercise, modalities (heat, cold, electrical stimulation), and other interventions 
+                    as deemed appropriate by my healthcare provider.
+                  </p>
+                  <p>
+                    I have been informed of the potential benefits and risks of treatment. I understand that while treatment 
+                    is designed to help, there are no guarantees of specific results. I acknowledge that my healthcare provider 
+                    has answered my questions regarding treatment to my satisfaction.
+                  </p>
+                  <p>
+                    I understand that I have the right to refuse treatment at any time and that I may withdraw this consent 
+                    at any time by notifying my healthcare provider.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="consentSignature"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Digital Signature *</FormLabel>
+                        <FormDescription>
+                          Please sign in the box below using your mouse or finger
+                        </FormDescription>
+                        <FormControl>
+                          <div className="border-2 border-input rounded-md">
+                            <SignatureCanvas
+                              ref={signatureRef}
+                              canvasProps={{
+                                className: "w-full h-40 rounded-md",
+                              }}
+                              onEnd={() => {
+                                if (signatureRef.current) {
+                                  const dataUrl = signatureRef.current.toDataURL();
+                                  field.onChange(dataUrl);
+                                }
+                              }}
+                            />
+                          </div>
+                        </FormControl>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (signatureRef.current) {
+                                signatureRef.current.clear();
+                                field.onChange("");
+                              }
+                            }}
+                          >
+                            Clear Signature
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="consentSignedName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type Your Full Name *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="John Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="consentDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Date *</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* HIPAA Privacy Notice */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <CardTitle>HIPAA Privacy Notice Acknowledgment</CardTitle>
+                  {sectionCompletion.hipaa && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2 className="h-5 w-5 text-success animate-scale-in cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Section complete: HIPAA notice acknowledged</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+                <CardDescription>
+                  Please read and acknowledge our HIPAA Privacy Notice
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-muted p-4 rounded-lg text-sm space-y-3 max-h-60 overflow-y-auto">
+                  <p className="font-semibold">NOTICE OF PRIVACY PRACTICES</p>
+                  <p>
+                    This notice describes how medical information about you may be used and disclosed and how you can 
+                    get access to this information. Please review it carefully.
+                  </p>
+                  <p className="font-semibold">YOUR RIGHTS:</p>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li>You have the right to inspect and copy your health information</li>
+                    <li>You have the right to request a restriction on certain uses and disclosures of your information</li>
+                    <li>You have the right to request to receive confidential communications of your health information</li>
+                    <li>You have the right to request an amendment to your health information</li>
+                    <li>You have the right to receive an accounting of disclosures of your health information</li>
+                    <li>You have the right to obtain a paper copy of this notice</li>
+                  </ul>
+                  <p className="font-semibold">OUR USES AND DISCLOSURES:</p>
+                  <p>
+                    We may use and disclose your health information for treatment, payment, and healthcare operations purposes. 
+                    We may also use and disclose your health information as required or permitted by law. Your health information 
+                    will not be shared without your authorization except as described in our full Privacy Notice.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="hipaaAcknowledged"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            I acknowledge that I have received and reviewed the HIPAA Privacy Notice *
+                          </FormLabel>
+                          <FormDescription>
+                            You must acknowledge to continue
+                          </FormDescription>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="hipaaSignedName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Type Your Full Name *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="John Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="hipaaDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Date *</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
