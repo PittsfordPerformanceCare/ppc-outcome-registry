@@ -23,6 +23,7 @@ import IntakeStart from "./pages/IntakeStart";
 import IntakeValidation from "./pages/IntakeValidation";
 import ClinicSettings from "./pages/ClinicSettings";
 import NotificationHistory from "./pages/NotificationHistory";
+import NotificationAnalytics from "./pages/NotificationAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
                     <Route path="/intake-validation" element={<IntakeValidation />} />
                     <Route path="/clinic-settings" element={<ClinicSettings />} />
                     <Route path="/notification-history" element={<NotificationHistory />} />
+                    <Route path="/notification-analytics" element={<NotificationAnalytics />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
