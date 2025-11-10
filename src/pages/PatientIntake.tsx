@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,6 +20,7 @@ import { Progress } from "@/components/ui/progress";
 import { useEffect, useState as useReactState, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import SignatureCanvas from "react-signature-canvas";
+import jsPDF from "jspdf";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -160,6 +161,7 @@ export default function PatientIntake() {
   const [accessCode, setAccessCode] = useState("");
   const [submittedComplaints, setSubmittedComplaints] = useState<z.infer<typeof complaintSchema>[]>([]);
   const [submittedReviewOfSystems, setSubmittedReviewOfSystems] = useState<string[]>([]);
+  const [submittedFormData, setSubmittedFormData] = useState<IntakeFormValues | null>(null);
   const [completionPercentage, setCompletionPercentage] = useState(0);
   const [hasTriggeredConfetti, setHasTriggeredConfetti] = useState(false);
   const [sectionCompletion, setSectionCompletion] = useState({
@@ -348,11 +350,149 @@ export default function PatientIntake() {
       setAccessCode(code);
       setSubmittedComplaints(data.complaints);
       setSubmittedReviewOfSystems(data.reviewOfSystems);
+      setSubmittedFormData(data);
       setSubmitted(true);
       toast.success("Intake form submitted successfully!");
     } catch (error: any) {
       toast.error(`Failed to submit form: ${error.message}`);
     }
+  };
+
+  const generatePDF = () => {
+    if (!submittedFormData) return;
+
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 20;
+    let yPosition = margin;
+
+    // Helper function to check if we need a new page
+    const checkPageBreak = (height: number) => {
+      if (yPosition + height > pageHeight - margin) {
+        pdf.addPage();
+        yPosition = margin;
+        return true;
+      }
+      return false;
+    };
+
+    // Helper function to add text with word wrap
+    const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
+      pdf.setFontSize(fontSize);
+      pdf.setFont("helvetica", isBold ? "bold" : "normal");
+      const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
+      checkPageBreak(lines.length * fontSize * 0.5);
+      pdf.text(lines, margin, yPosition);
+      yPosition += lines.length * fontSize * 0.5 + 3;
+    };
+
+    // Title
+    pdf.setFillColor(165, 28, 48); // Primary color
+    pdf.rect(0, 0, pageWidth, 30, "F");
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(20);
+    pdf.setFont("helvetica", "bold");
+    pdf.text("Patient Intake Form", pageWidth / 2, 20, { align: "center" });
+    
+    yPosition = 40;
+    pdf.setTextColor(0, 0, 0);
+
+    // Access Code
+    addText(`Access Code: ${accessCode}`, 14, true);
+    yPosition += 5;
+
+    // Personal Information
+    addText("PERSONAL INFORMATION", 12, true);
+    addText(`Name: ${submittedFormData.patientName}`);
+    addText(`Date of Birth: ${submittedFormData.dateOfBirth}`);
+    if (submittedFormData.phone) addText(`Phone: ${submittedFormData.phone}`);
+    if (submittedFormData.email) addText(`Email: ${submittedFormData.email}`);
+    if (submittedFormData.address) addText(`Address: ${submittedFormData.address}`);
+    yPosition += 5;
+
+    // Insurance Information
+    if (submittedFormData.insuranceProvider || submittedFormData.insuranceId) {
+      addText("INSURANCE INFORMATION", 12, true);
+      if (submittedFormData.insuranceProvider) addText(`Provider: ${submittedFormData.insuranceProvider}`);
+      if (submittedFormData.insuranceId) addText(`Insurance ID: ${submittedFormData.insuranceId}`);
+      if (submittedFormData.billResponsibleParty) addText(`Responsible Party: ${submittedFormData.billResponsibleParty}`);
+      yPosition += 5;
+    }
+
+    // Emergency Contact
+    if (submittedFormData.emergencyContactName) {
+      addText("EMERGENCY CONTACT", 12, true);
+      addText(`Name: ${submittedFormData.emergencyContactName}`);
+      if (submittedFormData.emergencyContactPhone) addText(`Phone: ${submittedFormData.emergencyContactPhone}`);
+      if (submittedFormData.emergencyContactRelationship) addText(`Relationship: ${submittedFormData.emergencyContactRelationship}`);
+      yPosition += 5;
+    }
+
+    // Medical History
+    addText("MEDICAL HISTORY", 12, true);
+    if (submittedFormData.primaryCarePhysician) addText(`Primary Care Physician: ${submittedFormData.primaryCarePhysician}`);
+    if (submittedFormData.currentMedications) addText(`Current Medications: ${submittedFormData.currentMedications}`);
+    if (submittedFormData.allergies) addText(`Allergies: ${submittedFormData.allergies}`);
+    if (submittedFormData.medicalHistory) addText(`Medical History: ${submittedFormData.medicalHistory}`);
+    yPosition += 5;
+
+    // Chief Complaints
+    addText("AREAS OF CONCERN", 12, true);
+    submittedFormData.complaints.forEach((complaint, index) => {
+      const label = complaint.isPrimary ? "PRIMARY COMPLAINT" : `Additional Concern ${index}`;
+      addText(`${label}:`, 10, true);
+      addText(`Category: ${complaint.category}`);
+      addText(`Severity: ${complaint.severity}`);
+      addText(`Duration: ${complaint.duration}`);
+      addText(`Description: ${complaint.text}`);
+      yPosition += 3;
+    });
+
+    if (submittedFormData.painLevel !== undefined) {
+      addText(`Pain Level: ${submittedFormData.painLevel}/10`);
+    }
+    if (submittedFormData.symptoms) addText(`Symptoms: ${submittedFormData.symptoms}`);
+    yPosition += 5;
+
+    // Review of Systems
+    if (submittedFormData.reviewOfSystems.length > 0) {
+      addText("REVIEW OF SYSTEMS", 12, true);
+      addText(`Selected Symptoms (${submittedFormData.reviewOfSystems.length}):`, 10, true);
+      submittedFormData.reviewOfSystems.forEach(symptom => {
+        addText(`• ${symptom}`, 9);
+      });
+      yPosition += 5;
+    }
+
+    // Consent Information
+    checkPageBreak(60);
+    addText("INFORMED CONSENT", 12, true);
+    addText(`Signed Name: ${submittedFormData.consentSignedName}`);
+    addText(`Date: ${submittedFormData.consentDate}`);
+    addText("Signature: [Digital signature on file]");
+    yPosition += 5;
+
+    // HIPAA Acknowledgment
+    addText("HIPAA PRIVACY NOTICE", 12, true);
+    addText(`Acknowledged: ${submittedFormData.hipaaAcknowledged ? "Yes" : "No"}`);
+    addText(`Signed Name: ${submittedFormData.hipaaSignedName}`);
+    addText(`Date: ${submittedFormData.hipaaDate}`);
+    yPosition += 10;
+
+    // Footer
+    pdf.setFontSize(8);
+    pdf.setTextColor(128, 128, 128);
+    pdf.text(
+      `Generated on ${new Date().toLocaleString()}`,
+      pageWidth / 2,
+      pageHeight - 10,
+      { align: "center" }
+    );
+
+    // Save the PDF
+    pdf.save(`intake-form-${accessCode}.pdf`);
+    toast.success("PDF downloaded successfully!");
   };
 
   if (submitted) {
@@ -475,14 +615,24 @@ export default function PatientIntake() {
               A staff member will review your information shortly.
             </p>
 
-            <Button 
-              onClick={() => window.print()} 
-              className="w-full print:hidden"
-              variant="outline"
-            >
-              <Printer className="h-4 w-4 mr-2" />
-              Print Summary for Your Records
-            </Button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:hidden">
+              <Button 
+                onClick={generatePDF} 
+                className="w-full"
+                variant="default"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download PDF
+              </Button>
+              <Button 
+                onClick={() => window.print()} 
+                className="w-full"
+                variant="outline"
+              >
+                <Printer className="h-4 w-4 mr-2" />
+                Print Summary
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
