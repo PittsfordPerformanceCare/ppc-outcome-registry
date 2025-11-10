@@ -222,120 +222,198 @@ async function sendReminderNotification(
 
   // Send Email
   if (patientEmail && resendApiKey) {
-    try {
-      // Generate tracking ID for email open tracking
-      const trackingId = crypto.randomUUID();
-      
-      const emailSubject = clinicSettings?.reminder_email_subject
-        ? replacePlaceholders(clinicSettings.reminder_email_subject)
-        : `Appointment Reminder: ${patientName}`;
+    // Check rate limit for email
+    const { data: emailRateLimit } = await supabase.rpc('check_rate_limit', {
+      p_service_type: 'email',
+      p_clinic_id: clinicId
+    });
 
-      let emailHtml = clinicSettings?.reminder_email_template
-        ? replacePlaceholders(clinicSettings.reminder_email_template)
-        : replacePlaceholders(`
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h1 style="color: #2563eb;">Appointment Reminder</h1>
-              <p>Dear {{patient_name}},</p>
-              <p>This is a friendly reminder about your upcoming physical therapy appointment.</p>
-              <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h2 style="color: #1f2937; margin-top: 0;">Appointment Details</h2>
-                <p><strong>Date:</strong> {{appointment_date}}</p>
-                <p><strong>Time:</strong> {{appointment_time}}</p>
-                <p><strong>Clinician:</strong> {{clinician_name}}</p>
-              </div>
-              <p>If you need to reschedule or have any questions, please call us at {{clinic_phone}}.</p>
-              <p style="margin-top: 30px;">See you soon!<br/>{{clinic_name}} Team</p>
-            </div>
-          `);
+    if (!emailRateLimit?.allowed) {
+      console.log(`Email rate limit exceeded for clinic ${clinicId}. Limit: ${emailRateLimit?.max_allowed}, Current: ${emailRateLimit?.current_count}`);
       
-      // Add tracking pixel to email HTML
-      const supabaseUrl = Deno.env.get('SUPABASE_URL');
-      emailHtml += `<img src="${supabaseUrl}/functions/v1/track-email-open?id=${trackingId}" width="1" height="1" alt="" style="display:block;border:0;" />`;
-
-      const emailResponse = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: `${clinicName} <onboarding@resend.dev>`,
-          to: [patientEmail],
-          subject: emailSubject,
-          html: emailHtml,
-        }),
+      // Record failed attempt due to rate limit
+      await supabase.rpc('record_rate_limit_usage', {
+        p_service_type: 'email',
+        p_success: false,
+        p_clinic_id: clinicId,
+        p_user_id: userId,
+        p_episode_id: episodeId
       });
-
-      if (emailResponse.ok) {
-        const responseData = await emailResponse.json();
-        console.log(`Reminder email sent to ${patientEmail}`);
+    } else {
+      try {
+        // Generate tracking ID for email open tracking
+        const trackingId = crypto.randomUUID();
         
-        // Log to notification history
-        await supabase.from('notifications_history').insert({
-          episode_id: episodeId,
-          patient_name: patientName,
-          patient_email: patientEmail,
-          clinician_name: clinicianName,
-          notification_type: 'email',
-          status: 'sent',
-          delivery_details: { message_id: responseData.id, type: 'appointment_reminder' },
-          tracking_id: trackingId,
-          user_id: userId,
-          clinic_id: clinicId
+        const emailSubject = clinicSettings?.reminder_email_subject
+          ? replacePlaceholders(clinicSettings.reminder_email_subject)
+          : `Appointment Reminder: ${patientName}`;
+
+        let emailHtml = clinicSettings?.reminder_email_template
+          ? replacePlaceholders(clinicSettings.reminder_email_template)
+          : replacePlaceholders(`
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #2563eb;">Appointment Reminder</h1>
+                <p>Dear {{patient_name}},</p>
+                <p>This is a friendly reminder about your upcoming physical therapy appointment.</p>
+                <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                  <h2 style="color: #1f2937; margin-top: 0;">Appointment Details</h2>
+                  <p><strong>Date:</strong> {{appointment_date}}</p>
+                  <p><strong>Time:</strong> {{appointment_time}}</p>
+                  <p><strong>Clinician:</strong> {{clinician_name}}</p>
+                </div>
+                <p>If you need to reschedule or have any questions, please call us at {{clinic_phone}}.</p>
+                <p style="margin-top: 30px;">See you soon!<br/>{{clinic_name}} Team</p>
+              </div>
+            `);
+        
+        // Add tracking pixel to email HTML
+        const supabaseUrl = Deno.env.get('SUPABASE_URL');
+        emailHtml += `<img src="${supabaseUrl}/functions/v1/track-email-open?id=${trackingId}" width="1" height="1" alt="" style="display:block;border:0;" />`;
+
+        const emailResponse = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: `${clinicName} <onboarding@resend.dev>`,
+            to: [patientEmail],
+            subject: emailSubject,
+            html: emailHtml,
+          }),
         });
-      } else {
-        console.error('Failed to send reminder email:', await emailResponse.text());
+
+        const emailSuccess = emailResponse.ok;
+
+        if (emailSuccess) {
+          const responseData = await emailResponse.json();
+          console.log(`Reminder email sent to ${patientEmail}`);
+          
+          // Log to notification history
+          await supabase.from('notifications_history').insert({
+            episode_id: episodeId,
+            patient_name: patientName,
+            patient_email: patientEmail,
+            clinician_name: clinicianName,
+            notification_type: 'email',
+            status: 'sent',
+            delivery_details: { message_id: responseData.id, type: 'appointment_reminder' },
+            tracking_id: trackingId,
+            user_id: userId,
+            clinic_id: clinicId
+          });
+        } else {
+          console.error('Failed to send reminder email:', await emailResponse.text());
+        }
+
+        // Record rate limit usage
+        await supabase.rpc('record_rate_limit_usage', {
+          p_service_type: 'email',
+          p_success: emailSuccess,
+          p_clinic_id: clinicId,
+          p_user_id: userId,
+          p_episode_id: episodeId
+        });
+      } catch (error) {
+        console.error('Error sending reminder email:', error);
+        
+        // Record failed rate limit usage
+        await supabase.rpc('record_rate_limit_usage', {
+          p_service_type: 'email',
+          p_success: false,
+          p_clinic_id: clinicId,
+          p_user_id: userId,
+          p_episode_id: episodeId
+        });
       }
-    } catch (error) {
-      console.error('Error sending reminder email:', error);
     }
   }
 
   // Send SMS
   if (patientPhone && twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
-    try {
-      const smsMessage = clinicSettings?.reminder_sms_template
-        ? replacePlaceholders(clinicSettings.reminder_sms_template)
-        : replacePlaceholders(`{{clinic_name}}: Reminder - You have a PT appointment on {{appointment_date}} at {{appointment_time}} with {{clinician_name}}. Call {{clinic_phone}} to reschedule.`);
+    // Check rate limit for SMS
+    const { data: smsRateLimit } = await supabase.rpc('check_rate_limit', {
+      p_service_type: 'sms',
+      p_clinic_id: clinicId
+    });
 
-      const auth = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
-      const smsResponse = await fetch(
-        `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Basic ${auth}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            To: patientPhone,
-            From: twilioPhoneNumber,
-            Body: smsMessage,
-          }).toString(),
+    if (!smsRateLimit?.allowed) {
+      console.log(`SMS rate limit exceeded for clinic ${clinicId}. Limit: ${smsRateLimit?.max_allowed}, Current: ${smsRateLimit?.current_count}`);
+      
+      // Record failed attempt due to rate limit
+      await supabase.rpc('record_rate_limit_usage', {
+        p_service_type: 'sms',
+        p_success: false,
+        p_clinic_id: clinicId,
+        p_user_id: userId,
+        p_episode_id: episodeId
+      });
+    } else {
+      try {
+        const smsMessage = clinicSettings?.reminder_sms_template
+          ? replacePlaceholders(clinicSettings.reminder_sms_template)
+          : replacePlaceholders(`{{clinic_name}}: Reminder - You have a PT appointment on {{appointment_date}} at {{appointment_time}} with {{clinician_name}}. Call {{clinic_phone}} to reschedule.`);
+
+        const auth = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+        const smsResponse = await fetch(
+          `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Basic ${auth}`,
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+              To: patientPhone,
+              From: twilioPhoneNumber,
+              Body: smsMessage,
+            }).toString(),
+          }
+        );
+
+        const smsSuccess = smsResponse.ok;
+
+        if (smsSuccess) {
+          const responseData = await smsResponse.json();
+          console.log(`Reminder SMS sent to ${patientPhone}`);
+          
+          // Log to notification history
+          await supabase.from('notifications_history').insert({
+            episode_id: episodeId,
+            patient_name: patientName,
+            patient_phone: patientPhone,
+            clinician_name: clinicianName,
+            notification_type: 'sms',
+            status: 'sent',
+            delivery_details: { sid: responseData.sid, type: 'appointment_reminder' },
+            user_id: userId,
+            clinic_id: clinicId
+          });
+        } else {
+          console.error('Failed to send reminder SMS:', await smsResponse.text());
         }
-      );
 
-      if (smsResponse.ok) {
-        const responseData = await smsResponse.json();
-        console.log(`Reminder SMS sent to ${patientPhone}`);
-        
-        // Log to notification history
-        await supabase.from('notifications_history').insert({
-          episode_id: episodeId,
-          patient_name: patientName,
-          patient_phone: patientPhone,
-          clinician_name: clinicianName,
-          notification_type: 'sms',
-          status: 'sent',
-          delivery_details: { sid: responseData.sid, type: 'appointment_reminder' },
-          user_id: userId,
-          clinic_id: clinicId
+        // Record rate limit usage
+        await supabase.rpc('record_rate_limit_usage', {
+          p_service_type: 'sms',
+          p_success: smsSuccess,
+          p_clinic_id: clinicId,
+          p_user_id: userId,
+          p_episode_id: episodeId
         });
-      } else {
-        console.error('Failed to send reminder SMS:', await smsResponse.text());
+      } catch (error) {
+        console.error('Error sending reminder SMS:', error);
+        
+        // Record failed rate limit usage
+        await supabase.rpc('record_rate_limit_usage', {
+          p_service_type: 'sms',
+          p_success: false,
+          p_clinic_id: clinicId,
+          p_user_id: userId,
+          p_episode_id: episodeId
+        });
       }
-    } catch (error) {
-      console.error('Error sending reminder SMS:', error);
     }
   }
 }
