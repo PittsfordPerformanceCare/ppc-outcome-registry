@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle } from "lucide-react";
+import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, ArrowRight, FileText } from "lucide-react";
 import { format } from "date-fns";
+import { IntakeToEpisodeConverter } from "@/components/IntakeToEpisodeConverter";
 
 interface IntakeForm {
   id: string;
@@ -35,6 +36,8 @@ interface IntakeForm {
   submitted_at: string;
   reviewed_at: string;
   converted_to_episode_id: string;
+  complaints: any;
+  review_of_systems: any;
 }
 
 export default function IntakeReview() {
@@ -42,6 +45,8 @@ export default function IntakeReview() {
   const [intakeForms, setIntakeForms] = useState<IntakeForm[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedForm, setSelectedForm] = useState<IntakeForm | null>(null);
+  const [convertDialogOpen, setConvertDialogOpen] = useState(false);
+  const [formToConvert, setFormToConvert] = useState<IntakeForm | null>(null);
 
   useEffect(() => {
     loadIntakeForms();
@@ -55,7 +60,15 @@ export default function IntakeReview() {
         .order("submitted_at", { ascending: false });
 
       if (error) throw error;
-      setIntakeForms(data || []);
+      
+      // Parse JSON fields
+      const parsedData = (data || []).map(form => ({
+        ...form,
+        complaints: typeof form.complaints === 'string' ? JSON.parse(form.complaints) : form.complaints || [],
+        review_of_systems: typeof form.review_of_systems === 'string' ? JSON.parse(form.review_of_systems) : form.review_of_systems || []
+      }));
+      
+      setIntakeForms(parsedData);
     } catch (error: any) {
       toast.error(`Failed to load intake forms: ${error.message}`);
     } finally {
@@ -63,25 +76,18 @@ export default function IntakeReview() {
     }
   };
 
-  const handleConvertToEpisode = async (form: IntakeForm) => {
-    try {
-      // Mark the intake as converted
-      const { error } = await supabase
-        .from("intake_forms")
-        .update({
-          status: "converted",
-          reviewed_at: new Date().toISOString()
-        })
-        .eq("id", form.id);
+  const handleConvertToEpisode = (form: IntakeForm) => {
+    setFormToConvert(form);
+    setConvertDialogOpen(true);
+  };
 
-      if (error) throw error;
+  const handleConversionSuccess = () => {
+    loadIntakeForms();
+    setSelectedForm(null);
+  };
 
-      // Store the intake form data in sessionStorage to pre-populate the new episode form
-      sessionStorage.setItem("intakeData", JSON.stringify(form));
-      navigate("/new-episode");
-    } catch (error: any) {
-      toast.error(`Failed to update intake: ${error.message}`);
-    }
+  const handleViewEpisode = (episodeId: string) => {
+    navigate(`/episode-summary?id=${episodeId}`);
   };
 
   const handleMarkReviewed = async (formId: string) => {
@@ -254,7 +260,9 @@ export default function IntakeReview() {
                   {selectedForm.injury_date && (
                     <div><span className="text-muted-foreground">Date of Onset:</span> {format(new Date(selectedForm.injury_date), "MMM d, yyyy")}</div>
                   )}
-                  <div><span className="text-muted-foreground">Pain Level:</span> {selectedForm.pain_level}/10</div>
+                  {selectedForm.pain_level && (
+                    <div><span className="text-muted-foreground">Pain Level:</span> {selectedForm.pain_level}/10</div>
+                  )}
                   {selectedForm.injury_mechanism && (
                     <div>
                       <span className="text-muted-foreground block mb-1">Mechanism:</span>
@@ -269,25 +277,91 @@ export default function IntakeReview() {
                   )}
                 </div>
               </div>
+
+              {/* Detailed Complaints */}
+              {selectedForm.complaints && Array.isArray(selectedForm.complaints) && selectedForm.complaints.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-3">Detailed Complaints</h3>
+                  <div className="space-y-3">
+                    {selectedForm.complaints.map((complaint: any, idx: number) => (
+                      <div key={idx} className="rounded-lg bg-muted p-3 text-sm">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="font-medium">{complaint.category}</div>
+                          {complaint.isPrimary && (
+                            <Badge variant="default" className="text-xs">Primary</Badge>
+                          )}
+                        </div>
+                        {complaint.description && (
+                          <p className="text-muted-foreground mb-2">{complaint.description}</p>
+                        )}
+                        <div className="grid gap-1">
+                          {complaint.severity && (
+                            <div><span className="text-muted-foreground">Severity:</span> {complaint.severity}</div>
+                          )}
+                          {complaint.duration && (
+                            <div><span className="text-muted-foreground">Duration:</span> {complaint.duration}</div>
+                          )}
+                          {complaint.activities && complaint.activities.length > 0 && (
+                            <div>
+                              <span className="text-muted-foreground">Affected Activities:</span>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {complaint.activities.map((activity: string, aIdx: number) => (
+                                  <Badge key={aIdx} variant="outline" className="text-xs">{activity}</Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {complaint.treatments && complaint.treatments.length > 0 && (
+                            <div>
+                              <span className="text-muted-foreground">Prior Treatments:</span>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {complaint.treatments.map((treatment: string, tIdx: number) => (
+                                  <Badge key={tIdx} variant="outline" className="text-xs">{treatment}</Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
           <div className="flex gap-3">
-            <Button
-              onClick={() => handleConvertToEpisode(selectedForm)}
-              className="flex-1"
-              size="lg"
-            >
-              Convert to Episode
-            </Button>
-            {selectedForm.status === "pending" && (
+            {selectedForm.converted_to_episode_id ? (
               <Button
-                onClick={() => handleMarkReviewed(selectedForm.id)}
-                variant="outline"
+                onClick={() => handleViewEpisode(selectedForm.converted_to_episode_id)}
+                className="flex-1"
                 size="lg"
+                variant="default"
               >
-                Mark as Reviewed
+                <FileText className="h-4 w-4 mr-2" />
+                View Episode
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
+            ) : (
+              <>
+                <Button
+                  onClick={() => handleConvertToEpisode(selectedForm)}
+                  className="flex-1"
+                  size="lg"
+                >
+                  <ArrowRight className="h-4 w-4 mr-2" />
+                  Convert to Episode
+                </Button>
+                {selectedForm.status === "pending" && (
+                  <Button
+                    onClick={() => handleMarkReviewed(selectedForm.id)}
+                    variant="outline"
+                    size="lg"
+                  >
+                    Mark as Reviewed
+                  </Button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -339,6 +413,18 @@ export default function IntakeReview() {
             </Card>
           ))}
         </div>
+      )}
+      
+      {formToConvert && (
+        <IntakeToEpisodeConverter
+          intakeForm={formToConvert}
+          open={convertDialogOpen}
+          onClose={() => {
+            setConvertDialogOpen(false);
+            setFormToConvert(null);
+          }}
+          onSuccess={handleConversionSuccess}
+        />
       )}
     </div>
   );
