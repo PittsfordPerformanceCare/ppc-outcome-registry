@@ -11,12 +11,13 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square, ChevronDown, History, CheckCircle2, XCircle, AlertCircle, TrendingUp, Target, Database, BarChart3, GitCompare } from "lucide-react";
+import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square, ChevronDown, History, CheckCircle2, XCircle, AlertCircle, TrendingUp, Target, Database, BarChart3, GitCompare, Download } from "lucide-react";
 import { format, startOfDay, startOfWeek, parseISO } from "date-fns";
 import { ExportTemplateManager } from "./ExportTemplateManager";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import jsPDF from "jspdf";
 
 interface ScheduledExport {
   id: string;
@@ -574,6 +575,169 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
     });
   };
 
+  const exportComparisonToPDF = async () => {
+    try {
+      toast({
+        title: "Generating PDF...",
+        description: "Please wait while we create your report",
+      });
+
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      let yPosition = 20;
+
+      // Title
+      pdf.setFontSize(20);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Export Schedule Performance Comparison", pageWidth / 2, yPosition, { align: "center" });
+      
+      yPosition += 10;
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(`Generated on ${format(new Date(), "MMMM d, yyyy 'at' h:mm a")}`, pageWidth / 2, yPosition, { align: "center" });
+      
+      yPosition += 15;
+
+      // Summary
+      const comparisonData = prepareComparisonData();
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Performance Summary", 15, yPosition);
+      
+      yPosition += 8;
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "normal");
+      
+      // Table headers
+      const colWidths = [60, 30, 30, 30, 25];
+      const headers = ["Export Schedule", "Success Rate", "Total Records", "Avg Records", "Failed"];
+      let xPosition = 15;
+      
+      pdf.setFont("helvetica", "bold");
+      pdf.setFillColor(240, 240, 240);
+      pdf.rect(15, yPosition - 5, pageWidth - 30, 8, "F");
+      
+      headers.forEach((header, i) => {
+        pdf.text(header, xPosition, yPosition, { align: i === 0 ? "left" : "right" });
+        xPosition += colWidths[i];
+      });
+      
+      yPosition += 8;
+      
+      // Table rows
+      pdf.setFont("helvetica", "normal");
+      comparisonData.forEach((data, index) => {
+        if (yPosition > pageHeight - 30) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+        
+        // Alternating row colors
+        if (index % 2 === 0) {
+          pdf.setFillColor(250, 250, 250);
+          pdf.rect(15, yPosition - 5, pageWidth - 30, 8, "F");
+        }
+        
+        xPosition = 15;
+        
+        // Name
+        pdf.text(data.name.substring(0, 35), xPosition, yPosition);
+        xPosition += colWidths[0];
+        
+        // Success Rate
+        pdf.text(`${data.successRate}%`, xPosition, yPosition, { align: "right" });
+        xPosition += colWidths[1];
+        
+        // Total Records
+        pdf.text(data.totalRecords.toLocaleString(), xPosition, yPosition, { align: "right" });
+        xPosition += colWidths[2];
+        
+        // Average Records
+        pdf.text(data.averageRecords.toLocaleString(), xPosition, yPosition, { align: "right" });
+        xPosition += colWidths[3];
+        
+        // Failed Runs
+        pdf.text(data.failedRuns.toString(), xPosition, yPosition, { align: "right" });
+        
+        yPosition += 8;
+      });
+      
+      yPosition += 10;
+      
+      // Detailed Metrics
+      pdf.setFontSize(14);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Detailed Metrics", 15, yPosition);
+      
+      yPosition += 8;
+      pdf.setFontSize(9);
+      pdf.setFont("helvetica", "normal");
+      
+      comparisonData.forEach((data, index) => {
+        if (yPosition > pageHeight - 50) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+        
+        pdf.setFont("helvetica", "bold");
+        pdf.text(`${index + 1}. ${data.name}`, 15, yPosition);
+        yPosition += 6;
+        
+        pdf.setFont("helvetica", "normal");
+        pdf.text(`Success Rate: ${data.successRate}% (${data.successfulRuns} successful out of ${data.totalRuns} total runs)`, 20, yPosition);
+        yPosition += 5;
+        pdf.text(`Total Records Exported: ${data.totalRecords.toLocaleString()}`, 20, yPosition);
+        yPosition += 5;
+        pdf.text(`Average Records per Export: ${data.averageRecords.toLocaleString()}`, 20, yPosition);
+        yPosition += 5;
+        pdf.text(`Failed Runs: ${data.failedRuns}`, 20, yPosition);
+        yPosition += 8;
+      });
+      
+      // Visual summary note
+      yPosition += 5;
+      
+      if (yPosition > pageHeight - 20) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+      
+      pdf.setFontSize(10);
+      pdf.setFont("helvetica", "italic");
+      pdf.text(
+        "Note: Charts and visual trends can be viewed in the application's comparison view.",
+        15,
+        yPosition
+      );
+      
+      // Footer on last page
+      pdf.setFontSize(8);
+      pdf.setFont("helvetica", "italic");
+      pdf.text(
+        "Generated by PPC Outcome Registry - Export Performance Comparison",
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: "center" }
+      );
+      
+      // Save the PDF
+      pdf.save(`export-comparison-${format(new Date(), "yyyy-MM-dd-HHmmss")}.pdf`);
+      
+      toast({
+        title: "PDF exported successfully",
+        description: "Your comparison report has been downloaded",
+      });
+    } catch (error: any) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Error generating PDF",
+        description: error.message || "Failed to create PDF report",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -756,16 +920,27 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                       <GitCompare className="h-5 w-5" />
                       <h3 className="font-semibold">Performance Comparison</h3>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setComparisonMode(false);
-                        setCompareSelected([]);
-                      }}
-                    >
-                      Close Comparison
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={exportComparisonToPDF}
+                        className="gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Export PDF
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setComparisonMode(false);
+                          setCompareSelected([]);
+                        }}
+                      >
+                        Close
+                      </Button>
+                    </div>
                   </div>
 
                   {/* Comparison Table */}
@@ -823,7 +998,7 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                   </div>
 
                   {/* Comparison Charts */}
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4" data-comparison-charts>
                     <div>
                       <h4 className="text-sm font-semibold mb-2">Success Rate Comparison</h4>
                       <ResponsiveContainer width="100%" height={200}>
