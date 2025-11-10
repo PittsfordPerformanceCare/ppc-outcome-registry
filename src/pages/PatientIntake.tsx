@@ -1,73 +1,98 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import { ClipboardCheck } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
+const intakeFormSchema = z.object({
+  patientName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  phone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
+  email: z.string().email("Invalid email address").max(255, "Email is too long").optional().or(z.literal("")),
+  address: z.string().max(500, "Address is too long").optional(),
+  guardianPhone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
+  insuranceProvider: z.string().max(100, "Insurance provider name is too long").optional(),
+  insuranceId: z.string().max(50, "Insurance ID is too long").optional(),
+  billResponsibleParty: z.string().max(100, "Name is too long").optional(),
+  emergencyContactName: z.string().max(100, "Name is too long").optional(),
+  emergencyContactPhone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
+  emergencyContactRelationship: z.string().max(50, "Relationship is too long").optional(),
+  referralSource: z.string().max(200, "Referral source is too long").optional(),
+  primaryCarePhysician: z.string().max(100, "Name is too long").optional(),
+  pcpPhone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
+  pcpAddress: z.string().max(300, "Address is too long").optional(),
+  referringPhysician: z.string().max(100, "Name is too long").optional(),
+  specialistSeen: z.string().max(200, "Information is too long").optional(),
+  hospitalizationHistory: z.string().max(1000, "Information is too long").optional(),
+  surgeryHistory: z.string().max(1000, "Information is too long").optional(),
+  currentMedications: z.string().max(1000, "Information is too long").optional(),
+  allergies: z.string().max(500, "Information is too long").optional(),
+  medicalHistory: z.string().max(1000, "Information is too long").optional(),
+  chiefComplaint: z.string().min(5, "Please describe your main concern (at least 5 characters)").max(1000, "Description is too long"),
+  injuryDate: z.string().optional(),
+  injuryMechanism: z.string().max(500, "Description is too long").optional(),
+  painLevel: z.number().min(0).max(10),
+  symptoms: z.string().max(1000, "Description is too long").optional(),
+  consentClinicUpdates: z.boolean().default(false),
+  optOutNewsletter: z.boolean().default(false),
+});
+
+type IntakeFormValues = z.infer<typeof intakeFormSchema>;
+
 export default function PatientIntake() {
-  const navigate = useNavigate();
-  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [accessCode, setAccessCode] = useState("");
 
-  // Patient demographics
-  const [patientName, setPatientName] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-  const [guardianPhone, setGuardianPhone] = useState("");
-
-  // Insurance
-  const [insuranceProvider, setInsuranceProvider] = useState("");
-  const [insuranceId, setInsuranceId] = useState("");
-  const [billResponsibleParty, setBillResponsibleParty] = useState("");
-
-  // Emergency contact
-  const [emergencyContactName, setEmergencyContactName] = useState("");
-  const [emergencyContactPhone, setEmergencyContactPhone] = useState("");
-  const [emergencyContactRelationship, setEmergencyContactRelationship] = useState("");
-
-  // Medical information
-  const [referralSource, setReferralSource] = useState("");
-  const [primaryCarePhysician, setPrimaryCarePhysician] = useState("");
-  const [pcpPhone, setPcpPhone] = useState("");
-  const [pcpAddress, setPcpAddress] = useState("");
-  const [referringPhysician, setReferringPhysician] = useState("");
-  const [specialistSeen, setSpecialistSeen] = useState("");
-  const [hospitalizationHistory, setHospitalizationHistory] = useState("");
-  const [surgeryHistory, setSurgeryHistory] = useState("");
-  const [currentMedications, setCurrentMedications] = useState("");
-  const [allergies, setAllergies] = useState("");
-  const [medicalHistory, setMedicalHistory] = useState("");
-
-  // Consents
-  const [consentClinicUpdates, setConsentClinicUpdates] = useState(false);
-  const [optOutNewsletter, setOptOutNewsletter] = useState(false);
-
-  // Injury/condition details
-  const [chiefComplaint, setChiefComplaint] = useState("");
-  const [injuryDate, setInjuryDate] = useState("");
-  const [injuryMechanism, setInjuryMechanism] = useState("");
-  const [painLevel, setPainLevel] = useState([5]);
-  const [symptoms, setSymptoms] = useState("");
+  const form = useForm<IntakeFormValues>({
+    resolver: zodResolver(intakeFormSchema),
+    defaultValues: {
+      patientName: "",
+      dateOfBirth: "",
+      phone: "",
+      email: "",
+      address: "",
+      guardianPhone: "",
+      insuranceProvider: "",
+      insuranceId: "",
+      billResponsibleParty: "",
+      emergencyContactName: "",
+      emergencyContactPhone: "",
+      emergencyContactRelationship: "",
+      referralSource: "",
+      primaryCarePhysician: "",
+      pcpPhone: "",
+      pcpAddress: "",
+      referringPhysician: "",
+      specialistSeen: "",
+      hospitalizationHistory: "",
+      surgeryHistory: "",
+      currentMedications: "",
+      allergies: "",
+      medicalHistory: "",
+      chiefComplaint: "",
+      injuryDate: "",
+      injuryMechanism: "",
+      painLevel: 5,
+      symptoms: "",
+      consentClinicUpdates: false,
+      optOutNewsletter: false,
+    },
+  });
 
   const generateAccessCode = () => {
-    // Generate a 6-character alphanumeric code
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-
+  const onSubmit = async (data: IntakeFormValues) => {
     try {
       const code = generateAccessCode();
       
@@ -75,36 +100,36 @@ export default function PatientIntake() {
         .from("intake_forms")
         .insert({
           access_code: code,
-          patient_name: patientName,
-          date_of_birth: dateOfBirth,
-          phone,
-          email,
-          address,
-          guardian_phone: guardianPhone || null,
-          insurance_provider: insuranceProvider,
-          insurance_id: insuranceId,
-          bill_responsible_party: billResponsibleParty || null,
-          emergency_contact_name: emergencyContactName,
-          emergency_contact_phone: emergencyContactPhone,
-          emergency_contact_relationship: emergencyContactRelationship,
-          referral_source: referralSource || null,
-          primary_care_physician: primaryCarePhysician,
-          pcp_phone: pcpPhone || null,
-          pcp_address: pcpAddress || null,
-          referring_physician: referringPhysician,
-          specialist_seen: specialistSeen || null,
-          hospitalization_history: hospitalizationHistory || null,
-          surgery_history: surgeryHistory || null,
-          current_medications: currentMedications,
-          allergies,
-          medical_history: medicalHistory,
-          chief_complaint: chiefComplaint,
-          injury_date: injuryDate || null,
-          injury_mechanism: injuryMechanism,
-          pain_level: painLevel[0],
-          symptoms,
-          consent_clinic_updates: consentClinicUpdates,
-          opt_out_newsletter: optOutNewsletter,
+          patient_name: data.patientName,
+          date_of_birth: data.dateOfBirth,
+          phone: data.phone || null,
+          email: data.email || null,
+          address: data.address || null,
+          guardian_phone: data.guardianPhone || null,
+          insurance_provider: data.insuranceProvider || null,
+          insurance_id: data.insuranceId || null,
+          bill_responsible_party: data.billResponsibleParty || null,
+          emergency_contact_name: data.emergencyContactName || null,
+          emergency_contact_phone: data.emergencyContactPhone || null,
+          emergency_contact_relationship: data.emergencyContactRelationship || null,
+          referral_source: data.referralSource || null,
+          primary_care_physician: data.primaryCarePhysician || null,
+          pcp_phone: data.pcpPhone || null,
+          pcp_address: data.pcpAddress || null,
+          referring_physician: data.referringPhysician || null,
+          specialist_seen: data.specialistSeen || null,
+          hospitalization_history: data.hospitalizationHistory || null,
+          surgery_history: data.surgeryHistory || null,
+          current_medications: data.currentMedications || null,
+          allergies: data.allergies || null,
+          medical_history: data.medicalHistory || null,
+          chief_complaint: data.chiefComplaint,
+          injury_date: data.injuryDate || null,
+          injury_mechanism: data.injuryMechanism || null,
+          pain_level: data.painLevel,
+          symptoms: data.symptoms || null,
+          consent_clinic_updates: data.consentClinicUpdates,
+          opt_out_newsletter: data.optOutNewsletter,
           status: "pending"
         });
 
@@ -115,8 +140,6 @@ export default function PatientIntake() {
       toast.success("Intake form submitted successfully!");
     } catch (error: any) {
       toast.error(`Failed to submit form: ${error.message}`);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -160,379 +183,506 @@ export default function PatientIntake() {
           </CardHeader>
         </Card>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Patient Demographics */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="patientName">Full Name *</Label>
-                <Input
-                  id="patientName"
-                  value={patientName}
-                  onChange={(e) => setPatientName(e.target.value)}
-                  required
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Personal Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Personal Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="patientName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="dateOfBirth">Date of Birth *</Label>
-                  <Input
-                    id="dateOfBirth"
-                    type="date"
-                    value={dateOfBirth}
-                    onChange={(e) => setDateOfBirth(e.target.value)}
-                    required
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="dateOfBirth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth *</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input type="tel" placeholder="(555) 123-4567" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="name@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Address</FormLabel>
+                      <FormControl>
+                        <Textarea rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="guardianPhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Parent/Guardian Phone (if under 18)</FormLabel>
+                      <FormControl>
+                        <Input type="tel" placeholder="Required if patient is under 18" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Insurance Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Insurance Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="insuranceProvider"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Insurance Provider</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="insuranceId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Insurance ID</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                <FormField
+                  control={form.control}
+                  name="billResponsibleParty"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Who is responsible for the bill?</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Self, Spouse, Parent, etc." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
+              </CardContent>
+            </Card>
 
-              <div className="space-y-2">
-                <Label htmlFor="address">Full Address</Label>
-                <Textarea
-                  id="address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  rows={2}
+            {/* Emergency Contact */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Emergency Contact</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="emergencyContactName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contact Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="guardianPhone">Parent/Guardian Phone (if under 18)</Label>
-                <Input
-                  id="guardianPhone"
-                  type="tel"
-                  value={guardianPhone}
-                  onChange={(e) => setGuardianPhone(e.target.value)}
-                  placeholder="Required if patient is under 18"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Insurance */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Insurance Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="insuranceProvider">Insurance Provider</Label>
-                  <Input
-                    id="insuranceProvider"
-                    value={insuranceProvider}
-                    onChange={(e) => setInsuranceProvider(e.target.value)}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="emergencyContactPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Phone</FormLabel>
+                        <FormControl>
+                          <Input type="tel" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="emergencyContactRelationship"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Relationship</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g., Spouse, Parent" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="insuranceId">Insurance ID</Label>
-                  <Input
-                    id="insuranceId"
-                    value={insuranceId}
-                    onChange={(e) => setInsuranceId(e.target.value)}
+              </CardContent>
+            </Card>
+
+            {/* Medical Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Medical Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="referralSource"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>How did you hear about us? (Referral Source)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Friend, doctor referral, online search, etc." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="primaryCarePhysician"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Primary Care Physician (PCP)</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pcpPhone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>PCP Phone</FormLabel>
+                        <FormControl>
+                          <Input type="tel" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="billResponsibleParty">Who is responsible for the bill?</Label>
-                <Input
-                  id="billResponsibleParty"
-                  value={billResponsibleParty}
-                  onChange={(e) => setBillResponsibleParty(e.target.value)}
-                  placeholder="Self, Spouse, Parent, etc."
+                <FormField
+                  control={form.control}
+                  name="pcpAddress"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>PCP Address</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Emergency Contact */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Emergency Contact</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="emergencyContactName">Contact Name</Label>
-                <Input
-                  id="emergencyContactName"
-                  value={emergencyContactName}
-                  onChange={(e) => setEmergencyContactName(e.target.value)}
+                <FormField
+                  control={form.control}
+                  name="referringPhysician"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Referring Physician (if any)</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="emergencyContactPhone">Contact Phone</Label>
-                  <Input
-                    id="emergencyContactPhone"
-                    type="tel"
-                    value={emergencyContactPhone}
-                    onChange={(e) => setEmergencyContactPhone(e.target.value)}
+                <FormField
+                  control={form.control}
+                  name="specialistSeen"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Have you seen a specialist? If so, who?</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Specialist name and specialty" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="hospitalizationHistory"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Have you ever been hospitalized?</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Please describe any hospitalizations" rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="surgeryHistory"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Please list any surgeries</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="List all previous surgeries and approximate dates" rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="currentMedications"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Current Medications</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="List all medications you are currently taking" rows={3} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="allergies"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Allergies</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="List any drug allergies or other relevant allergies" rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="medicalHistory"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Other Relevant Medical History</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Chronic conditions, family history, etc." rows={3} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Reason for Visit */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Reason for Visit</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="chiefComplaint"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>What brings you in today? *</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Describe your main concern or reason for seeking treatment" rows={3} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="injuryDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>When did this start?</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="painLevel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Current Pain Level (0-10)</FormLabel>
+                        <FormControl>
+                          <div className="pt-2">
+                            <Slider
+                              value={[field.value]}
+                              onValueChange={(value) => field.onChange(value[0])}
+                              max={10}
+                              step={1}
+                            />
+                            <div className="mt-2 text-center text-2xl font-bold">{field.value}</div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="emergencyContactRelationship">Relationship</Label>
-                  <Input
-                    id="emergencyContactRelationship"
-                    value={emergencyContactRelationship}
-                    onChange={(e) => setEmergencyContactRelationship(e.target.value)}
-                    placeholder="e.g., Spouse, Parent"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          {/* Medical Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Medical Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="referralSource">How did you hear about us? (Referral Source)</Label>
-                <Input
-                  id="referralSource"
-                  value={referralSource}
-                  onChange={(e) => setReferralSource(e.target.value)}
-                  placeholder="Friend, doctor referral, online search, etc."
+                <FormField
+                  control={form.control}
+                  name="injuryMechanism"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>How did this happen?</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Describe how the injury or condition occurred" rows={2} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="primaryCarePhysician">Primary Care Physician (PCP)</Label>
-                  <Input
-                    id="primaryCarePhysician"
-                    value={primaryCarePhysician}
-                    onChange={(e) => setPrimaryCarePhysician(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="pcpPhone">PCP Phone</Label>
-                  <Input
-                    id="pcpPhone"
-                    type="tel"
-                    value={pcpPhone}
-                    onChange={(e) => setPcpPhone(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="pcpAddress">PCP Address</Label>
-                <Input
-                  id="pcpAddress"
-                  value={pcpAddress}
-                  onChange={(e) => setPcpAddress(e.target.value)}
+                <FormField
+                  control={form.control}
+                  name="symptoms"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Current Symptoms</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Describe your symptoms (pain, stiffness, weakness, etc.)" rows={3} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
+              </CardContent>
+            </Card>
 
-              <div className="space-y-2">
-                <Label htmlFor="referringPhysician">Referring Physician (if any)</Label>
-                <Input
-                  id="referringPhysician"
-                  value={referringPhysician}
-                  onChange={(e) => setReferringPhysician(e.target.value)}
+            {/* Communication Preferences */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Communication Preferences</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="consentClinicUpdates"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="cursor-pointer">
+                          Yes, I would like to receive clinic updates and appointment reminders
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
                 />
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="specialistSeen">Have you seen a specialist? If so, who?</Label>
-                <Input
-                  id="specialistSeen"
-                  value={specialistSeen}
-                  onChange={(e) => setSpecialistSeen(e.target.value)}
-                  placeholder="Specialist name and specialty"
+                <FormField
+                  control={form.control}
+                  name="optOutNewsletter"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="cursor-pointer">
+                          I do not wish to receive newsletters or promotional materials
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
                 />
-              </div>
+              </CardContent>
+            </Card>
 
-              <div className="space-y-2">
-                <Label htmlFor="hospitalizationHistory">Have you ever been hospitalized?</Label>
-                <Textarea
-                  id="hospitalizationHistory"
-                  value={hospitalizationHistory}
-                  onChange={(e) => setHospitalizationHistory(e.target.value)}
-                  placeholder="Please describe any hospitalizations"
-                  rows={2}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="surgeryHistory">Please list any surgeries</Label>
-                <Textarea
-                  id="surgeryHistory"
-                  value={surgeryHistory}
-                  onChange={(e) => setSurgeryHistory(e.target.value)}
-                  placeholder="List all previous surgeries and approximate dates"
-                  rows={2}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="currentMedications">Current Medications</Label>
-                <Textarea
-                  id="currentMedications"
-                  value={currentMedications}
-                  onChange={(e) => setCurrentMedications(e.target.value)}
-                  placeholder="List all medications you are currently taking"
-                  rows={3}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="allergies">Allergies</Label>
-                <Textarea
-                  id="allergies"
-                  value={allergies}
-                  onChange={(e) => setAllergies(e.target.value)}
-                  placeholder="List any drug allergies or other relevant allergies"
-                  rows={2}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="medicalHistory">Other Relevant Medical History</Label>
-                <Textarea
-                  id="medicalHistory"
-                  value={medicalHistory}
-                  onChange={(e) => setMedicalHistory(e.target.value)}
-                  placeholder="Chronic conditions, family history, etc."
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Injury/Condition Details */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Reason for Visit</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="chiefComplaint">What brings you in today? *</Label>
-                <Textarea
-                  id="chiefComplaint"
-                  value={chiefComplaint}
-                  onChange={(e) => setChiefComplaint(e.target.value)}
-                  placeholder="Describe your main concern or reason for seeking treatment"
-                  rows={3}
-                  required
-                />
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="injuryDate">When did this start?</Label>
-                  <Input
-                    id="injuryDate"
-                    type="date"
-                    value={injuryDate}
-                    onChange={(e) => setInjuryDate(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="painLevel">Current Pain Level (0-10)</Label>
-                  <div className="pt-2">
-                    <Slider
-                      id="painLevel"
-                      value={painLevel}
-                      onValueChange={setPainLevel}
-                      max={10}
-                      step={1}
-                    />
-                    <div className="mt-2 text-center text-2xl font-bold">{painLevel[0]}</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="injuryMechanism">How did this happen?</Label>
-                <Textarea
-                  id="injuryMechanism"
-                  value={injuryMechanism}
-                  onChange={(e) => setInjuryMechanism(e.target.value)}
-                  placeholder="Describe how the injury or condition occurred"
-                  rows={2}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="symptoms">Current Symptoms</Label>
-                <Textarea
-                  id="symptoms"
-                  value={symptoms}
-                  onChange={(e) => setSymptoms(e.target.value)}
-                  placeholder="Describe your symptoms (pain, stiffness, weakness, etc.)"
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Consent & Communication */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Communication Preferences</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="consentClinicUpdates"
-                  checked={consentClinicUpdates}
-                  onChange={(e) => setConsentClinicUpdates(e.target.checked)}
-                  className="h-4 w-4 rounded border-input"
-                />
-                <Label htmlFor="consentClinicUpdates" className="cursor-pointer">
-                  Yes, I would like to receive clinic updates and appointment reminders
-                </Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="optOutNewsletter"
-                  checked={optOutNewsletter}
-                  onChange={(e) => setOptOutNewsletter(e.target.checked)}
-                  className="h-4 w-4 rounded border-input"
-                />
-                <Label htmlFor="optOutNewsletter" className="cursor-pointer">
-                  I do not wish to receive newsletters or promotional materials
-                </Label>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Button type="submit" className="w-full" size="lg" disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit Intake Form"}
-          </Button>
-        </form>
+            <Button type="submit" className="w-full" size="lg" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? "Submitting..." : "Submit Intake Form"}
+            </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );
