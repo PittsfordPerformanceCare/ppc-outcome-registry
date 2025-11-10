@@ -19,6 +19,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import jsPDF from "jspdf";
 import { ComparisonReportScheduler } from "./ComparisonReportScheduler";
+import { ComparisonReportAnalytics } from "./ComparisonReportAnalytics";
 
 interface ScheduledExport {
   id: string;
@@ -1450,10 +1451,14 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
           </TabsContent>
 
           <TabsContent value="reports" className="mt-4">
-            <ComparisonReportScheduler
-              availableExports={exports.map(exp => ({ id: exp.id, name: exp.name }))}
-              selectedExportIds={compareSelected}
-            />
+            <div className="space-y-6">
+              <ComparisonReportAnalytics />
+              
+              <ComparisonReportScheduler
+                availableExports={exports.map(exp => ({ id: exp.id, name: exp.name }))}
+                selectedExportIds={compareSelected}
+              />
+            </div>
           </TabsContent>
         </Tabs>
       </CardContent>

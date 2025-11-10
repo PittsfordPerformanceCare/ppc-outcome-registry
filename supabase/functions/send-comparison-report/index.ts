@@ -1,8 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@4.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -215,19 +212,31 @@ const handler = async (req: Request): Promise<Response> => {
     const emailHTML = generateEmailHTML({ schedule, exports, metricsData, trackingId });
     const now = new Date().toISOString();
     
-    let emailResponse;
+    let emailResponseData: any = null;
     let deliveryStatus = 'success';
     let errorMessage = null;
 
     try {
-      emailResponse = await resend.emails.send({
-        from: "PPC Outcome Registry <onboarding@resend.dev>",
-        to: schedule.recipient_emails,
-        subject: `${schedule.name} - ${schedule.frequency === 'weekly' ? 'Weekly' : 'Monthly'} Comparison Report`,
-        html: emailHTML,
+      const emailResponse = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Deno.env.get("RESEND_API_KEY")}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: "PPC Outcome Registry <onboarding@resend.dev>",
+          to: schedule.recipient_emails,
+          subject: `${schedule.name} - ${schedule.frequency === 'weekly' ? 'Weekly' : 'Monthly'} Comparison Report`,
+          html: emailHTML,
+        }),
       });
 
-      console.log('Comparison report sent successfully:', emailResponse);
+      if (emailResponse.ok) {
+        emailResponseData = await emailResponse.json();
+        console.log('Comparison report sent successfully:', emailResponseData);
+      } else {
+        throw new Error(`Email API error: ${emailResponse.status}`);
+      }
     } catch (error: any) {
       deliveryStatus = 'failed';
       errorMessage = error.message;
@@ -249,8 +258,8 @@ const handler = async (req: Request): Promise<Response> => {
         status: deliveryStatus,
         error_message: errorMessage,
         tracking_id: trackingId,
-        delivery_details: emailResponse ? {
-          email_id: emailResponse.id,
+        delivery_details: emailResponseData ? {
+          email_id: emailResponseData.id,
           metrics: metricsData,
         } : null,
       });
