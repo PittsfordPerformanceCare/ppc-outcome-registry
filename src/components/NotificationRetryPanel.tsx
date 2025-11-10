@@ -39,13 +39,14 @@ export function NotificationRetryPanel() {
         .from('notifications_history')
         .select('id, patient_name, notification_type, error_message, sent_at, retry_count, max_retries, last_retry_at, next_retry_at')
         .eq('status', 'failed')
-        .filter('retry_count', 'lt', 'max_retries')
         .order('sent_at', { ascending: false })
-        .limit(20);
+        .limit(50);
 
       if (error) throw error;
 
-      setFailedNotifications(data || []);
+      // Filter to only show notifications that haven't exceeded max retries
+      const eligibleForRetry = (data || []).filter(n => n.retry_count < n.max_retries);
+      setFailedNotifications(eligibleForRetry);
     } catch (error: any) {
       console.error("Error loading failed notifications:", error);
       toast.error(`Failed to load notifications: ${error.message}`);

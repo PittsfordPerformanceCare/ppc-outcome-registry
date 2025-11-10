@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -51,7 +50,6 @@ const handler = async (req: Request): Promise<Response> => {
     } else {
       // Automatic retry - retry notifications due for retry
       query = query
-        .lt('retry_count', supabase.rpc('max_retries'))
         .or('next_retry_at.is.null,next_retry_at.lte.now()')
         .limit(50); // Process up to 50 at a time
       console.log('Automatic retry check...');
@@ -64,7 +62,12 @@ const handler = async (req: Request): Promise<Response> => {
       throw fetchError;
     }
 
-    if (!failedNotifications || failedNotifications.length === 0) {
+    // Filter out notifications that have exceeded max retries
+    const eligibleNotifications = (failedNotifications || []).filter(
+      (n: any) => n.retry_count < n.max_retries
+    );
+
+    if (!eligibleNotifications || eligibleNotifications.length === 0) {
       console.log('No notifications to retry');
       return new Response(
         JSON.stringify({ 
@@ -76,16 +79,16 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    console.log(`Found ${failedNotifications.length} notifications to retry`);
+    console.log(`Found ${eligibleNotifications.length} eligible notifications to retry`);
 
     const results = {
-      total: failedNotifications.length,
+      total: eligibleNotifications.length,
       succeeded: 0,
       failed: 0,
       skipped: 0
     };
 
-    for (const notification of failedNotifications as NotificationRecord[]) {
+    for (const notification of eligibleNotifications as NotificationRecord[]) {
       // Check if max retries reached
       if (notification.retry_count >= notification.max_retries) {
         console.log(`Notification ${notification.id} has reached max retries, skipping`);
@@ -186,7 +189,6 @@ async function retryNotification(
   // Retry email if applicable
   if (notification.patient_email && RESEND_API_KEY) {
     try {
-      const resend = new Resend(RESEND_API_KEY);
       
       // Get clinic settings for templates
       const { data: settings } = await supabase
@@ -217,15 +219,24 @@ async function retryNotification(
         ...deliveryDetails
       });
 
-      const emailResponse = await resend.emails.send({
-        from: 'NeuroEdvance <onboarding@resend.dev>',
-        to: [notification.patient_email],
-        subject: subject,
-        html: emailBody,
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'NeuroEdvance <onboarding@resend.dev>',
+          to: [notification.patient_email],
+          subject: subject,
+          html: emailBody,
+        }),
       });
 
-      console.log(`Email retry sent for notification ${notification.id}`);
-      emailSuccess = true;
+      if (response.ok) {
+        console.log(`Email retry sent for notification ${notification.id}`);
+        emailSuccess = true;
+      }
     } catch (error: any) {
       console.error(`Email retry failed for notification ${notification.id}:`, error);
     }
