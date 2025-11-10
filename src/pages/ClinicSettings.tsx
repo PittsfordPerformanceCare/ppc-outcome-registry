@@ -33,6 +33,8 @@ export default function ClinicSettings() {
   const [reminderEmailSubject, setReminderEmailSubject] = useState("");
   const [reminderEmailTemplate, setReminderEmailTemplate] = useState("");
   const [reminderSmsTemplate, setReminderSmsTemplate] = useState("");
+  
+  const [testingReminders, setTestingReminders] = useState(false);
 
   useEffect(() => {
     const checkAdminAndLoadSettings = async () => {
@@ -182,6 +184,28 @@ export default function ClinicSettings() {
     }
   };
 
+  const handleTestReminders = async () => {
+    setTestingReminders(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-appointment-reminders');
+
+      if (error) throw error;
+
+      const result = data as { processed: number; message: string };
+      
+      if (result.processed > 0) {
+        toast.success(`${result.message || `Sent ${result.processed} reminder(s)`}`);
+      } else {
+        toast.info("No upcoming appointments found in the reminder window");
+      }
+    } catch (error: any) {
+      console.error("Error testing reminders:", error);
+      toast.error(`Failed to test reminders: ${error.message}`);
+    } finally {
+      setTestingReminders(false);
+    }
+  };
+
   if (authLoading || checkingAdmin) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -309,6 +333,31 @@ export default function ClinicSettings() {
               Reminders are checked hourly. A scheduled task will automatically send reminders to patients based on their appointment dates/times.
             </AlertDescription>
           </Alert>
+
+          {/* Manual Test Button */}
+          <div className="pt-4">
+            <Button
+              onClick={handleTestReminders}
+              disabled={testingReminders || !reminderEnabled}
+              variant="outline"
+              className="w-full"
+            >
+              {testingReminders ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Checking for Appointments...
+                </>
+              ) : (
+                <>
+                  <Bell className="h-4 w-4 mr-2" />
+                  Manually Check & Send Reminders Now
+                </>
+              )}
+            </Button>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              This will check for appointments in the next {reminderHoursBefore} hours and send reminders
+            </p>
+          </div>
         </CardContent>
       </Card>
 
