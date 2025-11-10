@@ -4,10 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, ArrowRight, FileText } from "lucide-react";
+import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, ArrowRight, FileText, CheckSquare, Layers } from "lucide-react";
 import { format } from "date-fns";
 import { IntakeToEpisodeConverter } from "@/components/IntakeToEpisodeConverter";
+import { BulkIntakeConverter } from "@/components/BulkIntakeConverter";
+import { validateBulkIntakes, checkForDuplicatePatients } from "@/lib/bulkIntakeValidation";
 
 interface IntakeForm {
   id: string;
@@ -48,6 +51,11 @@ export default function IntakeReview() {
   const [selectedForm, setSelectedForm] = useState<IntakeForm | null>(null);
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
   const [formToConvert, setFormToConvert] = useState<IntakeForm | null>(null);
+  
+  // Bulk selection states
+  const [selectedIntakes, setSelectedIntakes] = useState<Set<string>>(new Set());
+  const [bulkConvertDialogOpen, setBulkConvertDialogOpen] = useState(false);
+  const [validationResult, setValidationResult] = useState<any>(null);
 
   useEffect(() => {
     loadIntakeForms();
@@ -97,6 +105,7 @@ export default function IntakeReview() {
   const handleConversionSuccess = () => {
     loadIntakeForms();
     setSelectedForm(null);
+    setSelectedIntakes(new Set());
   };
 
   const handleViewEpisode = (episodeId: string) => {
@@ -119,6 +128,57 @@ export default function IntakeReview() {
     } catch (error: any) {
       toast.error(`Failed to update status: ${error.message}`);
     }
+  };
+
+  const toggleSelectIntake = (intakeId: string) => {
+    const newSelected = new Set(selectedIntakes);
+    if (newSelected.has(intakeId)) {
+      newSelected.delete(intakeId);
+    } else {
+      newSelected.add(intakeId);
+    }
+    setSelectedIntakes(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    const availableIntakes = intakeForms.filter(f => !f.converted_to_episode_id);
+    if (selectedIntakes.size === availableIntakes.length) {
+      setSelectedIntakes(new Set());
+    } else {
+      setSelectedIntakes(new Set(availableIntakes.map(f => f.id)));
+    }
+  };
+
+  const handleBulkConvert = async () => {
+    const selectedForms = intakeForms.filter(f => selectedIntakes.has(f.id));
+    
+    if (selectedForms.length === 0) {
+      toast.error("No intakes selected");
+      return;
+    }
+
+    // Validate selected intakes
+    const result = validateBulkIntakes(selectedForms);
+    
+    // Check for duplicate patients
+    const duplicates = await checkForDuplicatePatients(selectedForms);
+    
+    // Add duplicate warnings to validation result
+    duplicates.forEach((episodeId, intakeId) => {
+      const validated = result.validatedIntakes.find(v => v.id === intakeId);
+      if (validated) {
+        validated.issues.push({
+          severity: "warning",
+          message: `Patient may have an existing active episode (ID: ${episodeId})`,
+          field: "duplicate"
+        });
+        validated.hasExistingEpisode = true;
+        validated.existingEpisodeId = episodeId;
+      }
+    });
+
+    setValidationResult(result);
+    setBulkConvertDialogOpen(true);
   };
 
   const getStatusBadge = (status: string) => {
@@ -382,11 +442,44 @@ export default function IntakeReview() {
     );
   }
 
+  const availableForSelection = intakeForms.filter(f => !f.converted_to_episode_id);
+
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Patient Intake Forms</h1>
-        <p className="text-muted-foreground">Review and process new patient intake submissions</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Patient Intake Forms</h1>
+          <p className="text-muted-foreground">Review and process new patient intake submissions</p>
+        </div>
+        {availableForSelection.length > 0 && (
+          <div className="flex items-center gap-2">
+            {selectedIntakes.size > 0 && (
+              <>
+                <Badge variant="secondary" className="h-8 px-3">
+                  {selectedIntakes.size} selected
+                </Badge>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleBulkConvert}
+                  className="gap-2"
+                >
+                  <Layers className="h-4 w-4" />
+                  Convert Selected
+                </Button>
+              </>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleSelectAll}
+              className="gap-2"
+            >
+              <CheckSquare className="h-4 w-4" />
+              {selectedIntakes.size === availableForSelection.length ? "Deselect All" : "Select All"}
+            </Button>
+          </div>
+        )}
       </div>
 
       {intakeForms.length === 0 ? (
@@ -398,36 +491,55 @@ export default function IntakeReview() {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {intakeForms.map((form) => (
-            <Card key={form.id} className="cursor-pointer hover:bg-muted/50 transition-colors" onClick={() => setSelectedForm(form)}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="flex items-center gap-2">
-                      {form.patient_name}
-                      {getStatusBadge(form.status)}
-                    </CardTitle>
-                    <CardDescription>
-                      <div className="flex flex-wrap gap-4 mt-2">
-                        <span>Access Code: {form.access_code}</span>
-                        <span>DOB: {format(new Date(form.date_of_birth), "MMM d, yyyy")}</span>
-                        <span>Submitted: {format(new Date(form.submitted_at), "MMM d, yyyy 'at' h:mm a")}</span>
-                      </div>
-                    </CardDescription>
+          {intakeForms.map((form) => {
+            const isSelected = selectedIntakes.has(form.id);
+            const canSelect = !form.converted_to_episode_id;
+
+            return (
+              <Card 
+                key={form.id} 
+                className={`transition-colors ${
+                  isSelected ? 'ring-2 ring-primary' : ''
+                } ${canSelect ? 'cursor-pointer hover:bg-muted/50' : 'opacity-60'}`}
+              >
+                <CardHeader>
+                  <div className="flex items-center gap-4">
+                    {canSelect && (
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={() => toggleSelectIntake(form.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Select intake for ${form.patient_name}`}
+                      />
+                    )}
+                    <div className="flex-1" onClick={() => setSelectedForm(form)}>
+                      <CardTitle className="flex items-center gap-2">
+                        {form.patient_name}
+                        {getStatusBadge(form.status)}
+                      </CardTitle>
+                      <CardDescription>
+                        <div className="flex flex-wrap gap-4 mt-2">
+                          <span>Access Code: {form.access_code}</span>
+                          <span>DOB: {format(new Date(form.date_of_birth), "MMM d, yyyy")}</span>
+                          <span>Submitted: {format(new Date(form.submitted_at), "MMM d, yyyy 'at' h:mm a")}</span>
+                        </div>
+                      </CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm">
-                  <p className="text-muted-foreground mb-1">Chief Complaint:</p>
-                  <p className="line-clamp-2">{form.chief_complaint}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardHeader>
+                <CardContent onClick={() => setSelectedForm(form)}>
+                  <div className="text-sm">
+                    <p className="text-muted-foreground mb-1">Chief Complaint:</p>
+                    <p className="line-clamp-2">{form.chief_complaint}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
-      
+
+      {/* Single Conversion Dialog */}
       {formToConvert && (
         <IntakeToEpisodeConverter
           intakeForm={formToConvert}
@@ -435,6 +547,20 @@ export default function IntakeReview() {
           onClose={() => {
             setConvertDialogOpen(false);
             setFormToConvert(null);
+          }}
+          onSuccess={handleConversionSuccess}
+        />
+      )}
+
+      {/* Bulk Conversion Dialog */}
+      {validationResult && (
+        <BulkIntakeConverter
+          intakes={intakeForms.filter(f => selectedIntakes.has(f.id))}
+          validationResult={validationResult}
+          open={bulkConvertDialogOpen}
+          onClose={() => {
+            setBulkConvertDialogOpen(false);
+            setValidationResult(null);
           }}
           onSuccess={handleConversionSuccess}
         />
