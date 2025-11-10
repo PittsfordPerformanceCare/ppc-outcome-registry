@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { createEpisode } from "@/lib/dbOperations";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { ValidatedIntake, IntakeBulkValidationResult } from "@/lib/bulkIntakeValidation";
+import { PatientHistoryDialog } from "@/components/PatientHistoryDialog";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +39,8 @@ export function BulkIntakeConverter({
   const [converting, setConverting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentProcessing, setCurrentProcessing] = useState("");
+  const [showHistory, setShowHistory] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<{name: string; dob: string} | null>(null);
   const [results, setResults] = useState<{
     success: number;
     failed: number;
@@ -224,6 +227,7 @@ export function BulkIntakeConverter({
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh]">
         <DialogHeader>
@@ -351,15 +355,36 @@ export function BulkIntakeConverter({
                       {validated.issues.map((issue, idx) => (
                         <div key={idx} className="flex items-start gap-2 text-sm">
                           {getSeverityIcon(issue.severity)}
-                          <span className={
-                            issue.severity === "error" 
-                              ? "text-red-700 dark:text-red-300" 
-                              : issue.severity === "warning"
-                              ? "text-amber-700 dark:text-amber-300"
-                              : "text-blue-700 dark:text-blue-300"
-                          }>
-                            {issue.message}
-                          </span>
+                          <div className="flex-1 flex items-center justify-between">
+                            <span className={
+                              issue.severity === "error" 
+                                ? "text-red-700 dark:text-red-300" 
+                                : issue.severity === "warning"
+                                ? "text-amber-700 dark:text-amber-300"
+                                : "text-blue-700 dark:text-blue-300"
+                            }>
+                              {issue.message}
+                            </span>
+                            {validated.hasExistingEpisode && issue.field === "duplicate" && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-xs"
+                                onClick={() => {
+                                  const intake = intakes.find(i => i.id === validated.id);
+                                  if (intake) {
+                                    setSelectedPatient({
+                                      name: intake.patient_name,
+                                      dob: intake.date_of_birth
+                                    });
+                                    setShowHistory(true);
+                                  }
+                                }}
+                              >
+                                View History
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -393,5 +418,19 @@ export function BulkIntakeConverter({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {/* Patient History Dialog */}
+    {selectedPatient && (
+      <PatientHistoryDialog
+        open={showHistory}
+        onClose={() => {
+          setShowHistory(false);
+          setSelectedPatient(null);
+        }}
+        patientName={selectedPatient.name}
+        dateOfBirth={selectedPatient.dob}
+      />
+    )}
+    </>
   );
 }

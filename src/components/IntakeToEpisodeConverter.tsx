@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { createEpisode, saveOutcomeScore } from "@/lib/dbOperations";
 import { PPC_CONFIG, IndexType } from "@/lib/ppcConfig";
 import { getOutcomeToolRecommendations, getPrimaryOutcomeTool } from "@/lib/outcomeToolRecommendations";
 import { OutcomeToolRecommendations } from "@/components/OutcomeToolRecommendations";
+import { PatientHistoryDialog } from "@/components/PatientHistoryDialog";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -67,6 +69,8 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
   const [preview, setPreview] = useState<ConversionPreview | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [selectedDiagnosis, setSelectedDiagnosis] = useState<string>("");
+  const [hasDuplicate, setHasDuplicate] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Extract region from complaints
   const inferRegionFromComplaints = (): string => {
@@ -136,8 +140,8 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
     return treatments;
   };
 
-  // Initialize preview when dialog opens
-  useState(() => {
+  // Initialize preview and check for duplicates when dialog opens
+  useEffect(() => {
     if (open && !preview) {
       const region = inferRegionFromComplaints();
       setSelectedRegion(region);
@@ -148,8 +152,30 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
         functionalLimitations: extractFunctionalLimitations(),
         priorTreatments: extractPriorTreatments()
       });
+
+      // Check for duplicate patients
+      checkForDuplicates();
     }
-  });
+  }, [open]);
+
+  const checkForDuplicates = async () => {
+    try {
+      const { data: episodes, error } = await supabase
+        .from("episodes")
+        .select("id")
+        .ilike("patient_name", intakeForm.patient_name)
+        .eq("date_of_birth", intakeForm.date_of_birth)
+        .limit(1);
+
+      if (error) throw error;
+      
+      if (episodes && episodes.length > 0) {
+        setHasDuplicate(true);
+      }
+    } catch (error) {
+      console.error("Error checking for duplicates:", error);
+    }
+  };
 
   const handleConvert = async () => {
     if (!selectedRegion) {
@@ -238,25 +264,46 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle>Convert to Episode</DialogTitle>
-          <DialogDescription>
-            Review and confirm the episode details extracted from the intake form
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onClose}>
+        <DialogContent className="max-w-3xl max-h-[90vh]">
+          <DialogHeader>
+            <DialogTitle>Convert to Episode</DialogTitle>
+            <DialogDescription>
+              Review and confirm the episode details extracted from the intake form
+            </DialogDescription>
+          </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-180px)] pr-4">
-          <div className="space-y-4 py-4">
-            {/* Patient Info */}
-            <div className="rounded-lg bg-muted p-4">
-              <h3 className="font-semibold mb-2">Patient Information</h3>
-              <div className="space-y-1 text-sm">
-                <div><span className="text-muted-foreground">Name:</span> {intakeForm.patient_name}</div>
-                <div><span className="text-muted-foreground">DOB:</span> {new Date(intakeForm.date_of_birth).toLocaleDateString()}</div>
+          <ScrollArea className="max-h-[calc(90vh-180px)] pr-4">
+            <div className="space-y-4 py-4">
+              {/* Duplicate Patient Alert */}
+              {hasDuplicate && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="flex items-center justify-between">
+                    <span className="font-semibold">
+                      Warning: This patient may already have episodes in the system
+                    </span>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setShowHistory(true)}
+                      className="ml-4"
+                    >
+                      View History
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Patient Info */}
+              <div className="rounded-lg bg-muted p-4">
+                <h3 className="font-semibold mb-2">Patient Information</h3>
+                <div className="space-y-1 text-sm">
+                  <div><span className="text-muted-foreground">Name:</span> {intakeForm.patient_name}</div>
+                  <div><span className="text-muted-foreground">DOB:</span> {new Date(intakeForm.date_of_birth).toLocaleDateString()}</div>
+                </div>
               </div>
-            </div>
 
             {/* Region Selection */}
             <div className="space-y-2">
@@ -368,5 +415,14 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
         </DialogFooter>
       </DialogContent>
     </Dialog>
+
+    {/* Patient History Dialog */}
+    <PatientHistoryDialog
+      open={showHistory}
+      onClose={() => setShowHistory(false)}
+      patientName={intakeForm.patient_name}
+      dateOfBirth={intakeForm.date_of_birth}
+    />
+    </>
   );
 }
