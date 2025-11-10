@@ -15,6 +15,7 @@ import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -44,6 +45,58 @@ const DURATION_OPTIONS = [
   "6-12 months",
   "More than 1 year"
 ] as const;
+
+const REVIEW_OF_SYSTEMS = {
+  "General": [
+    "Fever", "Chills", "Night sweats", "Unexplained weight loss", "Unexplained weight gain", 
+    "Fatigue", "Weakness", "Loss of appetite"
+  ],
+  "Cardiovascular": [
+    "Chest pain", "Palpitations", "Irregular heartbeat", "Shortness of breath", 
+    "Swelling in legs/ankles", "High blood pressure", "History of heart disease"
+  ],
+  "Respiratory": [
+    "Chronic cough", "Wheezing", "Shortness of breath at rest", "Shortness of breath with activity",
+    "Asthma", "COPD", "Sleep apnea", "Difficulty breathing when lying flat"
+  ],
+  "Gastrointestinal": [
+    "Nausea", "Vomiting", "Diarrhea", "Constipation", "Abdominal pain", 
+    "Blood in stool", "Heartburn/reflux", "Difficulty swallowing", "Change in bowel habits"
+  ],
+  "Genitourinary": [
+    "Urinary frequency", "Urinary urgency", "Painful urination", "Blood in urine",
+    "Incontinence", "Kidney stones", "Prostate problems"
+  ],
+  "Musculoskeletal": [
+    "Joint pain", "Joint swelling", "Joint stiffness", "Muscle weakness", 
+    "Muscle pain", "Back pain", "Neck pain", "Limited range of motion",
+    "Arthritis", "Osteoporosis", "Previous fractures"
+  ],
+  "Neurological": [
+    "Headaches", "Migraines", "Dizziness", "Vertigo", "Fainting", "Seizures",
+    "Numbness", "Tingling", "Memory problems", "Balance problems", "Tremors",
+    "Vision changes", "Hearing loss"
+  ],
+  "Psychiatric": [
+    "Depression", "Anxiety", "Panic attacks", "Sleep problems", "Mood changes",
+    "Stress", "Previous mental health treatment"
+  ],
+  "Endocrine": [
+    "Diabetes", "Thyroid problems", "Excessive thirst", "Excessive urination",
+    "Heat/cold intolerance", "Changes in skin/hair"
+  ],
+  "Hematologic": [
+    "Easy bruising", "Easy bleeding", "Anemia", "Blood clots", "Swollen lymph nodes"
+  ],
+  "Skin": [
+    "Rashes", "Itching", "Changes in moles", "Skin lesions", "Excessive dryness",
+    "Eczema", "Psoriasis"
+  ],
+  "ENT (Ears, Nose, Throat)": [
+    "Ear pain", "Ringing in ears", "Sinus problems", "Frequent nosebleeds",
+    "Sore throat", "Hoarseness", "Difficulty swallowing"
+  ]
+};
 
 const complaintSchema = z.object({
   text: z.string().min(5, "Please describe this concern (at least 5 characters)").max(1000, "Description is too long"),
@@ -85,6 +138,7 @@ const intakeFormSchema = z.object({
   injuryMechanism: z.string().max(500, "Description is too long").optional(),
   painLevel: z.number().min(0).max(10),
   symptoms: z.string().max(1000, "Description is too long").optional(),
+  reviewOfSystems: z.array(z.string()).default([]),
   consentClinicUpdates: z.boolean().default(false),
   optOutNewsletter: z.boolean().default(false),
 });
@@ -127,6 +181,7 @@ export default function PatientIntake() {
       injuryMechanism: "",
       painLevel: 5,
       symptoms: "",
+      reviewOfSystems: [],
       consentClinicUpdates: false,
       optOutNewsletter: false,
     },
@@ -179,6 +234,7 @@ export default function PatientIntake() {
           injury_mechanism: data.injuryMechanism || null,
           pain_level: data.painLevel,
           symptoms: data.symptoms || null,
+          review_of_systems: data.reviewOfSystems,
           consent_clinic_updates: data.consentClinicUpdates,
           opt_out_newsletter: data.optOutNewsletter,
           status: "pending"
@@ -659,6 +715,73 @@ export default function PatientIntake() {
                       <FormControl>
                         <Textarea placeholder="Chronic conditions, family history, etc." rows={3} {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Review of Systems */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Review of Systems</CardTitle>
+                <CardDescription>
+                  Please check any symptoms you are currently experiencing or have experienced recently
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="reviewOfSystems"
+                  render={() => (
+                    <FormItem>
+                      <Accordion type="multiple" className="w-full">
+                        {Object.entries(REVIEW_OF_SYSTEMS).map(([system, symptoms]) => (
+                          <AccordionItem key={system} value={system}>
+                            <AccordionTrigger className="text-base font-semibold">
+                              {system}
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
+                                {symptoms.map((symptom) => (
+                                  <FormField
+                                    key={symptom}
+                                    control={form.control}
+                                    name="reviewOfSystems"
+                                    render={({ field }) => {
+                                      return (
+                                        <FormItem
+                                          key={symptom}
+                                          className="flex flex-row items-start space-x-2 space-y-0"
+                                        >
+                                          <FormControl>
+                                            <Checkbox
+                                              checked={field.value?.includes(symptom)}
+                                              onCheckedChange={(checked) => {
+                                                return checked
+                                                  ? field.onChange([...field.value, symptom])
+                                                  : field.onChange(
+                                                      field.value?.filter(
+                                                        (value) => value !== symptom
+                                                      )
+                                                    );
+                                              }}
+                                            />
+                                          </FormControl>
+                                          <FormLabel className="text-sm font-normal cursor-pointer">
+                                            {symptom}
+                                          </FormLabel>
+                                        </FormItem>
+                                      );
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
                       <FormMessage />
                     </FormItem>
                   )}
