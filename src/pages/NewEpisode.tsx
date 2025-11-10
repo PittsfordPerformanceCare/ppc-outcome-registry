@@ -327,15 +327,13 @@ export default function NewEpisode() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="clinician">Treating Clinician *</Label>
-                    <Select value={clinician} onValueChange={setClinician} required>
-                      <SelectTrigger id="clinician">
-                        <SelectValue placeholder="Select clinician" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Dr. Luckey">Dr. Luckey</SelectItem>
-                        <SelectItem value="Dr. Fink">Dr. Fink</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      id="clinician"
+                      placeholder="Enter clinician name"
+                      value={clinician}
+                      onChange={(e) => setClinician(e.target.value)}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="npi">Provider NPI</Label>
