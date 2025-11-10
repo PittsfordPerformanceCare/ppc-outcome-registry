@@ -34,10 +34,21 @@ const SEVERITY_LEVELS = [
   "Severe"
 ] as const;
 
+const DURATION_OPTIONS = [
+  "Less than 1 week",
+  "1-2 weeks",
+  "2-4 weeks",
+  "1-3 months",
+  "3-6 months",
+  "6-12 months",
+  "More than 1 year"
+] as const;
+
 const complaintSchema = z.object({
   text: z.string().min(5, "Please describe this concern (at least 5 characters)").max(1000, "Description is too long"),
   category: z.string().min(1, "Please select a body region/category"),
   severity: z.string().min(1, "Please select a severity level"),
+  duration: z.string().min(1, "Please select how long you've had this issue"),
   isPrimary: z.boolean(),
 });
 
@@ -109,7 +120,7 @@ export default function PatientIntake() {
       currentMedications: "",
       allergies: "",
       medicalHistory: "",
-      complaints: [{ text: "", category: "", severity: "", isPrimary: true }],
+      complaints: [{ text: "", category: "", severity: "", duration: "", isPrimary: true }],
       injuryDate: "",
       injuryMechanism: "",
       painLevel: 5,
@@ -692,6 +703,31 @@ export default function PatientIntake() {
 
                       <FormField
                         control={form.control}
+                        name={`complaints.${index}.duration`}
+                        render={({ field: durationField }) => (
+                          <FormItem>
+                            <FormLabel>How long have you had this issue? *</FormLabel>
+                            <Select onValueChange={durationField.onChange} value={durationField.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select duration" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {DURATION_OPTIONS.map((duration) => (
+                                  <SelectItem key={duration} value={duration}>
+                                    {duration}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
                         name={`complaints.${index}.text`}
                         render={({ field: textField }) => (
                           <FormItem>
@@ -714,7 +750,7 @@ export default function PatientIntake() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    onClick={() => append({ text: "", category: "", severity: "", isPrimary: false })}
+                    onClick={() => append({ text: "", category: "", severity: "", duration: "", isPrimary: false })}
                     className="w-full"
                   >
                     <Plus className="h-4 w-4 mr-2" />
