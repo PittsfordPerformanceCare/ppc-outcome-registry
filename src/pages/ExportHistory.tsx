@@ -190,6 +190,26 @@ export default function ExportHistory() {
 
   const hasActiveFilters = nameFilter || statusFilter !== "all" || startDate || endDate;
 
+  // Calculate statistics
+  const stats = {
+    total: filteredHistory.length,
+    successful: filteredHistory.filter((r) => r.status === "success").length,
+    failed: filteredHistory.filter((r) => r.status === "failed").length,
+    processing: filteredHistory.filter((r) => r.status === "processing").length,
+    totalRecords: filteredHistory.reduce(
+      (sum, r) => sum + (r.record_count || 0),
+      0
+    ),
+    successRate:
+      filteredHistory.length > 0
+        ? (
+            (filteredHistory.filter((r) => r.status === "success").length /
+              filteredHistory.length) *
+            100
+          ).toFixed(1)
+        : "0.0",
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -206,6 +226,70 @@ export default function ExportHistory() {
           <FileDown className="h-4 w-4 mr-2" />
           Export to CSV
         </Button>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Total Exports</CardDescription>
+            <CardTitle className="text-3xl">{stats.total}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">
+              {stats.processing > 0 && `${stats.processing} processing`}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Success Rate</CardDescription>
+            <CardTitle className="text-3xl text-green-600 dark:text-green-400">
+              {stats.successRate}%
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">
+              {stats.successful} successful exports
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Failed Exports</CardDescription>
+            <CardTitle className="text-3xl text-red-600 dark:text-red-400">
+              {stats.failed}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">
+              {stats.total > 0
+                ? ((stats.failed / stats.total) * 100).toFixed(1)
+                : "0.0"}
+              % failure rate
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardDescription>Total Records</CardDescription>
+            <CardTitle className="text-3xl">
+              {stats.totalRecords.toLocaleString()}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">
+              Avg{" "}
+              {stats.successful > 0
+                ? Math.round(stats.totalRecords / stats.successful).toLocaleString()
+                : 0}{" "}
+              per export
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters Card */}
