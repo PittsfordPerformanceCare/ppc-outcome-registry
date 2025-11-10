@@ -11,10 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square, ChevronDown, History, CheckCircle2, XCircle, AlertCircle, TrendingUp, Target, Database } from "lucide-react";
-import { format } from "date-fns";
+import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square, ChevronDown, History, CheckCircle2, XCircle, AlertCircle, TrendingUp, Target, Database, BarChart3 } from "lucide-react";
+import { format, startOfDay, startOfWeek, parseISO } from "date-fns";
 import { ExportTemplateManager } from "./ExportTemplateManager";
 import { Checkbox } from "@/components/ui/checkbox";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
 
 interface ScheduledExport {
   id: string;
@@ -52,6 +53,7 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
   const [selectedExports, setSelectedExports] = useState<string[]>([]);
   const [exportHistories, setExportHistories] = useState<Record<string, ExportHistoryRecord[]>>({});
   const [loadingHistory, setLoadingHistory] = useState<Record<string, boolean>>({});
+  const [chartView, setChartView] = useState<Record<string, "daily" | "weekly">>({});
   const { toast } = useToast();
 
   // Form state
@@ -487,6 +489,48 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
     };
   };
 
+  const prepareChartData = (history: ExportHistoryRecord[], view: "daily" | "weekly") => {
+    if (history.length === 0) return [];
+
+    // Group by day or week
+    const grouped = history.reduce((acc, record) => {
+      const date = parseISO(record.executed_at);
+      const key = view === "daily" 
+        ? format(startOfDay(date), "MMM d")
+        : format(startOfWeek(date, { weekStartsOn: 1 }), "MMM d");
+      
+      if (!acc[key]) {
+        acc[key] = {
+          period: key,
+          total: 0,
+          success: 0,
+          failed: 0,
+          records: 0,
+        };
+      }
+      
+      acc[key].total += 1;
+      if (record.status === "success") {
+        acc[key].success += 1;
+        acc[key].records += record.record_count || 0;
+      } else if (record.status === "failed") {
+        acc[key].failed += 1;
+      }
+      
+      return acc;
+    }, {} as Record<string, any>);
+
+    // Convert to array and calculate success rate
+    return Object.values(grouped).map((item: any) => ({
+      period: item.period,
+      successRate: Math.round((item.success / item.total) * 100),
+      records: item.records,
+      totalRuns: item.total,
+      successful: item.success,
+      failed: item.failed,
+    })).reverse().slice(0, 10); // Show last 10 periods
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -837,6 +881,86 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                                 </div>
                               );
                             })()}
+
+                            {/* Trend Chart */}
+                            <div className="mb-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                  <BarChart3 className="h-4 w-4" />
+                                  <h6 className="text-sm font-semibold">Performance Trends</h6>
+                                </div>
+                                <div className="flex gap-1">
+                                  <Button
+                                    variant={chartView[exp.id] === "daily" || !chartView[exp.id] ? "secondary" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setChartView(prev => ({ ...prev, [exp.id]: "daily" }))}
+                                  >
+                                    Daily
+                                  </Button>
+                                  <Button
+                                    variant={chartView[exp.id] === "weekly" ? "secondary" : "ghost"}
+                                    size="sm"
+                                    onClick={() => setChartView(prev => ({ ...prev, [exp.id]: "weekly" }))}
+                                  >
+                                    Weekly
+                                  </Button>
+                                </div>
+                              </div>
+                              
+                              <ResponsiveContainer width="100%" height={250}>
+                                <LineChart
+                                  data={prepareChartData(exportHistories[exp.id], chartView[exp.id] || "daily")}
+                                  margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                                >
+                                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                                  <XAxis 
+                                    dataKey="period" 
+                                    className="text-xs"
+                                    tick={{ fontSize: 12 }}
+                                  />
+                                  <YAxis 
+                                    yAxisId="left"
+                                    className="text-xs"
+                                    tick={{ fontSize: 12 }}
+                                    label={{ value: 'Success Rate (%)', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                                  />
+                                  <YAxis 
+                                    yAxisId="right" 
+                                    orientation="right"
+                                    className="text-xs"
+                                    tick={{ fontSize: 12 }}
+                                    label={{ value: 'Records', angle: 90, position: 'insideRight', style: { fontSize: 12 } }}
+                                  />
+                                  <Tooltip 
+                                    contentStyle={{ 
+                                      backgroundColor: 'hsl(var(--background))',
+                                      border: '1px solid hsl(var(--border))',
+                                      borderRadius: '6px',
+                                      fontSize: '12px'
+                                    }}
+                                  />
+                                  <Legend wrapperStyle={{ fontSize: '12px' }} />
+                                  <Line 
+                                    yAxisId="left"
+                                    type="monotone" 
+                                    dataKey="successRate" 
+                                    stroke="hsl(var(--primary))" 
+                                    strokeWidth={2}
+                                    name="Success Rate (%)"
+                                    dot={{ r: 4 }}
+                                  />
+                                  <Line 
+                                    yAxisId="right"
+                                    type="monotone" 
+                                    dataKey="records" 
+                                    stroke="hsl(142 76% 36%)" 
+                                    strokeWidth={2}
+                                    name="Records Exported"
+                                    dot={{ r: 4 }}
+                                  />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
 
                             {/* Run History */}
                             <div>
