@@ -316,10 +316,29 @@ All colors MUST be HSL.
     display: none !important;
   }
 
+  /* Show only specific print-allowed elements */
+  button.print\\:hidden {
+    display: none !important;
+  }
+
   /* Optimize cards for print */
   .bg-gradient-to-br,
   .bg-gradient-to-r {
     background: white !important;
+  }
+
+  /* Ensure cards have clean borders for print */
+  [class*="rounded"] {
+    border: 1px solid #ddd !important;
+  }
+
+  /* Optimize badges for print */
+  [class*="badge"],
+  [class*="Badge"] {
+    border: 1px solid #333 !important;
+    background: white !important;
+    color: black !important;
+    font-weight: 600 !important;
   }
 
   /* Remove shadows and borders for cleaner print */

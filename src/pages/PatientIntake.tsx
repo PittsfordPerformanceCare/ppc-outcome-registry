@@ -270,7 +270,7 @@ export default function PatientIntake() {
 
             <Button 
               onClick={() => window.print()} 
-              className="w-full"
+              className="w-full print:hidden"
               variant="outline"
             >
               <Printer className="h-4 w-4 mr-2" />
