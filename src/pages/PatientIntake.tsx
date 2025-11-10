@@ -466,11 +466,33 @@ export default function PatientIntake() {
     }
 
     // Consent Information
-    checkPageBreak(60);
+    checkPageBreak(80);
     addText("INFORMED CONSENT", 12, true);
     addText(`Signed Name: ${submittedFormData.consentSignedName}`);
     addText(`Date: ${submittedFormData.consentDate}`);
-    addText("Signature: [Digital signature on file]");
+    addText("Digital Signature:", 10, true);
+    yPosition += 3;
+    
+    // Add signature image if available
+    if (submittedFormData.consentSignature) {
+      try {
+        const signatureHeight = 30;
+        const signatureWidth = 80;
+        checkPageBreak(signatureHeight + 10);
+        pdf.addImage(
+          submittedFormData.consentSignature,
+          'PNG',
+          margin,
+          yPosition,
+          signatureWidth,
+          signatureHeight
+        );
+        yPosition += signatureHeight + 5;
+      } catch (error) {
+        console.error("Error adding signature to PDF:", error);
+        addText("[Signature could not be rendered]");
+      }
+    }
     yPosition += 5;
 
     // HIPAA Acknowledgment
