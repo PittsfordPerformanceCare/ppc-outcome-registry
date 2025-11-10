@@ -237,7 +237,7 @@ export default function ExportHistory() {
           ? startOfDay(subDays(new Date(), i - 1))
           : startOfWeek(subWeeks(new Date(), i - 1), { weekStartsOn: 1 });
 
-      const periodExports = filteredHistory.filter((record) => {
+      const periodExports = history.filter((record) => {
         const recordDate = new Date(record.executed_at);
         return recordDate >= periodStart && recordDate < periodEnd;
       });
@@ -250,6 +250,8 @@ export default function ExportHistory() {
         successful,
         failed,
         total: successful + failed,
+        startDate: format(periodStart, "yyyy-MM-dd"),
+        endDate: format(periodEnd, "yyyy-MM-dd"),
       });
     }
 
@@ -257,6 +259,19 @@ export default function ExportHistory() {
   };
 
   const chartData = getChartData();
+
+  const handleChartClick = (data: any) => {
+    if (data && data.activePayload && data.activePayload[0]) {
+      const clickedData = data.activePayload[0].payload;
+      setStartDate(clickedData.startDate);
+      setEndDate(clickedData.endDate);
+      
+      toast({
+        title: "Filters applied",
+        description: `Showing exports from ${format(new Date(clickedData.startDate), "MMM d")} to ${format(new Date(clickedData.endDate), "MMM d")}`,
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -347,7 +362,7 @@ export default function ExportHistory() {
             <div>
               <CardTitle>Export Trends</CardTitle>
               <CardDescription>
-                Success and failure rates over time
+                Success and failure rates over time (click any point to filter)
               </CardDescription>
             </div>
             <Tabs value={chartPeriod} onValueChange={(v) => setChartPeriod(v as "daily" | "weekly")}>
@@ -365,7 +380,7 @@ export default function ExportHistory() {
             </p>
           ) : (
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={chartData}>
+              <LineChart data={chartData} onClick={handleChartClick} className="cursor-pointer">
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis 
                   dataKey="period" 
@@ -382,6 +397,7 @@ export default function ExportHistory() {
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '6px',
                   }}
+                  cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 2 }}
                 />
                 <Legend />
                 <Line
@@ -391,6 +407,7 @@ export default function ExportHistory() {
                   strokeWidth={2}
                   name="Successful"
                   dot={{ fill: 'hsl(var(--chart-2))' }}
+                  activeDot={{ r: 8, cursor: 'pointer' }}
                 />
                 <Line
                   type="monotone"
@@ -399,6 +416,7 @@ export default function ExportHistory() {
                   strokeWidth={2}
                   name="Failed"
                   dot={{ fill: 'hsl(var(--destructive))' }}
+                  activeDot={{ r: 8, cursor: 'pointer' }}
                 />
               </LineChart>
             </ResponsiveContainer>
