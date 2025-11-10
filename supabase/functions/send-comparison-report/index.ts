@@ -205,15 +205,50 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Generate and send email
     const emailHTML = generateEmailHTML({ schedule, exports, metricsData });
+    const now = new Date().toISOString();
+    
+    let emailResponse;
+    let deliveryStatus = 'success';
+    let errorMessage = null;
 
-    const { error: emailError } = await resend.emails.send({
-      from: "PPC Outcome Registry <onboarding@resend.dev>",
-      to: schedule.recipient_emails,
-      subject: `${schedule.name} - ${schedule.frequency === 'weekly' ? 'Weekly' : 'Monthly'} Comparison Report`,
-      html: emailHTML,
-    });
+    try {
+      emailResponse = await resend.emails.send({
+        from: "PPC Outcome Registry <onboarding@resend.dev>",
+        to: schedule.recipient_emails,
+        subject: `${schedule.name} - ${schedule.frequency === 'weekly' ? 'Weekly' : 'Monthly'} Comparison Report`,
+        html: emailHTML,
+      });
 
-    if (emailError) throw emailError;
+      console.log('Comparison report sent successfully:', emailResponse);
+    } catch (error: any) {
+      deliveryStatus = 'failed';
+      errorMessage = error.message;
+      console.error('Error sending comparison report:', error);
+    }
+
+    // Log delivery history
+    const exportNames = exports.map(exp => exp.name);
+    const { error: historyError } = await supabase
+      .from('comparison_report_deliveries')
+      .insert({
+        schedule_id: scheduleId,
+        user_id: schedule.user_id,
+        clinic_id: schedule.clinic_id,
+        sent_at: now,
+        recipient_emails: schedule.recipient_emails,
+        export_ids: schedule.export_ids,
+        export_names: exportNames,
+        status: deliveryStatus,
+        error_message: errorMessage,
+        delivery_details: emailResponse ? {
+          email_id: emailResponse.id,
+          metrics: metricsData,
+        } : null,
+      });
+
+    if (historyError) {
+      console.error('Error logging delivery history:', historyError);
+    }
 
     // Update schedule
     const nextSendAt = calculateNextSendAt(schedule.frequency, schedule.send_day, schedule.send_time);
@@ -221,10 +256,15 @@ const handler = async (req: Request): Promise<Response> => {
     await supabase
       .from("comparison_report_schedules")
       .update({
-        last_sent_at: new Date().toISOString(),
+        last_sent_at: now,
         next_send_at: nextSendAt,
       })
       .eq("id", scheduleId);
+
+    // If email failed to send, throw error after logging
+    if (deliveryStatus === 'failed') {
+      throw new Error(errorMessage || 'Failed to send email');
+    }
 
     console.log(`Report sent successfully to ${schedule.recipient_emails.length} recipient(s)`);
 

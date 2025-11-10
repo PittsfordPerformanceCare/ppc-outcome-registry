@@ -164,6 +164,59 @@ export type Database = {
         }
         Relationships: []
       }
+      comparison_report_deliveries: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          delivery_details: Json | null
+          error_message: string | null
+          export_ids: string[]
+          export_names: string[]
+          id: string
+          recipient_emails: string[]
+          schedule_id: string
+          sent_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          delivery_details?: Json | null
+          error_message?: string | null
+          export_ids: string[]
+          export_names?: string[]
+          id?: string
+          recipient_emails: string[]
+          schedule_id: string
+          sent_at?: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          delivery_details?: Json | null
+          error_message?: string | null
+          export_ids?: string[]
+          export_names?: string[]
+          id?: string
+          recipient_emails?: string[]
+          schedule_id?: string
+          sent_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comparison_report_deliveries_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "comparison_report_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comparison_report_schedules: {
         Row: {
           clinic_id: string | null

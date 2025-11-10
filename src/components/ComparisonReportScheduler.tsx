@@ -11,8 +11,10 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { CalendarClock, Trash2, Edit, Mail, Clock } from "lucide-react";
+import { CalendarClock, Trash2, Edit, Mail, Clock, History } from "lucide-react";
 import { format } from "date-fns";
+import { ComparisonReportDeliveryHistory } from "./ComparisonReportDeliveryHistory";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface ComparisonReportSchedule {
   id: string;
@@ -46,6 +48,7 @@ export function ComparisonReportScheduler({
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<ComparisonReportSchedule | null>(null);
+  const [expandedHistory, setExpandedHistory] = useState<Record<string, boolean>>({});
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -463,6 +466,23 @@ export function ComparisonReportScheduler({
                   </Button>
                 </div>
               </div>
+
+              <Collapsible
+                open={expandedHistory[schedule.id]}
+                onOpenChange={(open) => 
+                  setExpandedHistory(prev => ({ ...prev, [schedule.id]: open }))
+                }
+              >
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="w-full mt-3">
+                    <History className="h-4 w-4 mr-2" />
+                    {expandedHistory[schedule.id] ? 'Hide' : 'Show'} Delivery History
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-3">
+                  <ComparisonReportDeliveryHistory scheduleId={schedule.id} />
+                </CollapsibleContent>
+              </Collapsible>
             </Card>
           ))}
         </div>
