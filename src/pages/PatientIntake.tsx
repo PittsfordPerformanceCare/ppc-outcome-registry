@@ -484,7 +484,7 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Personal Information</CardTitle>
                   {sectionCompletion.personal && (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   )}
                 </div>
               </CardHeader>
@@ -582,7 +582,7 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Insurance Information</CardTitle>
                   {sectionCompletion.insurance && (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   )}
                 </div>
               </CardHeader>
@@ -638,7 +638,7 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Emergency Contact</CardTitle>
                   {sectionCompletion.emergency && (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   )}
                 </div>
               </CardHeader>
@@ -694,7 +694,7 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Medical Information</CardTitle>
                   {sectionCompletion.medical && (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   )}
                 </div>
               </CardHeader>
@@ -862,7 +862,7 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Review of Systems</CardTitle>
                   {sectionCompletion.reviewOfSystems && (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   )}
                 </div>
                 <CardDescription>
@@ -934,7 +934,7 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Areas of Concern - What Would You Like Us to Evaluate?</CardTitle>
                   {sectionCompletion.concerns && (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                   )}
                 </div>
                 <CardDescription>
