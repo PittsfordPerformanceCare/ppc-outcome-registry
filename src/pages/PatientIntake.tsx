@@ -21,6 +21,7 @@ import { useEffect, useState as useReactState, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import SignatureCanvas from "react-signature-canvas";
 import jsPDF from "jspdf";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -663,6 +664,7 @@ export default function PatientIntake() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4 py-8">
+      <PWAInstallPrompt />
       <div className="mx-auto max-w-3xl">
         <Card className="mb-6">
           <CardHeader className="text-center">
