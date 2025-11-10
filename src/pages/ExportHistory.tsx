@@ -42,6 +42,7 @@ export default function ExportHistory() {
   const [selectedRecord, setSelectedRecord] = useState<ExportHistoryRecord | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [retrying, setRetrying] = useState(false);
+  const [recipientSearch, setRecipientSearch] = useState("");
   const { toast } = useToast();
 
   // Filter states
@@ -321,6 +322,7 @@ export default function ExportHistory() {
   const openDetailsModal = (record: ExportHistoryRecord) => {
     setSelectedRecord(record);
     setDetailsOpen(true);
+    setRecipientSearch(""); // Reset search when opening modal
   };
 
   const handleRetryExport = async () => {
@@ -932,26 +934,75 @@ export default function ExportHistory() {
                     Copy All
                   </Button>
                 </div>
-                <div className="space-y-2">
-                  {selectedRecord.recipient_emails.map((email, index) => (
-                    <div 
-                      key={index} 
-                      className="flex items-center justify-between gap-2 text-sm bg-background p-2 rounded group"
-                    >
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <Badge variant="secondary" className="shrink-0">{index + 1}</Badge>
-                        <span className="font-mono truncate">{email}</span>
-                      </div>
+
+                {/* Search Input */}
+                {selectedRecord.recipient_emails.length > 3 && (
+                  <div className="relative">
+                    <Input
+                      placeholder="Search recipients..."
+                      value={recipientSearch}
+                      onChange={(e) => setRecipientSearch(e.target.value)}
+                      className="h-9 pr-8"
+                    />
+                    {recipientSearch && (
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => copyIndividualEmail(email)}
-                        className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                        onClick={() => setRecipientSearch("")}
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
                       >
-                        <Copy className="h-3 w-3" />
+                        <X className="h-3 w-3" />
                       </Button>
-                    </div>
-                  ))}
+                    )}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  {(() => {
+                    const filteredEmails = selectedRecord.recipient_emails.filter(email =>
+                      email.toLowerCase().includes(recipientSearch.toLowerCase())
+                    );
+
+                    if (filteredEmails.length === 0) {
+                      return (
+                        <p className="text-sm text-muted-foreground text-center py-4">
+                          No recipients match "{recipientSearch}"
+                        </p>
+                      );
+                    }
+
+                    return (
+                      <>
+                        {recipientSearch && (
+                          <p className="text-xs text-muted-foreground">
+                            Showing {filteredEmails.length} of {selectedRecord.recipient_emails.length} recipients
+                          </p>
+                        )}
+                        {filteredEmails.map((email, originalIndex) => {
+                          const displayIndex = selectedRecord.recipient_emails.indexOf(email) + 1;
+                          return (
+                            <div 
+                              key={originalIndex} 
+                              className="flex items-center justify-between gap-2 text-sm bg-background p-2 rounded group"
+                            >
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <Badge variant="secondary" className="shrink-0">{displayIndex}</Badge>
+                                <span className="font-mono truncate">{email}</span>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => copyIndividualEmail(email)}
+                                className="h-7 px-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
 
