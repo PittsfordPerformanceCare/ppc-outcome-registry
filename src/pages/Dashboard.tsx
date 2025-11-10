@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare } from "lucide-react";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +20,8 @@ import { RegionalPerformanceChart } from "@/components/RegionalPerformanceChart"
 import { TreatmentEfficacyChart } from "@/components/TreatmentEfficacyChart";
 import { MCIDStatisticsCard } from "@/components/MCIDStatisticsCard";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
+import { generateBatchMCIDReports } from "@/lib/batchPDFExport";
+import { useClinicSettings } from "@/hooks/useClinicSettings";
 
 interface Episode {
   id: string;
@@ -39,7 +41,9 @@ export default function Dashboard() {
   const [episodesWithScores, setEpisodesWithScores] = useState<EpisodeMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [exportingPDFs, setExportingPDFs] = useState(false);
   const { toast } = useToast();
+  const { settings } = useClinicSettings();
   
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -263,6 +267,50 @@ export default function Dashboard() {
       title: "Export successful",
       description: `Exported ${selectedEpisodes.size} episode${selectedEpisodes.size !== 1 ? 's' : ''}`,
     });
+  };
+
+  const exportSelectedToPDF = async () => {
+    if (selectedEpisodes.size === 0) {
+      toast({
+        title: "No episodes selected",
+        description: "Please select at least one episode to export",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setExportingPDFs(true);
+
+    try {
+      const result = await generateBatchMCIDReports(
+        Array.from(selectedEpisodes),
+        settings
+      );
+
+      if (result.success > 0) {
+        toast({
+          title: "PDF export completed",
+          description: `Successfully exported ${result.success} report${result.success !== 1 ? 's' : ''}${result.failed > 0 ? `. ${result.failed} failed.` : ''}`,
+        });
+      }
+
+      if (result.errors.length > 0) {
+        console.error("Export errors:", result.errors);
+        toast({
+          title: "Some exports failed",
+          description: result.errors.slice(0, 3).join("; "),
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Export failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setExportingPDFs(false);
+    }
   };
 
   const deleteSelectedEpisodes = async () => {
@@ -780,11 +828,21 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
+                      onClick={exportSelectedToPDF}
+                      disabled={exportingPDFs}
+                      className="gap-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      {exportingPDFs ? "Exporting PDFs..." : "Export PDFs"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={exportSelectedToCSV}
                       className="gap-2"
                     >
                       <Download className="h-4 w-4" />
-                      Export Selected
+                      Export CSV
                     </Button>
                     <Button
                       variant="destructive"
