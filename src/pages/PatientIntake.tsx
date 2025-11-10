@@ -149,6 +149,7 @@ export default function PatientIntake() {
   const [submitted, setSubmitted] = useState(false);
   const [accessCode, setAccessCode] = useState("");
   const [submittedComplaints, setSubmittedComplaints] = useState<z.infer<typeof complaintSchema>[]>([]);
+  const [submittedReviewOfSystems, setSubmittedReviewOfSystems] = useState<string[]>([]);
 
   const form = useForm<IntakeFormValues>({
     resolver: zodResolver(intakeFormSchema),
@@ -244,6 +245,7 @@ export default function PatientIntake() {
 
       setAccessCode(code);
       setSubmittedComplaints(data.complaints);
+      setSubmittedReviewOfSystems(data.reviewOfSystems);
       setSubmitted(true);
       toast.success("Intake form submitted successfully!");
     } catch (error: any) {
@@ -331,6 +333,36 @@ export default function PatientIntake() {
                 </div>
               )}
             </div>
+
+            {submittedReviewOfSystems.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Review of Systems</h3>
+                <div className="border rounded-lg p-4 bg-card">
+                  <div className="space-y-3">
+                    {Object.entries(REVIEW_OF_SYSTEMS).map(([system, systemSymptoms]) => {
+                      const selectedSymptoms = systemSymptoms.filter(symptom => 
+                        submittedReviewOfSystems.includes(symptom)
+                      );
+                      
+                      if (selectedSymptoms.length === 0) return null;
+                      
+                      return (
+                        <div key={system} className="space-y-2">
+                          <h4 className="font-medium text-sm text-foreground">{system}</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedSymptoms.map((symptom) => (
+                              <Badge key={symptom} variant="secondary" className="text-xs">
+                                {symptom}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <p className="text-sm text-center text-muted-foreground">
               A staff member will review your information shortly.
