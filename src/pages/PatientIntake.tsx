@@ -1351,9 +1351,12 @@ export default function PatientIntake() {
                               if (signatureRef.current) {
                                 signatureRef.current.clear();
                                 field.onChange("");
+                                toast.success("Signature cleared");
                               }
                             }}
+                            className="border-accent text-accent hover:bg-accent hover:text-accent-foreground transition-all"
                           >
+                            <X className="h-4 w-4 mr-2" />
                             Clear Signature
                           </Button>
                         </div>
