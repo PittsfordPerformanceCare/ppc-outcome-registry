@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
-import { ClipboardCheck, Plus, X, Printer, Copy } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -153,6 +153,14 @@ export default function PatientIntake() {
   const [submittedComplaints, setSubmittedComplaints] = useState<z.infer<typeof complaintSchema>[]>([]);
   const [submittedReviewOfSystems, setSubmittedReviewOfSystems] = useState<string[]>([]);
   const [completionPercentage, setCompletionPercentage] = useState(0);
+  const [sectionCompletion, setSectionCompletion] = useState({
+    personal: false,
+    insurance: false,
+    emergency: false,
+    medical: false,
+    reviewOfSystems: false,
+    concerns: false,
+  });
 
   const form = useForm<IntakeFormValues>({
     resolver: zodResolver(intakeFormSchema),
@@ -200,48 +208,47 @@ export default function PatientIntake() {
   useEffect(() => {
     const subscription = form.watch((values) => {
       let completedSections = 0;
-      let totalSections = 7;
+      let totalSections = 6;
 
       // 1. Personal Information (required fields)
-      if (values.patientName && values.dateOfBirth) {
-        completedSections += 1;
-      }
+      const personalComplete = !!(values.patientName && values.dateOfBirth);
+      if (personalComplete) completedSections += 1;
 
       // 2. Insurance Information (at least one field)
-      if (values.insuranceProvider || values.insuranceId) {
-        completedSections += 1;
-      }
+      const insuranceComplete = !!(values.insuranceProvider || values.insuranceId);
+      if (insuranceComplete) completedSections += 1;
 
       // 3. Emergency Contact (at least name)
-      if (values.emergencyContactName) {
-        completedSections += 1;
-      }
+      const emergencyComplete = !!values.emergencyContactName;
+      if (emergencyComplete) completedSections += 1;
 
       // 4. Medical Information (at least one field)
-      if (values.primaryCarePhysician || values.currentMedications || values.allergies || values.medicalHistory) {
-        completedSections += 1;
-      }
+      const medicalComplete = !!(values.primaryCarePhysician || values.currentMedications || values.allergies || values.medicalHistory);
+      if (medicalComplete) completedSections += 1;
 
       // 5. Review of Systems (at least one selected)
-      if (values.reviewOfSystems && values.reviewOfSystems.length > 0) {
-        completedSections += 1;
-      }
+      const rosComplete = !!(values.reviewOfSystems && values.reviewOfSystems.length > 0);
+      if (rosComplete) completedSections += 1;
 
-      // 6. Areas of Concern (at least one complete complaint)
+      // 6. Areas of Concern (at least one complete complaint with pain/symptom info)
       const hasCompleteComplaint = values.complaints?.some(
         (c) => c.text && c.category && c.severity && c.duration
       );
-      if (hasCompleteComplaint) {
-        completedSections += 1;
-      }
-
-      // 7. Pain/Symptoms (pain level is always set, check for symptoms or injury info)
-      if (values.symptoms || values.injuryDate || values.injuryMechanism) {
-        completedSections += 1;
-      }
+      const hasSymptomInfo = !!(values.symptoms || values.injuryDate || values.injuryMechanism);
+      const concernsComplete = !!(hasCompleteComplaint && hasSymptomInfo);
+      if (concernsComplete) completedSections += 1;
 
       const percentage = Math.round((completedSections / totalSections) * 100);
       setCompletionPercentage(percentage);
+      
+      setSectionCompletion({
+        personal: personalComplete,
+        insurance: insuranceComplete,
+        emergency: emergencyComplete,
+        medical: medicalComplete,
+        reviewOfSystems: rosComplete,
+        concerns: concernsComplete,
+      });
     });
 
     return () => subscription.unsubscribe();
@@ -474,7 +481,12 @@ export default function PatientIntake() {
             {/* Personal Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle>Personal Information</CardTitle>
+                  {sectionCompletion.personal && (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormField
@@ -567,7 +579,12 @@ export default function PatientIntake() {
             {/* Insurance Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Insurance Information</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle>Insurance Information</CardTitle>
+                  {sectionCompletion.insurance && (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -618,7 +635,12 @@ export default function PatientIntake() {
             {/* Emergency Contact */}
             <Card>
               <CardHeader>
-                <CardTitle>Emergency Contact</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle>Emergency Contact</CardTitle>
+                  {sectionCompletion.emergency && (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormField
@@ -669,7 +691,12 @@ export default function PatientIntake() {
             {/* Medical Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Medical Information</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle>Medical Information</CardTitle>
+                  {sectionCompletion.medical && (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  )}
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <FormField
@@ -832,7 +859,12 @@ export default function PatientIntake() {
             {/* Review of Systems */}
             <Card>
               <CardHeader>
-                <CardTitle>Review of Systems</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle>Review of Systems</CardTitle>
+                  {sectionCompletion.reviewOfSystems && (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  )}
+                </div>
                 <CardDescription>
                   Please check any symptoms you are currently experiencing or have experienced recently
                 </CardDescription>
@@ -899,7 +931,12 @@ export default function PatientIntake() {
             {/* Areas of Concern */}
             <Card>
               <CardHeader>
-                <CardTitle>Areas of Concern - What Would You Like Us to Evaluate?</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle>Areas of Concern - What Would You Like Us to Evaluate?</CardTitle>
+                  {sectionCompletion.concerns && (
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  )}
+                </div>
                 <CardDescription>
                   Please describe each separate issue or condition you'd like evaluated. Use the category dropdown to specify the body region. Then select which concern you want us to prioritize and treat first.
                 </CardDescription>
