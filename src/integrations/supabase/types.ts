@@ -77,9 +77,12 @@ export type Database = {
           clinic_name: string
           created_at: string
           email: string | null
+          email_subject: string | null
+          email_template: string | null
           id: string
           logo_url: string | null
           phone: string | null
+          sms_template: string | null
           tagline: string | null
           updated_at: string
           website: string | null
@@ -89,9 +92,12 @@ export type Database = {
           clinic_name?: string
           created_at?: string
           email?: string | null
+          email_subject?: string | null
+          email_template?: string | null
           id?: string
           logo_url?: string | null
           phone?: string | null
+          sms_template?: string | null
           tagline?: string | null
           updated_at?: string
           website?: string | null
@@ -101,9 +107,12 @@ export type Database = {
           clinic_name?: string
           created_at?: string
           email?: string | null
+          email_subject?: string | null
+          email_template?: string | null
           id?: string
           logo_url?: string | null
           phone?: string | null
+          sms_template?: string | null
           tagline?: string | null
           updated_at?: string
           website?: string | null

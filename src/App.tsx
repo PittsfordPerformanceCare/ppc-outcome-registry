@@ -21,6 +21,7 @@ import PatientIntake from "./pages/PatientIntake";
 import IntakeReview from "./pages/IntakeReview";
 import IntakeStart from "./pages/IntakeStart";
 import IntakeValidation from "./pages/IntakeValidation";
+import ClinicSettings from "./pages/ClinicSettings";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/intake-review" element={<IntakeReview />} />
                     <Route path="/intake-validation" element={<IntakeValidation />} />
+                    <Route path="/clinic-settings" element={<ClinicSettings />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

@@ -59,6 +59,19 @@ const handler = async (req: Request): Promise<Response> => {
     const clinicName = clinicSettings?.clinic_name || 'Our Clinic';
     const clinicPhone = clinicSettings?.phone || '';
     const clinicEmail = clinicSettings?.email || '';
+    
+    // Template replacement helper
+    const replacePlaceholders = (template: string) => {
+      return template
+        .replace(/\{\{patient_name\}\}/g, patientName)
+        .replace(/\{\{clinician_name\}\}/g, clinicianName)
+        .replace(/\{\{episode_id\}\}/g, episodeId)
+        .replace(/\{\{clinic_name\}\}/g, clinicName)
+        .replace(/\{\{clinic_phone\}\}/g, clinicPhone)
+        .replace(/\{\{clinic_email\}\}/g, clinicEmail)
+        .replace(/\{\{appointment_date\}\}/g, appointmentDate || '')
+        .replace(/\{\{appointment_time\}\}/g, appointmentTime || '');
+    };
 
     // Send Email Notification
     if (patientEmail) {
@@ -66,6 +79,29 @@ const handler = async (req: Request): Promise<Response> => {
       
       if (resendApiKey) {
         try {
+          // Get custom templates or use defaults
+          const emailSubject = clinicSettings?.email_subject 
+            ? replacePlaceholders(clinicSettings.email_subject)
+            : 'Your Physical Therapy Episode Has Been Created';
+          
+          const emailHtml = clinicSettings?.email_template
+            ? replacePlaceholders(clinicSettings.email_template)
+            : replacePlaceholders(`
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h1 style="color: #2563eb;">Welcome to {{clinic_name}}!</h1>
+                  <p>Dear {{patient_name}},</p>
+                  <p>Your intake form has been reviewed and your physical therapy episode has been successfully created.</p>
+                  <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                    <h2 style="color: #1f2937; margin-top: 0;">Episode Details</h2>
+                    <p><strong>Clinician:</strong> {{clinician_name}}</p>
+                    <p><strong>Episode ID:</strong> {{episode_id}}</p>
+                  </div>
+                  <p>Your clinician will be working with you to develop a personalized treatment plan to help you achieve your recovery goals.</p>
+                  <p>If you have any questions, please call us at {{clinic_phone}}.</p>
+                  <p style="margin-top: 30px;">Best regards,<br/>{{clinic_name}} Team</p>
+                </div>
+              `);
+          
           const emailResponse = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -75,32 +111,8 @@ const handler = async (req: Request): Promise<Response> => {
             body: JSON.stringify({
               from: `${clinicName} <onboarding@resend.dev>`,
               to: [patientEmail],
-              subject: 'Your Physical Therapy Episode Has Been Created',
-              html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                  <h1 style="color: #2563eb;">Welcome to ${clinicName}!</h1>
-                  
-                  <p>Dear ${patientName},</p>
-                  
-                  <p>Your intake form has been reviewed and your physical therapy episode has been successfully created.</p>
-                  
-                  <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <h2 style="color: #1f2937; margin-top: 0;">Episode Details</h2>
-                    <p><strong>Clinician:</strong> ${clinicianName}</p>
-                    ${appointmentDate ? `<p><strong>First Appointment:</strong> ${appointmentDate}${appointmentTime ? ` at ${appointmentTime}` : ''}</p>` : ''}
-                    <p><strong>Episode ID:</strong> ${episodeId}</p>
-                  </div>
-                  
-                  <p>Your clinician will be working with you to develop a personalized treatment plan to help you achieve your recovery goals.</p>
-                  
-                  ${clinicPhone ? `<p>If you have any questions, please call us at ${clinicPhone}.</p>` : ''}
-                  
-                  <p style="margin-top: 30px;">Best regards,<br/>
-                  ${clinicName} Team</p>
-                  
-                  ${clinicEmail ? `<p style="color: #6b7280; font-size: 12px;">Contact: ${clinicEmail}</p>` : ''}
-                </div>
-              `,
+              subject: emailSubject,
+              html: emailHtml,
             }),
           });
 
@@ -131,7 +143,10 @@ const handler = async (req: Request): Promise<Response> => {
 
       if (twilioAccountSid && twilioAuthToken && twilioPhoneNumber) {
         try {
-          const message = `${clinicName}: Your PT episode has been created with ${clinicianName}. ${appointmentDate ? `First appointment: ${appointmentDate}. ` : ''}${clinicPhone ? `Call ${clinicPhone} with questions.` : ''}`;
+          // Get custom SMS template or use default
+          const smsMessage = clinicSettings?.sms_template
+            ? replacePlaceholders(clinicSettings.sms_template)
+            : replacePlaceholders(`{{clinic_name}}: Your PT episode has been created with {{clinician_name}}. Call {{clinic_phone}} with questions.`);
 
           const auth = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
           const smsResponse = await fetch(
@@ -145,7 +160,7 @@ const handler = async (req: Request): Promise<Response> => {
               body: new URLSearchParams({
                 To: patientPhone,
                 From: twilioPhoneNumber,
-                Body: message,
+                Body: smsMessage,
               }).toString(),
             }
           );

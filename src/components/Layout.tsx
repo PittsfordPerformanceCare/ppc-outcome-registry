@@ -55,7 +55,8 @@ export function Layout({ children }: LayoutProps) {
     { name: "PCP Summary", href: "/pcp-summary", icon: FileText },
     ...(isAdmin ? [
       { name: "Admin", href: "/admin", icon: Shield },
-      { name: "Compliance", href: "/compliance", icon: FileCheck }
+      { name: "Compliance", href: "/compliance", icon: FileCheck },
+      { name: "Settings", href: "/clinic-settings", icon: Settings }
     ] : []),
   ];
 
