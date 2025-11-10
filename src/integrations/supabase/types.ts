@@ -346,6 +346,7 @@ export type Database = {
           primary_care_physician: string | null
           referral_source: string | null
           referring_physician: string | null
+          review_of_systems: Json | null
           reviewed_at: string | null
           reviewed_by: string | null
           specialist_seen: string | null
@@ -388,6 +389,7 @@ export type Database = {
           primary_care_physician?: string | null
           referral_source?: string | null
           referring_physician?: string | null
+          review_of_systems?: Json | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           specialist_seen?: string | null
@@ -430,6 +432,7 @@ export type Database = {
           primary_care_physician?: string | null
           referral_source?: string | null
           referring_physician?: string | null
+          review_of_systems?: Json | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           specialist_seen?: string | null
