@@ -9,11 +9,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileText, Printer, Download } from "lucide-react";
+import { FileText, Printer, Download, Loader2 } from "lucide-react";
 import { MCIDReport } from "./MCIDReport";
 import { MCIDSummary } from "@/lib/mcidTracking";
 import { toast } from "sonner";
 import { useClinicSettings } from "@/hooks/useClinicSettings";
+import jsPDF from "jspdf";
 
 interface MCIDReportDialogProps {
   patientName: string;
@@ -31,6 +32,7 @@ interface MCIDReportDialogProps {
 
 export function MCIDReportDialog(props: MCIDReportDialogProps) {
   const [open, setOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const { settings } = useClinicSettings();
 
   const handlePrint = () => {
@@ -202,6 +204,44 @@ export function MCIDReportDialog(props: MCIDReportDialogProps) {
     toast.success("Opening print dialog...");
   };
 
+  const handleExportPDF = async () => {
+    setExporting(true);
+    try {
+      const reportContent = document.querySelector(".mcid-report");
+      if (!reportContent) {
+        toast.error("Report content not found");
+        return;
+      }
+
+      // Create a new jsPDF instance
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "letter",
+      });
+
+      // Convert HTML to PDF
+      await pdf.html(reportContent as HTMLElement, {
+        callback: (doc) => {
+          // Generate filename with patient name and date
+          const fileName = `MCID-Report-${props.patientName.replace(/\s+/g, "-")}-${new Date().toISOString().split("T")[0]}.pdf`;
+          doc.save(fileName);
+          toast.success("PDF downloaded successfully");
+        },
+        x: 10,
+        y: 10,
+        width: 190, // A4 width in mm minus margins
+        windowWidth: 900, // Match the report width
+        margin: [10, 10, 10, 10],
+      });
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      toast.error("Failed to export PDF. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -223,10 +263,23 @@ export function MCIDReportDialog(props: MCIDReportDialogProps) {
             <Printer className="h-4 w-4" />
             Print Report
           </Button>
-          <Button variant="outline" className="gap-2" disabled>
-            <Download className="h-4 w-4" />
-            Export PDF
-            <span className="text-xs text-muted-foreground ml-1">(Coming Soon)</span>
+          <Button 
+            variant="outline" 
+            className="gap-2" 
+            onClick={handleExportPDF}
+            disabled={exporting}
+          >
+            {exporting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Exporting...
+              </>
+            ) : (
+              <>
+                <Download className="h-4 w-4" />
+                Export PDF
+              </>
+            )}
           </Button>
         </div>
 
