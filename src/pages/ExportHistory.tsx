@@ -19,7 +19,7 @@ import {
   PaginationPrevious 
 } from "@/components/ui/pagination";
 import { useToast } from "@/hooks/use-toast";
-import { History, Download, CheckCircle, XCircle, Clock, Filter, X, FileDown } from "lucide-react";
+import { History, Download, CheckCircle, XCircle, Clock, Filter, X, FileDown, Copy } from "lucide-react";
 import { format, startOfDay, startOfWeek, subDays, subWeeks } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
@@ -368,6 +368,27 @@ export default function ExportHistory() {
       });
     } finally {
       setRetrying(false);
+    }
+  };
+
+  const copyRecipientsToClipboard = async () => {
+    if (!selectedRecord) return;
+
+    try {
+      // Copy emails as comma-separated list
+      const emailList = selectedRecord.recipient_emails.join(", ");
+      await navigator.clipboard.writeText(emailList);
+      
+      toast({
+        title: "Copied to clipboard",
+        description: `${selectedRecord.recipient_emails.length} email${selectedRecord.recipient_emails.length !== 1 ? 's' : ''} copied`,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Copy failed",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
@@ -879,10 +900,21 @@ export default function ExportHistory() {
 
               {/* Recipients Section */}
               <div className="space-y-3 rounded-lg border p-4">
-                <h3 className="text-sm font-semibold flex items-center gap-2">
-                  <Download className="h-4 w-4" />
-                  Recipients ({selectedRecord.recipient_emails.length})
-                </h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold flex items-center gap-2">
+                    <Download className="h-4 w-4" />
+                    Recipients ({selectedRecord.recipient_emails.length})
+                  </h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={copyRecipientsToClipboard}
+                    className="gap-2 h-8"
+                  >
+                    <Copy className="h-3 w-3" />
+                    Copy All
+                  </Button>
+                </div>
                 <div className="space-y-2">
                   {selectedRecord.recipient_emails.map((email, index) => (
                     <div 
