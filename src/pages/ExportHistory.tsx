@@ -25,6 +25,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 
 interface ExportHistoryRecord {
   id: string;
+  export_id: string;
   export_name: string;
   export_type: string;
   status: string;
@@ -40,6 +41,7 @@ export default function ExportHistory() {
   const [loading, setLoading] = useState(true);
   const [selectedRecord, setSelectedRecord] = useState<ExportHistoryRecord | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const { toast } = useToast();
 
   // Filter states
@@ -319,6 +321,54 @@ export default function ExportHistory() {
   const openDetailsModal = (record: ExportHistoryRecord) => {
     setSelectedRecord(record);
     setDetailsOpen(true);
+  };
+
+  const handleRetryExport = async () => {
+    if (!selectedRecord) return;
+
+    setRetrying(true);
+    try {
+      // Get the original scheduled export to retry
+      const { data: scheduledExports } = await supabase
+        .from("scheduled_exports")
+        .select("*")
+        .eq("id", selectedRecord.export_id)
+        .single();
+
+      if (!scheduledExports) {
+        throw new Error("Original export schedule not found");
+      }
+
+      toast({
+        title: "Retrying export...",
+        description: "Your export is being processed",
+      });
+
+      // Manually trigger the export
+      const { data, error } = await supabase.functions.invoke('process-scheduled-exports', {
+        body: { export_id: selectedRecord.export_id }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Export completed",
+        description: data?.results?.[0]?.status === 'success' 
+          ? "Export has been sent successfully"
+          : "Export processing completed",
+      });
+
+      setDetailsOpen(false);
+      loadHistory(); // Reload the history to show the new attempt
+    } catch (error: any) {
+      toast({
+        title: "Retry failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setRetrying(false);
+    }
   };
 
   return (
@@ -874,6 +924,25 @@ export default function ExportHistory() {
           )}
 
           <DialogFooter>
+            {selectedRecord?.status === "failed" && (
+              <Button 
+                onClick={handleRetryExport}
+                disabled={retrying}
+                className="gap-2"
+              >
+                {retrying ? (
+                  <>
+                    <Clock className="h-4 w-4 animate-spin" />
+                    Retrying...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Retry Export
+                  </>
+                )}
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setDetailsOpen(false)}>
               Close
             </Button>
