@@ -317,7 +317,9 @@ export type Database = {
           access_code: string
           address: string | null
           allergies: string | null
+          bill_responsible_party: string | null
           chief_complaint: string
+          consent_clinic_updates: boolean | null
           converted_to_episode_id: string | null
           created_at: string | null
           current_medications: string | null
@@ -326,21 +328,29 @@ export type Database = {
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
           emergency_contact_relationship: string | null
+          guardian_phone: string | null
+          hospitalization_history: string | null
           id: string
           injury_date: string | null
           injury_mechanism: string | null
           insurance_id: string | null
           insurance_provider: string | null
           medical_history: string | null
+          opt_out_newsletter: boolean | null
           pain_level: number | null
           patient_name: string
+          pcp_address: string | null
+          pcp_phone: string | null
           phone: string | null
           primary_care_physician: string | null
+          referral_source: string | null
           referring_physician: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          specialist_seen: string | null
           status: string
           submitted_at: string | null
+          surgery_history: string | null
           symptoms: string | null
           updated_at: string | null
         }
@@ -348,7 +358,9 @@ export type Database = {
           access_code: string
           address?: string | null
           allergies?: string | null
+          bill_responsible_party?: string | null
           chief_complaint: string
+          consent_clinic_updates?: boolean | null
           converted_to_episode_id?: string | null
           created_at?: string | null
           current_medications?: string | null
@@ -357,21 +369,29 @@ export type Database = {
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           emergency_contact_relationship?: string | null
+          guardian_phone?: string | null
+          hospitalization_history?: string | null
           id?: string
           injury_date?: string | null
           injury_mechanism?: string | null
           insurance_id?: string | null
           insurance_provider?: string | null
           medical_history?: string | null
+          opt_out_newsletter?: boolean | null
           pain_level?: number | null
           patient_name: string
+          pcp_address?: string | null
+          pcp_phone?: string | null
           phone?: string | null
           primary_care_physician?: string | null
+          referral_source?: string | null
           referring_physician?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          specialist_seen?: string | null
           status?: string
           submitted_at?: string | null
+          surgery_history?: string | null
           symptoms?: string | null
           updated_at?: string | null
         }
@@ -379,7 +399,9 @@ export type Database = {
           access_code?: string
           address?: string | null
           allergies?: string | null
+          bill_responsible_party?: string | null
           chief_complaint?: string
+          consent_clinic_updates?: boolean | null
           converted_to_episode_id?: string | null
           created_at?: string | null
           current_medications?: string | null
@@ -388,21 +410,29 @@ export type Database = {
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           emergency_contact_relationship?: string | null
+          guardian_phone?: string | null
+          hospitalization_history?: string | null
           id?: string
           injury_date?: string | null
           injury_mechanism?: string | null
           insurance_id?: string | null
           insurance_provider?: string | null
           medical_history?: string | null
+          opt_out_newsletter?: boolean | null
           pain_level?: number | null
           patient_name?: string
+          pcp_address?: string | null
+          pcp_phone?: string | null
           phone?: string | null
           primary_care_physician?: string | null
+          referral_source?: string | null
           referring_physician?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          specialist_seen?: string | null
           status?: string
           submitted_at?: string | null
+          surgery_history?: string | null
           symptoms?: string | null
           updated_at?: string | null
         }

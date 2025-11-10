@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ClipboardCheck } from "lucide-react";
@@ -22,10 +23,12 @@ export default function PatientIntake() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
+  const [guardianPhone, setGuardianPhone] = useState("");
 
   // Insurance
   const [insuranceProvider, setInsuranceProvider] = useState("");
   const [insuranceId, setInsuranceId] = useState("");
+  const [billResponsibleParty, setBillResponsibleParty] = useState("");
 
   // Emergency contact
   const [emergencyContactName, setEmergencyContactName] = useState("");
@@ -33,11 +36,21 @@ export default function PatientIntake() {
   const [emergencyContactRelationship, setEmergencyContactRelationship] = useState("");
 
   // Medical information
+  const [referralSource, setReferralSource] = useState("");
   const [primaryCarePhysician, setPrimaryCarePhysician] = useState("");
+  const [pcpPhone, setPcpPhone] = useState("");
+  const [pcpAddress, setPcpAddress] = useState("");
   const [referringPhysician, setReferringPhysician] = useState("");
+  const [specialistSeen, setSpecialistSeen] = useState("");
+  const [hospitalizationHistory, setHospitalizationHistory] = useState("");
+  const [surgeryHistory, setSurgeryHistory] = useState("");
   const [currentMedications, setCurrentMedications] = useState("");
   const [allergies, setAllergies] = useState("");
   const [medicalHistory, setMedicalHistory] = useState("");
+
+  // Consents
+  const [consentClinicUpdates, setConsentClinicUpdates] = useState(false);
+  const [optOutNewsletter, setOptOutNewsletter] = useState(false);
 
   // Injury/condition details
   const [chiefComplaint, setChiefComplaint] = useState("");
@@ -67,13 +80,21 @@ export default function PatientIntake() {
           phone,
           email,
           address,
+          guardian_phone: guardianPhone || null,
           insurance_provider: insuranceProvider,
           insurance_id: insuranceId,
+          bill_responsible_party: billResponsibleParty || null,
           emergency_contact_name: emergencyContactName,
           emergency_contact_phone: emergencyContactPhone,
           emergency_contact_relationship: emergencyContactRelationship,
+          referral_source: referralSource || null,
           primary_care_physician: primaryCarePhysician,
+          pcp_phone: pcpPhone || null,
+          pcp_address: pcpAddress || null,
           referring_physician: referringPhysician,
+          specialist_seen: specialistSeen || null,
+          hospitalization_history: hospitalizationHistory || null,
+          surgery_history: surgeryHistory || null,
           current_medications: currentMedications,
           allergies,
           medical_history: medicalHistory,
@@ -82,6 +103,8 @@ export default function PatientIntake() {
           injury_mechanism: injuryMechanism,
           pain_level: painLevel[0],
           symptoms,
+          consent_clinic_updates: consentClinicUpdates,
+          opt_out_newsletter: optOutNewsletter,
           status: "pending"
         });
 
@@ -187,12 +210,23 @@ export default function PatientIntake() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address">Full Address</Label>
                 <Textarea
                   id="address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="guardianPhone">Parent/Guardian Phone (if under 18)</Label>
+                <Input
+                  id="guardianPhone"
+                  type="tel"
+                  value={guardianPhone}
+                  onChange={(e) => setGuardianPhone(e.target.value)}
+                  placeholder="Required if patient is under 18"
                 />
               </div>
             </CardContent>
@@ -221,6 +255,16 @@ export default function PatientIntake() {
                     onChange={(e) => setInsuranceId(e.target.value)}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="billResponsibleParty">Who is responsible for the bill?</Label>
+                <Input
+                  id="billResponsibleParty"
+                  value={billResponsibleParty}
+                  onChange={(e) => setBillResponsibleParty(e.target.value)}
+                  placeholder="Self, Spouse, Parent, etc."
+                />
               </div>
             </CardContent>
           </Card>
@@ -269,9 +313,19 @@ export default function PatientIntake() {
               <CardTitle>Medical Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="referralSource">How did you hear about us? (Referral Source)</Label>
+                <Input
+                  id="referralSource"
+                  value={referralSource}
+                  onChange={(e) => setReferralSource(e.target.value)}
+                  placeholder="Friend, doctor referral, online search, etc."
+                />
+              </div>
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="primaryCarePhysician">Primary Care Physician</Label>
+                  <Label htmlFor="primaryCarePhysician">Primary Care Physician (PCP)</Label>
                   <Input
                     id="primaryCarePhysician"
                     value={primaryCarePhysician}
@@ -279,13 +333,64 @@ export default function PatientIntake() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="referringPhysician">Referring Physician</Label>
+                  <Label htmlFor="pcpPhone">PCP Phone</Label>
                   <Input
-                    id="referringPhysician"
-                    value={referringPhysician}
-                    onChange={(e) => setReferringPhysician(e.target.value)}
+                    id="pcpPhone"
+                    type="tel"
+                    value={pcpPhone}
+                    onChange={(e) => setPcpPhone(e.target.value)}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="pcpAddress">PCP Address</Label>
+                <Input
+                  id="pcpAddress"
+                  value={pcpAddress}
+                  onChange={(e) => setPcpAddress(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="referringPhysician">Referring Physician (if any)</Label>
+                <Input
+                  id="referringPhysician"
+                  value={referringPhysician}
+                  onChange={(e) => setReferringPhysician(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="specialistSeen">Have you seen a specialist? If so, who?</Label>
+                <Input
+                  id="specialistSeen"
+                  value={specialistSeen}
+                  onChange={(e) => setSpecialistSeen(e.target.value)}
+                  placeholder="Specialist name and specialty"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="hospitalizationHistory">Have you ever been hospitalized?</Label>
+                <Textarea
+                  id="hospitalizationHistory"
+                  value={hospitalizationHistory}
+                  onChange={(e) => setHospitalizationHistory(e.target.value)}
+                  placeholder="Please describe any hospitalizations"
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="surgeryHistory">Please list any surgeries</Label>
+                <Textarea
+                  id="surgeryHistory"
+                  value={surgeryHistory}
+                  onChange={(e) => setSurgeryHistory(e.target.value)}
+                  placeholder="List all previous surgeries and approximate dates"
+                  rows={2}
+                />
               </div>
 
               <div className="space-y-2">
@@ -311,12 +416,12 @@ export default function PatientIntake() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="medicalHistory">Relevant Medical History</Label>
+                <Label htmlFor="medicalHistory">Other Relevant Medical History</Label>
                 <Textarea
                   id="medicalHistory"
                   value={medicalHistory}
                   onChange={(e) => setMedicalHistory(e.target.value)}
-                  placeholder="Previous surgeries, chronic conditions, etc."
+                  placeholder="Chronic conditions, family history, etc."
                   rows={3}
                 />
               </div>
@@ -386,6 +491,40 @@ export default function PatientIntake() {
                   placeholder="Describe your symptoms (pain, stiffness, weakness, etc.)"
                   rows={3}
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Consent & Communication */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Communication Preferences</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="consentClinicUpdates"
+                  checked={consentClinicUpdates}
+                  onChange={(e) => setConsentClinicUpdates(e.target.checked)}
+                  className="h-4 w-4 rounded border-input"
+                />
+                <Label htmlFor="consentClinicUpdates" className="cursor-pointer">
+                  Yes, I would like to receive clinic updates and appointment reminders
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="optOutNewsletter"
+                  checked={optOutNewsletter}
+                  onChange={(e) => setOptOutNewsletter(e.target.checked)}
+                  className="h-4 w-4 rounded border-input"
+                />
+                <Label htmlFor="optOutNewsletter" className="cursor-pointer">
+                  I do not wish to receive newsletters or promotional materials
+                </Label>
               </div>
             </CardContent>
           </Card>
