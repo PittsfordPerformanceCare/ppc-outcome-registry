@@ -11,11 +11,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square, ChevronDown, History, CheckCircle2, XCircle, AlertCircle, TrendingUp, Target, Database, BarChart3 } from "lucide-react";
+import { Calendar, Clock, Mail, Trash2, Plus, Edit, Play, Copy, CheckSquare, Square, ChevronDown, History, CheckCircle2, XCircle, AlertCircle, TrendingUp, Target, Database, BarChart3, GitCompare } from "lucide-react";
 import { format, startOfDay, startOfWeek, parseISO } from "date-fns";
 import { ExportTemplateManager } from "./ExportTemplateManager";
 import { Checkbox } from "@/components/ui/checkbox";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface ScheduledExport {
   id: string;
@@ -54,6 +55,8 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
   const [exportHistories, setExportHistories] = useState<Record<string, ExportHistoryRecord[]>>({});
   const [loadingHistory, setLoadingHistory] = useState<Record<string, boolean>>({});
   const [chartView, setChartView] = useState<Record<string, "daily" | "weekly">>({});
+  const [comparisonMode, setComparisonMode] = useState(false);
+  const [compareSelected, setCompareSelected] = useState<string[]>([]);
   const { toast } = useToast();
 
   // Form state
@@ -531,6 +534,46 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
     })).reverse().slice(0, 10); // Show last 10 periods
   };
 
+  const toggleCompareSelection = (id: string) => {
+    setCompareSelected(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(i => i !== id);
+      } else {
+        if (prev.length >= 5) {
+          toast({
+            title: "Selection limit reached",
+            description: "You can compare up to 5 exports at a time",
+            variant: "destructive",
+          });
+          return prev;
+        }
+        return [...prev, id];
+      }
+    });
+  };
+
+  const loadComparisonHistories = async () => {
+    for (const exportId of compareSelected) {
+      if (!exportHistories[exportId]) {
+        await loadExportHistory(exportId);
+      }
+    }
+  };
+
+  const prepareComparisonData = () => {
+    return compareSelected.map(exportId => {
+      const exp = exports.find(e => e.id === exportId);
+      const history = exportHistories[exportId] || [];
+      const metrics = calculateMetrics(history);
+      
+      return {
+        id: exportId,
+        name: exp?.name || "Unknown",
+        ...metrics,
+      };
+    });
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -543,6 +586,51 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
             <CardDescription>
               Manage templates and scheduled exports
             </CardDescription>
+          </div>
+          <div className="flex gap-2">
+            {!comparisonMode && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setComparisonMode(true);
+                  setCompareSelected([]);
+                }}
+                className="gap-2"
+              >
+                <GitCompare className="h-4 w-4" />
+                Compare Schedules
+              </Button>
+            )}
+            {comparisonMode && (
+              <>
+                <Button
+                  variant="secondary"
+                  onClick={async () => {
+                    if (compareSelected.length < 2) {
+                      toast({
+                        title: "Select at least 2 exports",
+                        description: "Choose 2-5 exports to compare",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    await loadComparisonHistories();
+                  }}
+                  disabled={compareSelected.length < 2}
+                >
+                  View Comparison ({compareSelected.length})
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setComparisonMode(false);
+                    setCompareSelected([]);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
           </div>
           <Dialog open={dialogOpen} onOpenChange={(open) => {
             setDialogOpen(open);
@@ -652,6 +740,141 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
           </TabsList>
           
           <TabsContent value="schedules" className="mt-4">
+            {/* Comparison View */}
+            {comparisonMode && compareSelected.length >= 2 && (() => {
+              const comparisonData = prepareComparisonData();
+              const maxValues = {
+                successRate: Math.max(...comparisonData.map(d => d.successRate)),
+                totalRecords: Math.max(...comparisonData.map(d => d.totalRecords)),
+                averageRecords: Math.max(...comparisonData.map(d => d.averageRecords)),
+              };
+
+              return (
+                <div className="mb-6 p-4 border rounded-lg bg-muted/20">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <GitCompare className="h-5 w-5" />
+                      <h3 className="font-semibold">Performance Comparison</h3>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setComparisonMode(false);
+                        setCompareSelected([]);
+                      }}
+                    >
+                      Close Comparison
+                    </Button>
+                  </div>
+
+                  {/* Comparison Table */}
+                  <div className="mb-4 overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Export Schedule</TableHead>
+                          <TableHead className="text-right">Success Rate</TableHead>
+                          <TableHead className="text-right">Total Records</TableHead>
+                          <TableHead className="text-right">Avg Records</TableHead>
+                          <TableHead className="text-right">Total Runs</TableHead>
+                          <TableHead className="text-right">Failed Runs</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {comparisonData.map((data) => (
+                          <TableRow key={data.id}>
+                            <TableCell className="font-medium">{data.name}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <span className={data.successRate === maxValues.successRate ? "font-bold text-green-600" : ""}>
+                                  {data.successRate}%
+                                </span>
+                                {data.successRate === maxValues.successRate && (
+                                  <Badge variant="secondary" className="text-xs">Best</Badge>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                <span className={data.totalRecords === maxValues.totalRecords ? "font-bold text-blue-600" : ""}>
+                                  {data.totalRecords.toLocaleString()}
+                                </span>
+                                {data.totalRecords === maxValues.totalRecords && (
+                                  <Badge variant="secondary" className="text-xs">Most</Badge>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <span className={data.averageRecords === maxValues.averageRecords ? "font-bold text-purple-600" : ""}>
+                                {data.averageRecords.toLocaleString()}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-right">{data.totalRuns}</TableCell>
+                            <TableCell className="text-right">
+                              <span className={data.failedRuns > 0 ? "text-red-600" : "text-muted-foreground"}>
+                                {data.failedRuns}
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Comparison Charts */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2">Success Rate Comparison</h4>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={comparisonData}>
+                          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                          <XAxis 
+                            dataKey="name" 
+                            tick={{ fontSize: 10 }}
+                            angle={-45}
+                            textAnchor="end"
+                            height={60}
+                          />
+                          <YAxis tick={{ fontSize: 10 }} />
+                          <Tooltip />
+                          <Bar dataKey="successRate" name="Success Rate (%)">
+                            {comparisonData.map((entry, index) => (
+                              <Cell 
+                                key={`cell-${index}`}
+                                fill={entry.successRate >= 90 ? "hsl(142 76% 36%)" : 
+                                      entry.successRate >= 70 ? "hsl(48 96% 53%)" : 
+                                      "hsl(0 84% 60%)"}
+                              />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2">Total Records Comparison</h4>
+                      <ResponsiveContainer width="100%" height={200}>
+                        <BarChart data={comparisonData}>
+                          <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                          <XAxis 
+                            dataKey="name" 
+                            tick={{ fontSize: 10 }}
+                            angle={-45}
+                            textAnchor="end"
+                            height={60}
+                          />
+                          <YAxis tick={{ fontSize: 10 }} />
+                          <Tooltip />
+                          <Bar dataKey="totalRecords" fill="hsl(var(--primary))" name="Total Records" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             {loading ? (
               <p className="text-muted-foreground text-center py-8">Loading...</p>
             ) : exports.length === 0 ? (
@@ -660,8 +883,18 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
               </p>
             ) : (
               <>
+                {/* Comparison Mode Instructions */}
+                {comparisonMode && (
+                  <div className="mb-4 p-3 border rounded-lg bg-blue-50 dark:bg-blue-950">
+                    <p className="text-sm">
+                      Select 2-5 exports to compare their performance metrics. 
+                      Click <strong>View Comparison</strong> when ready.
+                    </p>
+                  </div>
+                )}
+
                 {/* Bulk Actions Bar */}
-                {selectedExports.length > 0 && (
+                {!comparisonMode && selectedExports.length > 0 && (
                   <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50 mb-3">
                     <p className="text-sm font-medium">
                       {selectedExports.length} export{selectedExports.length !== 1 ? 's' : ''} selected
@@ -706,26 +939,36 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                 )}
 
                 {/* Select All */}
-                <div className="flex items-center gap-2 p-2 border-b">
-                  <Checkbox
-                    checked={selectedExports.length === exports.length && exports.length > 0}
-                    onCheckedChange={toggleSelectAll}
-                    id="select-all"
-                  />
-                  <Label htmlFor="select-all" className="text-sm cursor-pointer">
-                    Select all ({exports.length})
-                  </Label>
-                </div>
+                {!comparisonMode && (
+                  <div className="flex items-center gap-2 p-2 border-b">
+                    <Checkbox
+                      checked={selectedExports.length === exports.length && exports.length > 0}
+                      onCheckedChange={toggleSelectAll}
+                      id="select-all"
+                    />
+                    <Label htmlFor="select-all" className="text-sm cursor-pointer">
+                      Select all ({exports.length})
+                    </Label>
+                  </div>
+                )}
 
                 <div className="space-y-3">
                 {exports.map((exp) => (
                   <Collapsible key={exp.id}>
                     <div className="flex items-center gap-3 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <Checkbox
-                        checked={selectedExports.includes(exp.id)}
-                        onCheckedChange={() => toggleSelectExport(exp.id)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
+                      {comparisonMode ? (
+                        <Checkbox
+                          checked={compareSelected.includes(exp.id)}
+                          onCheckedChange={() => toggleCompareSelection(exp.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      ) : (
+                        <Checkbox
+                          checked={selectedExports.includes(exp.id)}
+                          onCheckedChange={() => toggleSelectExport(exp.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      )}
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-2">
                           <h4 className="font-medium">{exp.name}</h4>
@@ -752,7 +995,8 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      {!comparisonMode && (
+                        <div className="flex items-center gap-2">
                         <CollapsibleTrigger asChild>
                           <Button
                             variant="ghost"
@@ -803,9 +1047,11 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
+                      )}
                     </div>
 
-                    <CollapsibleContent>
+                    {!comparisonMode && (
+                      <CollapsibleContent>
                       <div className="ml-10 mr-4 mb-3 p-4 border border-t-0 rounded-b-lg bg-muted/20">
                         <div className="flex items-center gap-2 mb-4">
                           <History className="h-4 w-4" />
@@ -1009,6 +1255,7 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
                         )}
                       </div>
                     </CollapsibleContent>
+                    )}
                   </Collapsible>
                 ))}
               </div>
