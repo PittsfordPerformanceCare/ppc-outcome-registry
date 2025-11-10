@@ -7,9 +7,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { History, Download, CheckCircle, XCircle, Clock, Filter, X, FileDown } from "lucide-react";
-import { format } from "date-fns";
+import { format, startOfDay, startOfWeek, subDays, subWeeks } from "date-fns";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 interface ExportHistoryRecord {
   id: string;
@@ -33,6 +35,7 @@ export default function ExportHistory() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [chartPeriod, setChartPeriod] = useState<"daily" | "weekly">("daily");
 
   useEffect(() => {
     loadHistory();
@@ -210,6 +213,51 @@ export default function ExportHistory() {
         : "0.0",
   };
 
+  // Generate chart data
+  const getChartData = () => {
+    if (filteredHistory.length === 0) return [];
+
+    const periods = chartPeriod === "daily" ? 14 : 8; // Last 14 days or 8 weeks
+    const data: any[] = [];
+
+    for (let i = periods - 1; i >= 0; i--) {
+      let periodStart: Date;
+      let periodLabel: string;
+
+      if (chartPeriod === "daily") {
+        periodStart = startOfDay(subDays(new Date(), i));
+        periodLabel = format(periodStart, "MMM dd");
+      } else {
+        periodStart = startOfWeek(subWeeks(new Date(), i), { weekStartsOn: 1 });
+        periodLabel = format(periodStart, "MMM dd");
+      }
+
+      const periodEnd =
+        chartPeriod === "daily"
+          ? startOfDay(subDays(new Date(), i - 1))
+          : startOfWeek(subWeeks(new Date(), i - 1), { weekStartsOn: 1 });
+
+      const periodExports = filteredHistory.filter((record) => {
+        const recordDate = new Date(record.executed_at);
+        return recordDate >= periodStart && recordDate < periodEnd;
+      });
+
+      const successful = periodExports.filter((r) => r.status === "success").length;
+      const failed = periodExports.filter((r) => r.status === "failed").length;
+
+      data.push({
+        period: periodLabel,
+        successful,
+        failed,
+        total: successful + failed,
+      });
+    }
+
+    return data;
+  };
+
+  const chartData = getChartData();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -291,6 +339,72 @@ export default function ExportHistory() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Trend Chart */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Export Trends</CardTitle>
+              <CardDescription>
+                Success and failure rates over time
+              </CardDescription>
+            </div>
+            <Tabs value={chartPeriod} onValueChange={(v) => setChartPeriod(v as "daily" | "weekly")}>
+              <TabsList>
+                <TabsTrigger value="daily">Daily</TabsTrigger>
+                <TabsTrigger value="weekly">Weekly</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {chartData.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              No data available for chart
+            </p>
+          ) : (
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  dataKey="period" 
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <YAxis 
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <Tooltip 
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--background))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '6px',
+                  }}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="successful"
+                  stroke="hsl(var(--chart-2))"
+                  strokeWidth={2}
+                  name="Successful"
+                  dot={{ fill: 'hsl(var(--chart-2))' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="failed"
+                  stroke="hsl(var(--destructive))"
+                  strokeWidth={2}
+                  name="Failed"
+                  dot={{ fill: 'hsl(var(--destructive))' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Filters Card */}
       <Card>
