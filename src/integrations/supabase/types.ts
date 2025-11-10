@@ -312,6 +312,102 @@ export type Database = {
           },
         ]
       }
+      intake_forms: {
+        Row: {
+          access_code: string
+          address: string | null
+          allergies: string | null
+          chief_complaint: string
+          converted_to_episode_id: string | null
+          created_at: string | null
+          current_medications: string | null
+          date_of_birth: string
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          id: string
+          injury_date: string | null
+          injury_mechanism: string | null
+          insurance_id: string | null
+          insurance_provider: string | null
+          medical_history: string | null
+          pain_level: number | null
+          patient_name: string
+          phone: string | null
+          primary_care_physician: string | null
+          referring_physician: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string | null
+          symptoms: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          access_code: string
+          address?: string | null
+          allergies?: string | null
+          chief_complaint: string
+          converted_to_episode_id?: string | null
+          created_at?: string | null
+          current_medications?: string | null
+          date_of_birth: string
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          id?: string
+          injury_date?: string | null
+          injury_mechanism?: string | null
+          insurance_id?: string | null
+          insurance_provider?: string | null
+          medical_history?: string | null
+          pain_level?: number | null
+          patient_name: string
+          phone?: string | null
+          primary_care_physician?: string | null
+          referring_physician?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          symptoms?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          access_code?: string
+          address?: string | null
+          allergies?: string | null
+          chief_complaint?: string
+          converted_to_episode_id?: string | null
+          created_at?: string | null
+          current_medications?: string | null
+          date_of_birth?: string
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          id?: string
+          injury_date?: string | null
+          injury_mechanism?: string | null
+          insurance_id?: string | null
+          insurance_provider?: string | null
+          medical_history?: string | null
+          pain_level?: number | null
+          patient_name?: string
+          phone?: string | null
+          primary_care_physician?: string | null
+          referring_physician?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          symptoms?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       outcome_scores: {
         Row: {
           clinic_id: string | null

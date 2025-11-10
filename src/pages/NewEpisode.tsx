@@ -71,6 +71,36 @@ export default function NewEpisode() {
     loadClinicianInfo();
   }, []);
 
+  // Check for intake data from sessionStorage
+  useEffect(() => {
+    const intakeDataStr = sessionStorage.getItem("intakeData");
+    if (intakeDataStr) {
+      try {
+        const intakeData = JSON.parse(intakeDataStr);
+        
+        // Populate form fields from intake data
+        setPatientName(intakeData.patient_name || "");
+        setDob(intakeData.date_of_birth || "");
+        setInsurance(intakeData.insurance_provider || "");
+        setEmergencyContact(intakeData.emergency_contact_name || "");
+        setEmergencyPhone(intakeData.emergency_contact_phone || "");
+        setReferringPhysician(intakeData.referring_physician || "");
+        setMedications(intakeData.current_medications || "");
+        setMedicalHistory(intakeData.medical_history || "");
+        setInjuryDate(intakeData.injury_date || "");
+        setInjuryMechanism(intakeData.injury_mechanism || "");
+        setPainPre(intakeData.pain_level || null);
+        
+        // Clear the sessionStorage after loading
+        sessionStorage.removeItem("intakeData");
+        
+        toast.success("Patient data loaded from intake form");
+      } catch (error) {
+        console.error("Failed to parse intake data:", error);
+      }
+    }
+  }, []);
+
   const handleRegionChange = (value: string) => {
     setRegion(value);
     const recommendedIndices = PPC_CONFIG.regionToIndices(value) as IndexType[];

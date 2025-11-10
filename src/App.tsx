@@ -17,6 +17,8 @@ import ComplianceAudit from "./pages/ComplianceAudit";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import PatientIntake from "./pages/PatientIntake";
+import IntakeReview from "./pages/IntakeReview";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
+          <Route path="/patient-intake" element={<PatientIntake />} />
           <Route
             path="/*"
             element={
@@ -44,6 +47,7 @@ const App = () => (
                     <Route path="/admin" element={<AdminManagement />} />
                     <Route path="/compliance" element={<ComplianceAudit />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/intake-review" element={<IntakeReview />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
