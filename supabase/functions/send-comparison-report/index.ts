@@ -57,8 +57,12 @@ const calculateMetrics = (history: any[]): ComparisonMetrics => {
   };
 };
 
-const generateEmailHTML = (data: { schedule: any; exports: any[]; metricsData: ComparisonMetrics[] }) => {
-  const { schedule, exports, metricsData } = data;
+const generateEmailHTML = (data: { schedule: any; exports: any[]; metricsData: ComparisonMetrics[]; trackingId: string }) => {
+  const { schedule, exports, metricsData, trackingId } = data;
+  const baseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+  const trackingPixelUrl = `${baseUrl}/functions/v1/track-comparison-open?id=${trackingId}`;
+  const createTrackedLink = (url: string, label: string) => 
+    `${baseUrl}/functions/v1/track-comparison-click?id=${trackingId}&url=${encodeURIComponent(url)}&label=${encodeURIComponent(label)}`;
   
   const tableRows = metricsData.map((metrics, index) => `
     <tr style="border-bottom: 1px solid #e5e7eb;">
@@ -126,7 +130,7 @@ const generateEmailHTML = (data: { schedule: any; exports: any[]; metricsData: C
       </div>
       
       <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
-        To view detailed charts and trends, log in to your PPC Outcome Registry dashboard.
+        To view detailed charts and trends, <a href="${createTrackedLink(baseUrl, 'Dashboard Link')}" style="color: #2754C5; text-decoration: underline;">log in to your PPC Outcome Registry dashboard</a>.
       </p>
     </div>
     
@@ -135,6 +139,7 @@ const generateEmailHTML = (data: { schedule: any; exports: any[]; metricsData: C
       <p>This is an automated report. Do not reply to this email.</p>
     </div>
   </div>
+  <img src="${trackingPixelUrl}" width="1" height="1" style="display:none;" alt="" />
 </body>
 </html>
   `;
@@ -203,8 +208,11 @@ const handler = async (req: Request): Promise<Response> => {
       metricsData.push(metrics);
     }
 
+    // Generate tracking ID
+    const trackingId = crypto.randomUUID();
+    
     // Generate and send email
-    const emailHTML = generateEmailHTML({ schedule, exports, metricsData });
+    const emailHTML = generateEmailHTML({ schedule, exports, metricsData, trackingId });
     const now = new Date().toISOString();
     
     let emailResponse;
@@ -240,6 +248,7 @@ const handler = async (req: Request): Promise<Response> => {
         export_names: exportNames,
         status: deliveryStatus,
         error_message: errorMessage,
+        tracking_id: trackingId,
         delivery_details: emailResponse ? {
           email_id: emailResponse.id,
           metrics: metricsData,

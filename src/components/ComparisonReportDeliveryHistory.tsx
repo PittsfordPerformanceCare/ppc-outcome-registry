@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { CheckCircle2, XCircle, Clock, Mail } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Mail, Eye, MousePointerClick } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface DeliveryHistory {
@@ -14,6 +14,10 @@ interface DeliveryHistory {
   export_names: string[];
   status: 'success' | 'failed';
   error_message?: string;
+  opened_at?: string;
+  open_count: number;
+  first_clicked_at?: string;
+  click_count: number;
 }
 
 interface ComparisonReportDeliveryHistoryProps {
@@ -108,6 +112,45 @@ export function ComparisonReportDeliveryHistory({ scheduleId }: ComparisonReport
                 {delivery.export_names && delivery.export_names.length > 0 && (
                   <div className="text-sm text-muted-foreground">
                     <span className="font-medium">Exports:</span> {delivery.export_names.join(', ')}
+                  </div>
+                )}
+
+                {delivery.status === 'success' && (
+                  <div className="flex items-center gap-4 text-sm mt-2">
+                    <div className="flex items-center gap-1.5">
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">
+                        {delivery.open_count > 0 ? (
+                          <>
+                            Opened {delivery.open_count}x
+                            {delivery.opened_at && (
+                              <span className="text-xs ml-1">
+                                (first: {format(new Date(delivery.opened_at), 'MMM d, h:mm a')})
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          'Not opened yet'
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <MousePointerClick className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">
+                        {delivery.click_count > 0 ? (
+                          <>
+                            {delivery.click_count} click{delivery.click_count > 1 ? 's' : ''}
+                            {delivery.first_clicked_at && (
+                              <span className="text-xs ml-1">
+                                (first: {format(new Date(delivery.first_clicked_at), 'MMM d, h:mm a')})
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          'No clicks'
+                        )}
+                      </span>
+                    </div>
                   </div>
                 )}
 

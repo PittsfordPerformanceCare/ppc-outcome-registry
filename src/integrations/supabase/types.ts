@@ -164,47 +164,103 @@ export type Database = {
         }
         Relationships: []
       }
+      comparison_report_clicks: {
+        Row: {
+          clicked_at: string
+          created_at: string
+          delivery_id: string
+          id: string
+          ip_address: unknown
+          link_label: string | null
+          link_url: string
+          user_agent: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          created_at?: string
+          delivery_id: string
+          id?: string
+          ip_address?: unknown
+          link_label?: string | null
+          link_url: string
+          user_agent?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          created_at?: string
+          delivery_id?: string
+          id?: string
+          ip_address?: unknown
+          link_label?: string | null
+          link_url?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comparison_report_clicks_delivery_id_fkey"
+            columns: ["delivery_id"]
+            isOneToOne: false
+            referencedRelation: "comparison_report_deliveries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comparison_report_deliveries: {
         Row: {
+          click_count: number | null
           clinic_id: string | null
           created_at: string
           delivery_details: Json | null
           error_message: string | null
           export_ids: string[]
           export_names: string[]
+          first_clicked_at: string | null
           id: string
+          open_count: number | null
+          opened_at: string | null
           recipient_emails: string[]
           schedule_id: string
           sent_at: string
           status: string
+          tracking_id: string | null
           user_id: string
         }
         Insert: {
+          click_count?: number | null
           clinic_id?: string | null
           created_at?: string
           delivery_details?: Json | null
           error_message?: string | null
           export_ids: string[]
           export_names?: string[]
+          first_clicked_at?: string | null
           id?: string
+          open_count?: number | null
+          opened_at?: string | null
           recipient_emails: string[]
           schedule_id: string
           sent_at?: string
           status: string
+          tracking_id?: string | null
           user_id: string
         }
         Update: {
+          click_count?: number | null
           clinic_id?: string | null
           created_at?: string
           delivery_details?: Json | null
           error_message?: string | null
           export_ids?: string[]
           export_names?: string[]
+          first_clicked_at?: string | null
           id?: string
+          open_count?: number | null
+          opened_at?: string | null
           recipient_emails?: string[]
           schedule_id?: string
           sent_at?: string
           status?: string
+          tracking_id?: string | null
           user_id?: string
         }
         Relationships: [
