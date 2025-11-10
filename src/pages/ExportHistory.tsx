@@ -8,6 +8,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationEllipsis, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
 import { useToast } from "@/hooks/use-toast";
 import { History, Download, CheckCircle, XCircle, Clock, Filter, X, FileDown } from "lucide-react";
 import { format, startOfDay, startOfWeek, subDays, subWeeks } from "date-fns";
@@ -36,6 +45,10 @@ export default function ExportHistory() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [chartPeriod, setChartPeriod] = useState<"daily" | "weekly">("daily");
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   useEffect(() => {
     loadHistory();
@@ -43,6 +56,7 @@ export default function ExportHistory() {
 
   useEffect(() => {
     applyFilters();
+    setCurrentPage(1); // Reset to first page when filters change
   }, [history, nameFilter, statusFilter, startDate, endDate]);
 
   const loadHistory = async () => {
@@ -284,6 +298,16 @@ export default function ExportHistory() {
 
   const hasDateFilters = startDate || endDate;
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredHistory.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedHistory = filteredHistory.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -524,10 +548,19 @@ export default function ExportHistory() {
       {/* History Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Export Executions</CardTitle>
-          <CardDescription>
-            Complete history of all export runs
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Export Executions</CardTitle>
+              <CardDescription>
+                Complete history of all export runs
+              </CardDescription>
+            </div>
+            {totalPages > 1 && (
+              <p className="text-sm text-muted-foreground">
+                Page {currentPage} of {totalPages} ({filteredHistory.length} total)
+              </p>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -539,79 +572,161 @@ export default function ExportHistory() {
                 : "No export history yet"}
             </p>
           ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Export Name</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Records</TableHead>
-                    <TableHead>Recipients</TableHead>
-                    <TableHead>Executed At</TableHead>
-                    <TableHead>Details</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredHistory.map((record) => (
-                    <TableRow key={record.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(record.status)}
-                          <Badge variant={getStatusBadgeVariant(record.status)}>
-                            {record.status}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">
-                        {record.export_name}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {record.export_type.toUpperCase()}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {record.record_count !== null ? (
-                          <span className="text-sm">
-                            {record.record_count.toLocaleString()}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-1">
-                          <Download className="h-3 w-3 text-muted-foreground" />
-                          <span className="text-sm">
-                            {record.recipient_emails.length}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {format(
-                          new Date(record.executed_at),
-                          "MMM d, yyyy h:mm a"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {record.error_message ? (
-                          <div className="max-w-xs">
-                            <p className="text-xs text-destructive line-clamp-2">
-                              {record.error_message}
-                            </p>
-                          </div>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">
-                            No errors
-                          </span>
-                        )}
-                      </TableCell>
+            <>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Export Name</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Records</TableHead>
+                      <TableHead>Recipients</TableHead>
+                      <TableHead>Executed At</TableHead>
+                      <TableHead>Details</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedHistory.map((record) => (
+                      <TableRow key={record.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(record.status)}
+                            <Badge variant={getStatusBadgeVariant(record.status)}>
+                              {record.status}
+                            </Badge>
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {record.export_name}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {record.export_type.toUpperCase()}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {record.record_count !== null ? (
+                            <span className="text-sm">
+                              {record.record_count.toLocaleString()}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Download className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-sm">
+                              {record.recipient_emails.length}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {format(
+                            new Date(record.executed_at),
+                            "MMM d, yyyy h:mm a"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {record.error_message ? (
+                            <div className="max-w-xs">
+                              <p className="text-xs text-destructive line-clamp-2">
+                                {record.error_message}
+                              </p>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">
+                              No errors
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-4 flex items-center justify-center">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => goToPage(currentPage - 1)}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                      
+                      {/* First page */}
+                      {currentPage > 2 && (
+                        <PaginationItem>
+                          <PaginationLink onClick={() => goToPage(1)} className="cursor-pointer">
+                            1
+                          </PaginationLink>
+                        </PaginationItem>
+                      )}
+                      
+                      {/* Ellipsis before current */}
+                      {currentPage > 3 && (
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                      
+                      {/* Previous page */}
+                      {currentPage > 1 && (
+                        <PaginationItem>
+                          <PaginationLink onClick={() => goToPage(currentPage - 1)} className="cursor-pointer">
+                            {currentPage - 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )}
+                      
+                      {/* Current page */}
+                      <PaginationItem>
+                        <PaginationLink isActive className="cursor-default">
+                          {currentPage}
+                        </PaginationLink>
+                      </PaginationItem>
+                      
+                      {/* Next page */}
+                      {currentPage < totalPages && (
+                        <PaginationItem>
+                          <PaginationLink onClick={() => goToPage(currentPage + 1)} className="cursor-pointer">
+                            {currentPage + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )}
+                      
+                      {/* Ellipsis after current */}
+                      {currentPage < totalPages - 2 && (
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      )}
+                      
+                      {/* Last page */}
+                      {currentPage < totalPages - 1 && (
+                        <PaginationItem>
+                          <PaginationLink onClick={() => goToPage(totalPages)} className="cursor-pointer">
+                            {totalPages}
+                          </PaginationLink>
+                        </PaginationItem>
+                      )}
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => goToPage(currentPage + 1)}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
