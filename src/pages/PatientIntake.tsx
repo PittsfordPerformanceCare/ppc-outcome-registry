@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState as useReactState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -476,7 +477,8 @@ export default function PatientIntake() {
           </CardContent>
         </Card>
 
-        <Form {...form}>
+        <TooltipProvider>
+          <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Personal Information */}
             <Card>
@@ -484,7 +486,14 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Personal Information</CardTitle>
                   {sectionCompletion.personal && (
-                    <CheckCircle2 className="h-5 w-5 text-success animate-scale-in" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2 className="h-5 w-5 text-success animate-scale-in cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Section complete: Name and date of birth provided</p>
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
               </CardHeader>
@@ -582,7 +591,14 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Insurance Information</CardTitle>
                   {sectionCompletion.insurance && (
-                    <CheckCircle2 className="h-5 w-5 text-success animate-scale-in" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2 className="h-5 w-5 text-success animate-scale-in cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Section complete: Insurance provider or ID provided</p>
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
               </CardHeader>
@@ -638,7 +654,14 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Emergency Contact</CardTitle>
                   {sectionCompletion.emergency && (
-                    <CheckCircle2 className="h-5 w-5 text-success animate-scale-in" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2 className="h-5 w-5 text-success animate-scale-in cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Section complete: Emergency contact name provided</p>
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
               </CardHeader>
@@ -694,7 +717,14 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Medical Information</CardTitle>
                   {sectionCompletion.medical && (
-                    <CheckCircle2 className="h-5 w-5 text-success animate-scale-in" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2 className="h-5 w-5 text-success animate-scale-in cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Section complete: At least one medical field provided</p>
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
               </CardHeader>
@@ -862,7 +892,14 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Review of Systems</CardTitle>
                   {sectionCompletion.reviewOfSystems && (
-                    <CheckCircle2 className="h-5 w-5 text-success animate-scale-in" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2 className="h-5 w-5 text-success animate-scale-in cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Section complete: At least one symptom selected</p>
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
                 <CardDescription>
@@ -934,7 +971,14 @@ export default function PatientIntake() {
                 <div className="flex items-center gap-2">
                   <CardTitle>Areas of Concern - What Would You Like Us to Evaluate?</CardTitle>
                   {sectionCompletion.concerns && (
-                    <CheckCircle2 className="h-5 w-5 text-success animate-scale-in" />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <CheckCircle2 className="h-5 w-5 text-success animate-scale-in cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Section complete: Concern details and symptoms provided</p>
+                      </TooltipContent>
+                    </Tooltip>
                   )}
                 </div>
                 <CardDescription>
@@ -1225,6 +1269,7 @@ export default function PatientIntake() {
             </Button>
           </form>
         </Form>
+        </TooltipProvider>
       </div>
     </div>
   );
