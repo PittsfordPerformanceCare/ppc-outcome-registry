@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import PatientIntake from "./pages/PatientIntake";
 import IntakeReview from "./pages/IntakeReview";
 import IntakeStart from "./pages/IntakeStart";
+import IntakeValidation from "./pages/IntakeValidation";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
                     <Route path="/compliance" element={<ComplianceAudit />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/intake-review" element={<IntakeReview />} />
+                    <Route path="/intake-validation" element={<IntakeValidation />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
