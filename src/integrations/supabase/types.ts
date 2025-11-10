@@ -319,6 +319,7 @@ export type Database = {
           allergies: string | null
           bill_responsible_party: string | null
           chief_complaint: string
+          complaints: Json | null
           consent_clinic_updates: boolean | null
           converted_to_episode_id: string | null
           created_at: string | null
@@ -360,6 +361,7 @@ export type Database = {
           allergies?: string | null
           bill_responsible_party?: string | null
           chief_complaint: string
+          complaints?: Json | null
           consent_clinic_updates?: boolean | null
           converted_to_episode_id?: string | null
           created_at?: string | null
@@ -401,6 +403,7 @@ export type Database = {
           allergies?: string | null
           bill_responsible_party?: string | null
           chief_complaint?: string
+          complaints?: Json | null
           consent_clinic_updates?: boolean | null
           converted_to_episode_id?: string | null
           created_at?: string | null

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,10 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
-import { ClipboardCheck } from "lucide-react";
+import { ClipboardCheck, Plus, X } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+const complaintSchema = z.object({
+  text: z.string().min(5, "Please describe the complaint (at least 5 characters)").max(1000, "Description is too long"),
+  isPrimary: z.boolean(),
+});
 
 const intakeFormSchema = z.object({
   patientName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
@@ -37,7 +43,10 @@ const intakeFormSchema = z.object({
   currentMedications: z.string().max(1000, "Information is too long").optional(),
   allergies: z.string().max(500, "Information is too long").optional(),
   medicalHistory: z.string().max(1000, "Information is too long").optional(),
-  chiefComplaint: z.string().min(5, "Please describe your main concern (at least 5 characters)").max(1000, "Description is too long"),
+  complaints: z.array(complaintSchema).min(1, "At least one complaint is required").refine(
+    (complaints) => complaints.some(c => c.isPrimary),
+    "Please select a primary complaint"
+  ),
   injuryDate: z.string().optional(),
   injuryMechanism: z.string().max(500, "Description is too long").optional(),
   painLevel: z.number().min(0).max(10),
@@ -78,7 +87,7 @@ export default function PatientIntake() {
       currentMedications: "",
       allergies: "",
       medicalHistory: "",
-      chiefComplaint: "",
+      complaints: [{ text: "", isPrimary: true }],
       injuryDate: "",
       injuryMechanism: "",
       painLevel: 5,
@@ -88,6 +97,11 @@ export default function PatientIntake() {
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "complaints",
+  });
+
   const generateAccessCode = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   };
@@ -95,6 +109,7 @@ export default function PatientIntake() {
   const onSubmit = async (data: IntakeFormValues) => {
     try {
       const code = generateAccessCode();
+      const primaryComplaint = data.complaints.find(c => c.isPrimary);
       
       const { error } = await supabase
         .from("intake_forms")
@@ -123,7 +138,8 @@ export default function PatientIntake() {
           current_medications: data.currentMedications || null,
           allergies: data.allergies || null,
           medical_history: data.medicalHistory || null,
-          chief_complaint: data.chiefComplaint,
+          chief_complaint: primaryComplaint?.text || data.complaints[0]?.text || "",
+          complaints: data.complaints,
           injury_date: data.injuryDate || null,
           injury_mechanism: data.injuryMechanism || null,
           pain_level: data.painLevel,
@@ -547,21 +563,96 @@ export default function PatientIntake() {
             <Card>
               <CardHeader>
                 <CardTitle>Reason for Visit</CardTitle>
+                <CardDescription>
+                  List all concerns that bring you in today. Select which one is your primary concern.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="chiefComplaint"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>What brings you in today? *</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Describe your main concern or reason for seeking treatment" rows={3} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                <div className="space-y-4">
+                  {fields.map((field, index) => (
+                    <div key={field.id} className="space-y-4 p-4 border rounded-lg relative">
+                      <div className="flex items-start justify-between gap-2">
+                        <FormField
+                          control={form.control}
+                          name={`complaints.${index}.isPrimary`}
+                          render={({ field: radioField }) => (
+                            <FormItem className="flex items-center space-y-0">
+                              <FormControl>
+                                <div className="flex items-center space-x-2">
+                                  <input
+                                    type="radio"
+                                    checked={radioField.value}
+                                    onChange={() => {
+                                      // Uncheck all others
+                                      fields.forEach((_, i) => {
+                                        form.setValue(`complaints.${i}.isPrimary`, i === index);
+                                      });
+                                    }}
+                                    className="h-4 w-4"
+                                  />
+                                  <FormLabel className="font-normal cursor-pointer">
+                                    {radioField.value ? "Primary Concern" : "Set as Primary"}
+                                  </FormLabel>
+                                </div>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                        {fields.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              if (form.getValues(`complaints.${index}.isPrimary`)) {
+                                toast.error("Cannot remove the primary complaint. Please set another complaint as primary first.");
+                                return;
+                              }
+                              remove(index);
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name={`complaints.${index}.text`}
+                        render={({ field: textField }) => (
+                          <FormItem>
+                            <FormLabel>Complaint {index + 1} *</FormLabel>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="Describe your concern or reason for seeking treatment" 
+                                rows={3} 
+                                {...textField} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  ))}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => append({ text: "", isPrimary: false })}
+                    className="w-full"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Another Complaint
+                  </Button>
+
+                  {form.formState.errors.complaints?.root && (
+                    <p className="text-sm font-medium text-destructive">
+                      {form.formState.errors.complaints.root.message}
+                    </p>
                   )}
-                />
+                </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormField
