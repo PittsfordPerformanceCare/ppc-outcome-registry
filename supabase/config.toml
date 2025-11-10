@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.check-notification-failures]
 verify_jwt = false
+
+[functions.retry-notifications]
+verify_jwt = false
