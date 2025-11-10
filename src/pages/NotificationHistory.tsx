@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Loader2, Search, Mail, MessageSquare, CheckCircle, XCircle, Eye, Clock, AlertCircle } from "lucide-react";
+import { Loader2, Search, Mail, MessageSquare, CheckCircle, XCircle, Eye, Clock, AlertCircle, BarChart3 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { NotificationRetryPanel } from "@/components/NotificationRetryPanel";
@@ -31,6 +33,7 @@ interface NotificationHistoryRecord {
 
 export default function NotificationHistory() {
   const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState<NotificationHistoryRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -111,11 +114,17 @@ export default function NotificationHistory() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Notification History</h1>
-        <p className="text-muted-foreground mt-2">
-          Detailed delivery logs and email engagement tracking for all notifications
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Notification History</h1>
+          <p className="text-muted-foreground mt-2">
+            Detailed delivery logs and email engagement tracking for all notifications
+          </p>
+        </div>
+        <Button onClick={() => navigate("/retry-analytics")} variant="outline" className="gap-2">
+          <BarChart3 className="h-4 w-4" />
+          View Retry Analytics
+        </Button>
       </div>
 
       {/* Retry Management Panel */}

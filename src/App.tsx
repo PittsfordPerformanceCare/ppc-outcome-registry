@@ -24,6 +24,7 @@ import IntakeValidation from "./pages/IntakeValidation";
 import ClinicSettings from "./pages/ClinicSettings";
 import NotificationHistory from "./pages/NotificationHistory";
 import NotificationAnalytics from "./pages/NotificationAnalytics";
+import RetryAnalytics from "./pages/RetryAnalytics";
 import LinkAnalytics from "./pages/LinkAnalytics";
 import AlertHistory from "./pages/AlertHistory";
 
@@ -60,6 +61,7 @@ const App = () => (
                     <Route path="/clinic-settings" element={<ClinicSettings />} />
                     <Route path="/notification-history" element={<NotificationHistory />} />
                     <Route path="/notification-analytics" element={<NotificationAnalytics />} />
+                    <Route path="/retry-analytics" element={<RetryAnalytics />} />
                     <Route path="/link-analytics" element={<LinkAnalytics />} />
                     <Route path="/alert-history" element={<AlertHistory />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
