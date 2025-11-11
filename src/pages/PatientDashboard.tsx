@@ -21,6 +21,7 @@ import { addDays } from "date-fns";
 import { PatientDashboardSkeleton } from "@/components/skeletons/PatientDashboardSkeleton";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 
 interface PatientEpisode {
   id: string;
@@ -33,6 +34,88 @@ interface PatientEpisode {
   followup_time: string | null;
   clinician: string | null;
   diagnosis: string | null;
+}
+
+interface EpisodeCardProps {
+  episode: PatientEpisode;
+  isActive: boolean;
+  onNavigate: () => void;
+}
+
+function EpisodeCard({ episode, isActive, onNavigate }: EpisodeCardProps) {
+  const { light } = useHaptics();
+  const [dismissed, setDismissed] = useState(false);
+
+  const { elementRef, dragOffset } = useSwipeGesture({
+    onSwipeLeft: () => {
+      light();
+      setDismissed(true);
+      setTimeout(() => setDismissed(false), 2000);
+    },
+    threshold: 100,
+    enabled: true,
+  });
+
+  if (dismissed) {
+    return (
+      <Card className="border-dashed opacity-50">
+        <CardContent className="py-8 text-center">
+          <p className="text-sm text-muted-foreground">Swipe to undo</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card
+      ref={elementRef}
+      className="cursor-pointer hover:border-primary/50 transition-all"
+      style={{
+        transform: `translateX(${dragOffset.x}px)`,
+        opacity: Math.max(0.5, 1 - Math.abs(dragOffset.x) / 200),
+      }}
+      onClick={onNavigate}
+    >
+      <CardContent className="pt-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <div className="flex items-start justify-between mb-2">
+              <h3 className="font-semibold">{episode.patient_name}</h3>
+              <Badge variant={isActive ? "default" : "secondary"}>
+                {isActive ? "Active" : "Completed"}
+              </Badge>
+            </div>
+            
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <MapPin className="h-4 w-4" />
+                <span>{episode.region}</span>
+              </div>
+              
+              {episode.diagnosis && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Activity className="h-4 w-4" />
+                  <span>{episode.diagnosis}</span>
+                </div>
+              )}
+              
+              {episode.clinician && (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <User className="h-4 w-4" />
+                  <span>{episode.clinician}</span>
+                </div>
+              )}
+              
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Calendar className="h-4 w-4" />
+                <span>Started {format(new Date(episode.date_of_service), "MMM dd, yyyy")}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
 }
 
 export default function PatientDashboard() {
@@ -446,52 +529,12 @@ export default function PatientDashboard() {
                     {episodes.map((episode) => {
                       const isActive = !episode.discharge_date;
                       return (
-                        <Card
+                        <EpisodeCard
                           key={episode.id}
-                          className="cursor-pointer hover:border-primary/50 transition-colors"
-                          onClick={() => navigate(`/patient-episode/${episode.id}`)}
-                        >
-                          <CardContent className="pt-6">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1">
-                                <div className="flex items-start justify-between mb-2">
-                                  <h3 className="font-semibold">{episode.patient_name}</h3>
-                                  <Badge variant={isActive ? "default" : "secondary"}>
-                                    {isActive ? "Active" : "Completed"}
-                                  </Badge>
-                                </div>
-                                
-                                <div className="space-y-2 text-sm">
-                                  <div className="flex items-center gap-2 text-muted-foreground">
-                                    <MapPin className="h-4 w-4" />
-                                    <span>{episode.region}</span>
-                                  </div>
-                                  
-                                  {episode.diagnosis && (
-                                    <div className="flex items-center gap-2 text-muted-foreground">
-                                      <Activity className="h-4 w-4" />
-                                      <span>{episode.diagnosis}</span>
-                                    </div>
-                                  )}
-                                  
-                                  {episode.clinician && (
-                                    <div className="flex items-center gap-2 text-muted-foreground">
-                                      <User className="h-4 w-4" />
-                                      <span>{episode.clinician}</span>
-                                    </div>
-                                  )}
-                                  
-                                  <div className="flex items-center gap-2 text-muted-foreground">
-                                    <Calendar className="h-4 w-4" />
-                                    <span>
-                                      Started {format(new Date(episode.date_of_service), "MMM d, yyyy")}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                          episode={episode}
+                          isActive={isActive}
+                          onNavigate={() => navigate(`/patient-episode/${episode.id}`)}
+                        />
                       );
                     })}
                   </div>

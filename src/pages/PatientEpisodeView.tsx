@@ -24,6 +24,8 @@ import PostDischargeFeedback from "@/components/PostDischargeFeedback";
 import { PatientEpisodeViewSkeleton } from "@/components/skeletons/PatientEpisodeViewSkeleton";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useSwipeGesture } from "@/hooks/useSwipeGesture";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface EpisodeData {
   id: string;
@@ -55,7 +57,7 @@ export default function PatientEpisodeView() {
   const [searchParams] = useSearchParams();
   const episodeId = searchParams.get("id");
   const { toast } = useToast();
-  const { success } = useHaptics();
+  const { success, light } = useHaptics();
 
   const [loading, setLoading] = useState(true);
   const [episode, setEpisode] = useState<EpisodeData | null>(null);
@@ -63,6 +65,8 @@ export default function PatientEpisodeView() {
   const [hasAccess, setHasAccess] = useState(false);
   const [feedbackGiven, setFeedbackGiven] = useState(false);
   const [patientId, setPatientId] = useState<string>("");
+  const [allEpisodes, setAllEpisodes] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   useEffect(() => {
     checkAccessAndLoadData();
@@ -84,18 +88,25 @@ export default function PatientEpisodeView() {
 
       setPatientId(session.user.id);
 
-      // Check if patient has access to this episode
+      // Load all episodes for navigation
       const { data: accessData, error: accessError } = await supabase
         .from("patient_episode_access")
-        .select("is_active")
+        .select("episode_id")
         .eq("patient_id", session.user.id)
-        .eq("episode_id", episodeId)
         .eq("is_active", true)
-        .maybeSingle();
+        .order("created_at", { ascending: false });
 
       if (accessError) throw accessError;
 
-      if (!accessData) {
+      if (accessData) {
+        const episodeIds = accessData.map(a => a.episode_id);
+        setAllEpisodes(episodeIds);
+        setCurrentIndex(episodeIds.indexOf(episodeId));
+      }
+
+      // Check if patient has access to this episode
+      const accessRecord = accessData?.find(a => a.episode_id === episodeId);
+      if (!accessRecord) {
         setHasAccess(false);
         setLoading(false);
         return;
@@ -152,6 +163,23 @@ export default function PatientEpisodeView() {
     success();
   };
 
+  const navigateToEpisode = (direction: "prev" | "next") => {
+    if (currentIndex === -1) return;
+    
+    const newIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
+    if (newIndex < 0 || newIndex >= allEpisodes.length) return;
+    
+    light();
+    navigate(`/patient-episode/${allEpisodes[newIndex]}`);
+  };
+
+  const { elementRef, dragOffset } = useSwipeGesture({
+    onSwipeLeft: () => navigateToEpisode("next"),
+    onSwipeRight: () => navigateToEpisode("prev"),
+    threshold: 100,
+    enabled: allEpisodes.length > 1,
+  });
+
   const prepareChartData = () => {
     if (scores.length === 0) return [];
 
@@ -204,17 +232,53 @@ export default function PatientEpisodeView() {
   const chartData = prepareChartData();
   const indices = getScoreIndices();
   const isCompleted = !!episode.discharge_date;
+  const hasPrevious = currentIndex > 0;
+  const hasNext = currentIndex < allEpisodes.length - 1;
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      <div 
+        ref={elementRef}
+        className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5"
+        style={{
+          transform: `translateX(${dragOffset.x * 0.3}px)`,
+          transition: dragOffset.x === 0 ? "transform 0.3s ease-out" : "none",
+        }}
+      >
         <div className="container mx-auto max-w-5xl py-8 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <Button variant="outline" onClick={() => navigate("/patient-dashboard")} className="gap-2">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Button>
+          {/* Header with Navigation */}
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={() => navigate("/patient-dashboard")} className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Dashboard
+              </Button>
+              {hasPrevious && (
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => navigateToEpisode("prev")}
+                  className="gap-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              )}
+              {allEpisodes.length > 1 && (
+                <span className="text-sm text-muted-foreground">
+                  {currentIndex + 1} / {allEpisodes.length}
+                </span>
+              )}
+              {hasNext && (
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => navigateToEpisode("next")}
+                  className="gap-2"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           <div className="flex items-center gap-2">
             {scores.length > 0 && (
               <ShareProgress 
