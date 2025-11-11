@@ -6,6 +6,7 @@ import { PPC_CONFIG, IndexType } from "@/lib/ppcConfig";
 import { getOutcomeToolRecommendations, getPrimaryOutcomeTool } from "@/lib/outcomeToolRecommendations";
 import { OutcomeToolRecommendations } from "@/components/OutcomeToolRecommendations";
 import { PatientHistoryDialog } from "@/components/PatientHistoryDialog";
+import { DataTransferSummary } from "@/components/DataTransferSummary";
 import {
   Dialog,
   DialogContent,
@@ -79,6 +80,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
   const [showHistory, setShowHistory] = useState(false);
   const [confirmDuplicate, setConfirmDuplicate] = useState(false);
   const [showDuplicateDetails, setShowDuplicateDetails] = useState(false);
+  const [showDataSummary, setShowDataSummary] = useState(false);
 
   // Extract region from complaints
   const inferRegionFromComplaints = (): string => {
@@ -174,6 +176,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
       setDuplicateEpisodes([]);
       setConfirmDuplicate(false);
       setShowDuplicateDetails(false);
+      setShowDataSummary(false);
     }
   }, [open]);
 
@@ -590,6 +593,29 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
                     </div>
                   </AlertDescription>
                 </Alert>
+              )}
+
+              {/* Data Transfer Summary Toggle */}
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">View Data Transfer Details</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDataSummary(!showDataSummary)}
+                >
+                  {showDataSummary ? "Hide" : "Show"} Summary
+                </Button>
+              </div>
+
+              {/* Data Transfer Summary */}
+              {showDataSummary && (
+                <DataTransferSummary
+                  intakeData={intakeForm}
+                  episodeData={preview}
+                />
               )}
 
               {/* Patient Info */}
