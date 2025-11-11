@@ -21,9 +21,13 @@ import { formatDistanceToNow } from "date-fns";
 interface PatientAccess {
   id: string;
   patient_id: string;
+  episode_id: string;
   invitation_code: string | null;
   is_active: boolean;
   granted_at: string;
+  granted_by: string | null;
+  code_used_at: string | null;
+  created_at: string;
   patient_accounts: {
     full_name: string;
     email: string;

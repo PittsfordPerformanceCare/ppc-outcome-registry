@@ -1367,6 +1367,7 @@ export type Database = {
           granted_by: string | null
           id: string
           invitation_code: string | null
+          is_active: boolean
           patient_id: string
         }
         Insert: {
@@ -1377,6 +1378,7 @@ export type Database = {
           granted_by?: string | null
           id?: string
           invitation_code?: string | null
+          is_active?: boolean
           patient_id: string
         }
         Update: {
@@ -1387,6 +1389,7 @@ export type Database = {
           granted_by?: string | null
           id?: string
           invitation_code?: string | null
+          is_active?: boolean
           patient_id?: string
         }
         Relationships: [
