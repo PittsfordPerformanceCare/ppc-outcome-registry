@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_definitions: {
+        Row: {
+          achievement_type: string
+          badge_color: string
+          badge_icon: string
+          created_at: string
+          criteria: Json
+          description: string
+          id: string
+          name: string
+          points_required: number | null
+        }
+        Insert: {
+          achievement_type: string
+          badge_color: string
+          badge_icon: string
+          created_at?: string
+          criteria: Json
+          description: string
+          id?: string
+          name: string
+          points_required?: number | null
+        }
+        Update: {
+          achievement_type?: string
+          badge_color?: string
+          badge_icon?: string
+          created_at?: string
+          criteria?: Json
+          description?: string
+          id?: string
+          name?: string
+          points_required?: number | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -1358,6 +1394,41 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_achievements: {
+        Row: {
+          achievement_id: string
+          earned_at: string
+          episode_id: string | null
+          id: string
+          metadata: Json | null
+          patient_id: string
+        }
+        Insert: {
+          achievement_id: string
+          earned_at?: string
+          episode_id?: string | null
+          id?: string
+          metadata?: Json | null
+          patient_id: string
+        }
+        Update: {
+          achievement_id?: string
+          earned_at?: string
+          episode_id?: string | null
+          id?: string
+          metadata?: Json | null
+          patient_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievement_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_episode_access: {
         Row: {
           code_used_at: string | null
@@ -1415,6 +1486,77 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      patient_notification_preferences: {
+        Row: {
+          appointment_reminders: boolean | null
+          clinician_notes: boolean | null
+          created_at: string | null
+          id: string
+          outcome_reminders: boolean | null
+          patient_id: string
+          progress_updates: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_reminders?: boolean | null
+          clinician_notes?: boolean | null
+          created_at?: string | null
+          id?: string
+          outcome_reminders?: boolean | null
+          patient_id: string
+          progress_updates?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_reminders?: boolean | null
+          clinician_notes?: boolean | null
+          created_at?: string | null
+          id?: string
+          outcome_reminders?: boolean | null
+          patient_id?: string
+          progress_updates?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_notification_preferences_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: true
+            referencedRelation: "patient_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patient_points: {
+        Row: {
+          created_at: string
+          episode_id: string | null
+          id: string
+          outcome_score_id: string | null
+          patient_id: string
+          points: number
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          outcome_score_id?: string | null
+          patient_id: string
+          points: number
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          outcome_score_id?: string | null
+          patient_id?: string
+          points?: number
+          reason?: string
+        }
+        Relationships: []
       }
       patient_rewards: {
         Row: {
@@ -1624,6 +1766,50 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string | null
+          endpoint: string
+          id: string
+          is_active: boolean | null
+          last_used_at: string | null
+          p256dh: string
+          patient_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          auth: string
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          p256dh: string
+          patient_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          auth?: string
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          p256dh?: string
+          patient_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient_accounts"
             referencedColumns: ["id"]
           },
         ]
@@ -2139,6 +2325,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_patient_points: {
+        Args: {
+          p_episode_id?: string
+          p_outcome_score_id?: string
+          p_patient_id: string
+          p_points: number
+          p_reason: string
+        }
+        Returns: string
+      }
       calculate_next_retry: {
         Args: { base_delay_minutes?: number; current_retry_count: number }
         Returns: string
@@ -2146,6 +2342,10 @@ export type Database = {
       calculate_webhook_retry_time: {
         Args: { retry_count: number }
         Returns: string
+      }
+      check_and_award_achievements: {
+        Args: { p_patient_id: string }
+        Returns: undefined
       }
       check_rate_limit: {
         Args: { p_clinic_id?: string; p_service_type: string }
@@ -2176,6 +2376,10 @@ export type Database = {
           start_date: string
           treatment_goals: Json
         }[]
+      }
+      get_patient_total_points: {
+        Args: { p_patient_id: string }
+        Returns: number
       }
       get_user_clinic_id: { Args: { _user_id: string }; Returns: string }
       has_role: {

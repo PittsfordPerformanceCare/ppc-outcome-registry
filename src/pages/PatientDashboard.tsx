@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift } from "lucide-react";
+import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy } from "lucide-react";
 import { format } from "date-fns";
 import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
+import { PatientAchievements } from "@/components/PatientAchievements";
+import { usePatientRewards } from "@/hooks/usePatientRewards";
 
 interface PatientEpisode {
   id: string;
@@ -30,10 +33,30 @@ export default function PatientDashboard() {
   const [rewards, setRewards] = useState<any[]>([]);
   const [accessCode, setAccessCode] = useState("");
   const [claimingCode, setClaimingCode] = useState(false);
+  const [hasAwardedWelcome, setHasAwardedWelcome] = useState(false);
+
+  const {
+    totalPoints,
+    achievements,
+    recentPoints,
+    loading: rewardsLoading,
+    nextMilestone,
+    progressToNext,
+    awardWelcomePoints,
+    refreshRewards
+  } = usePatientRewards(user?.id);
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    // Award welcome points on first visit
+    if (user && !hasAwardedWelcome && !rewardsLoading && totalPoints === 0) {
+      awardWelcomePoints();
+      setHasAwardedWelcome(true);
+    }
+  }, [user, hasAwardedWelcome, rewardsLoading, totalPoints]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -248,85 +271,114 @@ export default function PatientDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-primary/20">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Rewards</CardTitle>
-              <Gift className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Total Points</CardTitle>
+              <Trophy className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{rewards.length}</div>
-              <p className="text-xs text-muted-foreground">Available rewards</p>
+              <div className="text-2xl font-bold text-primary">{totalPoints}</div>
+              <p className="text-xs text-muted-foreground">
+                {nextMilestone ? `${nextMilestone - totalPoints} to next level` : 'Max level reached!'}
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Episodes List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>My Episodes</CardTitle>
-            <CardDescription>
-              View your physical therapy episodes and track your progress
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {episodes.length === 0 ? (
-              <div className="text-center py-12">
-                <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-                <p className="text-muted-foreground">No episodes yet</p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Ask your clinician for an access code to view your records
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {episodes.map((episode) => (
-                  <div
-                    key={episode.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                    onClick={() => navigate(`/patient-episode?id=${episode.id}`)}
-                  >
-                    <div className="space-y-2 flex-1">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium">{episode.region}</span>
-                        {episode.discharge_date ? (
-                          <Badge className="bg-success/15 text-success border-success/30">
-                            Completed
-                          </Badge>
-                        ) : (
-                          <Badge>Active</Badge>
-                        )}
-                      </div>
-                      
-                      {episode.diagnosis && (
-                        <p className="text-sm text-muted-foreground">
-                          {episode.diagnosis}
-                        </p>
-                      )}
-                      
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          Started: {format(new Date(episode.date_of_service), "MMM dd, yyyy")}
-                        </div>
-                        {episode.clinician && (
-                          <div className="flex items-center gap-1">
-                            <User className="h-3 w-3" />
-                            {episode.clinician}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+        {/* Tabs for Episodes and Achievements */}
+        <Tabs defaultValue="episodes" className="space-y-4">
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="episodes">My Episodes</TabsTrigger>
+            <TabsTrigger value="achievements">
+              <Trophy className="h-4 w-4 mr-2" />
+              Achievements
+            </TabsTrigger>
+          </TabsList>
 
-                    <Button variant="outline" size="sm">
-                      View Details
-                    </Button>
+          <TabsContent value="episodes">
+            <Card>
+              <CardHeader>
+                <CardTitle>Your Treatment Episodes</CardTitle>
+                <CardDescription>
+                  View and track your physical therapy episodes
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {episodes.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground mb-4">
+                      No episodes yet. Ask your clinician for an access code to view your episodes.
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                ) : (
+                  <div className="space-y-4">
+                    {episodes.map((episode) => {
+                      const isActive = !episode.discharge_date;
+                      return (
+                        <Card
+                          key={episode.id}
+                          className="cursor-pointer hover:border-primary/50 transition-colors"
+                          onClick={() => navigate(`/patient-episode/${episode.id}`)}
+                        >
+                          <CardContent className="pt-6">
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1">
+                                <div className="flex items-start justify-between mb-2">
+                                  <h3 className="font-semibold">{episode.patient_name}</h3>
+                                  <Badge variant={isActive ? "default" : "secondary"}>
+                                    {isActive ? "Active" : "Completed"}
+                                  </Badge>
+                                </div>
+                                
+                                <div className="space-y-2 text-sm">
+                                  <div className="flex items-center gap-2 text-muted-foreground">
+                                    <MapPin className="h-4 w-4" />
+                                    <span>{episode.region}</span>
+                                  </div>
+                                  
+                                  {episode.diagnosis && (
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                      <Activity className="h-4 w-4" />
+                                      <span>{episode.diagnosis}</span>
+                                    </div>
+                                  )}
+                                  
+                                  {episode.clinician && (
+                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                      <User className="h-4 w-4" />
+                                      <span>{episode.clinician}</span>
+                                    </div>
+                                  )}
+                                  
+                                  <div className="flex items-center gap-2 text-muted-foreground">
+                                    <Calendar className="h-4 w-4" />
+                                    <span>
+                                      Started {format(new Date(episode.date_of_service), "MMM d, yyyy")}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="achievements">
+            <PatientAchievements
+              achievements={achievements}
+              totalPoints={totalPoints}
+              nextMilestone={nextMilestone}
+              progressToNext={progressToNext}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
