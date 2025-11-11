@@ -27,6 +27,9 @@ verify_jwt = false
 [functions.retry-failed-webhooks]
 verify_jwt = false
 
+[functions.check-webhook-health]
+verify_jwt = false
+
 [functions.send-comparison-report]
 verify_jwt = false
 

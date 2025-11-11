@@ -1412,6 +1412,95 @@ export type Database = {
           },
         ]
       }
+      webhook_alert_config: {
+        Row: {
+          alert_recipients: string[]
+          check_window_hours: number
+          clinic_id: string | null
+          cooldown_hours: number
+          created_at: string
+          enabled: boolean
+          failure_rate_threshold: number
+          id: string
+          last_alert_sent_at: string | null
+          min_calls_required: number
+          response_time_threshold: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_recipients?: string[]
+          check_window_hours?: number
+          clinic_id?: string | null
+          cooldown_hours?: number
+          created_at?: string
+          enabled?: boolean
+          failure_rate_threshold?: number
+          id?: string
+          last_alert_sent_at?: string | null
+          min_calls_required?: number
+          response_time_threshold?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_recipients?: string[]
+          check_window_hours?: number
+          clinic_id?: string | null
+          cooldown_hours?: number
+          created_at?: string
+          enabled?: boolean
+          failure_rate_threshold?: number
+          id?: string
+          last_alert_sent_at?: string | null
+          min_calls_required?: number
+          response_time_threshold?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      webhook_alert_history: {
+        Row: {
+          alert_details: Json | null
+          alert_sent_to: string[]
+          alert_type: string
+          config_id: string | null
+          created_at: string
+          id: string
+          triggered_at: string
+          webhook_name: string | null
+        }
+        Insert: {
+          alert_details?: Json | null
+          alert_sent_to: string[]
+          alert_type: string
+          config_id?: string | null
+          created_at?: string
+          id?: string
+          triggered_at?: string
+          webhook_name?: string | null
+        }
+        Update: {
+          alert_details?: Json | null
+          alert_sent_to?: string[]
+          alert_type?: string
+          config_id?: string | null
+          created_at?: string
+          id?: string
+          triggered_at?: string
+          webhook_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_alert_history_config_id_fkey"
+            columns: ["config_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_alert_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_retry_queue: {
         Row: {
           activity_log_id: string | null

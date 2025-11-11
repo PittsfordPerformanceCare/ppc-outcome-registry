@@ -16,6 +16,7 @@ import { format } from "date-fns";
 import { WebhookActivityLog } from "./WebhookActivityLog";
 import { WebhookRetryQueue } from "./WebhookRetryQueue";
 import { WebhookAnalytics } from "./WebhookAnalytics";
+import { WebhookAlertSettings } from "./WebhookAlertSettings";
 
 interface WebhookConfig {
   id: string;
@@ -247,9 +248,10 @@ export function ZapierWebhookConfig() {
 
   return (
     <Tabs defaultValue="config" className="w-full space-y-4">
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="config">Configuration</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <TabsTrigger value="alerts">Alerts</TabsTrigger>
         <TabsTrigger value="retry">Retry Queue</TabsTrigger>
         <TabsTrigger value="activity">Activity Log</TabsTrigger>
       </TabsList>
@@ -453,6 +455,10 @@ export function ZapierWebhookConfig() {
 
       <TabsContent value="analytics">
         <WebhookAnalytics />
+      </TabsContent>
+
+      <TabsContent value="alerts">
+        <WebhookAlertSettings />
       </TabsContent>
 
       <TabsContent value="retry">
