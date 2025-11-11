@@ -39,11 +39,13 @@ export function PendingEpisodesWidget() {
   const [sortBy, setSortBy] = useState<string>("priority-asc");
   const [thresholdWarning, setThresholdWarning] = useState(DEFAULT_THRESHOLD_WARNING);
   const [thresholdCritical, setThresholdCritical] = useState(DEFAULT_THRESHOLD_CRITICAL);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     loadPendingEpisodes();
     loadThresholds();
+    checkAdminStatus();
 
     // Set up realtime subscription for pending episodes
     const episodesChannel = supabase
@@ -143,6 +145,20 @@ export function PendingEpisodesWidget() {
     } catch (error) {
       console.error("Error loading thresholds:", error);
     }
+  };
+
+  const checkAdminStatus = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from("user_roles")
+      .select()
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle();
+    
+    setIsAdmin(!!data);
   };
 
   // Filter and sort episodes
@@ -326,7 +342,10 @@ export function PendingEpisodesWidget() {
             <div className="flex gap-2">
               {!noEpisodes && (
                 <>
-                  <PendingEpisodeThresholdSettings />
+                  <PendingEpisodeThresholdSettings
+                    isAdmin={isAdmin}
+                    onSettingsChange={loadThresholds}
+                  />
                   <Button
                     variant="ghost"
                     size="sm"

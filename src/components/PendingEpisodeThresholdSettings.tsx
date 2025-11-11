@@ -1,116 +1,57 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Settings, AlertCircle, Save } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Settings, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { Switch } from "@/components/ui/switch";
 
 interface ThresholdSettings {
   id: string;
-  clinic_id: string | null;
   warning_days: number;
   critical_days: number;
 }
 
-export function PendingEpisodeThresholdSettings() {
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [clinicId, setClinicId] = useState<string | null>(null);
-  const [globalThresholds, setGlobalThresholds] = useState<ThresholdSettings | null>(null);
-  const [clinicThresholds, setClinicThresholds] = useState<ThresholdSettings | null>(null);
-  const [useClinicSpecific, setUseClinicSpecific] = useState(false);
+interface PendingEpisodeThresholdSettingsProps {
+  isAdmin: boolean;
+  onSettingsChange?: () => void;
+}
+
+export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: PendingEpisodeThresholdSettingsProps) {
+  const [settings, setSettings] = useState<ThresholdSettings | null>(null);
   const [warningDays, setWarningDays] = useState(30);
   const [criticalDays, setCriticalDays] = useState(60);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   useEffect(() => {
-    checkAdminStatus();
-  }, []);
-
-  useEffect(() => {
-    if (open && isAdmin) {
-      loadThresholds();
+    if (open) {
+      loadSettings();
     }
-  }, [open, isAdmin]);
+  }, [open]);
 
-  const checkAdminStatus = async () => {
+  const loadSettings = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("clinic_id")
-        .eq("id", user.id)
-        .single();
-
-      if (profile) {
-        setClinicId(profile.clinic_id);
-      }
-
-      const { data } = await supabase
-        .from("user_roles")
-        .select()
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-
-      setIsAdmin(!!data);
-    } catch (error) {
-      console.error("Error checking admin status:", error);
-    }
-  };
-
-  const loadThresholds = async () => {
-    try {
-      setLoading(true);
-      
-      // Load global thresholds
-      const { data: globalData } = await supabase
+      const { data, error } = await supabase
         .from("pending_episode_thresholds")
         .select("*")
         .is("clinic_id", null)
-        .single();
+        .maybeSingle();
 
-      if (globalData) {
-        setGlobalThresholds(globalData);
-      }
+      if (error) throw error;
 
-      // Load clinic-specific thresholds if user has a clinic
-      if (clinicId) {
-        const { data: clinicData } = await supabase
-          .from("pending_episode_thresholds")
-          .select("*")
-          .eq("clinic_id", clinicId)
-          .maybeSingle();
-
-        if (clinicData) {
-          setClinicThresholds(clinicData);
-          setUseClinicSpecific(true);
-          setWarningDays(clinicData.warning_days);
-          setCriticalDays(clinicData.critical_days);
-        } else if (globalData) {
-          setWarningDays(globalData.warning_days);
-          setCriticalDays(globalData.critical_days);
-        }
-      } else if (globalData) {
-        setWarningDays(globalData.warning_days);
-        setCriticalDays(globalData.critical_days);
+      if (data) {
+        setSettings(data);
+        setWarningDays(data.warning_days);
+        setCriticalDays(data.critical_days);
       }
     } catch (error: any) {
-      console.error("Error loading thresholds:", error);
+      console.error("Error loading threshold settings:", error);
       toast.error("Failed to load threshold settings");
     } finally {
       setLoading(false);
@@ -118,85 +59,75 @@ export function PendingEpisodeThresholdSettings() {
   };
 
   const validateInputs = () => {
-    setError("");
-
-    if (warningDays < 1) {
-      setError("Warning threshold must be at least 1 day");
+    if (warningDays <= 0) {
+      setValidationError("Warning threshold must be greater than 0");
       return false;
     }
-
-    if (criticalDays < 1) {
-      setError("Critical threshold must be at least 1 day");
+    if (criticalDays <= 0) {
+      setValidationError("Critical threshold must be greater than 0");
       return false;
     }
-
     if (warningDays >= criticalDays) {
-      setError("Warning threshold must be less than critical threshold");
+      setValidationError("Warning threshold must be less than critical threshold");
       return false;
     }
-
+    setValidationError("");
     return true;
   };
 
   const handleSave = async () => {
     if (!validateInputs()) return;
 
+    setSaving(true);
     try {
-      setLoading(true);
-
-      const targetClinicId = useClinicSpecific ? clinicId : null;
-
-      if (useClinicSpecific && clinicThresholds) {
-        // Update existing clinic-specific thresholds
+      if (settings) {
+        // Update existing settings
         const { error } = await supabase
           .from("pending_episode_thresholds")
           .update({
             warning_days: warningDays,
             critical_days: criticalDays,
           })
-          .eq("id", clinicThresholds.id);
+          .eq("id", settings.id);
 
         if (error) throw error;
-      } else if (useClinicSpecific && !clinicThresholds && clinicId) {
-        // Create new clinic-specific thresholds
+      } else {
+        // Create new settings
         const { error } = await supabase
           .from("pending_episode_thresholds")
           .insert({
-            clinic_id: clinicId,
+            clinic_id: null,
             warning_days: warningDays,
             critical_days: criticalDays,
           });
 
         if (error) throw error;
-      } else if (!useClinicSpecific && clinicThresholds) {
-        // Delete clinic-specific thresholds to revert to global
-        const { error } = await supabase
-          .from("pending_episode_thresholds")
-          .delete()
-          .eq("id", clinicThresholds.id);
-
-        if (error) throw error;
-      } else if (!useClinicSpecific && globalThresholds) {
-        // Update global thresholds
-        const { error } = await supabase
-          .from("pending_episode_thresholds")
-          .update({
-            warning_days: warningDays,
-            critical_days: criticalDays,
-          })
-          .eq("id", globalThresholds.id);
-
-        if (error) throw error;
       }
 
       toast.success("Threshold settings updated successfully");
-      await loadThresholds();
       setOpen(false);
+      onSettingsChange?.();
     } catch (error: any) {
-      console.error("Error saving thresholds:", error);
+      console.error("Error saving threshold settings:", error);
       toast.error(`Failed to save settings: ${error.message}`);
     } finally {
-      setLoading(false);
+      setSaving(false);
+    }
+  };
+
+  const handleWarningChange = (value: string) => {
+    const num = parseInt(value);
+    if (!isNaN(num)) {
+      setWarningDays(num);
+      setValidationError("");
+    }
+  };
+
+  const handleCriticalChange = (value: string) => {
+    const num = parseInt(value);
+    if (!isNaN(num)) {
+      setCriticalDays(num);
+      setValidationError("");
     }
   };
 
@@ -207,115 +138,103 @@ export function PendingEpisodeThresholdSettings() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button variant="ghost" size="sm" className="gap-2">
           <Settings className="h-4 w-4" />
-          Configure Thresholds
+          Configure
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Pending Episode Threshold Settings</DialogTitle>
           <DialogDescription>
-            Configure the day thresholds for warning and critical alerts on pending episodes.
+            Configure warning and critical day thresholds for pending episodes. These settings apply to all pending episodes in the system.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-6 py-4">
           <Alert>
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="text-xs">
+            <AlertDescription>
               Episodes pending longer than these thresholds will be highlighted with visual indicators.
             </AlertDescription>
           </Alert>
 
-          {clinicId && (
-            <div className="flex items-center justify-between space-x-2 rounded-lg border border-border p-3 bg-muted/50">
-              <div className="space-y-0.5">
-                <Label htmlFor="clinic-override" className="text-sm font-medium">
-                  Clinic-Specific Override
-                </Label>
-                <p className="text-xs text-muted-foreground">
-                  Use custom thresholds for your clinic instead of global defaults
-                </p>
-              </div>
-              <Switch
-                id="clinic-override"
-                checked={useClinicSpecific}
-                onCheckedChange={(checked) => {
-                  setUseClinicSpecific(checked);
-                  if (checked && clinicThresholds) {
-                    setWarningDays(clinicThresholds.warning_days);
-                    setCriticalDays(clinicThresholds.critical_days);
-                  } else if (!checked && globalThresholds) {
-                    setWarningDays(globalThresholds.warning_days);
-                    setCriticalDays(globalThresholds.critical_days);
-                  }
-                }}
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="warningDays">Warning Threshold (days)</Label>
+              <Input
+                id="warningDays"
+                type="number"
+                min="1"
+                value={warningDays}
+                onChange={(e) => handleWarningChange(e.target.value)}
+                className="mt-2"
+                disabled={loading || saving}
               />
+              <p className="text-xs text-muted-foreground mt-1">
+                Episodes pending for this many days will show a yellow warning indicator
+              </p>
             </div>
-          )}
 
-          {useClinicSpecific && clinicId && (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription className="text-xs">
-                These settings will only apply to your clinic. Other clinics will use the global defaults.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <div className="space-y-2">
-            <Label htmlFor="warningDays">Warning Threshold (days)</Label>
-            <Input
-              id="warningDays"
-              type="number"
-              min="1"
-              value={warningDays}
-              onChange={(e) => setWarningDays(parseInt(e.target.value) || 0)}
-              className="bg-background"
-            />
-            <p className="text-xs text-muted-foreground">
-              Episodes pending longer than this will show a yellow warning indicator
-            </p>
+            <div>
+              <Label htmlFor="criticalDays">Critical Threshold (days)</Label>
+              <Input
+                id="criticalDays"
+                type="number"
+                min="1"
+                value={criticalDays}
+                onChange={(e) => handleCriticalChange(e.target.value)}
+                className="mt-2"
+                disabled={loading || saving}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Episodes pending for this many days will show a red critical alert
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="criticalDays">Critical Threshold (days)</Label>
-            <Input
-              id="criticalDays"
-              type="number"
-              min="1"
-              value={criticalDays}
-              onChange={(e) => setCriticalDays(parseInt(e.target.value) || 0)}
-              className="bg-background"
-            />
-            <p className="text-xs text-muted-foreground">
-              Episodes pending longer than this will show a red critical alert
-            </p>
-          </div>
-
-          {error && (
+          {validationError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{validationError}</AlertDescription>
             </Alert>
           )}
 
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Preview:</span>
+            </div>
+            <div className="space-y-2 rounded-md border p-3 bg-muted/30">
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-green-500" />
+                <span className="text-sm">0-{warningDays - 1} days: Normal</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-warning" />
+                <span className="text-sm">{warningDays}-{criticalDays - 1} days: Warning</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-destructive" />
+                <span className="text-sm">{criticalDays}+ days: Critical</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              onClick={handleSave}
+              disabled={loading || saving || !!validationError}
+              className="flex-1 gap-2"
+            >
+              <Save className="h-4 w-4" />
+              {saving ? "Saving..." : "Save Settings"}
+            </Button>
             <Button
               variant="outline"
               onClick={() => setOpen(false)}
-              disabled={loading}
+              disabled={saving}
             >
               Cancel
-            </Button>
-            <Button
-              onClick={handleSave}
-              disabled={loading}
-              className="gap-2"
-            >
-              <Save className="h-4 w-4" />
-              {loading ? "Saving..." : "Save Settings"}
             </Button>
           </div>
         </div>
