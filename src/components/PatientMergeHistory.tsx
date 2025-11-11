@@ -4,11 +4,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { History, Calendar, User, FileText, ChevronDown, ChevronUp, Download, FileSpreadsheet } from "lucide-react";
+import { History, Calendar as CalendarIcon, User, FileText, ChevronDown, ChevronUp, Download, FileSpreadsheet, X, CalendarRange } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface MergeAuditLog {
   id: string;
@@ -42,6 +46,8 @@ export function PatientMergeHistory() {
   const [mergeHistory, setMergeHistory] = useState<MergeAuditLog[]>([]);
   const [userProfiles, setUserProfiles] = useState<Record<string, UserProfile>>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [dateFrom, setDateFrom] = useState<Date>();
+  const [dateTo, setDateTo] = useState<Date>();
 
   useEffect(() => {
     loadMergeHistory();
@@ -98,8 +104,41 @@ export function PatientMergeHistory() {
     return new Date(dateString).toLocaleDateString();
   };
 
+  // Filter merge history based on date range
+  const filteredMergeHistory = mergeHistory.filter(log => {
+    const logDate = new Date(log.created_at);
+    
+    if (dateFrom && logDate < dateFrom) {
+      return false;
+    }
+    
+    if (dateTo) {
+      const endOfDay = new Date(dateTo);
+      endOfDay.setHours(23, 59, 59, 999);
+      if (logDate > endOfDay) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
+
+  const clearDateFilters = () => {
+    setDateFrom(undefined);
+    setDateTo(undefined);
+  };
+
+  const hasDateFilters = dateFrom || dateTo;
+
   const exportToCSV = () => {
     try {
+      const dataToExport = filteredMergeHistory;
+      
+      if (dataToExport.length === 0) {
+        toast.error("No merge history to export");
+        return;
+      }
+
       // CSV header
       const headers = [
         "Merge Date/Time",
@@ -112,7 +151,7 @@ export function PatientMergeHistory() {
       ];
 
       // CSV rows
-      const rows = mergeHistory.map(log => [
+      const rows = dataToExport.map(log => [
         formatDate(log.created_at),
         userProfiles[log.user_id]?.full_name || "Unknown User",
         log.new_data.primary_patient.patient_name,
@@ -133,13 +172,18 @@ export function PatientMergeHistory() {
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", `patient_merge_history_${new Date().toISOString().split('T')[0]}.csv`);
+      
+      const dateRangeSuffix = hasDateFilters 
+        ? `_${dateFrom ? format(dateFrom, 'yyyy-MM-dd') : 'all'}_to_${dateTo ? format(dateTo, 'yyyy-MM-dd') : 'now'}`
+        : `_${new Date().toISOString().split('T')[0]}`;
+      
+      link.setAttribute("download", `patient_merge_history${dateRangeSuffix}.csv`);
       link.style.visibility = "hidden";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
 
-      toast.success("Merge history exported to CSV");
+      toast.success(`Exported ${dataToExport.length} merge records to CSV`);
     } catch (error) {
       console.error("Error exporting to CSV:", error);
       toast.error("Failed to export to CSV");
@@ -148,6 +192,13 @@ export function PatientMergeHistory() {
 
   const exportToPDF = () => {
     try {
+      const dataToExport = filteredMergeHistory;
+      
+      if (dataToExport.length === 0) {
+        toast.error("No merge history to export");
+        return;
+      }
+
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       
@@ -155,20 +206,26 @@ export function PatientMergeHistory() {
       doc.setFontSize(18);
       doc.text("Patient Merge History - Audit Report", pageWidth / 2, 15, { align: "center" });
       
-      // Subtitle with date
+      // Subtitle with date and filter info
       doc.setFontSize(10);
       doc.text(`Generated: ${new Date().toLocaleString()}`, pageWidth / 2, 22, { align: "center" });
       
+      if (hasDateFilters) {
+        const filterText = `Filter: ${dateFrom ? format(dateFrom, 'MMM dd, yyyy') : 'All'} to ${dateTo ? format(dateTo, 'MMM dd, yyyy') : 'Now'}`;
+        doc.text(filterText, pageWidth / 2, 27, { align: "center" });
+      }
+      
       // Summary statistics
+      const summaryY = hasDateFilters ? 35 : 32;
       doc.setFontSize(12);
-      doc.text("Summary", 14, 32);
+      doc.text("Summary", 14, summaryY);
       doc.setFontSize(10);
-      doc.text(`Total Merges: ${mergeHistory.length}`, 14, 38);
-      const totalEpisodes = mergeHistory.reduce((sum, log) => sum + log.old_data.total_episodes_affected, 0);
-      doc.text(`Total Episodes Affected: ${totalEpisodes}`, 14, 44);
+      doc.text(`Total Merges: ${dataToExport.length}`, 14, summaryY + 6);
+      const totalEpisodes = dataToExport.reduce((sum, log) => sum + log.old_data.total_episodes_affected, 0);
+      doc.text(`Total Episodes Affected: ${totalEpisodes}`, 14, summaryY + 12);
 
       // Table data
-      const tableData = mergeHistory.map(log => [
+      const tableData = dataToExport.map(log => [
         formatDate(log.created_at),
         userProfiles[log.user_id]?.full_name || "Unknown",
         log.new_data.primary_patient.patient_name,
@@ -177,8 +234,9 @@ export function PatientMergeHistory() {
       ]);
 
       // Add table
+      const tableStartY = hasDateFilters ? 55 : 52;
       autoTable(doc, {
-        startY: 52,
+        startY: tableStartY,
         head: [["Date/Time", "User", "Primary Patient", "Merged Patients", "Episodes"]],
         body: tableData,
         theme: "striped",
@@ -191,7 +249,7 @@ export function PatientMergeHistory() {
           3: { cellWidth: 60 },
           4: { cellWidth: 20 }
         },
-        margin: { top: 52 }
+        margin: { top: tableStartY }
       });
 
       // Add page numbers
@@ -208,9 +266,13 @@ export function PatientMergeHistory() {
       }
 
       // Save PDF
-      doc.save(`patient_merge_history_${new Date().toISOString().split('T')[0]}.pdf`);
+      const dateRangeSuffix = hasDateFilters 
+        ? `_${dateFrom ? format(dateFrom, 'yyyy-MM-dd') : 'all'}_to_${dateTo ? format(dateTo, 'yyyy-MM-dd') : 'now'}`
+        : `_${new Date().toISOString().split('T')[0]}`;
       
-      toast.success("Merge history exported to PDF");
+      doc.save(`patient_merge_history${dateRangeSuffix}.pdf`);
+      
+      toast.success(`Exported ${dataToExport.length} merge records to PDF`);
     } catch (error) {
       console.error("Error exporting to PDF:", error);
       toast.error("Failed to export to PDF");
@@ -254,7 +316,93 @@ export function PatientMergeHistory() {
           )}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        {/* Date Range Filter */}
+        {mergeHistory.length > 0 && (
+          <Card className="border-dashed">
+            <CardContent className="pt-6">
+              <div className="flex items-end gap-4 flex-wrap">
+                <div className="flex-1 min-w-[200px] space-y-2">
+                  <label className="text-sm font-medium">From Date</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dateFrom && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateFrom ? format(dateFrom, "PPP") : "Select start date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateFrom}
+                        onSelect={setDateFrom}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="flex-1 min-w-[200px] space-y-2">
+                  <label className="text-sm font-medium">To Date</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !dateTo && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateTo ? format(dateTo, "PPP") : "Select end date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateTo}
+                        onSelect={setDateTo}
+                        disabled={(date) => dateFrom ? date < dateFrom : false}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {hasDateFilters && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearDateFilters}
+                    className="gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+
+              {hasDateFilters && (
+                <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                  <CalendarRange className="h-4 w-4" />
+                  <span>
+                    Showing {filteredMergeHistory.length} of {mergeHistory.length} merge records
+                    {dateFrom && ` from ${format(dateFrom, "MMM dd, yyyy")}`}
+                    {dateTo && ` to ${format(dateTo, "MMM dd, yyyy")}`}
+                  </span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
         {isLoading ? (
           <div className="text-center py-8 text-muted-foreground">
             Loading merge history...
@@ -263,10 +411,14 @@ export function PatientMergeHistory() {
           <div className="text-center py-8 text-muted-foreground">
             No patient merges have been performed yet
           </div>
+        ) : filteredMergeHistory.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            No merge records found for the selected date range
+          </div>
         ) : (
           <ScrollArea className="h-[600px] pr-4">
             <div className="space-y-4">
-              {mergeHistory.map((log) => (
+              {filteredMergeHistory.map((log) => (
                 <Card key={log.id} className="border-l-4 border-l-primary">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
@@ -275,7 +427,7 @@ export function PatientMergeHistory() {
                           Merged into: {log.new_data.primary_patient.patient_name}
                         </CardTitle>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Calendar className="h-3 w-3" />
+                          <CalendarIcon className="h-3 w-3" />
                           {formatDate(log.created_at)}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
