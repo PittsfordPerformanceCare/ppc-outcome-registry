@@ -9,6 +9,7 @@ import { SessionTimeoutWarning } from "./SessionTimeoutWarning";
 import { IntakeNotificationsPanel } from "./IntakeNotificationsPanel";
 import { FloatingActionButton } from "./FloatingActionButton";
 import { BottomTabNavigation } from "./BottomTabNavigation";
+import { PageTransition } from "./PageTransition";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -252,12 +253,12 @@ export function Layout({ children }: LayoutProps) {
           </Drawer>
 
           {/* Logo & Brand */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="rounded-lg bg-primary/10 p-2 transition-colors group-hover:bg-primary/20">
-              <Activity className="h-5 w-5 text-primary" />
+          <Link to="/" className="flex items-center space-x-3 group animate-fade-in">
+            <div className="rounded-lg bg-primary/10 p-2 transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110 group-hover:shadow-md">
+              <Activity className="h-5 w-5 text-primary transition-transform group-hover:rotate-12" />
             </div>
             <div className="hidden sm:flex flex-col">
-              <h1 className="text-lg font-bold leading-none text-foreground">
+              <h1 className="text-lg font-bold leading-none text-foreground transition-colors group-hover:text-primary">
                 PPC Outcome Registry
               </h1>
               <span className="text-xs text-muted-foreground">Clinical Excellence Platform</span>
@@ -275,13 +276,18 @@ export function Layout({ children }: LayoutProps) {
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    "flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
+                    "flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium",
+                    "transition-all duration-200 ease-out",
+                    "hover:scale-105 active:scale-95",
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground hover:shadow-sm"
                   )}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className={cn(
+                    "h-4 w-4 transition-transform duration-200",
+                    isActive && "scale-110"
+                  )} />
                   <span>{item.name}</span>
                 </Link>
               );
@@ -416,9 +422,14 @@ export function Layout({ children }: LayoutProps) {
               variant="ghost"
               size="icon"
               onClick={toggleDarkMode}
-              className="rounded-full"
+              className="rounded-full transition-all duration-300 hover:rotate-180 hover:scale-110"
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             >
-              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              {isDark ? (
+                <Sun className="h-5 w-5 transition-transform duration-300" />
+              ) : (
+                <Moon className="h-5 w-5 transition-transform duration-300" />
+              )}
             </Button>
             
             {/* User Menu */}
@@ -457,7 +468,9 @@ export function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 pb-24 lg:pb-8">{children}</main>
+      <main className="container mx-auto px-4 py-8 pb-24 lg:pb-8">
+        <PageTransition>{children}</PageTransition>
+      </main>
 
       {/* Footer */}
       <footer className="mt-auto border-t bg-muted/30 mb-16 lg:mb-0">

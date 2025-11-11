@@ -288,6 +288,69 @@ All colors MUST be HSL.
   .gradient-accent {
     background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--success)) 100%);
   }
+
+  /* Micro-animations for interactive elements */
+  .btn-hover-lift {
+    @apply transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md active:translate-y-0;
+  }
+
+  .card-hover-scale {
+    @apply transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-lg;
+  }
+
+  .icon-bounce {
+    animation: icon-bounce 0.6s ease-in-out;
+  }
+
+  @keyframes icon-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  /* Ripple effect for buttons */
+  .btn-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .btn-ripple:active::after {
+    width: 300px;
+    height: 300px;
+  }
+
+  /* Staggered animation delays */
+  .animation-delay-75 {
+    animation-delay: 75ms;
+  }
+
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-150 {
+    animation-delay: 150ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
 }
 
 /* Print Styles */

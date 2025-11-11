@@ -77,15 +77,34 @@ export function BottomTabNavigation({ isAdmin }: BottomTabNavigationProps) {
               key={tab.name}
               to={tab.href}
               className={cn(
-                "flex flex-col items-center justify-center min-w-[64px] h-full space-y-1 rounded-lg transition-colors",
-                "active:scale-95 transition-transform",
+                "flex flex-col items-center justify-center min-w-[64px] h-full space-y-1 rounded-lg",
+                "transition-all duration-200 ease-out",
+                "active:scale-95",
+                "hover:bg-accent/10",
                 active
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className={cn("h-6 w-6", active && "fill-primary/10")} strokeWidth={active ? 2.5 : 2} />
-              <span className={cn("text-xs font-medium", active && "font-semibold")}>
+              <div className={cn(
+                "relative transition-transform duration-200",
+                active && "scale-110"
+              )}>
+                <Icon 
+                  className={cn(
+                    "h-6 w-6 transition-all duration-200",
+                    active && "fill-primary/10"
+                  )} 
+                  strokeWidth={active ? 2.5 : 2} 
+                />
+                {active && (
+                  <div className="absolute -inset-1 bg-primary/10 rounded-full blur-sm -z-10 animate-fade-in" />
+                )}
+              </div>
+              <span className={cn(
+                "text-xs font-medium transition-all duration-200",
+                active && "font-semibold scale-105"
+              )}>
                 {tab.name}
               </span>
             </Link>
@@ -97,18 +116,20 @@ export function BottomTabNavigation({ isAdmin }: BottomTabNavigationProps) {
           <SheetTrigger asChild>
             <button
               className={cn(
-                "flex flex-col items-center justify-center min-w-[64px] h-full space-y-1 rounded-lg transition-colors",
-                "active:scale-95 transition-transform text-muted-foreground hover:text-foreground"
+                "flex flex-col items-center justify-center min-w-[64px] h-full space-y-1 rounded-lg",
+                "transition-all duration-200 ease-out",
+                "active:scale-95 hover:bg-accent/10",
+                "text-muted-foreground hover:text-foreground"
               )}
             >
-              <MoreHorizontal className="h-6 w-6" strokeWidth={2} />
+              <MoreHorizontal className="h-6 w-6 transition-transform hover:rotate-90 duration-300" strokeWidth={2} />
               <span className="text-xs font-medium">More</span>
             </button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
-            <SheetHeader>
+          <SheetContent side="bottom" className="h-[85vh] overflow-y-auto animate-slide-up">
+            <SheetHeader className="animate-fade-in">
               <SheetTitle className="flex items-center space-x-2">
-                <Activity className="h-5 w-5 text-primary" />
+                <Activity className="h-5 w-5 text-primary animate-zoom-in" />
                 <span>More Options</span>
               </SheetTitle>
             </SheetHeader>
@@ -158,13 +179,18 @@ export function BottomTabNavigation({ isAdmin }: BottomTabNavigationProps) {
                         key={item.name}
                         to={item.href}
                         className={cn(
-                          "flex items-center space-x-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors",
+                          "flex items-center space-x-3 rounded-lg px-3 py-3 text-sm font-medium",
+                          "transition-all duration-200 ease-out",
+                          "hover:translate-x-1",
                           active
-                            ? "bg-primary text-primary-foreground"
+                            ? "bg-primary text-primary-foreground shadow-md"
                             : "text-foreground hover:bg-accent"
                         )}
                       >
-                        <Icon className="h-5 w-5" />
+                        <Icon className={cn(
+                          "h-5 w-5 transition-transform duration-200",
+                          active && "scale-110"
+                        )} />
                         <span>{item.name}</span>
                       </Link>
                     );
