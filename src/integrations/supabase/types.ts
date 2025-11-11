@@ -1172,6 +1172,101 @@ export type Database = {
         }
         Relationships: []
       }
+      outcome_reminder_report_deliveries: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          recipient_emails: string[]
+          report_data: Json | null
+          schedule_id: string
+          sent_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_emails: string[]
+          report_data?: Json | null
+          schedule_id: string
+          sent_at?: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_emails?: string[]
+          report_data?: Json | null
+          schedule_id?: string
+          sent_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outcome_reminder_report_deliveries_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "outcome_reminder_report_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outcome_reminder_report_schedules: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          enabled: boolean
+          frequency: string
+          id: string
+          last_sent_at: string | null
+          name: string
+          next_send_at: string
+          recipient_emails: string[]
+          send_day: string
+          send_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          frequency: string
+          id?: string
+          last_sent_at?: string | null
+          name: string
+          next_send_at: string
+          recipient_emails?: string[]
+          send_day: string
+          send_time?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          frequency?: string
+          id?: string
+          last_sent_at?: string | null
+          name?: string
+          next_send_at?: string
+          recipient_emails?: string[]
+          send_day?: string
+          send_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       outcome_scores: {
         Row: {
           clinic_id: string | null
@@ -1226,6 +1321,153 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patient_accounts: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_active: boolean
+          phone: string | null
+          profile_image_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id: string
+          is_active?: boolean
+          phone?: string | null
+          profile_image_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          profile_image_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      patient_episode_access: {
+        Row: {
+          code_used_at: string | null
+          created_at: string
+          episode_id: string
+          granted_at: string
+          granted_by: string | null
+          id: string
+          invitation_code: string | null
+          patient_id: string
+        }
+        Insert: {
+          code_used_at?: string | null
+          created_at?: string
+          episode_id: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          invitation_code?: string | null
+          patient_id: string
+        }
+        Update: {
+          code_used_at?: string | null
+          created_at?: string
+          episode_id?: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          invitation_code?: string | null
+          patient_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_episode_access_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_episode_access_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_episode_access_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patient_rewards: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          patient_id: string
+          qr_code_data: string | null
+          reward_description: string | null
+          reward_name: string
+          reward_type: string
+          updated_at: string
+          valid_from: string
+          valid_until: string | null
+          view_count: number
+          viewed_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          patient_id: string
+          qr_code_data?: string | null
+          reward_description?: string | null
+          reward_name: string
+          reward_type?: string
+          updated_at?: string
+          valid_from?: string
+          valid_until?: string | null
+          view_count?: number
+          viewed_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          patient_id?: string
+          qr_code_data?: string | null
+          reward_description?: string | null
+          reward_name?: string
+          reward_type?: string
+          updated_at?: string
+          valid_from?: string
+          valid_until?: string | null
+          view_count?: number
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_rewards_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient_accounts"
             referencedColumns: ["id"]
           },
         ]
@@ -1913,6 +2155,25 @@ export type Database = {
         }[]
       }
       cleanup_old_sessions: { Args: never; Returns: undefined }
+      get_patient_episode_view: {
+        Args: { _episode_id: string; _patient_id: string }
+        Returns: {
+          clinician: string
+          date_of_service: string
+          diagnosis: string
+          discharge_date: string
+          followup_date: string
+          functional_limitations: string[]
+          id: string
+          injury_date: string
+          injury_mechanism: string
+          pain_level: string
+          patient_name: string
+          region: string
+          start_date: string
+          treatment_goals: Json
+        }[]
+      }
       get_user_clinic_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -1922,6 +2183,10 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      patient_has_episode_access: {
+        Args: { _episode_id: string; _patient_id: string }
+        Returns: boolean
+      }
       record_rate_limit_usage: {
         Args: {
           p_clinic_id?: string
