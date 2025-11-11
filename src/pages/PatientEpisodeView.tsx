@@ -251,8 +251,10 @@ export default function PatientEpisodeView() {
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={() => navigate("/patient-dashboard")} className="gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                Back to Dashboard
+                <span className="hidden sm:inline">Back to Dashboard</span>
+                <span className="sm:hidden">Back</span>
               </Button>
+              <span className="text-sm font-semibold text-primary hidden sm:inline">PPC Patient Hub</span>
               {hasPrevious && (
                 <Button 
                   variant="ghost" 

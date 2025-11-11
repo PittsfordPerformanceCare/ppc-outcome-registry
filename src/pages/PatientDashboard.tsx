@@ -329,7 +329,7 @@ export default function PatientDashboard() {
   return (
     <PullToRefresh onRefresh={handleRefresh}>
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-        <div className="container mx-auto max-w-6xl py-8 space-y-6">
+      <div className="container mx-auto max-w-6xl py-8 space-y-6">
         {/* Header with Personalized Greeting */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -337,9 +337,13 @@ export default function PatientDashboard() {
               <Activity className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">
-                Welcome back, {patientAccount?.full_name?.split(' ')[0] || 'there'}! 👋
-              </h1>
+              <div className="flex items-center gap-2 mb-1">
+                <h1 className="text-xl font-bold text-primary">PPC Patient Hub</h1>
+                <span className="text-muted-foreground">•</span>
+                <span className="text-lg font-semibold">
+                  Welcome back, {patientAccount?.full_name?.split(' ')[0] || 'there'}! 👋
+                </span>
+              </div>
               <p className="text-muted-foreground">
                 {episodes.filter(e => !e.discharge_date).length > 0 
                   ? "Keep up the great work on your recovery journey"
