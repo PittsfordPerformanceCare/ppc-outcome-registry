@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Download, Printer, AlertCircle, ArrowRight, ArrowLeft, Home } from "lucide-react";
 import { toast } from "sonner";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
+import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 
 interface OutcomeScore {
   index_type: string;
@@ -75,6 +76,9 @@ export default function PCPSummary() {
   const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Enable keyboard shortcuts
+  useNavigationShortcuts();
 
   useEffect(() => {
     if (episodeId) {

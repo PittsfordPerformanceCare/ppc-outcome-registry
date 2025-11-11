@@ -23,6 +23,7 @@ import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
 import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorTreatmentSelector";
 import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoalsSelector";
+import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 
 interface DischargeScores {
   NDI?: number;
@@ -37,6 +38,9 @@ export default function Discharge() {
   const episodeParam = searchParams.get("episode") || "";
 
   const [episodeId, setEpisodeId] = useState(episodeParam);
+
+  // Enable keyboard shortcuts
+  useNavigationShortcuts();
   const [patientName, setPatientName] = useState("");
   const [dob, setDob] = useState("");
   const [region, setRegion] = useState("");

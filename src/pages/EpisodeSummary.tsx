@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { 
   ArrowLeft, 
   User, 
@@ -72,6 +73,9 @@ export default function EpisodeSummary() {
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
   const [journey, setJourney] = useState<ReturnType<typeof calculatePatientJourney> | null>(null);
+
+  // Enable keyboard shortcuts
+  useNavigationShortcuts();
 
   useEffect(() => {
     const loadEpisodeData = async () => {
