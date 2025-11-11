@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle, History } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle, History, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
@@ -17,6 +17,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Separator } from "@/components/ui/separator";
 
 interface LayoutProps {
   children: ReactNode;
@@ -29,6 +38,7 @@ export function Layout({ children }: LayoutProps) {
   const { showWarning, extendSession } = useSessionTimeout();
   const { isDark, toggleDarkMode } = useDarkMode();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -81,12 +91,166 @@ export function Layout({ children }: LayoutProps) {
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
+          {/* Mobile Menu Button */}
+          <Drawer open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <DrawerTrigger asChild>
+              <Button variant="ghost" size="icon" className="lg:hidden">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent className="h-[85vh]">
+              <DrawerHeader>
+                <DrawerTitle className="flex items-center space-x-2">
+                  <Activity className="h-5 w-5 text-primary" />
+                  <span>Navigation</span>
+                </DrawerTitle>
+              </DrawerHeader>
+              <div className="overflow-y-auto px-4 pb-8">
+                {/* Primary Navigation */}
+                <div className="space-y-1 mb-6">
+                  <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Main</h3>
+                  {primaryNav.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.href;
+                    return (
+                      <DrawerClose key={item.name} asChild>
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          )}
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span>{item.name}</span>
+                        </Link>
+                      </DrawerClose>
+                    );
+                  })}
+                </div>
+
+                <Separator className="my-4" />
+
+                {/* Episodes */}
+                <div className="space-y-1 mb-6">
+                  <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Episodes</h3>
+                  {episodesNav.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.href;
+                    return (
+                      <DrawerClose key={item.name} asChild>
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          )}
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span>{item.name}</span>
+                        </Link>
+                      </DrawerClose>
+                    );
+                  })}
+                </div>
+
+                <Separator className="my-4" />
+
+                {/* Intake */}
+                <div className="space-y-1 mb-6">
+                  <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Intake</h3>
+                  {intakeNav.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.href;
+                    return (
+                      <DrawerClose key={item.name} asChild>
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          )}
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span>{item.name}</span>
+                        </Link>
+                      </DrawerClose>
+                    );
+                  })}
+                </div>
+
+                <Separator className="my-4" />
+
+                {/* Analytics */}
+                <div className="space-y-1 mb-6">
+                  <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Analytics</h3>
+                  {analyticsNav.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = location.pathname === item.href;
+                    return (
+                      <DrawerClose key={item.name} asChild>
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          )}
+                        >
+                          <Icon className="h-5 w-5" />
+                          <span>{item.name}</span>
+                        </Link>
+                      </DrawerClose>
+                    );
+                  })}
+                </div>
+
+                {/* Admin */}
+                {isAdmin && adminNav.length > 0 && (
+                  <>
+                    <Separator className="my-4" />
+                    <div className="space-y-1">
+                      <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Admin</h3>
+                      {adminNav.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = location.pathname === item.href;
+                        return (
+                          <DrawerClose key={item.name} asChild>
+                            <Link
+                              to={item.href}
+                              className={cn(
+                                "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                                isActive
+                                  ? "bg-primary text-primary-foreground"
+                                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                              )}
+                            >
+                              <Icon className="h-5 w-5" />
+                              <span>{item.name}</span>
+                            </Link>
+                          </DrawerClose>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
+            </DrawerContent>
+          </Drawer>
+
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="rounded-lg bg-primary/10 p-2 transition-colors group-hover:bg-primary/20">
               <Activity className="h-5 w-5 text-primary" />
             </div>
-            <div className="flex flex-col">
+            <div className="hidden sm:flex flex-col">
               <h1 className="text-lg font-bold leading-none text-foreground">
                 PPC Outcome Registry
               </h1>
