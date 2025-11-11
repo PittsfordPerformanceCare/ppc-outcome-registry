@@ -6,8 +6,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, ShieldOff, Users, Building2 } from "lucide-react";
+import { Shield, ShieldOff, Users, Building2, Clock } from "lucide-react";
 import { ClinicBrandingSettings } from "@/components/ClinicBrandingSettings";
+import { PendingEpisodeThresholdManagement } from "@/components/PendingEpisodeThresholdManagement";
 
 interface UserWithRole {
   id: string;
@@ -19,11 +20,31 @@ interface UserWithRole {
 const AdminManagement = () => {
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     loadUsers();
+    checkAdminStatus();
   }, []);
+
+  const checkAdminStatus = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", user.id)
+          .eq("role", "admin")
+          .maybeSingle();
+        
+        setIsAdmin(!!data);
+      }
+    } catch (error) {
+      console.error("Error checking admin status:", error);
+    }
+  };
 
   const loadUsers = async () => {
     try {
@@ -144,7 +165,7 @@ const AdminManagement = () => {
       </div>
 
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-md">
+        <TabsList className="grid w-full grid-cols-3 max-w-2xl">
           <TabsTrigger value="users" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             Users
@@ -152,6 +173,10 @@ const AdminManagement = () => {
           <TabsTrigger value="branding" className="flex items-center gap-2">
             <Building2 className="h-4 w-4" />
             Clinic Branding
+          </TabsTrigger>
+          <TabsTrigger value="thresholds" className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            Thresholds
           </TabsTrigger>
         </TabsList>
 
@@ -214,6 +239,10 @@ const AdminManagement = () => {
 
         <TabsContent value="branding">
           <ClinicBrandingSettings />
+        </TabsContent>
+
+        <TabsContent value="thresholds">
+          <PendingEpisodeThresholdManagement isAdmin={isAdmin} />
         </TabsContent>
       </Tabs>
     </div>
