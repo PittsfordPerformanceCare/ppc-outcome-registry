@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getAllEpisodes } from "@/lib/dbOperations";
+import { PatientInvitationDialog } from "@/components/PatientInvitationDialog";
 import { calculateMCIDSummary } from "@/lib/mcidTracking";
 import { EpisodeMeta } from "@/lib/ppcStore";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText } from "lucide-react";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
@@ -69,6 +70,10 @@ export default function Dashboard() {
   
   // Bulk action states
   const [selectedEpisodes, setSelectedEpisodes] = useState<Set<string>>(new Set());
+  
+  // Patient invitation dialog state
+  const [invitationDialogOpen, setInvitationDialogOpen] = useState(false);
+  const [selectedEpisodeForInvitation, setSelectedEpisodeForInvitation] = useState<Episode | null>(null);
 
   useEffect(() => {
     loadEpisodes();
@@ -1009,6 +1014,19 @@ export default function Dashboard() {
                       {episode.discharge_date && (
                         <Badge className="badge-complete">Completed</Badge>
                       )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1"
+                        onClick={() => {
+                          setSelectedEpisodeForInvitation(episode);
+                          setInvitationDialogOpen(true);
+                        }}
+                        title="Send patient invitation"
+                      >
+                        <Mail className="h-4 w-4" />
+                        Invite Patient
+                      </Button>
                       <Link to={`/episode-summary?id=${episode.id}`}>
                         <Button size="sm" variant="outline">
                           View Details
@@ -1029,6 +1047,16 @@ export default function Dashboard() {
           )}
         </CardContent>
       </Card>
+
+      {/* Patient Invitation Dialog */}
+      {selectedEpisodeForInvitation && (
+        <PatientInvitationDialog
+          open={invitationDialogOpen}
+          onOpenChange={setInvitationDialogOpen}
+          episodeId={selectedEpisodeForInvitation.id}
+          patientName={selectedEpisodeForInvitation.patient_name}
+        />
+      )}
     </div>
   );
 }
