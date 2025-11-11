@@ -47,8 +47,14 @@ export async function createEpisode(episode: Partial<Episode>) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
+  // Generate unique episode ID
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  const episodeId = `EP-${timestamp}-${random}`;
+
   const episodeData = {
     ...episode,
+    id: episodeId,
     user_id: user.id,
   } as any;
 

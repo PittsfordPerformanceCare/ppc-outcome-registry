@@ -100,15 +100,12 @@ export default function IntakeReview() {
   };
 
   const handleConvertToEpisode = async (form: IntakeForm) => {
-    console.log("Convert to Episode clicked for:", form.patient_name);
     setPreparingConversion(true);
     // Brief delay to show loading state
     await new Promise(resolve => setTimeout(resolve, 300));
-    console.log("Setting formToConvert and opening dialog");
     setFormToConvert(form);
     setConvertDialogOpen(true);
     setPreparingConversion(false);
-    console.log("Dialog should be open now, convertDialogOpen:", true);
   };
 
   const handleConversionSuccess = () => {
@@ -631,19 +628,15 @@ export default function IntakeReview() {
       
       {/* Single Conversion Dialog */}
       {formToConvert && (
-        <>
-          {console.log("Rendering IntakeToEpisodeConverter, formToConvert:", formToConvert?.patient_name, "convertDialogOpen:", convertDialogOpen)}
-          <IntakeToEpisodeConverter
-            intakeForm={formToConvert}
-            open={convertDialogOpen}
-            onClose={() => {
-              console.log("Closing dialog");
-              setConvertDialogOpen(false);
-              setFormToConvert(null);
-            }}
-            onSuccess={handleConversionSuccess}
-          />
-        </>
+        <IntakeToEpisodeConverter
+          intakeForm={formToConvert}
+          open={convertDialogOpen}
+          onClose={() => {
+            setConvertDialogOpen(false);
+            setFormToConvert(null);
+          }}
+          onSuccess={handleConversionSuccess}
+        />
       )}
 
       {/* Bulk Conversion Dialog */}
