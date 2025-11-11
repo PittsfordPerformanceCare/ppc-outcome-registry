@@ -456,6 +456,10 @@ export function ZapierWebhookConfig() {
       <TabsContent value="activity">
         <WebhookActivityLog />
       </TabsContent>
+
+      <TabsContent value="retry">
+        <WebhookRetryQueue />
+      </TabsContent>
     </Tabs>
   );
 }
