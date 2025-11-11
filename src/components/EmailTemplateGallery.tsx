@@ -37,19 +37,19 @@ const EMAIL_TEMPLATES: EmailTemplate[] = [
     name: "Professional Welcome",
     description: "Clean, professional design with branded header and clear call-to-action",
     category: "professional",
-    subject: "Your Physical Therapy Episode Has Been Created",
+    subject: "Your Rehabilitative Care Episode Has Been Created",
     preview: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop",
     html: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
   <div style="background-color: #1e3a8a; padding: 40px 20px; text-align: center;">
     <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">{{clinic_name}}</h1>
-    <p style="color: #93c5fd; margin: 10px 0 0 0; font-size: 14px;">Physical Therapy Excellence</p>
+    <p style="color: #93c5fd; margin: 10px 0 0 0; font-size: 14px;">Rehabilitative Medicine Excellence</p>
   </div>
   
   <div style="padding: 40px 30px;">
     <h2 style="color: #1e3a8a; font-size: 24px; margin: 0 0 20px 0;">Welcome, {{patient_name}}!</h2>
     
     <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
-      We are pleased to inform you that your intake form has been reviewed and your physical therapy episode has been successfully created.
+      We are pleased to inform you that your intake form has been reviewed and your rehabilitative care episode has been successfully created.
     </p>
     
     <div style="background-color: #f1f5f9; border-left: 4px solid #1e3a8a; padding: 20px; margin: 20px 0;">
@@ -232,7 +232,7 @@ const EMAIL_TEMPLATES: EmailTemplate[] = [
     </p>
     
     <p style="color: #333333; font-size: 16px; line-height: 1.8; margin: 0 0 25px 0;">
-      Your intake form has been reviewed and processed. We have created your physical therapy episode and are ready to begin your treatment.
+      Your intake form has been reviewed and processed. We have created your rehabilitative care episode and are ready to begin your treatment.
     </p>
     
     <div style="background-color: #f9f9f9; padding: 30px; margin: 30px 0; border-left: 3px solid #000000;">
@@ -278,7 +278,7 @@ const EMAIL_TEMPLATES: EmailTemplate[] = [
       <span style="font-size: 30px;">⚕️</span>
     </div>
     <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 600;">{{clinic_name}}</h1>
-    <p style="color: #d1fae5; margin: 8px 0 0 0; font-size: 14px;">Physical Therapy & Rehabilitation</p>
+    <p style="color: #d1fae5; margin: 8px 0 0 0; font-size: 14px;">Rehabilitative Medicine & Chiropractic Care</p>
   </div>
   
   <div style="padding: 40px 30px;">
@@ -291,7 +291,7 @@ const EMAIL_TEMPLATES: EmailTemplate[] = [
     </p>
     
     <p style="color: #374151; font-size: 16px; line-height: 1.6; margin: 0 0 25px 0;">
-      This letter confirms that your patient intake has been completed and your physical therapy treatment episode has been established in our clinical system.
+      This letter confirms that your patient intake has been completed and your rehabilitative care treatment episode has been established in our clinical system.
     </p>
     
     <div style="background-color: #f3f4f6; border-radius: 8px; padding: 25px; margin: 25px 0;">
@@ -540,7 +540,7 @@ export function EmailTemplateGallery({ onSelectTemplate }: EmailTemplateGalleryP
                               .replace(/\{\{patient_name\}\}/g, "John Doe")
                               .replace(/\{\{clinician_name\}\}/g, "Dr. Sarah Smith")
                               .replace(/\{\{episode_id\}\}/g, "EP-2025-001")
-                              .replace(/\{\{clinic_name\}\}/g, "Acme Physical Therapy")
+                              .replace(/\{\{clinic_name\}\}/g, "Acme Rehabilitative Medicine")
                               .replace(/\{\{clinic_phone\}\}/g, "(555) 123-4567")
                               .replace(/\{\{clinic_email\}\}/g, "info@acmept.com")
                           }}

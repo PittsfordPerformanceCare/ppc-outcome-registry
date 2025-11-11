@@ -137,7 +137,7 @@ export default function PatientWelcome() {
               PPC Patient Hub
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Your personal companion for tracking physical therapy progress, celebrating milestones, 
+              Your personal companion for tracking rehabilitative care progress, celebrating milestones, 
               and achieving your recovery goals
             </p>
           </div>
@@ -236,7 +236,7 @@ export default function PatientWelcome() {
             <h3 className="text-2xl font-bold">Ready to Start Your Journey?</h3>
             <p className="text-muted-foreground max-w-xl mx-auto">
               Join thousands of patients who are successfully tracking their recovery and achieving 
-              their physical therapy goals with PPC Patient Hub
+              their rehabilitative care goals with PPC Patient Hub
             </p>
             <Button 
               size="lg" 

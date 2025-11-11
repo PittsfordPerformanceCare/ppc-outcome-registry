@@ -117,7 +117,7 @@ const handler = async (req: Request): Promise<Response> => {
               <div class="impact">
                 <h3 style="color: #1f2937; margin-top: 0;">Your Impact</h3>
                 <p style="margin: 0; color: #4b5563;">
-                  Thanks to your recommendations, <strong>${milestoneCount} people</strong> have discovered quality physical therapy care at ${clinicName}. Each person you've referred is now on their own recovery journey, and that's something truly special.
+                  Thanks to your recommendations, <strong>${milestoneCount} people</strong> have discovered quality rehabilitative care at ${clinicName}. Each person you've referred is now on their own recovery journey, and that's something truly special.
                 </p>
               </div>
 

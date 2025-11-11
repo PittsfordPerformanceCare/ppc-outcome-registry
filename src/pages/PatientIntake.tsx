@@ -1568,13 +1568,13 @@ export default function PatientIntake() {
                 <div className="bg-muted p-4 rounded-lg text-sm space-y-3 max-h-60 overflow-y-auto">
                   <p className="font-semibold">CONSENT FOR TREATMENT</p>
                   <p>
-                    I hereby request and consent to physical therapy treatment and related healthcare services. 
-                    I understand that the practice of physical therapy involves the assessment, treatment, and prevention 
+                    I hereby request and consent to chiropractic and rehabilitative care treatment and related healthcare services. 
+                    I understand that the practice of rehabilitative medicine involves the assessment, treatment, and prevention
                     of physical impairments, functional limitations, and disabilities.
                   </p>
                   <p>
                     I understand that various forms of treatment may be used during my care, including but not limited to: 
-                    manual therapy, therapeutic exercise, modalities (heat, cold, electrical stimulation), and other interventions 
+                    spinal adjustments, manual therapy, therapeutic exercise, modalities (heat, cold, electrical stimulation), and other interventions 
                     as deemed appropriate by my healthcare provider.
                   </p>
                   <p>

@@ -122,7 +122,7 @@ const handler = async (req: Request): Promise<Response> => {
           .select("clinic_name, phone")
           .single();
 
-        const clinicName = clinicSettings?.clinic_name || "Physical Therapy Clinic";
+        const clinicName = clinicSettings?.clinic_name || "Rehabilitative Care Clinic";
         const clinicPhone = clinicSettings?.phone || "";
 
         // Build HTML email

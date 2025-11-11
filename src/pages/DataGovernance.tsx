@@ -120,7 +120,7 @@ const DataGovernance = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />
-                    <span><strong>Purpose Limitation:</strong> Data used solely for physical therapy outcomes, care coordination, and authorized research</span>
+                    <span><strong>Purpose Limitation:</strong> Data used solely for rehabilitative care outcomes, care coordination, and authorized research</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-600 flex-shrink-0" />

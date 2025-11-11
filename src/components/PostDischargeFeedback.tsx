@@ -198,7 +198,7 @@ export default function PostDischargeFeedback({
               Share as testimonial
             </Label>
             <p className="text-xs text-muted-foreground">
-              Allow us to use your feedback (anonymously) to help others understand the benefits of physical therapy
+              Allow us to use your feedback (anonymously) to help others understand the benefits of rehabilitative care
             </p>
           </div>
         </div>

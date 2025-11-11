@@ -52,8 +52,8 @@ export default function AddToCalendarButton({
   const startDate = getStartDateTime();
   const endDate = addHours(startDate, 1); // Default 1-hour appointment
 
-  const eventTitle = `Physical Therapy - ${treatmentArea}`;
-  const eventDescription = `Physical therapy appointment with ${clinicName}${
+  const eventTitle = `Rehabilitative Care - ${treatmentArea}`;
+  const eventDescription = `Rehabilitative care appointment with ${clinicName}${
     clinicianName ? `\n\nYour clinician: ${clinicianName}` : ""
   }\n\nPatient: ${patientName}\nTreatment Area: ${treatmentArea}\n\nPlease arrive 10 minutes early for check-in.`;
 

@@ -532,7 +532,7 @@ export default function PatientDashboard() {
               <CardHeader>
                 <CardTitle>Your Treatment Episodes</CardTitle>
                 <CardDescription>
-                  View and track your physical therapy episodes
+                  View and track your rehabilitative care episodes
                 </CardDescription>
               </CardHeader>
               <CardContent>

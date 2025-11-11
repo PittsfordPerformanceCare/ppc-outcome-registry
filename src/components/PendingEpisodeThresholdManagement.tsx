@@ -123,7 +123,7 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
       const headers = ["Clinic ID", "Clinic Name", "Warning Days", "Critical Days"];
       const examples = [
         ["GLOBAL", "Global Default", "30", "60"],
-        ["clinic-uuid-123", "Downtown Physical Therapy", "21", "45"],
+        ["clinic-uuid-123", "Downtown Rehabilitative Medicine", "21", "45"],
         ["clinic-uuid-456", "Sports Medicine Center", "14", "30"],
       ];
       

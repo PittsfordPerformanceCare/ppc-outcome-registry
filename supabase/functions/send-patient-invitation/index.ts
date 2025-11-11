@@ -114,11 +114,11 @@ const handler = async (req: Request): Promise<Response> => {
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 Access Your Physical Therapy Records</h1>
+              <h1>🏥 Access Your Rehabilitative Care Records</h1>
             </div>
             <div class="content">
               <h2>Hello ${patientName}!</h2>
-              <p>You've been invited to access your physical therapy episode records${clinicName ? ` from ${clinicName}` : ''}.</p>
+              <p>You've been invited to access your rehabilitative care episode records${clinicName ? ` from ${clinicName}` : ''}.</p>
               
               <p><strong>Episode Details:</strong></p>
               <ul>
@@ -151,9 +151,9 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const { data: emailData, error: emailError } = await resend.emails.send({
-      from: clinicName ? `${clinicName} <onboarding@resend.dev>` : "Physical Therapy Portal <onboarding@resend.dev>",
+      from: clinicName ? `${clinicName} <onboarding@resend.dev>` : "Rehabilitative Care Portal <onboarding@resend.dev>",
       to: [patientEmail],
-      subject: "Access Your Physical Therapy Records",
+      subject: "Access Your Rehabilitative Care Records",
       html: emailHtml,
     });
 

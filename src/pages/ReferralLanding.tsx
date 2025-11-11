@@ -92,7 +92,7 @@ const ReferralLanding = () => {
           <p className="text-xl text-muted-foreground mb-8">
             {referrerName 
               ? `We're here to provide the same quality care that ${referrerName} experienced.`
-              : "Start your path to better health with expert physical therapy care."
+              : "Start your path to better health with expert rehabilitative care."
             }
           </p>
         </div>
@@ -107,7 +107,7 @@ const ReferralLanding = () => {
               <div>
                 <h3 className="font-semibold mb-2">Expert Care Team</h3>
                 <p className="text-sm text-muted-foreground">
-                  Work with licensed physical therapists who specialize in your condition
+                  Work with licensed rehabilitative specialists who specialize in your condition
                 </p>
               </div>
             </div>

@@ -175,7 +175,7 @@ const handler = async (req: Request): Promise<Response> => {
           // Get custom templates or use defaults
           let emailSubject = clinicSettings?.email_subject 
             ? replacePlaceholders(clinicSettings.email_subject)
-            : 'Your Physical Therapy Episode Has Been Created';
+            : 'Your Rehabilitative Care Episode Has Been Created';
           
           // Add TEST prefix for test emails
           if (isTest) {
@@ -194,7 +194,7 @@ const handler = async (req: Request): Promise<Response> => {
                     <p style="font-size: 16px; line-height: 1.6; color: #374151;">Dear <strong>{{patient_name}}</strong>,</p>
                     
                     <p style="font-size: 16px; line-height: 1.6; color: #374151;">
-                      Great news! Your intake form has been reviewed and approved. Your physical therapy episode has been successfully created, and we're excited to begin your journey to recovery.
+                      Great news! Your intake form has been reviewed and approved. Your rehabilitative care episode has been successfully created, and we're excited to begin your journey to recovery.
                     </p>
                     
                     <div style="background-color: #ffffff; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #a51c30;">

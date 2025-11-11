@@ -68,7 +68,7 @@ const handler = async (req: Request): Promise<Response> => {
               <div class="highlight-box">
                 <h2 style="margin-top: 0; color: #0EA5E9;">You're a Perfect Fit!</h2>
                 <p style="font-size: 16px; margin: 0;">
-                  <strong>${clinicianName}</strong> has reviewed your intake form and you're an excellent candidate for our physical therapy program at <strong>${finalClinicName}</strong>.
+                  <strong>${clinicianName}</strong> has reviewed your intake form and you're an excellent candidate for our rehabilitative care program at <strong>${finalClinicName}</strong>.
                 </p>
               </div>
 
@@ -79,7 +79,7 @@ const handler = async (req: Request): Promise<Response> => {
                     <li>We'll contact you within 24 hours to schedule your first appointment</li>
                     <li>Bring your insurance card and ID to your first visit</li>
                     <li>Wear comfortable clothing you can move in</li>
-                    <li>Be ready to discuss your treatment goals with your therapist</li>
+                    <li>Be ready to discuss your treatment goals with your provider</li>
                   </ul>
                 `}
               </div>

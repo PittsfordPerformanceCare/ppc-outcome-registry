@@ -63,7 +63,7 @@ export default function ShareProgress({ episodeId, patientName }: ShareProgressP
       });
 
       // Generate summary text
-      let summary = `🎯 Physical Therapy Progress Summary\n\n`;
+      let summary = `🎯 Rehabilitative Care Progress Summary\n\n`;
       summary += `Patient: ${patientName}\n`;
       summary += `Treatment Area: ${episode.region}\n`;
       if (episode.diagnosis) summary += `Diagnosis: ${episode.diagnosis}\n`;
@@ -102,7 +102,7 @@ export default function ShareProgress({ episodeId, patientName }: ShareProgressP
     if (summary && navigator.share) {
       try {
         await navigator.share({
-          title: "My Physical Therapy Progress",
+          title: "My Rehabilitative Care Progress",
           text: summary,
         });
       } catch (error) {

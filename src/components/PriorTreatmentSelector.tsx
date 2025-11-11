@@ -12,7 +12,7 @@ export const PRIOR_TREATMENTS_12 = [
   "Muscle relaxant",
   "Oral steroid dose pack",
   "Corticosteroid injection",
-  "Physical therapy (PT)",
+  "Chiropractic care",
   "Chiropractic care",
   "Massage therapy",
   "Acupuncture",

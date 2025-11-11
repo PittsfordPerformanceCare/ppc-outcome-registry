@@ -159,7 +159,7 @@ const handler = async (req: Request): Promise<Response> => {
           // Get custom templates or use defaults
           let emailSubject = clinicSettings?.discharge_email_subject 
             ? replacePlaceholders(clinicSettings.discharge_email_subject)
-            : 'Congratulations on Completing Your Physical Therapy!';
+            : 'Congratulations on Completing Your Rehabilitative Care!';
           
           let emailHtml = clinicSettings?.discharge_email_template
             ? replacePlaceholders(clinicSettings.discharge_email_template)
@@ -173,7 +173,7 @@ const handler = async (req: Request): Promise<Response> => {
                     <p style="font-size: 16px; line-height: 1.6; color: #374151;">Dear <strong>{{patient_name}}</strong>,</p>
                     
                     <p style="font-size: 16px; line-height: 1.6; color: #374151;">
-                      Congratulations on completing your physical therapy treatment with {{clinic_name}}! We are incredibly proud of your dedication and the progress you've made throughout your recovery journey.
+                      Congratulations on completing your rehabilitative care treatment with {{clinic_name}}! We are incredibly proud of your dedication and the progress you've made throughout your recovery journey.
                     </p>
                     
                     <div style="background-color: #ffffff; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #16a34a;">

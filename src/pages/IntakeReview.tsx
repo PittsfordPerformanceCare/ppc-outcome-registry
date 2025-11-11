@@ -119,7 +119,7 @@ export default function IntakeReview() {
             intakeFormId: form.id,
             patientEmail: form.email,
             patientName: form.patient_name,
-            clinicianName: profile?.clinician_name || "Your therapist",
+            clinicianName: profile?.clinician_name || "Your provider",
           },
         });
       } catch (error) {

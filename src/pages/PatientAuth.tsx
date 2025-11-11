@@ -253,7 +253,7 @@ export default function PatientAuth() {
           </div>
           <CardTitle className="text-2xl">Patient Portal</CardTitle>
           <CardDescription>
-            Access your physical therapy records and track your progress
+            Access your rehabilitative care records and track your progress
           </CardDescription>
         </CardHeader>
         <CardContent>

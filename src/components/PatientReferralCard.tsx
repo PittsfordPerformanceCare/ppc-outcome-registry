@@ -97,8 +97,8 @@ const PatientReferralCard = ({ patientId }: PatientReferralCardProps) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Join me at PPC Physical Therapy!",
-          text: "I've had a great experience with PPC Physical Therapy. Check them out!",
+          title: "Join me at PPC Rehabilitative Medicine!",
+          text: "I've had a great experience with PPC Rehabilitative Medicine. Check them out!",
           url: referralLink,
         });
       } catch (error) {

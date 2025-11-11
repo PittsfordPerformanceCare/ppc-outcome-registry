@@ -61,7 +61,7 @@ const Index = () => {
               Transform Patient Outcomes
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
-              Comprehensive outcome tracking and analytics for physical therapy clinics and their patients
+              Comprehensive outcome tracking and analytics for rehabilitative medicine clinics and their patients
             </p>
           </div>
 
@@ -181,7 +181,7 @@ const Index = () => {
               Ready to Get Started?
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Join physical therapy clinics improving patient outcomes through data-driven insights
+              Join rehabilitative medicine clinics improving patient outcomes through data-driven insights
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
               <Button 

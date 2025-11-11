@@ -254,7 +254,7 @@ async function sendReminderNotification(
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
                 <h1 style="color: #2563eb;">Appointment Reminder</h1>
                 <p>Dear {{patient_name}},</p>
-                <p>This is a friendly reminder about your upcoming physical therapy appointment.</p>
+                <p>This is a friendly reminder about your upcoming rehabilitative care appointment.</p>
                 <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
                   <h2 style="color: #1f2937; margin-top: 0;">Appointment Details</h2>
                   <p><strong>Date:</strong> {{appointment_date}}</p>
