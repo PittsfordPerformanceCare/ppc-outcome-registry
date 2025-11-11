@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -158,6 +159,7 @@ const intakeFormSchema = z.object({
 type IntakeFormValues = z.infer<typeof intakeFormSchema>;
 
 export default function PatientIntake() {
+  const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
   const [accessCode, setAccessCode] = useState("");
   const [submittedComplaints, setSubmittedComplaints] = useState<z.infer<typeof complaintSchema>[]>([]);
@@ -656,6 +658,15 @@ export default function PatientIntake() {
                 Print Summary
               </Button>
             </div>
+
+            <Button 
+              onClick={() => navigate("/")} 
+              className="w-full print:hidden"
+              variant="secondary"
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Return to Home
+            </Button>
           </CardContent>
         </Card>
       </div>
