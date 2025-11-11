@@ -449,12 +449,12 @@ export function ZapierWebhookConfig() {
         )}
       </TabsContent>
 
-      <TabsContent value="retry">
-        <WebhookRetryQueue />
-      </TabsContent>
-
       <TabsContent value="activity">
         <WebhookActivityLog />
+      </TabsContent>
+
+      <TabsContent value="retry">
+        <WebhookRetryQueue />
       </TabsContent>
     </Tabs>
   );
