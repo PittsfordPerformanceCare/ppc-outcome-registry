@@ -144,7 +144,13 @@ export default function PatientAuth() {
         description: "Redirecting to your dashboard...",
       });
 
-      navigate("/patient-dashboard");
+      // Check if first time user
+      const hasSeenWelcome = localStorage.getItem("ppc_patient_welcome_seen");
+      if (!hasSeenWelcome) {
+        navigate("/patient-welcome");
+      } else {
+        navigate("/patient-dashboard");
+      }
     } catch (error: any) {
       toast({
         title: "Sign In Failed",

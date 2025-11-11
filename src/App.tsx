@@ -36,6 +36,7 @@ import ExportHistory from "./pages/ExportHistory";
 import ReferralAnalytics from "./pages/ReferralAnalytics";
 import AutomationStatus from "./pages/AutomationStatus";
 import ClinicianInbox from "./pages/ClinicianInbox";
+import PatientWelcome from "./pages/PatientWelcome";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,10 @@ const App = () => (
         <Routes>
           <Route path="/auth" element={<Auth />} />
           <Route path="/patient-auth" element={<PatientAuth />} />
+          <Route path="/patient-welcome" element={<PatientWelcome />} />
+          <Route path="/patient-dashboard" element={<PatientDashboard />} />
+          <Route path="/patient-episode/:id" element={<PatientEpisodeView />} />
+          <Route path="/patient-preferences" element={<PatientNotificationPreferences />} />
           <Route path="/patient-intake" element={<PatientIntake />} />
           <Route path="/intake-start" element={<IntakeStart />} />
           <Route path="/referral/:referralCode" element={<ReferralLanding />} />

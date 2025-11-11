@@ -164,6 +164,13 @@ export default function PatientDashboard() {
       return;
     }
 
+    // Check if this is first time user
+    const hasSeenWelcome = localStorage.getItem("ppc_patient_welcome_seen");
+    if (!hasSeenWelcome) {
+      navigate("/patient-welcome");
+      return;
+    }
+
     await loadPatientData(session.user.id);
   };
 
