@@ -424,10 +424,16 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
                             {duplicateEpisodes.map((episode, idx) => (
                               <div
                                 key={episode.id}
-                                className="rounded-md bg-background/80 p-3 text-foreground space-y-1.5"
+                                onClick={() => {
+                                  // Open episode in new window to avoid losing conversion dialog
+                                  window.open(`/episode-summary?id=${episode.id}`, '_blank');
+                                }}
+                                className="rounded-md bg-background/80 p-3 text-foreground space-y-1.5 cursor-pointer hover:bg-background hover:ring-2 hover:ring-primary/50 transition-all"
                               >
                                 <div className="flex items-center justify-between">
-                                  <span className="font-medium text-sm">{episode.id}</span>
+                                  <span className="font-medium text-sm hover:text-primary transition-colors">
+                                    {episode.id}
+                                  </span>
                                   {!episode.discharge_date ? (
                                     <Badge variant="default" className="text-xs">Active</Badge>
                                   ) : (
@@ -456,6 +462,10 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
                                   {episode.clinician && (
                                     <div><span className="text-muted-foreground">Clinician:</span> {episode.clinician}</div>
                                   )}
+                                </div>
+                                <div className="text-xs text-primary/80 font-medium pt-1 flex items-center gap-1">
+                                  <Activity className="h-3 w-3" />
+                                  Click to view episode details
                                 </div>
                               </div>
                             ))}
