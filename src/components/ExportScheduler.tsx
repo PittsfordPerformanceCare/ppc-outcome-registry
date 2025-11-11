@@ -21,6 +21,7 @@ import jsPDF from "jspdf";
 import { ComparisonReportScheduler } from "./ComparisonReportScheduler";
 import { ComparisonReportAnalytics } from "./ComparisonReportAnalytics";
 import { RecipientEngagementAnalytics } from "./RecipientEngagementAnalytics";
+import { EngagementReportScheduler } from "./EngagementReportScheduler";
 
 interface ScheduledExport {
   id: string;
@@ -1456,6 +1457,8 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
               <ComparisonReportAnalytics />
               
               <RecipientEngagementAnalytics />
+              
+              <EngagementReportScheduler />
               
               <ComparisonReportScheduler
                 availableExports={exports.map(exp => ({ id: exp.id, name: exp.name }))}

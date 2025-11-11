@@ -1191,6 +1191,57 @@ export type Database = {
           },
         ]
       }
+      recipient_engagement_schedules: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          enabled: boolean
+          frequency: string
+          id: string
+          last_sent_at: string | null
+          min_engagement_filter: string | null
+          name: string
+          next_send_at: string
+          recipient_emails: string[]
+          send_day: string
+          send_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          frequency: string
+          id?: string
+          last_sent_at?: string | null
+          min_engagement_filter?: string | null
+          name: string
+          next_send_at: string
+          recipient_emails: string[]
+          send_day: string
+          send_time?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          frequency?: string
+          id?: string
+          last_sent_at?: string | null
+          min_engagement_filter?: string | null
+          name?: string
+          next_send_at?: string
+          recipient_emails?: string[]
+          send_day?: string
+          send_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       scheduled_exports: {
         Row: {
           clinic_id: string | null
