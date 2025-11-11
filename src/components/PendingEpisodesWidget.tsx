@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, AlertCircle, User, FileText, Filter, X, ArrowUpDown } from "lucide-react";
+import { Calendar, AlertCircle, User, FileText, Filter, X, ArrowUpDown, TrendingUp, Clock, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 
@@ -149,6 +149,42 @@ export function PendingEpisodesWidget() {
     setFilterPriority("all");
     setSortBy("priority-asc");
   };
+
+  // Calculate statistics
+  const statistics = useMemo(() => {
+    const pending = pendingEpisodes.filter(ep => ep.status === "pending");
+    const deferred = pendingEpisodes.filter(ep => ep.status === "deferred");
+    
+    // Calculate average days pending
+    const now = new Date();
+    const totalDays = pending.reduce((sum, ep) => {
+      const createdDate = new Date(ep.created_at);
+      const daysPending = Math.floor((now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+      return sum + daysPending;
+    }, 0);
+    const avgDaysPending = pending.length > 0 ? Math.round(totalDays / pending.length) : 0;
+    
+    // Find oldest pending complaint
+    const oldestPending = pending.length > 0 
+      ? pending.reduce((oldest, ep) => {
+          const epDate = new Date(ep.created_at);
+          const oldestDate = new Date(oldest.created_at);
+          return epDate < oldestDate ? ep : oldest;
+        })
+      : null;
+    
+    const oldestDays = oldestPending 
+      ? Math.floor((now.getTime() - new Date(oldestPending.created_at).getTime()) / (1000 * 60 * 60 * 24))
+      : 0;
+    
+    return {
+      totalPending: pending.length,
+      totalDeferred: deferred.length,
+      avgDaysPending,
+      oldestPending,
+      oldestDays,
+    };
+  }, [pendingEpisodes]);
 
   const handleViewDischarge = (episodeId: string) => {
     navigate(`/discharge?episode=${episodeId}`);
@@ -321,6 +357,74 @@ export function PendingEpisodesWidget() {
         </div>
       </CardHeader>
       <CardContent>
+        {/* Statistics Panel */}
+        {!noEpisodes && (
+          <div className="grid gap-4 sm:grid-cols-3 mb-6">
+            <Card className="border-primary/20">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Pending vs Deferred</p>
+                    <div className="flex items-baseline gap-2 mt-2">
+                      <p className="text-3xl font-bold text-primary">{statistics.totalPending}</p>
+                      <span className="text-muted-foreground">/</span>
+                      <p className="text-xl font-semibold text-muted-foreground">{statistics.totalDeferred}</p>
+                    </div>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <TrendingUp className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-blue-500/20">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Avg Days Pending</p>
+                    <div className="flex items-baseline gap-2 mt-2">
+                      <p className="text-3xl font-bold text-blue-500">{statistics.avgDaysPending}</p>
+                      <span className="text-sm text-muted-foreground">days</span>
+                    </div>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
+                    <Clock className="h-6 w-6 text-blue-500" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-warning/20">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Oldest Pending</p>
+                    <div className="flex items-baseline gap-2 mt-2">
+                      {statistics.oldestPending ? (
+                        <>
+                          <p className="text-3xl font-bold text-warning">{statistics.oldestDays}</p>
+                          <span className="text-sm text-muted-foreground">days</span>
+                        </>
+                      ) : (
+                        <p className="text-2xl font-semibold text-muted-foreground">N/A</p>
+                      )}
+                    </div>
+                    {statistics.oldestPending && (
+                      <p className="text-xs text-muted-foreground mt-1 truncate">
+                        {statistics.oldestPending.patient_name}
+                      </p>
+                    )}
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-warning/10 flex items-center justify-center">
+                    <AlertTriangle className="h-6 w-6 text-warning" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {noEpisodes && (
           <Alert>
             <AlertDescription className="flex items-center gap-2">
