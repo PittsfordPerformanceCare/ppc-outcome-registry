@@ -14,9 +14,11 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Settings, AlertCircle, Save } from "lucide-react";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
 
 interface ThresholdSettings {
   id: string;
+  clinic_id: string | null;
   warning_days: number;
   critical_days: number;
 }
@@ -25,7 +27,10 @@ export function PendingEpisodeThresholdSettings() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [thresholds, setThresholds] = useState<ThresholdSettings | null>(null);
+  const [clinicId, setClinicId] = useState<string | null>(null);
+  const [globalThresholds, setGlobalThresholds] = useState<ThresholdSettings | null>(null);
+  const [clinicThresholds, setClinicThresholds] = useState<ThresholdSettings | null>(null);
+  const [useClinicSpecific, setUseClinicSpecific] = useState(false);
   const [warningDays, setWarningDays] = useState(30);
   const [criticalDays, setCriticalDays] = useState(60);
   const [error, setError] = useState("");
@@ -45,6 +50,16 @@ export function PendingEpisodeThresholdSettings() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("clinic_id")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        setClinicId(profile.clinic_id);
+      }
+
       const { data } = await supabase
         .from("user_roles")
         .select()
@@ -61,18 +76,38 @@ export function PendingEpisodeThresholdSettings() {
   const loadThresholds = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Load global thresholds
+      const { data: globalData } = await supabase
         .from("pending_episode_thresholds")
         .select("*")
         .is("clinic_id", null)
         .single();
 
-      if (error) throw error;
+      if (globalData) {
+        setGlobalThresholds(globalData);
+      }
 
-      if (data) {
-        setThresholds(data);
-        setWarningDays(data.warning_days);
-        setCriticalDays(data.critical_days);
+      // Load clinic-specific thresholds if user has a clinic
+      if (clinicId) {
+        const { data: clinicData } = await supabase
+          .from("pending_episode_thresholds")
+          .select("*")
+          .eq("clinic_id", clinicId)
+          .maybeSingle();
+
+        if (clinicData) {
+          setClinicThresholds(clinicData);
+          setUseClinicSpecific(true);
+          setWarningDays(clinicData.warning_days);
+          setCriticalDays(clinicData.critical_days);
+        } else if (globalData) {
+          setWarningDays(globalData.warning_days);
+          setCriticalDays(globalData.critical_days);
+        }
+      } else if (globalData) {
+        setWarningDays(globalData.warning_days);
+        setCriticalDays(globalData.critical_days);
       }
     } catch (error: any) {
       console.error("Error loading thresholds:", error);
@@ -109,17 +144,53 @@ export function PendingEpisodeThresholdSettings() {
     try {
       setLoading(true);
 
-      const { error } = await supabase
-        .from("pending_episode_thresholds")
-        .update({
-          warning_days: warningDays,
-          critical_days: criticalDays,
-        })
-        .eq("id", thresholds?.id);
+      const targetClinicId = useClinicSpecific ? clinicId : null;
 
-      if (error) throw error;
+      if (useClinicSpecific && clinicThresholds) {
+        // Update existing clinic-specific thresholds
+        const { error } = await supabase
+          .from("pending_episode_thresholds")
+          .update({
+            warning_days: warningDays,
+            critical_days: criticalDays,
+          })
+          .eq("id", clinicThresholds.id);
+
+        if (error) throw error;
+      } else if (useClinicSpecific && !clinicThresholds && clinicId) {
+        // Create new clinic-specific thresholds
+        const { error } = await supabase
+          .from("pending_episode_thresholds")
+          .insert({
+            clinic_id: clinicId,
+            warning_days: warningDays,
+            critical_days: criticalDays,
+          });
+
+        if (error) throw error;
+      } else if (!useClinicSpecific && clinicThresholds) {
+        // Delete clinic-specific thresholds to revert to global
+        const { error } = await supabase
+          .from("pending_episode_thresholds")
+          .delete()
+          .eq("id", clinicThresholds.id);
+
+        if (error) throw error;
+      } else if (!useClinicSpecific && globalThresholds) {
+        // Update global thresholds
+        const { error } = await supabase
+          .from("pending_episode_thresholds")
+          .update({
+            warning_days: warningDays,
+            critical_days: criticalDays,
+          })
+          .eq("id", globalThresholds.id);
+
+        if (error) throw error;
+      }
 
       toast.success("Threshold settings updated successfully");
+      await loadThresholds();
       setOpen(false);
     } catch (error: any) {
       console.error("Error saving thresholds:", error);
@@ -156,6 +227,42 @@ export function PendingEpisodeThresholdSettings() {
               Episodes pending longer than these thresholds will be highlighted with visual indicators.
             </AlertDescription>
           </Alert>
+
+          {clinicId && (
+            <div className="flex items-center justify-between space-x-2 rounded-lg border border-border p-3 bg-muted/50">
+              <div className="space-y-0.5">
+                <Label htmlFor="clinic-override" className="text-sm font-medium">
+                  Clinic-Specific Override
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Use custom thresholds for your clinic instead of global defaults
+                </p>
+              </div>
+              <Switch
+                id="clinic-override"
+                checked={useClinicSpecific}
+                onCheckedChange={(checked) => {
+                  setUseClinicSpecific(checked);
+                  if (checked && clinicThresholds) {
+                    setWarningDays(clinicThresholds.warning_days);
+                    setCriticalDays(clinicThresholds.critical_days);
+                  } else if (!checked && globalThresholds) {
+                    setWarningDays(globalThresholds.warning_days);
+                    setCriticalDays(globalThresholds.critical_days);
+                  }
+                }}
+              />
+            </div>
+          )}
+
+          {useClinicSpecific && clinicId && (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-xs">
+                These settings will only apply to your clinic. Other clinics will use the global defaults.
+              </AlertDescription>
+            </Alert>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="warningDays">Warning Threshold (days)</Label>

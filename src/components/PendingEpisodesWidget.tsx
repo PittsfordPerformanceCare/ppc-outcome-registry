@@ -103,17 +103,42 @@ export function PendingEpisodesWidget() {
 
   const loadThresholds = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("clinic_id")
+        .eq("id", user.id)
+        .single();
+
+      const clinicId = profile?.clinic_id;
+
+      // Try to load clinic-specific thresholds first
+      if (clinicId) {
+        const { data: clinicData } = await supabase
+          .from("pending_episode_thresholds")
+          .select("warning_days, critical_days")
+          .eq("clinic_id", clinicId)
+          .maybeSingle();
+
+        if (clinicData) {
+          setThresholdWarning(clinicData.warning_days);
+          setThresholdCritical(clinicData.critical_days);
+          return;
+        }
+      }
+
+      // Fall back to global thresholds
+      const { data: globalData } = await supabase
         .from("pending_episode_thresholds")
-        .select("*")
+        .select("warning_days, critical_days")
         .is("clinic_id", null)
-        .maybeSingle();
+        .single();
 
-      if (error) throw error;
-
-      if (data) {
-        setThresholdWarning(data.warning_days);
-        setThresholdCritical(data.critical_days);
+      if (globalData) {
+        setThresholdWarning(globalData.warning_days);
+        setThresholdCritical(globalData.critical_days);
       }
     } catch (error) {
       console.error("Error loading thresholds:", error);
