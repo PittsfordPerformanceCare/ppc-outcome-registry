@@ -3,8 +3,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { ExternalLink, Award, TrendingUp, TrendingDown } from "lucide-react";
+import { ExternalLink, Award, TrendingUp, TrendingDown, Download, FileSpreadsheet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { convertToCSV, convertToExcel, downloadCSV, downloadExcel, generateExportFilename } from "@/lib/exportUtils";
+import { toast } from "sonner";
 
 interface Episode {
   id: string;
@@ -42,6 +44,32 @@ export function MetricDrillDownDialog({
   const handleViewEpisode = (episodeId: string) => {
     navigate(`/episode-summary?id=${episodeId}`);
     onOpenChange(false);
+  };
+
+  const handleExportCSV = () => {
+    try {
+      const includeScores = metricType === 'mcid' || metricType === 'outcome';
+      const csvContent = convertToCSV(episodes, includeScores);
+      const filename = generateExportFilename(title, 'csv');
+      downloadCSV(csvContent, filename);
+      toast.success(`Exported ${episodes.length} episodes to CSV`);
+    } catch (error) {
+      console.error('Error exporting to CSV:', error);
+      toast.error('Failed to export data to CSV');
+    }
+  };
+
+  const handleExportExcel = () => {
+    try {
+      const includeScores = metricType === 'mcid' || metricType === 'outcome';
+      const excelContent = convertToExcel(episodes, includeScores);
+      const filename = generateExportFilename(title, 'xls');
+      downloadExcel(excelContent, filename);
+      toast.success(`Exported ${episodes.length} episodes to Excel`);
+    } catch (error) {
+      console.error('Error exporting to Excel:', error);
+      toast.error('Failed to export data to Excel');
+    }
   };
 
   const renderMCIDIndicator = (episode: Episode) => {
@@ -181,13 +209,39 @@ export function MetricDrillDownDialog({
           )}
         </div>
         
-        <div className="flex items-center justify-between pt-4 border-t">
-          <p className="text-sm text-muted-foreground">
-            Showing {episodes.length} {episodes.length === 1 ? 'episode' : 'episodes'}
-          </p>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Close
-          </Button>
+        <div className="flex items-center justify-between pt-4 border-t gap-4">
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-muted-foreground">
+              Showing {episodes.length} {episodes.length === 1 ? 'episode' : 'episodes'}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {episodes.length > 0 && (
+              <>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleExportCSV}
+                  className="gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Export CSV
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleExportExcel}
+                  className="gap-2"
+                >
+                  <FileSpreadsheet className="h-4 w-4" />
+                  Export Excel
+                </Button>
+              </>
+            )}
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Close
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
