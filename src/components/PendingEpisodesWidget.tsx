@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, AlertCircle, User, FileText, Filter, X } from "lucide-react";
+import { Calendar, AlertCircle, User, FileText, Filter, X, ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 
@@ -31,6 +31,7 @@ export function PendingEpisodesWidget() {
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterPatientName, setFilterPatientName] = useState("");
   const [filterPriority, setFilterPriority] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("priority-asc");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -75,9 +76,10 @@ export function PendingEpisodesWidget() {
     }
   };
 
-  // Filter episodes based on filter criteria
-  const filteredEpisodes = useMemo(() => {
-    return pendingEpisodes.filter(episode => {
+  // Filter and sort episodes
+  const filteredAndSortedEpisodes = useMemo(() => {
+    // First filter
+    const filtered = pendingEpisodes.filter(episode => {
       // Status filter
       if (filterStatus !== "all" && episode.status !== filterStatus) {
         return false;
@@ -98,12 +100,34 @@ export function PendingEpisodesWidget() {
 
       return true;
     });
-  }, [pendingEpisodes, filterStatus, filterPatientName, filterPriority]);
 
-  const pendingCount = filteredEpisodes.filter(ep => ep.status === "pending").length;
-  const deferredCount = filteredEpisodes.filter(ep => ep.status === "deferred").length;
+    // Then sort
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case "priority-asc":
+          return a.complaint_priority - b.complaint_priority;
+        case "priority-desc":
+          return b.complaint_priority - a.complaint_priority;
+        case "date-newest":
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        case "date-oldest":
+          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "name-asc":
+          return a.patient_name.localeCompare(b.patient_name);
+        case "name-desc":
+          return b.patient_name.localeCompare(a.patient_name);
+        default:
+          return 0;
+      }
+    });
 
-  const groupedByPatient = filteredEpisodes.reduce((acc, episode) => {
+    return sorted;
+  }, [pendingEpisodes, filterStatus, filterPatientName, filterPriority, sortBy]);
+
+  const pendingCount = filteredAndSortedEpisodes.filter(ep => ep.status === "pending").length;
+  const deferredCount = filteredAndSortedEpisodes.filter(ep => ep.status === "deferred").length;
+
+  const groupedByPatient = filteredAndSortedEpisodes.reduce((acc, episode) => {
     if (!acc[episode.patient_name]) {
       acc[episode.patient_name] = [];
     }
@@ -123,6 +147,7 @@ export function PendingEpisodesWidget() {
     setFilterStatus("all");
     setFilterPatientName("");
     setFilterPriority("all");
+    setSortBy("priority-asc");
   };
 
   const handleViewDischarge = (episodeId: string) => {
@@ -148,7 +173,7 @@ export function PendingEpisodesWidget() {
   }
 
   const noEpisodes = pendingEpisodes.length === 0;
-  const noFilteredResults = filteredEpisodes.length === 0 && !noEpisodes;
+  const noFilteredResults = filteredAndSortedEpisodes.length === 0 && !noEpisodes;
 
   return (
     <Card>
@@ -187,10 +212,10 @@ export function PendingEpisodesWidget() {
             </div>
           </div>
 
-          {/* Filter Controls */}
+          {/* Filter & Sort Controls */}
           {showFilters && !noEpisodes && (
             <div className="space-y-3 border-t pt-4">
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-4">
                 <div>
                   <label className="text-sm font-medium mb-2 block">Status</label>
                   <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -231,6 +256,53 @@ export function PendingEpisodesWidget() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Sort By</label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="bg-background">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover">
+                      <SelectItem value="priority-asc">
+                        <span className="flex items-center gap-2">
+                          <ArrowUpDown className="h-3 w-3" />
+                          Priority (Low to High)
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="priority-desc">
+                        <span className="flex items-center gap-2">
+                          <ArrowUpDown className="h-3 w-3" />
+                          Priority (High to Low)
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="date-newest">
+                        <span className="flex items-center gap-2">
+                          <ArrowUpDown className="h-3 w-3" />
+                          Date (Newest First)
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="date-oldest">
+                        <span className="flex items-center gap-2">
+                          <ArrowUpDown className="h-3 w-3" />
+                          Date (Oldest First)
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="name-asc">
+                        <span className="flex items-center gap-2">
+                          <ArrowUpDown className="h-3 w-3" />
+                          Patient Name (A-Z)
+                        </span>
+                      </SelectItem>
+                      <SelectItem value="name-desc">
+                        <span className="flex items-center gap-2">
+                          <ArrowUpDown className="h-3 w-3" />
+                          Patient Name (Z-A)
+                        </span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {hasActiveFilters && (
@@ -241,7 +313,7 @@ export function PendingEpisodesWidget() {
                   className="gap-2"
                 >
                   <X className="h-4 w-4" />
-                  Clear Filters
+                  Clear All Filters & Sorting
                 </Button>
               )}
             </div>
