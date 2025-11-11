@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useBrowserNotifications } from "@/hooks/useBrowserNotifications";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +43,7 @@ interface CallbackRequest {
 export default function ClinicianInbox() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { isEnabled: browserNotificationsEnabled, sendNotification } = useBrowserNotifications();
   const [selectedMessage, setSelectedMessage] = useState<PatientMessage | null>(null);
   const [selectedCallback, setSelectedCallback] = useState<CallbackRequest | null>(null);
   const [responseText, setResponseText] = useState("");
@@ -91,6 +93,25 @@ export default function ClinicianInbox() {
 
           const patientName = patientData?.full_name || "A patient";
           const isCallback = newMessage.message_type === "callback_request";
+
+          // Send browser notification if enabled and tab is not active
+          if (browserNotificationsEnabled) {
+            sendNotification(
+              isCallback ? "🔔 New Callback Request" : "💬 New Message",
+              {
+                body: `${patientName}${episodeInfo}\n"${newMessage.subject}"`,
+                tag: newMessage.id, // Prevents duplicate notifications
+                data: {
+                  messageId: newMessage.id,
+                  onClick: () => {
+                    // Focus the window and refresh
+                    queryClient.invalidateQueries({ queryKey: ["patient-messages"] });
+                    queryClient.invalidateQueries({ queryKey: ["callback-requests"] });
+                  },
+                },
+              }
+            );
+          }
 
           // Show toast notification with action button
           toast(
@@ -150,7 +171,7 @@ export default function ClinicianInbox() {
       supabase.removeChannel(channel);
       setRealtimeConnected(false);
     };
-  }, [user, queryClient]);
+  }, [user, queryClient, browserNotificationsEnabled, sendNotification]);
 
   // Fetch messages
   const { data: messages = [], isLoading: messagesLoading } = useQuery({

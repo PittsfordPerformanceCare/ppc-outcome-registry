@@ -2,13 +2,16 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useBrowserNotifications } from "@/hooks/useBrowserNotifications";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Bell, Mail, MessageSquare, Phone, AlertCircle } from "lucide-react";
+import { Bell, Mail, MessageSquare, Phone, AlertCircle, BellRing } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface NotificationPreferences {
   id?: string;
@@ -22,6 +25,13 @@ interface NotificationPreferences {
 export default function ClinicianNotificationSettings() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { 
+    permission: browserPermission, 
+    isSupported: browserNotificationsSupported,
+    isEnabled: browserNotificationsEnabled,
+    requestPermission 
+  } = useBrowserNotifications();
+  
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     email_enabled: true,
     notify_on_new_message: true,
@@ -118,19 +128,78 @@ export default function ClinicianNotificationSettings() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5 text-primary" />
-          Email Notification Preferences
+          Notification Preferences
         </CardTitle>
         <CardDescription>
-          Configure when you want to receive email notifications about patient messages and requests
+          Configure when and how you want to receive notifications about patient messages and requests
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Browser Notifications Section */}
+        <div className="space-y-4 rounded-lg border p-4 bg-muted/30">
+          <div className="flex items-center justify-between space-x-4">
+            <div className="flex-1 space-y-1">
+              <div className="flex items-center gap-2">
+                <BellRing className="h-4 w-4 text-primary" />
+                <Label htmlFor="browser-notifications" className="font-semibold">
+                  Browser Push Notifications
+                </Label>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Get notified even when the tab is not active
+              </p>
+            </div>
+            {browserNotificationsSupported ? (
+              <div className="flex items-center gap-2">
+                {browserPermission === "granted" && (
+                  <Badge variant="outline" className="text-green-600 border-green-600">
+                    Enabled
+                  </Badge>
+                )}
+                {browserPermission === "denied" && (
+                  <Badge variant="outline" className="text-red-600 border-red-600">
+                    Blocked
+                  </Badge>
+                )}
+                {browserPermission === "default" && (
+                  <Button onClick={requestPermission} size="sm">
+                    Enable
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <Badge variant="outline" className="text-muted-foreground">
+                Not Supported
+              </Badge>
+            )}
+          </div>
+          
+          {browserPermission === "denied" && (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Browser notifications are blocked. Please enable them in your browser settings to receive push notifications.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {browserPermission === "default" && browserNotificationsSupported && (
+            <Alert>
+              <BellRing className="h-4 w-4" />
+              <AlertDescription>
+                Enable browser notifications to get notified about new messages even when this tab is not active. You can disable them anytime in your browser settings.
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+
+        {/* Email Notifications Section */}
         <div className="flex items-center justify-between space-x-4 rounded-lg border p-4">
           <div className="flex-1 space-y-1">
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-primary" />
               <Label htmlFor="email-enabled" className="font-semibold">
-                Enable Email Notifications
+                Email Notifications
               </Label>
             </div>
             <p className="text-sm text-muted-foreground">
