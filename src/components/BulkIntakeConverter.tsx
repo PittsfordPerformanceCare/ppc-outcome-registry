@@ -5,6 +5,7 @@ import { createEpisode } from "@/lib/dbOperations";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { ValidatedIntake, IntakeBulkValidationResult } from "@/lib/bulkIntakeValidation";
 import { PatientHistoryDialog } from "@/components/PatientHistoryDialog";
+import { ValidationSummaryPanel } from "@/components/ValidationSummaryPanel";
 import {
   Dialog,
   DialogContent,
@@ -257,38 +258,10 @@ export function BulkIntakeConverter({
 
         <ScrollArea className="max-h-[calc(90vh-200px)] pr-4">
           <div className="space-y-4 py-4">
-            {/* Summary Stats */}
-            <div className="grid grid-cols-3 gap-4">
-              <div className="rounded-lg bg-green-50 dark:bg-green-950 p-4 border border-green-200 dark:border-green-800">
-                <div className="flex items-center gap-2 mb-1">
-                  <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
-                  <span className="text-sm font-medium text-green-900 dark:text-green-100">Ready</span>
-                </div>
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {validationResult.validForConversion}
-                </div>
-              </div>
-
-              <div className="rounded-lg bg-amber-50 dark:bg-amber-950 p-4 border border-amber-200 dark:border-amber-800">
-                <div className="flex items-center gap-2 mb-1">
-                  <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                  <span className="text-sm font-medium text-amber-900 dark:text-amber-100">Needs Review</span>
-                </div>
-                <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
-                  {validationResult.requiresReview}
-                </div>
-              </div>
-
-              <div className="rounded-lg bg-red-50 dark:bg-red-950 p-4 border border-red-200 dark:border-red-800">
-                <div className="flex items-center gap-2 mb-1">
-                  <XCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
-                  <span className="text-sm font-medium text-red-900 dark:text-red-100">Cannot Convert</span>
-                </div>
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                  {validationResult.totalSelected - validationResult.validForConversion}
-                </div>
-              </div>
-            </div>
+            {/* Show ValidationSummaryPanel before conversion starts */}
+            {!converting && !results && (
+              <ValidationSummaryPanel validationResult={validationResult} />
+            )}
 
             {/* Conversion Progress */}
             {converting && (
@@ -334,82 +307,10 @@ export function BulkIntakeConverter({
               </div>
             )}
 
-            {/* Individual Intake Validation Results */}
-            <div className="space-y-3">
-              <h3 className="font-semibold">Validation Details</h3>
-              {validationResult.validatedIntakes.map((validated) => (
-                <div 
-                  key={validated.id} 
-                  className={`rounded-lg border p-4 ${
-                    validated.canConvert 
-                      ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950' 
-                      : 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950'
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{validated.patient_name}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {validated.access_code}
-                        </Badge>
-                      </div>
-                    </div>
-                    {validated.canConvert ? (
-                      <Badge className="bg-green-600 dark:bg-green-700">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        Ready
-                      </Badge>
-                    ) : (
-                      <Badge variant="destructive">
-                        <XCircle className="h-3 w-3 mr-1" />
-                        Cannot Convert
-                      </Badge>
-                    )}
-                  </div>
-
-                  {validated.issues.length > 0 && (
-                    <div className="space-y-1 mt-3">
-                      {validated.issues.map((issue, idx) => (
-                        <div key={idx} className="flex items-start gap-2 text-sm">
-                          {getSeverityIcon(issue.severity)}
-                          <div className="flex-1 flex items-center justify-between">
-                            <span className={
-                              issue.severity === "error" 
-                                ? "text-red-700 dark:text-red-300" 
-                                : issue.severity === "warning"
-                                ? "text-amber-700 dark:text-amber-300"
-                                : "text-blue-700 dark:text-blue-300"
-                            }>
-                              {issue.message}
-                            </span>
-                            {validated.hasExistingEpisode && issue.field === "duplicate" && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-xs"
-                                onClick={() => {
-                                  const intake = intakes.find(i => i.id === validated.id);
-                                  if (intake) {
-                                    setSelectedPatient({
-                                      name: intake.patient_name,
-                                      dob: intake.date_of_birth
-                                    });
-                                    setShowHistory(true);
-                                  }
-                                }}
-                              >
-                                View History
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            {/* Show ValidationSummaryPanel after conversion completes with results */}
+            {results && (
+              <ValidationSummaryPanel validationResult={validationResult} />
+            )}
           </div>
         </ScrollArea>
 
