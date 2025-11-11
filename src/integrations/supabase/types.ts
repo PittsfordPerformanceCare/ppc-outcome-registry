@@ -1412,6 +1412,78 @@ export type Database = {
           },
         ]
       }
+      webhook_retry_queue: {
+        Row: {
+          activity_log_id: string | null
+          clinic_id: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          max_retries: number
+          next_retry_at: string
+          request_payload: Json
+          retry_count: number
+          status: string
+          trigger_type: string
+          updated_at: string
+          user_id: string
+          webhook_config_id: string | null
+          webhook_name: string
+          webhook_url: string
+        }
+        Insert: {
+          activity_log_id?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          max_retries?: number
+          next_retry_at: string
+          request_payload: Json
+          retry_count?: number
+          status?: string
+          trigger_type: string
+          updated_at?: string
+          user_id: string
+          webhook_config_id?: string | null
+          webhook_name: string
+          webhook_url: string
+        }
+        Update: {
+          activity_log_id?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          max_retries?: number
+          next_retry_at?: string
+          request_payload?: Json
+          retry_count?: number
+          status?: string
+          trigger_type?: string
+          updated_at?: string
+          user_id?: string
+          webhook_config_id?: string | null
+          webhook_name?: string
+          webhook_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_retry_queue_activity_log_id_fkey"
+            columns: ["activity_log_id"]
+            isOneToOne: false
+            referencedRelation: "webhook_activity_log"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webhook_retry_queue_webhook_config_id_fkey"
+            columns: ["webhook_config_id"]
+            isOneToOne: false
+            referencedRelation: "zapier_webhook_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       zapier_webhook_config: {
         Row: {
           clinic_id: string | null
@@ -1461,6 +1533,10 @@ export type Database = {
     Functions: {
       calculate_next_retry: {
         Args: { base_delay_minutes?: number; current_retry_count: number }
+        Returns: string
+      }
+      calculate_webhook_retry_time: {
+        Args: { retry_count: number }
         Returns: string
       }
       check_rate_limit: {

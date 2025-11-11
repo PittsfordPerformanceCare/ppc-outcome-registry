@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Zap, Trash2, Edit, ExternalLink, TestTube } from "lucide-react";
 import { format } from "date-fns";
 import { WebhookActivityLog } from "./WebhookActivityLog";
+import { WebhookRetryQueue } from "./WebhookRetryQueue";
 
 interface WebhookConfig {
   id: string;
@@ -245,8 +246,9 @@ export function ZapierWebhookConfig() {
 
   return (
     <Tabs defaultValue="config" className="w-full space-y-4">
-      <TabsList className="grid w-full grid-cols-2">
+      <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="config">Configuration</TabsTrigger>
+        <TabsTrigger value="retry">Retry Queue</TabsTrigger>
         <TabsTrigger value="activity">Activity Log</TabsTrigger>
       </TabsList>
 
@@ -445,6 +447,10 @@ export function ZapierWebhookConfig() {
             ))}
           </div>
         )}
+      </TabsContent>
+
+      <TabsContent value="retry">
+        <WebhookRetryQueue />
       </TabsContent>
 
       <TabsContent value="activity">

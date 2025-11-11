@@ -431,7 +431,7 @@ async function triggerWebhooks(
         }
 
         // Log the webhook activity
-        await supabase
+        const { data: activityLog } = await supabase
           .from('webhook_activity_log')
           .insert({
             webhook_config_id: webhook.id,
@@ -443,10 +443,38 @@ async function triggerWebhooks(
             status,
             request_payload: payload,
             response_status: responseStatus,
-            response_body: responseBody?.substring(0, 5000), // Limit response body size
+            response_body: responseBody?.substring(0, 5000),
             error_message: errorMessage,
             duration_ms: duration,
-          });
+          })
+          .select()
+          .single();
+
+        // If failed, add to retry queue
+        if (status === 'failed') {
+          const { data: retryTime } = await supabase
+            .rpc('calculate_webhook_retry_time', { retry_count: 0 });
+
+          await supabase
+            .from('webhook_retry_queue')
+            .insert({
+              webhook_config_id: webhook.id,
+              activity_log_id: activityLog?.id,
+              user_id: userId,
+              clinic_id: webhook.clinic_id,
+              webhook_name: webhook.name,
+              webhook_url: webhook.webhook_url,
+              trigger_type: triggerType,
+              request_payload: payload,
+              retry_count: 0,
+              max_retries: 5,
+              next_retry_at: retryTime,
+              last_error: errorMessage,
+              status: 'pending',
+            });
+
+          console.log(`Added failed webhook ${webhook.name} to retry queue`);
+        }
 
       } catch (webhookError: any) {
         const duration = Date.now() - startTime;
@@ -462,7 +490,7 @@ async function triggerWebhooks(
         console.error(`Error triggering webhook ${webhook.name}:`, webhookError);
 
         // Log the failed webhook activity
-        await supabase
+        const { data: activityLog } = await supabase
           .from('webhook_activity_log')
           .insert({
             webhook_config_id: webhook.id,
@@ -482,7 +510,38 @@ async function triggerWebhooks(
             response_body: responseBody,
             error_message: errorMessage,
             duration_ms: duration,
+          })
+          .select()
+          .single();
+
+        // Add to retry queue
+        const { data: retryTime } = await supabase
+          .rpc('calculate_webhook_retry_time', { retry_count: 0 });
+
+        await supabase
+          .from('webhook_retry_queue')
+          .insert({
+            webhook_config_id: webhook.id,
+            activity_log_id: activityLog?.id,
+            user_id: userId,
+            clinic_id: webhook.clinic_id,
+            webhook_name: webhook.name,
+            webhook_url: webhook.webhook_url,
+            trigger_type: triggerType,
+            request_payload: {
+              trigger_type: triggerType,
+              webhook_name: webhook.name,
+              timestamp: new Date().toISOString(),
+              data: summary
+            },
+            retry_count: 0,
+            max_retries: 5,
+            next_retry_at: retryTime,
+            last_error: errorMessage,
+            status: 'pending',
           });
+
+        console.log(`Added failed webhook ${webhook.name} to retry queue`);
       }
     }
   } catch (error) {
