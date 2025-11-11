@@ -1390,13 +1390,37 @@ export default function PatientIntake() {
 
                   <DragOverlay>
                     {activeId ? (
-                      <div className="opacity-50">
-                        <div className="p-5 border-2 border-primary rounded-lg bg-card shadow-lg">
-                          <div className="flex items-center gap-3">
-                            <GripVertical className="h-5 w-5 text-primary" />
-                            <span className="font-medium">Dragging complaint...</span>
-                          </div>
-                        </div>
+                      <div className="opacity-90 rotate-2 scale-105 transition-transform">
+                        {(() => {
+                          const draggedIndex = fields.findIndex((f) => f.id === activeId);
+                          const draggedComplaint = form.watch(`complaints.${draggedIndex}`);
+                          return (
+                            <div className="p-5 border-2 border-primary rounded-lg bg-card shadow-2xl">
+                              <div className="flex items-center gap-3 mb-3 pb-3 border-b">
+                                <GripVertical className="h-5 w-5 text-primary animate-pulse" />
+                                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary text-primary-foreground font-bold text-sm">
+                                  {draggedIndex + 1}
+                                </div>
+                                <Badge variant="default" className="gap-1">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  Priority #{draggedComplaint?.priority || draggedIndex + 1}
+                                </Badge>
+                              </div>
+                              <div className="space-y-2">
+                                {draggedComplaint?.category && (
+                                  <p className="text-sm font-semibold text-primary">
+                                    {draggedComplaint.category}
+                                  </p>
+                                )}
+                                {draggedComplaint?.text && (
+                                  <p className="text-sm text-muted-foreground line-clamp-2">
+                                    {draggedComplaint.text}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
                     ) : null}
                   </DragOverlay>
