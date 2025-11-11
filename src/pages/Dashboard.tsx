@@ -33,6 +33,8 @@ import { OutcomeReminderHistory } from "@/components/OutcomeReminderHistory";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useSwipeGesture } from "@/hooks/useSwipeGesture";
+import { EpisodeCardWithSwipe } from "@/components/EpisodeCardWithSwipe";
 
 interface Episode {
   id: string;
@@ -55,6 +57,7 @@ export default function Dashboard() {
   const [exportingPDFs, setExportingPDFs] = useState(false);
   const { toast } = useToast();
   const { settings } = useClinicSettings();
+  const { success } = useHaptics();
   
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -449,8 +452,6 @@ export default function Dashboard() {
 
   // Pull to refresh handler
   const handleRefresh = async () => {
-    const { success } = useHaptics();
-    
     await loadEpisodes();
     
     // Trigger success haptic on successful refresh
@@ -997,63 +998,36 @@ export default function Dashboard() {
                 const isSelected = selectedEpisodes.has(episode.id);
 
                 return (
-                  <div
+                  <EpisodeCardWithSwipe
                     key={episode.id}
-                    className="flex items-center gap-4 rounded-lg border p-4 transition-colors hover:bg-muted/50"
-                  >
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={() => toggleSelectEpisode(episode.id)}
-                      aria-label={`Select episode ${episode.id}`}
-                    />
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{episode.patient_name}</p>
-                        <Badge variant="outline" className="text-xs">
-                          {episode.region}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Episode ID: {episode.id} | Service Date:{" "}
-                        {format(new Date(episode.date_of_service), "MMM dd, yyyy")}
-                      </p>
-                      {episode.diagnosis && (
-                        <p className="text-sm text-muted-foreground">
-                          Diagnosis: {episode.diagnosis}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {episode.discharge_date && (
-                        <Badge className="badge-complete">Completed</Badge>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="gap-1"
-                        onClick={() => {
-                          setSelectedEpisodeForInvitation(episode);
-                          setInvitationDialogOpen(true);
-                        }}
-                        title="Send patient invitation"
-                      >
-                        <Mail className="h-4 w-4" />
-                        Invite Patient
-                      </Button>
-                      <Link to={`/episode-summary?id=${episode.id}`}>
-                        <Button size="sm" variant="outline">
-                          View Details
-                        </Button>
-                      </Link>
-                      {!episode.discharge_date && (
-                        <Link to={`/follow-up?episode=${episode.id}`}>
-                          <Button size="sm" variant="outline">
-                            Schedule Follow-up
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
-                  </div>
+                    episode={episode}
+                    isSelected={isSelected}
+                    onSelect={() => toggleSelectEpisode(episode.id)}
+                    onInvite={() => {
+                      setSelectedEpisodeForInvitation(episode);
+                      setInvitationDialogOpen(true);
+                    }}
+                    onDelete={async () => {
+                      const { error } = await supabase
+                        .from("episodes")
+                        .delete()
+                        .eq("id", episode.id);
+
+                      if (error) {
+                        toast({
+                          title: "Error",
+                          description: "Failed to delete episode",
+                          variant: "destructive",
+                        });
+                      } else {
+                        toast({
+                          title: "Deleted",
+                          description: "Episode deleted successfully",
+                        });
+                        loadEpisodes();
+                      }
+                    }}
+                  />
                 );
               })}
             </div>
