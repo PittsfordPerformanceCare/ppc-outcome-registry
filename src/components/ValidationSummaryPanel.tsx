@@ -4,12 +4,15 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import { 
   CheckCircle2, 
   AlertCircle, 
   AlertTriangle, 
   Info,
-  XCircle
+  XCircle,
+  CheckSquare,
+  Square
 } from "lucide-react";
 import type { IntakeBulkValidationResult, ValidatedIntake, IntakeValidationIssue } from "@/lib/bulkIntakeValidation";
 
@@ -17,13 +20,21 @@ interface ValidationSummaryPanelProps {
   validationResult: IntakeBulkValidationResult;
   excludedIds?: Set<string>;
   onToggleExclude?: (intakeId: string) => void;
+  onSelectAll?: () => void;
+  onDeselectAll?: () => void;
 }
 
 export function ValidationSummaryPanel({ 
   validationResult, 
   excludedIds = new Set(), 
-  onToggleExclude 
+  onToggleExclude,
+  onSelectAll,
+  onDeselectAll
 }: ValidationSummaryPanelProps) {
+  const convertibleIntakes = validationResult.validatedIntakes.filter(i => i.canConvert);
+  const allSelected = convertibleIntakes.length > 0 && excludedIds.size === 0;
+  const noneSelected = excludedIds.size === convertibleIntakes.length;
+  const someSelected = !allSelected && !noneSelected;
   const getIssueSeverityIcon = (severity: IntakeValidationIssue["severity"]) => {
     switch (severity) {
       case "error":
@@ -77,13 +88,39 @@ export function ValidationSummaryPanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5" />
-          Validation Summary
-        </CardTitle>
-        <CardDescription>
-          Review validation results before proceeding with conversion
-        </CardDescription>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <CardTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5" />
+              Validation Summary
+            </CardTitle>
+            <CardDescription>
+              Review validation results before proceeding with conversion
+            </CardDescription>
+          </div>
+          {onSelectAll && onDeselectAll && convertibleIntakes.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={allSelected || someSelected ? onDeselectAll : onSelectAll}
+                className="gap-2"
+              >
+                {allSelected || someSelected ? (
+                  <>
+                    <Square className="h-4 w-4" />
+                    Deselect All
+                  </>
+                ) : (
+                  <>
+                    <CheckSquare className="h-4 w-4" />
+                    Select All
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Summary Statistics */}

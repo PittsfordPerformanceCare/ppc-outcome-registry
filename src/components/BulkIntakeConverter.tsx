@@ -61,6 +61,17 @@ export function BulkIntakeConverter({
     });
   };
 
+  const handleSelectAll = () => {
+    setExcludedIds(new Set());
+  };
+
+  const handleDeselectAll = () => {
+    const convertibleIds = validationResult.validatedIntakes
+      .filter(v => v.canConvert)
+      .map(v => v.id);
+    setExcludedIds(new Set(convertibleIds));
+  };
+
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
       case "error":
@@ -279,6 +290,8 @@ export function BulkIntakeConverter({
                 validationResult={validationResult}
                 excludedIds={excludedIds}
                 onToggleExclude={handleToggleExclude}
+                onSelectAll={handleSelectAll}
+                onDeselectAll={handleDeselectAll}
               />
             )}
 
