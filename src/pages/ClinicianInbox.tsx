@@ -218,7 +218,7 @@ export default function ClinicianInbox() {
       const { error } = await supabase
         .from("patient_messages")
         .update({
-          status: "responded",
+          status: "resolved",
           clinician_response: response,
           responded_at: new Date().toISOString(),
           responded_by: user?.id,
@@ -254,7 +254,7 @@ export default function ClinicianInbox() {
         .update({
           status,
           clinician_response: notes,
-          responded_at: status === "contacted" ? new Date().toISOString() : null,
+          responded_at: status === "in_progress" ? new Date().toISOString() : null,
           responded_by: user?.id,
         })
         .eq("id", callbackId);
@@ -272,22 +272,25 @@ export default function ClinicianInbox() {
     },
   });
 
-  const unreadCount = messages.filter((m) => m.status === "unread").length;
+  const unreadCount = messages.filter((m) => m.status === "pending").length;
   const pendingCallbacks = callbacks.filter((c) => c.status === "pending").length;
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "outline"> = {
-      unread: "default",
-      read: "secondary",
-      responded: "outline",
       pending: "default",
-      contacted: "secondary",
-      completed: "outline",
+      in_progress: "secondary",
+      resolved: "outline",
+    };
+
+    const labels: Record<string, string> = {
+      pending: "New",
+      in_progress: "In Progress",
+      resolved: "Resolved",
     };
 
     return (
       <Badge variant={variants[status] || "default"}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {labels[status] || status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
   };
@@ -567,27 +570,27 @@ export default function ClinicianInbox() {
                         onClick={() =>
                           updateCallbackMutation.mutate({
                             callbackId: selectedCallback.id,
-                            status: "contacted",
+                            status: "in_progress",
                             notes: callbackNotes,
                           })
                         }
                         disabled={!callbackNotes.trim() || updateCallbackMutation.isPending}
                       >
                         <CheckCircle className="h-4 w-4 mr-2" />
-                        Mark as Contacted
+                        Mark as In Progress
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() =>
                           updateCallbackMutation.mutate({
                             callbackId: selectedCallback.id,
-                            status: "completed",
+                            status: "resolved",
                             notes: callbackNotes || "Completed",
                           })
                         }
                         disabled={updateCallbackMutation.isPending}
                       >
-                        Mark as Completed
+                        Mark as Resolved
                       </Button>
                       <Button
                         variant="outline"
