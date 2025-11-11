@@ -3,8 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, TrendingUp, Award, Target, Calendar, Trophy } from "lucide-react";
+import { Users, TrendingUp, Award, Target, Calendar, Trophy, Settings } from "lucide-react";
 import { format, subDays, startOfMonth, endOfMonth } from "date-fns";
+import { ReferralReportScheduler } from "@/components/ReferralReportScheduler";
 
 interface ReferralStats {
   totalReferrals: number;
@@ -201,20 +202,37 @@ export default function ReferralAnalytics() {
 
   return (
     <div className="container mx-auto py-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Referral Analytics</h1>
-          <p className="text-muted-foreground">Track and analyze patient referral performance</p>
-        </div>
-        <Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as any)}>
+      {/* Main Tabs */}
+      <Tabs defaultValue="analytics" className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Referral Analytics</h1>
+            <p className="text-muted-foreground">Track and analyze patient referral performance</p>
+          </div>
           <TabsList>
-            <TabsTrigger value="week">Last 7 Days</TabsTrigger>
-            <TabsTrigger value="month">This Month</TabsTrigger>
-            <TabsTrigger value="all">All Time</TabsTrigger>
+            <TabsTrigger value="analytics">
+              <Trophy className="h-4 w-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="reports">
+              <Settings className="h-4 w-4 mr-2" />
+              Reports
+            </TabsTrigger>
           </TabsList>
-        </Tabs>
-      </div>
+        </div>
+
+        {/* Analytics Tab */}
+        <TabsContent value="analytics" className="space-y-6">
+          {/* Time Range Filter */}
+          <div className="flex justify-end">
+            <Tabs value={timeRange} onValueChange={(v) => setTimeRange(v as any)}>
+              <TabsList>
+                <TabsTrigger value="week">Last 7 Days</TabsTrigger>
+                <TabsTrigger value="month">This Month</TabsTrigger>
+                <TabsTrigger value="all">All Time</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -271,7 +289,7 @@ export default function ReferralAnalytics() {
         </Card>
       </div>
 
-      {/* Main Content Tabs */}
+      {/* Content Tabs */}
       <Tabs defaultValue="leaderboard" className="space-y-4">
         <TabsList>
           <TabsTrigger value="leaderboard">
@@ -391,6 +409,13 @@ export default function ReferralAnalytics() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+      </Tabs>
+        </TabsContent>
+
+        {/* Reports Tab */}
+        <TabsContent value="reports">
+          <ReferralReportScheduler />
         </TabsContent>
       </Tabs>
     </div>

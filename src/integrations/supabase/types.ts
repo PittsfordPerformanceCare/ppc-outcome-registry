@@ -2029,6 +2029,116 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_report_deliveries: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          recipient_emails: string[]
+          report_data: Json | null
+          schedule_id: string
+          sent_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_emails: string[]
+          report_data?: Json | null
+          schedule_id: string
+          sent_at?: string
+          status: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_emails?: string[]
+          report_data?: Json | null
+          schedule_id?: string
+          sent_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_report_deliveries_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_report_deliveries_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "referral_report_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_report_schedules: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          enabled: boolean
+          frequency: string
+          id: string
+          last_sent_at: string | null
+          name: string
+          next_send_at: string
+          recipient_emails: string[]
+          send_day: number
+          send_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          frequency?: string
+          id?: string
+          last_sent_at?: string | null
+          name: string
+          next_send_at: string
+          recipient_emails?: string[]
+          send_day?: number
+          send_time?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          frequency?: string
+          id?: string
+          last_sent_at?: string | null
+          name?: string
+          next_send_at?: string
+          recipient_emails?: string[]
+          send_day?: number
+          send_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_report_schedules_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scheduled_exports: {
         Row: {
           clinic_id: string | null
