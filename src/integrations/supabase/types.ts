@@ -84,6 +84,11 @@ export type Database = {
           email_template: string | null
           id: string
           logo_url: string | null
+          outcome_reminder_email_subject: string | null
+          outcome_reminder_email_template: string | null
+          outcome_reminder_enabled: boolean | null
+          outcome_reminder_interval_days: number | null
+          outcome_reminder_sms_template: string | null
           phone: string | null
           reminder_email_subject: string | null
           reminder_email_template: string | null
@@ -107,6 +112,11 @@ export type Database = {
           email_template?: string | null
           id?: string
           logo_url?: string | null
+          outcome_reminder_email_subject?: string | null
+          outcome_reminder_email_template?: string | null
+          outcome_reminder_enabled?: boolean | null
+          outcome_reminder_interval_days?: number | null
+          outcome_reminder_sms_template?: string | null
           phone?: string | null
           reminder_email_subject?: string | null
           reminder_email_template?: string | null
@@ -130,6 +140,11 @@ export type Database = {
           email_template?: string | null
           id?: string
           logo_url?: string | null
+          outcome_reminder_email_subject?: string | null
+          outcome_reminder_email_template?: string | null
+          outcome_reminder_enabled?: boolean | null
+          outcome_reminder_interval_days?: number | null
+          outcome_reminder_sms_template?: string | null
           phone?: string | null
           reminder_email_subject?: string | null
           reminder_email_template?: string | null

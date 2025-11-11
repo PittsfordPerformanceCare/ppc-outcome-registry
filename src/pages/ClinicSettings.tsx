@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2, Save, AlertCircle, Send, Mail, MessageSquare, Bell, Clock, FileText } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -19,6 +20,28 @@ import { EmailTemplateGallery } from "@/components/EmailTemplateGallery";
 import { SaveTemplateDialog } from "@/components/SaveTemplateDialog";
 import { EmailTemplateAnalytics } from "@/components/EmailTemplateAnalytics";
 
+interface ClinicSettings {
+  clinic_name: string;
+  phone: string;
+  email: string;
+  email_subject: string;
+  email_template: string;
+  sms_template: string;
+  discharge_email_subject: string;
+  discharge_email_template: string;
+  discharge_sms_template: string;
+  reminder_enabled: boolean;
+  reminder_hours_before: number;
+  reminder_email_subject: string;
+  reminder_email_template: string;
+  reminder_sms_template: string;
+  outcome_reminder_enabled: boolean;
+  outcome_reminder_interval_days: number;
+  outcome_reminder_email_subject: string;
+  outcome_reminder_email_template: string;
+  outcome_reminder_sms_template: string;
+}
+
 export default function ClinicSettings() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
@@ -26,24 +49,11 @@ export default function ClinicSettings() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAdmin, setCheckingAdmin] = useState(true);
   
-  const [emailSubject, setEmailSubject] = useState("");
-  const [emailTemplate, setEmailTemplate] = useState("");
-  const [smsTemplate, setSmsTemplate] = useState("");
-  
-  const [dischargeEmailSubject, setDischargeEmailSubject] = useState("");
-  const [dischargeEmailTemplate, setDischargeEmailTemplate] = useState("");
-  const [dischargeSmsTemplate, setDischargeSmsTemplate] = useState("");
+  const [settings, setSettings] = useState<Partial<ClinicSettings>>({});
   
   const [testEmail, setTestEmail] = useState("");
   const [testPhone, setTestPhone] = useState("");
   const [sendingTest, setSendingTest] = useState(false);
-  
-  const [reminderEnabled, setReminderEnabled] = useState(true);
-  const [reminderHoursBefore, setReminderHoursBefore] = useState(24);
-  const [reminderEmailSubject, setReminderEmailSubject] = useState("");
-  const [reminderEmailTemplate, setReminderEmailTemplate] = useState("");
-  const [reminderSmsTemplate, setReminderSmsTemplate] = useState("");
-  
   const [testingReminders, setTestingReminders] = useState(false);
 
   useEffect(() => {
@@ -69,25 +79,15 @@ export default function ClinicSettings() {
         setIsAdmin(true);
         
         // Load clinic settings
-        const { data: settings, error } = await supabase
+        const { data: settingsData, error } = await supabase
           .from("clinic_settings")
-          .select("email_subject, email_template, sms_template, discharge_email_subject, discharge_email_template, discharge_sms_template, reminder_enabled, reminder_hours_before, reminder_email_subject, reminder_email_template, reminder_sms_template")
+          .select("*")
           .single();
         
         if (error) throw error;
         
-        if (settings) {
-          setEmailSubject(settings.email_subject || "");
-          setEmailTemplate(settings.email_template || "");
-          setSmsTemplate(settings.sms_template || "");
-          setDischargeEmailSubject(settings.discharge_email_subject || "");
-          setDischargeEmailTemplate(settings.discharge_email_template || "");
-          setDischargeSmsTemplate(settings.discharge_sms_template || "");
-          setReminderEnabled(settings.reminder_enabled ?? true);
-          setReminderHoursBefore(settings.reminder_hours_before || 24);
-          setReminderEmailSubject(settings.reminder_email_subject || "");
-          setReminderEmailTemplate(settings.reminder_email_template || "");
-          setReminderSmsTemplate(settings.reminder_sms_template || "");
+        if (settingsData) {
+          setSettings(settingsData as Partial<ClinicSettings>);
         }
         
         // Load user email for test notifications
@@ -108,26 +108,19 @@ export default function ClinicSettings() {
   const handleSave = async () => {
     setLoading(true);
     try {
+      const { data: currentSettings } = await supabase
+        .from("clinic_settings")
+        .select("id")
+        .single();
+
       const { error } = await supabase
         .from("clinic_settings")
-        .update({
-          email_subject: emailSubject,
-          email_template: emailTemplate,
-          sms_template: smsTemplate,
-          discharge_email_subject: dischargeEmailSubject,
-          discharge_email_template: dischargeEmailTemplate,
-          discharge_sms_template: dischargeSmsTemplate,
-          reminder_enabled: reminderEnabled,
-          reminder_hours_before: reminderHoursBefore,
-          reminder_email_subject: reminderEmailSubject,
-          reminder_email_template: reminderEmailTemplate,
-          reminder_sms_template: reminderSmsTemplate,
-        })
-        .eq("id", (await supabase.from("clinic_settings").select("id").single()).data?.id);
+        .update(settings)
+        .eq("id", currentSettings?.id);
 
       if (error) throw error;
 
-      toast.success("Notification templates saved successfully!");
+      toast.success("Settings saved successfully!");
     } catch (error: any) {
       console.error("Error saving settings:", error);
       toast.error(`Failed to save settings: ${error.message}`);
@@ -239,539 +232,381 @@ export default function ClinicSettings() {
       <div>
         <h1 className="text-3xl font-bold">Clinic Settings</h1>
         <p className="text-muted-foreground mt-2">
-          Configure notification templates for patient communications
+          Configure notification templates and clinic preferences
         </p>
       </div>
 
-      <Alert>
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          <strong>Available placeholders:</strong> {`{{patient_name}}, {{clinician_name}}, {{episode_id}}, {{appointment_date}}, {{appointment_time}}, {{clinic_name}}, {{clinic_phone}}`}
-        </AlertDescription>
-      </Alert>
-
-      {/* Email Template Analytics */}
-      <EmailTemplateAnalytics />
-
-      {/* Save Current Template Button */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            💾 Save Current Template
-          </CardTitle>
-          <CardDescription>
-            Save your current email template design to your custom gallery for future use
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <SaveTemplateDialog 
-            currentSubject={emailSubject}
-            currentHtml={emailTemplate}
-            onSave={() => {
-              toast.success("Template saved! Check the gallery below.");
-            }}
-          />
-        </CardContent>
-      </Card>
+        <CardContent className="pt-6">
+          <Tabs defaultValue="general" className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="notifications">Notifications</TabsTrigger>
+              <TabsTrigger value="reminders">Reminders</TabsTrigger>
+              <TabsTrigger value="discharge">Discharge</TabsTrigger>
+              <TabsTrigger value="outcome-reminders">Outcome Reminders</TabsTrigger>
+            </TabsList>
 
-      {/* Email Template Gallery */}
-      <EmailTemplateGallery 
-        onSelectTemplate={(subject, html) => {
-          setEmailSubject(subject);
-          setEmailTemplate(html);
-          toast.success("Template applied! You can now customize it further.");
-          // Scroll to editor
-          setTimeout(() => {
-            document.getElementById("email-template")?.scrollIntoView({ behavior: "smooth", block: "center" });
-          }, 100);
-        }}
-      />
+            <TabsContent value="general" className="space-y-4">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="clinic-name">Clinic Name</Label>
+                  <Input
+                    id="clinic-name"
+                    value={settings.clinic_name || ''}
+                    onChange={(e) => setSettings({ ...settings, clinic_name: e.target.value })}
+                    placeholder="Your Clinic Name"
+                  />
+                </div>
 
-      {/* Appointment Reminder Settings */}
-      <Card className="border-purple-200 dark:border-purple-800">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5 text-purple-500" />
-            Appointment Reminders
-          </CardTitle>
-          <CardDescription>
-            Configure automated reminders sent before scheduled appointments
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Enable/Disable Toggle */}
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="reminder-enabled">Enable Appointment Reminders</Label>
-              <p className="text-sm text-muted-foreground">
-                Automatically send reminders before appointments
-              </p>
-            </div>
-            <Switch
-              id="reminder-enabled"
-              checked={reminderEnabled}
-              onCheckedChange={setReminderEnabled}
-            />
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="clinic-phone">Phone Number</Label>
+                  <Input
+                    id="clinic-phone"
+                    value={settings.phone || ''}
+                    onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
+                    placeholder="(555) 123-4567"
+                  />
+                </div>
 
-          {/* Hours Before Reminder */}
-          <div className="space-y-2">
-            <Label htmlFor="reminder-hours" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Hours Before Appointment
-            </Label>
-            <Input
-              id="reminder-hours"
-              type="number"
-              min="1"
-              max="168"
-              value={reminderHoursBefore}
-              onChange={(e) => setReminderHoursBefore(parseInt(e.target.value) || 24)}
-              disabled={!reminderEnabled}
-            />
-            <p className="text-xs text-muted-foreground">
-              Send reminder {reminderHoursBefore} hours ({Math.round(reminderHoursBefore / 24 * 10) / 10} days) before the appointment
-            </p>
-          </div>
-
-          <Separator />
-
-          {/* Reminder Email Subject */}
-          <div className="space-y-2">
-            <Label htmlFor="reminder-email-subject">Reminder Email Subject</Label>
-            <Input
-              id="reminder-email-subject"
-              value={reminderEmailSubject}
-              onChange={(e) => setReminderEmailSubject(e.target.value)}
-              placeholder="Appointment Reminder: {{patient_name}}"
-              disabled={!reminderEnabled}
-            />
-          </div>
-
-          {/* Reminder Email Template */}
-          <div className="space-y-2">
-            <Label htmlFor="reminder-email-template">Reminder Email Template (HTML)</Label>
-            <Textarea
-              id="reminder-email-template"
-              value={reminderEmailTemplate}
-              onChange={(e) => setReminderEmailTemplate(e.target.value)}
-              rows={12}
-              className="font-mono text-sm"
-              placeholder="Enter HTML email template..."
-              disabled={!reminderEnabled}
-            />
-          </div>
-
-          <Separator />
-
-          {/* Reminder SMS Template */}
-          <div className="space-y-2">
-            <Label htmlFor="reminder-sms-template">Reminder SMS Template</Label>
-            <Textarea
-              id="reminder-sms-template"
-              value={reminderSmsTemplate}
-              onChange={(e) => setReminderSmsTemplate(e.target.value)}
-              rows={4}
-              placeholder="Enter SMS reminder template..."
-              disabled={!reminderEnabled}
-            />
-            <p className="text-xs text-muted-foreground">
-              Current length: {reminderSmsTemplate.length} characters
-            </p>
-          </div>
-
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="text-xs">
-              Reminders are checked hourly. A scheduled task will automatically send reminders to patients based on their appointment dates/times.
-            </AlertDescription>
-          </Alert>
-
-          {/* Manual Test Button */}
-          <div className="pt-4">
-            <Button
-              onClick={handleTestReminders}
-              disabled={testingReminders || !reminderEnabled}
-              variant="outline"
-              className="w-full"
-            >
-              {testingReminders ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Checking for Appointments...
-                </>
-              ) : (
-                <>
-                  <Bell className="h-4 w-4 mr-2" />
-                  Manually Check & Send Reminders Now
-                </>
-              )}
-            </Button>
-            <p className="text-xs text-muted-foreground text-center mt-2">
-              This will check for appointments in the next {reminderHoursBefore} hours and send reminders
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Test Notifications */}
-      <Card className="border-blue-200 dark:border-blue-800">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Send className="h-5 w-5 text-blue-500" />
-            Test Notifications
-          </CardTitle>
-          <CardDescription>
-            Send test notifications to yourself to preview templates with sample data
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Test Email */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-blue-500" />
-              <h3 className="font-semibold">Test Email</h3>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="test-email">Your Email Address</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="test-email"
-                  type="email"
-                  value={testEmail}
-                  onChange={(e) => setTestEmail(e.target.value)}
-                  placeholder="your.email@example.com"
-                  className="flex-1"
-                />
-                <Button 
-                  onClick={handleSendTestEmail} 
-                  disabled={sendingTest || !testEmail}
-                  variant="outline"
-                >
-                  {sendingTest ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4 mr-2" />
-                      Send Test
-                    </>
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Test data: Patient "John Doe", Episode "TEST-12345", Clinician "Dr. Smith"
-              </p>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Test SMS */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-green-500" />
-              <h3 className="font-semibold">Test SMS</h3>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="test-phone">Your Phone Number</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="test-phone"
-                  type="tel"
-                  value={testPhone}
-                  onChange={(e) => setTestPhone(e.target.value)}
-                  placeholder="+1234567890"
-                  className="flex-1"
-                />
-                <Button 
-                  onClick={handleSendTestSMS} 
-                  disabled={sendingTest || !testPhone}
-                  variant="outline"
-                >
-                  {sendingTest ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4 mr-2" />
-                      Send Test
-                    </>
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Include country code (e.g., +1 for US). Requires Twilio API configuration.
-              </p>
-            </div>
-          </div>
-
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="text-xs">
-              <strong>Note:</strong> Test notifications use [TEST] prefix and won't be logged in notification history. 
-              Make sure to save your templates before testing to see the latest changes.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-
-      {/* Email Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5 text-primary" />
-            Episode Confirmation Email Template
-          </CardTitle>
-          <CardDescription>
-            Customize the email sent to patients when their intake form is converted to an episode
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Template Variable Helper */}
-          <Alert className="bg-primary/5 border-primary/20">
-            <AlertCircle className="h-4 w-4 text-primary" />
-            <AlertDescription>
-              <div className="space-y-2">
-                <p className="font-semibold text-primary">Available Template Variables:</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
-                  {[
-                    '{{patient_name}}',
-                    '{{clinician_name}}',
-                    '{{episode_id}}',
-                    '{{clinic_name}}',
-                    '{{clinic_phone}}',
-                    '{{clinic_email}}',
-                    '{{appointment_date}}',
-                    '{{appointment_time}}'
-                  ].map((variable) => (
-                    <Button
-                      key={variable}
-                      variant="outline"
-                      size="sm"
-                      className="justify-start text-xs font-mono"
-                      onClick={() => {
-                        const textarea = document.getElementById('email-template') as HTMLTextAreaElement;
-                        if (textarea) {
-                          const start = textarea.selectionStart;
-                          const end = textarea.selectionEnd;
-                          const newValue = emailTemplate.substring(0, start) + variable + emailTemplate.substring(end);
-                          setEmailTemplate(newValue);
-                          setTimeout(() => {
-                            textarea.focus();
-                            textarea.setSelectionRange(start + variable.length, start + variable.length);
-                          }, 0);
-                        }
-                      }}
-                    >
-                      {variable}
-                    </Button>
-                  ))}
+                <div className="space-y-2">
+                  <Label htmlFor="clinic-email">Email Address</Label>
+                  <Input
+                    id="clinic-email"
+                    type="email"
+                    value={settings.email || ''}
+                    onChange={(e) => setSettings({ ...settings, email: e.target.value })}
+                    placeholder="info@clinic.com"
+                  />
                 </div>
               </div>
-            </AlertDescription>
-          </Alert>
+            </TabsContent>
 
-          <div className="space-y-2">
-            <Label htmlFor="email-subject">Email Subject Line</Label>
-            <Input
-              id="email-subject"
-              value={emailSubject}
-              onChange={(e) => setEmailSubject(e.target.value)}
-              placeholder="🎉 Welcome! Your Physical Therapy Episode Has Been Created"
-              className="text-base"
-            />
-            <p className="text-xs text-muted-foreground">
-              Use emojis and variables to personalize the subject line
-            </p>
-          </div>
+            <TabsContent value="notifications" className="space-y-4">
+              <EmailTemplateAnalytics />
 
-          <Separator />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Save Current Template</CardTitle>
+                  <CardDescription>
+                    Save your current email template design for future use
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SaveTemplateDialog 
+                    currentSubject={settings.email_subject || ''}
+                    currentHtml={settings.email_template || ''}
+                    onSave={() => toast.success("Template saved!")}
+                  />
+                </CardContent>
+              </Card>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Editor Side */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="email-template">HTML Email Template</Label>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    const defaultTemplate = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px;">
-  <div style="background-color: #a51c30; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
-    <h1 style="color: #ffffff; margin: 0; font-size: 28px;">🎉 Welcome to {{clinic_name}}!</h1>
-  </div>
-  
-  <div style="padding: 30px; background-color: #f9fafb; border-radius: 0 0 8px 8px;">
-    <p style="font-size: 16px; line-height: 1.6; color: #374151;">Dear <strong>{{patient_name}}</strong>,</p>
-    
-    <p style="font-size: 16px; line-height: 1.6; color: #374151;">
-      Great news! Your intake form has been reviewed and approved. Your physical therapy episode has been successfully created.
-    </p>
-    
-    <div style="background-color: #ffffff; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #a51c30;">
-      <h2 style="color: #1f2937; margin-top: 0; font-size: 20px;">📋 Your Episode Details</h2>
-      <p style="margin: 8px 0; color: #6b7280;"><strong>Assigned Clinician:</strong> {{clinician_name}}</p>
-      <p style="margin: 8px 0; color: #6b7280;"><strong>Episode ID:</strong> {{episode_id}}</p>
-    </div>
-    
-    <p style="font-size: 16px; line-height: 1.6; color: #374151;">
-      We'll contact you within 1-2 business days to schedule your first appointment.
-    </p>
-    
-    <div style="text-align: center; margin: 30px 0;">
-      <p style="margin: 0; color: #6b7280;">Questions? Call us at</p>
-      <a href="tel:{{clinic_phone}}" style="color: #a51c30; font-size: 20px; font-weight: 600; text-decoration: none;">{{clinic_phone}}</a>
-    </div>
-    
-    <p style="font-size: 16px; line-height: 1.6; color: #374151;">
-      Best regards,<br/>
-      <strong>The {{clinic_name}} Team</strong>
-    </p>
-  </div>
-</div>`;
-                    setEmailTemplate(defaultTemplate);
-                    toast.success("Reset to default template");
-                  }}
-                >
-                  Reset to Default
-                </Button>
-              </div>
-              <Textarea
-                id="email-template"
-                value={emailTemplate}
-                onChange={(e) => setEmailTemplate(e.target.value)}
-                rows={20}
-                className="font-mono text-sm resize-none"
-                placeholder="Enter HTML email template..."
+              <EmailTemplateGallery 
+                onSelectTemplate={(subject, html) => {
+                  setSettings({ ...settings, email_subject: subject, email_template: html });
+                  toast.success("Template applied!");
+                }}
               />
-              <p className="text-xs text-muted-foreground">
-                Use HTML/CSS for styling. Template variables will be replaced with actual patient data.
-              </p>
-            </div>
 
-            {/* Preview Side */}
-            <div className="space-y-2">
-              <Label>Live Preview</Label>
-              <div className="border rounded-lg bg-white dark:bg-slate-900 overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 text-sm font-semibold">
-                  Preview with Sample Data
-                </div>
-                <div 
-                  className="p-4 overflow-auto max-h-[500px]"
-                  dangerouslySetInnerHTML={{ 
-                    __html: emailTemplate
-                      .replace(/\{\{patient_name\}\}/g, 'John Doe')
-                      .replace(/\{\{clinician_name\}\}/g, 'Dr. Sarah Smith')
-                      .replace(/\{\{episode_id\}\}/g, 'EP-2025-001')
-                      .replace(/\{\{clinic_name\}\}/g, 'Acme Physical Therapy')
-                      .replace(/\{\{clinic_phone\}\}/g, '(555) 123-4567')
-                      .replace(/\{\{clinic_email\}\}/g, 'info@acmept.com')
-                      .replace(/\{\{appointment_date\}\}/g, new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }))
-                      .replace(/\{\{appointment_time\}\}/g, '10:00 AM')
-                  }}
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Available placeholders: {'{'}
+                  {'{'}patient_name{'}'}
+                  {'}'}, {'{'}
+                  {'{'}clinician_name{'}'}
+                  {'}'}, {'{'}
+                  {'{'}episode_id{'}'}
+                  {'}'}, {'{'}
+                  {'{'}clinic_name{'}'}
+                  {'}'}, {'{'}
+                  {'{'}clinic_phone{'}'}
+                  {'}'}
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-2">
+                <Label htmlFor="email-subject">Email Subject</Label>
+                <Input
+                  id="email-subject"
+                  value={settings.email_subject || ''}
+                  onChange={(e) => setSettings({ ...settings, email_subject: e.target.value })}
+                  placeholder="Your Episode Has Been Created"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
-                This preview shows how your email will look with sample patient data
-              </p>
-            </div>
-          </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email-template">Email Template (HTML)</Label>
+                <Textarea
+                  id="email-template"
+                  value={settings.email_template || ''}
+                  onChange={(e) => setSettings({ ...settings, email_template: e.target.value })}
+                  rows={15}
+                  className="font-mono text-sm"
+                  placeholder="Enter HTML template..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="sms-template">SMS Template</Label>
+                <Textarea
+                  id="sms-template"
+                  value={settings.sms_template || ''}
+                  onChange={(e) => setSettings({ ...settings, sms_template: e.target.value })}
+                  rows={4}
+                  placeholder="SMS template..."
+                />
+              </div>
+
+              {/* Test Notifications */}
+              <Card className="border-blue-200">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Send className="h-5 w-5 text-blue-500" />
+                    Test Notifications
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      type="email"
+                      value={testEmail}
+                      onChange={(e) => setTestEmail(e.target.value)}
+                      placeholder="test@email.com"
+                    />
+                    <Button onClick={handleSendTestEmail} disabled={sendingTest}>
+                      {sendingTest ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="tel"
+                      value={testPhone}
+                      onChange={(e) => setTestPhone(e.target.value)}
+                      placeholder="+1234567890"
+                    />
+                    <Button onClick={handleSendTestSMS} disabled={sendingTest}>
+                      {sendingTest ? <Loader2 className="h-4 w-4 animate-spin" /> : <MessageSquare className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="reminders" className="space-y-4">
+              <ReminderStatusPanel />
+              
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="reminder-enabled"
+                  checked={settings.reminder_enabled ?? true}
+                  onCheckedChange={(checked) => setSettings({ ...settings, reminder_enabled: checked })}
+                />
+                <Label htmlFor="reminder-enabled">Enable Appointment Reminders</Label>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reminder-hours">Hours Before Appointment</Label>
+                <Input
+                  id="reminder-hours"
+                  type="number"
+                  value={settings.reminder_hours_before ?? 24}
+                  onChange={(e) => setSettings({ ...settings, reminder_hours_before: parseInt(e.target.value) || 24 })}
+                />
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2">
+                <Label htmlFor="reminder-email-subject">Email Subject</Label>
+                <Input
+                  id="reminder-email-subject"
+                  value={settings.reminder_email_subject || ''}
+                  onChange={(e) => setSettings({ ...settings, reminder_email_subject: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reminder-email-template">Email Template</Label>
+                <Textarea
+                  id="reminder-email-template"
+                  value={settings.reminder_email_template || ''}
+                  onChange={(e) => setSettings({ ...settings, reminder_email_template: e.target.value })}
+                  rows={10}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reminder-sms-template">SMS Template</Label>
+                <Textarea
+                  id="reminder-sms-template"
+                  value={settings.reminder_sms_template || ''}
+                  onChange={(e) => setSettings({ ...settings, reminder_sms_template: e.target.value })}
+                  rows={3}
+                />
+              </div>
+
+              <Button onClick={handleTestReminders} disabled={testingReminders} className="w-full">
+                {testingReminders ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Bell className="h-4 w-4 mr-2" />}
+                Test Reminders Now
+              </Button>
+            </TabsContent>
+
+            <TabsContent value="discharge" className="space-y-4">
+              <Alert className="bg-green-50 border-green-200">
+                <AlertCircle className="h-4 w-4 text-green-600" />
+                <AlertDescription className="text-green-800">
+                  Discharge notifications are sent automatically when an episode is marked as complete. Additional placeholders: {'{'}
+                  {'{'}discharge_date{'}'}
+                  {'}'}, {'{'}
+                  {'{'}improvement_summary{'}'}
+                  {'}'}
+                </AlertDescription>
+              </Alert>
+
+              <div className="space-y-2">
+                <Label htmlFor="discharge-email-subject">Email Subject</Label>
+                <Input
+                  id="discharge-email-subject"
+                  value={settings.discharge_email_subject || ''}
+                  onChange={(e) => setSettings({ ...settings, discharge_email_subject: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="discharge-email-template">Email Template</Label>
+                <Textarea
+                  id="discharge-email-template"
+                  value={settings.discharge_email_template || ''}
+                  onChange={(e) => setSettings({ ...settings, discharge_email_template: e.target.value })}
+                  rows={10}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="discharge-sms-template">SMS Template</Label>
+                <Textarea
+                  id="discharge-sms-template"
+                  value={settings.discharge_sms_template || ''}
+                  onChange={(e) => setSettings({ ...settings, discharge_sms_template: e.target.value })}
+                  rows={3}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="outcome-reminders" className="space-y-4">
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Outcome measure reminders automatically prompt patients to complete assessments (NDI, ODI, LEFS, QuickDASH) at regular intervals during their treatment.
+                </AlertDescription>
+              </Alert>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="outcome-reminders-enabled"
+                  checked={settings.outcome_reminder_enabled ?? true}
+                  onCheckedChange={(checked) =>
+                    setSettings({ ...settings, outcome_reminder_enabled: checked })
+                  }
+                />
+                <Label htmlFor="outcome-reminders-enabled">
+                  Enable Outcome Measure Reminders
+                </Label>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="outcome-interval">Reminder Interval (Days)</Label>
+                <Input
+                  id="outcome-interval"
+                  type="number"
+                  min="1"
+                  value={settings.outcome_reminder_interval_days ?? 14}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      outcome_reminder_interval_days: parseInt(e.target.value) || 14,
+                    })
+                  }
+                />
+                <p className="text-sm text-muted-foreground">
+                  How often to remind patients to complete outcome measures (default: 14 days)
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2">
+                <Label htmlFor="outcome-email-subject">Email Subject</Label>
+                <Input
+                  id="outcome-email-subject"
+                  value={settings.outcome_reminder_email_subject || ''}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      outcome_reminder_email_subject: e.target.value,
+                    })
+                  }
+                  placeholder="Time to Complete Your Outcome Measure"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="outcome-email-template">Email Template</Label>
+                <Textarea
+                  id="outcome-email-template"
+                  value={settings.outcome_reminder_email_template || ''}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      outcome_reminder_email_template: e.target.value,
+                    })
+                  }
+                  rows={10}
+                  placeholder="Email template HTML..."
+                />
+                <p className="text-sm text-muted-foreground">
+                  Available placeholders: {'{'}
+                  {'{'}patient_name{'}'}
+                  {'}'}, {'{'}
+                  {'{'}clinic_name{'}'}
+                  {'}'}, {'{'}
+                  {'{'}clinic_phone{'}'}
+                  {'}'}, {'{'}
+                  {'{'}episode_id{'}'}
+                  {'}'}, {'{'}
+                  {'{'}clinician_name{'}'}
+                  {'}'}, {'{'}
+                  {'{'}region{'}'}
+                  {'}'}, {'{'}
+                  {'{'}outcome_tool{'}'}
+                  {'}'}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="outcome-sms-template">SMS Template</Label>
+                <Textarea
+                  id="outcome-sms-template"
+                  value={settings.outcome_reminder_sms_template || ''}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      outcome_reminder_sms_template: e.target.value,
+                    })
+                  }
+                  rows={3}
+                  placeholder="SMS template..."
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
 
-      {/* SMS Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>SMS Notification Template</CardTitle>
-          <CardDescription>
-            Customize the SMS text message sent to patients (160 character limit recommended)
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="sms-template">SMS Message</Label>
-            <Textarea
-              id="sms-template"
-              value={smsTemplate}
-              onChange={(e) => setSmsTemplate(e.target.value)}
-              rows={4}
-              placeholder="Enter SMS template..."
-            />
-            <p className="text-xs text-muted-foreground">
-              Current length: {smsTemplate.length} characters
-              {smsTemplate.length > 160 && (
-                <span className="text-amber-600 ml-2">
-                  (Warning: Message may be split into multiple SMS)
-                </span>
-              )}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Discharge Notification Templates */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-green-600" />
-            Discharge Notification Templates
-          </CardTitle>
-          <CardDescription>
-            Customize notifications sent when a patient completes their treatment episode
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <Alert className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
-            <AlertCircle className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800 dark:text-green-200">
-              These templates are sent automatically when a clinician marks an episode as discharged. Additional placeholders: <code className="font-mono text-xs">{`{{discharge_date}}, {{improvement_summary}}`}</code>
-            </AlertDescription>
-          </Alert>
-
-          <div className="space-y-2">
-            <Label htmlFor="discharge-email-subject">Discharge Email Subject</Label>
-            <Input
-              id="discharge-email-subject"
-              value={dischargeEmailSubject}
-              onChange={(e) => setDischargeEmailSubject(e.target.value)}
-              placeholder="🎉 Congratulations on Completing Your Physical Therapy!"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="discharge-email-template">Discharge Email Template (HTML)</Label>
-            <Textarea
-              id="discharge-email-template"
-              value={dischargeEmailTemplate}
-              onChange={(e) => setDischargeEmailTemplate(e.target.value)}
-              rows={12}
-              className="font-mono text-sm"
-              placeholder="Enter HTML template..."
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="discharge-sms-template">Discharge SMS Template</Label>
-            <Textarea
-              id="discharge-sms-template"
-              value={dischargeSmsTemplate}
-              onChange={(e) => setDischargeSmsTemplate(e.target.value)}
-              rows={4}
-              placeholder="Enter SMS template..."
-            />
-            <p className="text-xs text-muted-foreground">
-              Current length: {dischargeSmsTemplate.length} characters
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Notification Failure Alerts */}
       <NotificationAlertSettings />
-
-      {/* Rate Limit Configuration */}
       <RateLimitConfigPanel />
 
-      {/* Save Button */}
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={loading} size="lg">
           {loading ? (
@@ -782,7 +617,7 @@ export default function ClinicSettings() {
           ) : (
             <>
               <Save className="h-4 w-4 mr-2" />
-              Save Templates
+              Save All Settings
             </>
           )}
         </Button>
