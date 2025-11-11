@@ -142,8 +142,11 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
 
   // Initialize preview and check for duplicates when dialog opens
   useEffect(() => {
+    console.log("IntakeToEpisodeConverter useEffect triggered, open:", open);
     if (open) {
+      console.log("Dialog is opening, initializing preview for:", intakeForm.patient_name);
       const region = inferRegionFromComplaints();
+      console.log("Inferred region:", region);
       setSelectedRegion(region);
       setSelectedDiagnosis("");
       setHasDuplicate(false);
@@ -158,6 +161,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
       // Check for duplicate patients
       checkForDuplicates();
     } else {
+      console.log("Dialog is closing, resetting state");
       // Reset state when dialog closes
       setPreview(null);
       setSelectedRegion("");
