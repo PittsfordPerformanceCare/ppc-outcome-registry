@@ -28,6 +28,7 @@ import { AdvancedFilters, FilterState } from "@/components/AdvancedFilters";
 import { DateRangeComparison } from "@/components/DateRangeComparison";
 import { PendingEpisodesWidget } from "@/components/PendingEpisodesWidget";
 import { OutcomeReminderCronStatus } from "@/components/OutcomeReminderCronStatus";
+import { OutcomeReminderHistory } from "@/components/OutcomeReminderHistory";
 
 interface Episode {
   id: string;
@@ -614,6 +615,9 @@ export default function Dashboard() {
 
       {/* Outcome Reminder Cron Status */}
       <OutcomeReminderCronStatus />
+
+      {/* Outcome Reminder History */}
+      <OutcomeReminderHistory />
 
       {/* Data Visualization & Analytics Section */}
       <div className="space-y-6">
