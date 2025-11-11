@@ -6,9 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, AlertCircle, User, FileText, Filter, X, ArrowUpDown, TrendingUp, Clock, AlertTriangle } from "lucide-react";
+import { Calendar, AlertCircle, User, FileText, Filter, X, ArrowUpDown, TrendingUp, Clock, AlertTriangle, Flame } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+
+// Threshold constants (in days)
+const THRESHOLD_WARNING = 30; // Yellow warning
+const THRESHOLD_CRITICAL = 60; // Red alert
 
 interface PendingEpisode {
   id: string;
@@ -150,6 +154,20 @@ export function PendingEpisodesWidget() {
     setSortBy("priority-asc");
   };
 
+  // Helper function to get days pending
+  const getDaysPending = (createdAt: string) => {
+    const now = new Date();
+    const createdDate = new Date(createdAt);
+    return Math.floor((now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
+  // Helper function to get threshold status
+  const getThresholdStatus = (daysPending: number) => {
+    if (daysPending >= THRESHOLD_CRITICAL) return "critical";
+    if (daysPending >= THRESHOLD_WARNING) return "warning";
+    return "normal";
+  };
+
   // Calculate statistics
   const statistics = useMemo(() => {
     const pending = pendingEpisodes.filter(ep => ep.status === "pending");
@@ -177,12 +195,23 @@ export function PendingEpisodesWidget() {
       ? Math.floor((now.getTime() - new Date(oldestPending.created_at).getTime()) / (1000 * 60 * 60 * 24))
       : 0;
     
+    // Count episodes by threshold
+    const criticalCount = pending.filter(ep => getDaysPending(ep.created_at) >= THRESHOLD_CRITICAL).length;
+    const warningCount = pending.filter(ep => {
+      const days = getDaysPending(ep.created_at);
+      return days >= THRESHOLD_WARNING && days < THRESHOLD_CRITICAL;
+    }).length;
+    
     return {
       totalPending: pending.length,
       totalDeferred: deferred.length,
       avgDaysPending,
       oldestPending,
       oldestDays,
+      criticalCount,
+      warningCount,
+      oldestThresholdStatus: getThresholdStatus(oldestDays),
+      avgThresholdStatus: getThresholdStatus(avgDaysPending),
     };
   }, [pendingEpisodes]);
 
@@ -357,6 +386,28 @@ export function PendingEpisodesWidget() {
         </div>
       </CardHeader>
       <CardContent>
+        {/* Threshold Alerts */}
+        {!noEpisodes && (statistics.criticalCount > 0 || statistics.warningCount > 0) && (
+          <div className="space-y-2 mb-6">
+            {statistics.criticalCount > 0 && (
+              <Alert variant="destructive" className="border-destructive/50">
+                <Flame className="h-4 w-4" />
+                <AlertDescription>
+                  <span className="font-semibold">{statistics.criticalCount}</span> pending episode{statistics.criticalCount !== 1 ? 's' : ''} have been waiting <span className="font-semibold">over {THRESHOLD_CRITICAL} days</span> - immediate attention required
+                </AlertDescription>
+              </Alert>
+            )}
+            {statistics.warningCount > 0 && (
+              <Alert className="border-warning/50 bg-warning/5">
+                <AlertTriangle className="h-4 w-4 text-warning" />
+                <AlertDescription className="text-warning-foreground">
+                  <span className="font-semibold">{statistics.warningCount}</span> pending episode{statistics.warningCount !== 1 ? 's' : ''} have been waiting <span className="font-semibold">over {THRESHOLD_WARNING} days</span>
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
+
         {/* Statistics Panel */}
         {!noEpisodes && (
           <div className="grid gap-4 sm:grid-cols-3 mb-6">
@@ -378,24 +429,31 @@ export function PendingEpisodesWidget() {
               </CardContent>
             </Card>
 
-            <Card className="border-blue-500/20">
+            <Card className={`border-blue-500/20 ${statistics.avgThresholdStatus === 'critical' ? 'ring-2 ring-destructive' : statistics.avgThresholdStatus === 'warning' ? 'ring-2 ring-warning' : ''}`}>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Avg Days Pending</p>
                     <div className="flex items-baseline gap-2 mt-2">
-                      <p className="text-3xl font-bold text-blue-500">{statistics.avgDaysPending}</p>
+                      <p className={`text-3xl font-bold ${statistics.avgThresholdStatus === 'critical' ? 'text-destructive' : statistics.avgThresholdStatus === 'warning' ? 'text-warning' : 'text-blue-500'}`}>
+                        {statistics.avgDaysPending}
+                      </p>
                       <span className="text-sm text-muted-foreground">days</span>
                     </div>
+                    {statistics.avgThresholdStatus !== 'normal' && (
+                      <Badge variant={statistics.avgThresholdStatus === 'critical' ? 'destructive' : 'outline'} className="mt-2 text-xs">
+                        {statistics.avgThresholdStatus === 'critical' ? 'Critical' : 'Warning'}
+                      </Badge>
+                    )}
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <Clock className="h-6 w-6 text-blue-500" />
+                  <div className={`h-12 w-12 rounded-full flex items-center justify-center ${statistics.avgThresholdStatus === 'critical' ? 'bg-destructive/10' : statistics.avgThresholdStatus === 'warning' ? 'bg-warning/10' : 'bg-blue-500/10'}`}>
+                    <Clock className={`h-6 w-6 ${statistics.avgThresholdStatus === 'critical' ? 'text-destructive' : statistics.avgThresholdStatus === 'warning' ? 'text-warning' : 'text-blue-500'}`} />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="border-warning/20">
+            <Card className={`border-warning/20 ${statistics.oldestThresholdStatus === 'critical' ? 'ring-2 ring-destructive' : statistics.oldestThresholdStatus === 'warning' ? 'ring-2 ring-warning' : ''}`}>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
@@ -403,7 +461,9 @@ export function PendingEpisodesWidget() {
                     <div className="flex items-baseline gap-2 mt-2">
                       {statistics.oldestPending ? (
                         <>
-                          <p className="text-3xl font-bold text-warning">{statistics.oldestDays}</p>
+                          <p className={`text-3xl font-bold ${statistics.oldestThresholdStatus === 'critical' ? 'text-destructive' : statistics.oldestThresholdStatus === 'warning' ? 'text-warning' : 'text-warning'}`}>
+                            {statistics.oldestDays}
+                          </p>
                           <span className="text-sm text-muted-foreground">days</span>
                         </>
                       ) : (
@@ -411,13 +471,24 @@ export function PendingEpisodesWidget() {
                       )}
                     </div>
                     {statistics.oldestPending && (
-                      <p className="text-xs text-muted-foreground mt-1 truncate">
-                        {statistics.oldestPending.patient_name}
-                      </p>
+                      <>
+                        <p className="text-xs text-muted-foreground mt-1 truncate">
+                          {statistics.oldestPending.patient_name}
+                        </p>
+                        {statistics.oldestThresholdStatus !== 'normal' && (
+                          <Badge variant={statistics.oldestThresholdStatus === 'critical' ? 'destructive' : 'outline'} className="mt-1 text-xs">
+                            {statistics.oldestThresholdStatus === 'critical' ? 'Critical' : 'Warning'}
+                          </Badge>
+                        )}
+                      </>
                     )}
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-warning/10 flex items-center justify-center">
-                    <AlertTriangle className="h-6 w-6 text-warning" />
+                  <div className={`h-12 w-12 rounded-full flex items-center justify-center ${statistics.oldestThresholdStatus === 'critical' ? 'bg-destructive/10' : statistics.oldestThresholdStatus === 'warning' ? 'bg-warning/10' : 'bg-warning/10'}`}>
+                    {statistics.oldestThresholdStatus === 'critical' ? (
+                      <Flame className="h-6 w-6 text-destructive" />
+                    ) : (
+                      <AlertTriangle className="h-6 w-6 text-warning" />
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -469,37 +540,69 @@ export function PendingEpisodesWidget() {
                 </div>
 
                 <div className="space-y-2 pl-6">
-                  {episodes.map((episode) => (
-                    <div key={episode.id} className="flex items-start justify-between text-sm">
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Badge variant={episode.status === "pending" ? "secondary" : "outline"} className="text-xs">
-                            Priority #{episode.complaint_priority}
-                          </Badge>
-                          <Badge variant="outline" className="text-xs">
-                            {episode.complaint_category || "General"}
-                          </Badge>
-                          {episode.status === "deferred" && (
-                            <Badge variant="outline" className="text-xs text-warning">
-                              Deferred
+                  {episodes.map((episode) => {
+                    const daysPending = getDaysPending(episode.created_at);
+                    const thresholdStatus = getThresholdStatus(daysPending);
+                    
+                    return (
+                      <div 
+                        key={episode.id} 
+                        className={`flex items-start justify-between text-sm rounded-md p-2 ${
+                          thresholdStatus === 'critical' ? 'bg-destructive/5 border-l-4 border-destructive' :
+                          thresholdStatus === 'warning' ? 'bg-warning/5 border-l-4 border-warning' : ''
+                        }`}
+                      >
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge variant={episode.status === "pending" ? "secondary" : "outline"} className="text-xs">
+                              Priority #{episode.complaint_priority}
                             </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {episode.complaint_category || "General"}
+                            </Badge>
+                            {episode.status === "deferred" && (
+                              <Badge variant="outline" className="text-xs text-warning">
+                                Deferred
+                              </Badge>
+                            )}
+                            {episode.status === "pending" && (
+                              <>
+                                {thresholdStatus === 'critical' && (
+                                  <Badge variant="destructive" className="text-xs gap-1">
+                                    <Flame className="h-3 w-3" />
+                                    {daysPending}d - Critical
+                                  </Badge>
+                                )}
+                                {thresholdStatus === 'warning' && (
+                                  <Badge variant="outline" className="text-xs gap-1 text-warning border-warning">
+                                    <AlertTriangle className="h-3 w-3" />
+                                    {daysPending}d - Warning
+                                  </Badge>
+                                )}
+                                {thresholdStatus === 'normal' && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {daysPending} day{daysPending !== 1 ? 's' : ''} pending
+                                  </Badge>
+                                )}
+                              </>
+                            )}
+                          </div>
+                          <p className="text-muted-foreground">{episode.complaint_text}</p>
+                          {episode.deferred_reason && (
+                            <p className="text-xs text-muted-foreground italic">
+                              Reason: {episode.deferred_reason}
+                            </p>
+                          )}
+                          {episode.scheduled_date && (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              Scheduled: {format(new Date(episode.scheduled_date), "MMM dd, yyyy")}
+                            </p>
                           )}
                         </div>
-                        <p className="text-muted-foreground">{episode.complaint_text}</p>
-                        {episode.deferred_reason && (
-                          <p className="text-xs text-muted-foreground italic">
-                            Reason: {episode.deferred_reason}
-                          </p>
-                        )}
-                        {episode.scheduled_date && (
-                          <p className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            Scheduled: {format(new Date(episode.scheduled_date), "MMM dd, yyyy")}
-                          </p>
-                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
