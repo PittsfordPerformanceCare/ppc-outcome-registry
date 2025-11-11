@@ -130,6 +130,29 @@ export function PatientMergeHistory() {
 
   const hasDateFilters = dateFrom || dateTo;
 
+  const setQuickFilter = (preset: 'last7' | 'last30' | 'lastQuarter' | 'lastYear') => {
+    const now = new Date();
+    const from = new Date();
+    
+    switch (preset) {
+      case 'last7':
+        from.setDate(now.getDate() - 7);
+        break;
+      case 'last30':
+        from.setDate(now.getDate() - 30);
+        break;
+      case 'lastQuarter':
+        from.setMonth(now.getMonth() - 3);
+        break;
+      case 'lastYear':
+        from.setFullYear(now.getFullYear() - 1);
+        break;
+    }
+    
+    setDateFrom(from);
+    setDateTo(now);
+  };
+
   const exportToCSV = () => {
     try {
       const dataToExport = filteredMergeHistory;
@@ -320,74 +343,121 @@ export function PatientMergeHistory() {
         {/* Date Range Filter */}
         {mergeHistory.length > 0 && (
           <Card className="border-dashed">
-            <CardContent className="pt-6">
-              <div className="flex items-end gap-4 flex-wrap">
-                <div className="flex-1 min-w-[200px] space-y-2">
-                  <label className="text-sm font-medium">From Date</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !dateFrom && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateFrom ? format(dateFrom, "PPP") : "Select start date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={dateFrom}
-                        onSelect={setDateFrom}
-                        initialFocus
-                        className={cn("p-3 pointer-events-auto")}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                <div className="flex-1 min-w-[200px] space-y-2">
-                  <label className="text-sm font-medium">To Date</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !dateTo && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {dateTo ? format(dateTo, "PPP") : "Select end date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={dateTo}
-                        onSelect={setDateTo}
-                        disabled={(date) => dateFrom ? date < dateFrom : false}
-                        initialFocus
-                        className={cn("p-3 pointer-events-auto")}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                {hasDateFilters && (
+            <CardContent className="pt-6 space-y-4">
+              {/* Quick Filter Presets */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Quick Filters</label>
+                <div className="flex flex-wrap gap-2">
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    onClick={clearDateFilters}
+                    onClick={() => setQuickFilter('last7')}
                     className="gap-2"
                   >
-                    <X className="h-4 w-4" />
-                    Clear Filters
+                    <CalendarRange className="h-4 w-4" />
+                    Last 7 Days
                   </Button>
-                )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setQuickFilter('last30')}
+                    className="gap-2"
+                  >
+                    <CalendarRange className="h-4 w-4" />
+                    Last 30 Days
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setQuickFilter('lastQuarter')}
+                    className="gap-2"
+                  >
+                    <CalendarRange className="h-4 w-4" />
+                    Last Quarter
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setQuickFilter('lastYear')}
+                    className="gap-2"
+                  >
+                    <CalendarRange className="h-4 w-4" />
+                    Last Year
+                  </Button>
+                </div>
+              </div>
+
+              {/* Custom Date Range */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Custom Date Range</label>
+                <div className="flex items-end gap-4 flex-wrap">
+                  <div className="flex-1 min-w-[200px] space-y-2">
+                    <label className="text-sm text-muted-foreground">From Date</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !dateFrom && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {dateFrom ? format(dateFrom, "PPP") : "Select start date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={dateFrom}
+                          onSelect={setDateFrom}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="flex-1 min-w-[200px] space-y-2">
+                    <label className="text-sm text-muted-foreground">To Date</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !dateTo && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {dateTo ? format(dateTo, "PPP") : "Select end date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={dateTo}
+                          onSelect={setDateTo}
+                          disabled={(date) => dateFrom ? date < dateFrom : false}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  {hasDateFilters && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearDateFilters}
+                      className="gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      Clear
+                    </Button>
+                  )}
+                </div>
               </div>
 
               {hasDateFilters && (
