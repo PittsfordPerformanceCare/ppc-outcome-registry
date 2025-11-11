@@ -487,6 +487,46 @@ export default function Dashboard() {
   const avgOutcomeImprovement = calculateOutcomeImprovement();
   const avgDaysToDischarge = calculateAvgDaysToDischarge();
 
+  // Calculate MCID statistics (must be before early return to satisfy Rules of Hooks)
+  const mcidStatistics = useMemo(() => {
+    const completedEpisodes = episodesWithScores.filter(e => 
+      e.dischargeScores && Object.keys(e.dischargeScores).length > 0
+    );
+    
+    let totalAchieved = 0;
+    let totalImprovementSum = 0;
+    let measurementCount = 0;
+
+    completedEpisodes.forEach(episode => {
+      if (episode.baselineScores && episode.dischargeScores) {
+        const summary = calculateMCIDSummary(
+          episode.baselineScores,
+          episode.dischargeScores
+        );
+        if (summary.achievedMCID > 0) {
+          totalAchieved++;
+        }
+        totalImprovementSum += summary.averageImprovement;
+        measurementCount++;
+      }
+    });
+
+    const achievementRate = completedEpisodes.length > 0
+      ? (totalAchieved / completedEpisodes.length) * 100
+      : 0;
+    
+    const averageImprovement = measurementCount > 0
+      ? totalImprovementSum / measurementCount
+      : 0;
+
+    return {
+      totalCompletedEpisodes: completedEpisodes.length,
+      episodesAchievingMCID: totalAchieved,
+      achievementRate,
+      averageImprovement
+    };
+  }, [episodesWithScores]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -788,44 +828,7 @@ export default function Dashboard() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {/* MCID Success Rate */}
         <MCIDStatisticsCard 
-          statistics={useMemo(() => {
-            const completedEpisodes = episodesWithScores.filter(e => 
-              e.dischargeScores && Object.keys(e.dischargeScores).length > 0
-            );
-            
-            let totalAchieved = 0;
-            let totalImprovementSum = 0;
-            let measurementCount = 0;
-
-            completedEpisodes.forEach(episode => {
-              if (episode.baselineScores && episode.dischargeScores) {
-                const summary = calculateMCIDSummary(
-                  episode.baselineScores,
-                  episode.dischargeScores
-                );
-                if (summary.achievedMCID > 0) {
-                  totalAchieved++;
-                }
-                totalImprovementSum += summary.averageImprovement;
-                measurementCount++;
-              }
-            });
-
-            const achievementRate = completedEpisodes.length > 0
-              ? (totalAchieved / completedEpisodes.length) * 100
-              : 0;
-            
-            const averageImprovement = measurementCount > 0
-              ? totalImprovementSum / measurementCount
-              : 0;
-
-            return {
-              totalCompletedEpisodes: completedEpisodes.length,
-              episodesAchievingMCID: totalAchieved,
-              achievementRate,
-              averageImprovement
-            };
-          }, [episodesWithScores])}
+          statistics={mcidStatistics}
         />
         
         <Card>
