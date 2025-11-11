@@ -41,6 +41,9 @@ interface IntakeForm {
   current_medications?: string;
   allergies?: string;
   medical_history?: string;
+  surgery_history?: string;
+  hospitalization_history?: string;
+  specialist_seen?: string;
   chief_complaint: string;
   injury_date?: string;
   injury_mechanism?: string;
@@ -269,6 +272,44 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
         .eq("id", user.id)
         .single();
 
+      // Build comprehensive medical history from intake form
+      const medicalHistoryParts: string[] = [];
+      
+      if (intakeForm.medical_history) {
+        medicalHistoryParts.push(`**Medical History:** ${intakeForm.medical_history}`);
+      }
+      if (intakeForm.allergies) {
+        medicalHistoryParts.push(`**Allergies:** ${intakeForm.allergies}`);
+      }
+      if (intakeForm.surgery_history) {
+        medicalHistoryParts.push(`**Surgery History:** ${intakeForm.surgery_history}`);
+      }
+      if (intakeForm.hospitalization_history) {
+        medicalHistoryParts.push(`**Hospitalization History:** ${intakeForm.hospitalization_history}`);
+      }
+      if (intakeForm.specialist_seen) {
+        medicalHistoryParts.push(`**Specialists Seen:** ${intakeForm.specialist_seen}`);
+      }
+      if (intakeForm.primary_care_physician) {
+        medicalHistoryParts.push(`**Primary Care Physician:** ${intakeForm.primary_care_physician}`);
+      }
+      
+      const comprehensiveMedicalHistory = medicalHistoryParts.length > 0 
+        ? medicalHistoryParts.join('\n\n') 
+        : "";
+
+      // Build comprehensive injury mechanism including symptoms
+      const injuryDetails: string[] = [];
+      if (intakeForm.injury_mechanism) {
+        injuryDetails.push(intakeForm.injury_mechanism);
+      }
+      if (intakeForm.symptoms) {
+        injuryDetails.push(`Symptoms: ${intakeForm.symptoms}`);
+      }
+      const comprehensiveInjuryMechanism = injuryDetails.length > 0 
+        ? injuryDetails.join(' | ') 
+        : "";
+
       // Create episode
       const newEpisodeData = {
         patient_name: intakeForm.patient_name,
@@ -279,13 +320,13 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
         clinician: profile?.clinician_name || profile?.full_name || "",
         npi: profile?.npi || "",
         injury_date: intakeForm.injury_date || null,
-        injury_mechanism: intakeForm.injury_mechanism || "",
+        injury_mechanism: comprehensiveInjuryMechanism,
         referring_physician: intakeForm.referring_physician || "",
         insurance: intakeForm.insurance_provider || "",
         emergency_contact: intakeForm.emergency_contact_name || "",
         emergency_phone: intakeForm.emergency_contact_phone || "",
         medications: intakeForm.current_medications || "",
-        medical_history: intakeForm.medical_history || "",
+        medical_history: comprehensiveMedicalHistory,
         functional_limitations: preview?.functionalLimitations || [],
         prior_treatments: preview?.priorTreatments || [],
         pain_level: intakeForm.pain_level?.toString() || "",
