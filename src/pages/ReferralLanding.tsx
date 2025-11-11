@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart, Shield, Clock, Users } from "lucide-react";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const ReferralLanding = () => {
+  const { referralCode: urlCode } = useParams<{ referralCode: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -15,14 +16,15 @@ const ReferralLanding = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const code = searchParams.get("ref");
+    // Support both URL param (/referral/CODE) and query param (?ref=CODE)
+    const code = urlCode || searchParams.get("ref");
     if (code) {
       setReferralCode(code);
       validateReferralCode(code);
     } else {
       setLoading(false);
     }
-  }, [searchParams]);
+  }, [urlCode, searchParams]);
 
   const validateReferralCode = async (code: string) => {
     try {
