@@ -23,3 +23,18 @@ verify_jwt = false
 
 [functions.process-scheduled-exports]
 verify_jwt = false
+
+[functions.retry-failed-webhooks]
+verify_jwt = false
+
+[functions.send-comparison-report]
+verify_jwt = false
+
+[functions.send-engagement-report]
+verify_jwt = false
+
+[functions.track-comparison-open]
+verify_jwt = false
+
+[functions.track-comparison-click]
+verify_jwt = false
