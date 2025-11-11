@@ -268,9 +268,8 @@ export default function IntakeReview() {
     );
   }
 
-  if (selectedForm) {
-    return (
-      <div className="mx-auto max-w-4xl space-y-6">
+  const detailView = selectedForm ? (
+    <div className="mx-auto max-w-4xl space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Intake Form Details</h1>
@@ -515,12 +514,11 @@ export default function IntakeReview() {
           </div>
         </div>
       </div>
-    );
-  }
+  ) : null;
 
   const availableForSelection = intakeForms.filter(f => !f.converted_to_episode_id);
 
-  return (
+  const listView = (
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -624,7 +622,13 @@ export default function IntakeReview() {
           })}
         </div>
       )}
+    </div>
+  );
 
+  return (
+    <>
+      {selectedForm ? detailView : listView}
+      
       {/* Single Conversion Dialog */}
       {formToConvert && (
         <>
@@ -655,6 +659,6 @@ export default function IntakeReview() {
           onSuccess={handleConversionSuccess}
         />
       )}
-    </div>
+    </>
   );
 }
