@@ -175,28 +175,30 @@ export function BulkIntakeConverter({
         try {
           const region = inferRegionFromComplaints(intake);
           
-          const newEpisodeData = {
-            patient_name: intake.patient_name,
-            date_of_birth: intake.date_of_birth,
-            region,
-            diagnosis: intake.chief_complaint,
-            date_of_service: new Date().toISOString().split('T')[0],
-            clinician: profile?.clinician_name || profile?.full_name || "",
-            npi: profile?.npi || "",
-            injury_date: intake.injury_date || null,
-            injury_mechanism: intake.injury_mechanism || "",
-            referring_physician: intake.referring_physician || "",
-            insurance: intake.insurance_provider || "",
-            emergency_contact: intake.emergency_contact_name || "",
-            emergency_phone: intake.emergency_contact_phone || "",
-            medications: intake.current_medications || "",
-            medical_history: intake.medical_history || "",
-            functional_limitations: extractFunctionalLimitations(intake),
-            prior_treatments: extractPriorTreatments(intake),
-            pain_level: intake.pain_level?.toString() || "",
-            user_id: user.id,
-            clinic_id: profile?.clinic_id || null
-          };
+      const newEpisodeData = {
+        patient_name: intake.patient_name,
+        date_of_birth: intake.date_of_birth,
+        region,
+        diagnosis: intake.chief_complaint,
+        date_of_service: new Date().toISOString().split('T')[0],
+        clinician: profile?.clinician_name || profile?.full_name || "",
+        npi: profile?.npi || "",
+        injury_date: intake.injury_date || null,
+        injury_mechanism: intake.injury_mechanism || "",
+        referring_physician: intake.referring_physician || "",
+        insurance: intake.insurance_provider || "",
+        emergency_contact: intake.emergency_contact_name || "",
+        emergency_phone: intake.emergency_contact_phone || "",
+        medications: intake.current_medications || "",
+        medical_history: intake.medical_history || "",
+        functional_limitations: extractFunctionalLimitations(intake),
+        prior_treatments: extractPriorTreatments(intake),
+        pain_level: intake.pain_level?.toString() || "",
+        user_id: user.id,
+        clinic_id: profile?.clinic_id || null,
+        complaint_priority: 1, // Primary complaint
+        source_intake_form_id: intake.id
+      };
 
           const createdEpisode = await createEpisode(newEpisodeData);
 
@@ -212,6 +214,36 @@ export function BulkIntakeConverter({
             .eq("id", intake.id);
 
           if (updateError) throw updateError;
+
+          // Create pending episodes for remaining complaints (if any)
+          if (intake.complaints && Array.isArray(intake.complaints)) {
+            const sortedComplaints = [...intake.complaints]
+              .filter((c: any) => c.priority && c.priority > 1)
+              .sort((a: any, b: any) => (a.priority || 999) - (b.priority || 999));
+
+            if (sortedComplaints.length > 0) {
+              for (const complaint of sortedComplaints) {
+                try {
+                  await supabase
+                    .from('pending_episodes')
+                    .insert({
+                      intake_form_id: intake.id,
+                      complaint_priority: complaint.priority,
+                      complaint_category: complaint.category,
+                      complaint_text: complaint.text,
+                      patient_name: intake.patient_name,
+                      date_of_birth: intake.date_of_birth,
+                      status: 'pending',
+                      previous_episode_id: createdEpisode.id,
+                      user_id: user.id,
+                      clinic_id: profile?.clinic_id || null
+                    });
+                } catch (err) {
+                  console.error('Failed to create pending episode:', err);
+                }
+              }
+            }
+          }
 
           // Send notification to patient
           try {

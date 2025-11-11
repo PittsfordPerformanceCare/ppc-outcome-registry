@@ -420,6 +420,7 @@ export type Database = {
           cis_pre: number | null
           clinic_id: string | null
           clinician: string | null
+          complaint_priority: number | null
           compliance_notes: string | null
           compliance_rating: string | null
           created_at: string
@@ -454,6 +455,7 @@ export type Database = {
           region: string
           reminder_sent_at: string | null
           resolution_days: string | null
+          source_intake_form_id: string | null
           start_date: string | null
           treatment_goals: Json | null
           updated_at: string
@@ -466,6 +468,7 @@ export type Database = {
           cis_pre?: number | null
           clinic_id?: string | null
           clinician?: string | null
+          complaint_priority?: number | null
           compliance_notes?: string | null
           compliance_rating?: string | null
           created_at?: string
@@ -500,6 +503,7 @@ export type Database = {
           region: string
           reminder_sent_at?: string | null
           resolution_days?: string | null
+          source_intake_form_id?: string | null
           start_date?: string | null
           treatment_goals?: Json | null
           updated_at?: string
@@ -512,6 +516,7 @@ export type Database = {
           cis_pre?: number | null
           clinic_id?: string | null
           clinician?: string | null
+          complaint_priority?: number | null
           compliance_notes?: string | null
           compliance_rating?: string | null
           created_at?: string
@@ -546,6 +551,7 @@ export type Database = {
           region?: string
           reminder_sent_at?: string | null
           resolution_days?: string | null
+          source_intake_form_id?: string | null
           start_date?: string | null
           treatment_goals?: Json | null
           updated_at?: string
@@ -558,6 +564,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episodes_source_intake_form_id_fkey"
+            columns: ["source_intake_form_id"]
+            isOneToOne: false
+            referencedRelation: "intake_forms"
             referencedColumns: ["id"]
           },
           {
@@ -888,6 +901,7 @@ export type Database = {
           date_from: string
           date_to: string
           id: string
+          is_shared: boolean
           name: string
           updated_at: string
           user_id: string
@@ -898,6 +912,7 @@ export type Database = {
           date_from: string
           date_to: string
           id?: string
+          is_shared?: boolean
           name: string
           updated_at?: string
           user_id: string
@@ -908,6 +923,7 @@ export type Database = {
           date_from?: string
           date_to?: string
           id?: string
+          is_shared?: boolean
           name?: string
           updated_at?: string
           user_id?: string
@@ -1186,6 +1202,91 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pending_episodes: {
+        Row: {
+          clinic_id: string | null
+          complaint_category: string | null
+          complaint_priority: number
+          complaint_text: string | null
+          converted_at: string | null
+          converted_to_episode_id: string | null
+          created_at: string
+          date_of_birth: string
+          deferred_reason: string | null
+          id: string
+          intake_form_id: string
+          notes: string | null
+          patient_name: string
+          previous_episode_id: string | null
+          scheduled_date: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          complaint_category?: string | null
+          complaint_priority: number
+          complaint_text?: string | null
+          converted_at?: string | null
+          converted_to_episode_id?: string | null
+          created_at?: string
+          date_of_birth: string
+          deferred_reason?: string | null
+          id?: string
+          intake_form_id: string
+          notes?: string | null
+          patient_name: string
+          previous_episode_id?: string | null
+          scheduled_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          complaint_category?: string | null
+          complaint_priority?: number
+          complaint_text?: string | null
+          converted_at?: string | null
+          converted_to_episode_id?: string | null
+          created_at?: string
+          date_of_birth?: string
+          deferred_reason?: string | null
+          id?: string
+          intake_form_id?: string
+          notes?: string | null
+          patient_name?: string
+          previous_episode_id?: string | null
+          scheduled_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_episodes_converted_to_episode_id_fkey"
+            columns: ["converted_to_episode_id"]
+            isOneToOne: false
+            referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_episodes_intake_form_id_fkey"
+            columns: ["intake_form_id"]
+            isOneToOne: false
+            referencedRelation: "intake_forms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_episodes_previous_episode_id_fkey"
+            columns: ["previous_episode_id"]
+            isOneToOne: false
+            referencedRelation: "episodes"
             referencedColumns: ["id"]
           },
         ]

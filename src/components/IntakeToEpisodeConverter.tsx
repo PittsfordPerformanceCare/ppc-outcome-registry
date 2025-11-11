@@ -290,7 +290,9 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
         prior_treatments: preview?.priorTreatments || [],
         pain_level: intakeForm.pain_level?.toString() || "",
         user_id: user.id,
-        clinic_id: profile?.clinic_id || null
+        clinic_id: profile?.clinic_id || null,
+        complaint_priority: 1, // This is for the primary complaint
+        source_intake_form_id: intakeForm.id
       };
 
       const createdEpisode = await createEpisode(newEpisodeData);
@@ -314,6 +316,47 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
         .eq("id", intakeForm.id);
 
       if (updateError) throw updateError;
+
+      // Create pending episodes for remaining complaints (if any)
+      if (intakeForm.complaints && Array.isArray(intakeForm.complaints)) {
+        const sortedComplaints = [...intakeForm.complaints]
+          .filter(c => c.priority && c.priority > 1) // Get complaints after the primary
+          .sort((a, b) => (a.priority || 999) - (b.priority || 999));
+
+        if (sortedComplaints.length > 0) {
+          console.log(`Creating ${sortedComplaints.length} pending episodes for remaining complaints`);
+          
+          for (const complaint of sortedComplaints) {
+            try {
+              const { error: pendingError } = await supabase
+                .from('pending_episodes')
+                .insert({
+                  intake_form_id: intakeForm.id,
+                  complaint_priority: complaint.priority,
+                  complaint_category: complaint.category,
+                  complaint_text: complaint.text,
+                  patient_name: intakeForm.patient_name,
+                  date_of_birth: intakeForm.date_of_birth,
+                  status: 'pending',
+                  previous_episode_id: episodeId,
+                  user_id: user.id,
+                  clinic_id: profile?.clinic_id || null
+                });
+
+              if (pendingError) {
+                console.error('Error creating pending episode:', pendingError);
+              }
+            } catch (err) {
+              console.error('Failed to create pending episode:', err);
+            }
+          }
+
+          toast.success(
+            `Episode created! ${sortedComplaints.length} additional complaint${sortedComplaints.length > 1 ? 's' : ''} queued for future treatment.`,
+            { duration: 5000 }
+          );
+        }
+      }
 
       // Send notification to patient with episode confirmation
       try {
