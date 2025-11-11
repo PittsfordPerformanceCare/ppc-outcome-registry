@@ -1350,6 +1350,48 @@ export type Database = {
         }
         Relationships: []
       }
+      zapier_webhook_config: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          enabled: boolean
+          id: string
+          last_triggered_at: string | null
+          name: string
+          threshold_value: number | null
+          trigger_type: string
+          updated_at: string
+          user_id: string
+          webhook_url: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_triggered_at?: string | null
+          name: string
+          threshold_value?: number | null
+          trigger_type: string
+          updated_at?: string
+          user_id: string
+          webhook_url: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_triggered_at?: string | null
+          name?: string
+          threshold_value?: number | null
+          trigger_type?: string
+          updated_at?: string
+          user_id?: string
+          webhook_url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

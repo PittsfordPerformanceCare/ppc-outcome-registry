@@ -22,6 +22,7 @@ import { ComparisonReportScheduler } from "./ComparisonReportScheduler";
 import { ComparisonReportAnalytics } from "./ComparisonReportAnalytics";
 import { RecipientEngagementAnalytics } from "./RecipientEngagementAnalytics";
 import { EngagementReportScheduler } from "./EngagementReportScheduler";
+import { ZapierWebhookConfig } from "./ZapierWebhookConfig";
 
 interface ScheduledExport {
   id: string;
@@ -1457,6 +1458,8 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
               <ComparisonReportAnalytics />
               
               <RecipientEngagementAnalytics />
+              
+              <ZapierWebhookConfig />
               
               <EngagementReportScheduler />
               

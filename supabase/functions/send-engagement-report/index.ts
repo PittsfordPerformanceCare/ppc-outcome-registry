@@ -275,6 +275,23 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Report sent successfully to ${schedule.recipient_emails.length} recipient(s)`);
 
+    // Trigger Zapier webhooks
+    await triggerWebhooks(supabase, schedule.user_id, 'report_sent', summary);
+
+    // Check for threshold-based triggers
+    if (summary.avgOpenRate < 30) {
+      await triggerWebhooks(supabase, schedule.user_id, 'low_open_rate', summary, 30);
+    }
+    if (summary.avgClickRate < 10) {
+      await triggerWebhooks(supabase, schedule.user_id, 'low_click_rate', summary, 10);
+    }
+    if (summary.avgOpenRate >= 75) {
+      await triggerWebhooks(supabase, schedule.user_id, 'high_engagement', summary, 75);
+    }
+    if (summary.avgOpenRate < 25) {
+      await triggerWebhooks(supabase, schedule.user_id, 'low_engagement', summary, 25);
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true,
@@ -322,6 +339,77 @@ function calculateNextSendAt(frequency: string, sendDay: string, sendTime: strin
     const targetDate = parseInt(sendDay);
     const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, targetDate, hours, minutes, 0, 0);
     return nextMonth.toISOString();
+  }
+}
+
+async function triggerWebhooks(
+  supabase: any,
+  userId: string,
+  triggerType: string,
+  summary: any,
+  threshold?: number
+) {
+  try {
+    // Get enabled webhooks for this trigger type
+    const { data: webhooks, error } = await supabase
+      .from('zapier_webhook_config')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('trigger_type', triggerType)
+      .eq('enabled', true);
+
+    if (error || !webhooks || webhooks.length === 0) {
+      return;
+    }
+
+    // Trigger each webhook
+    for (const webhook of webhooks) {
+      // Check threshold if applicable
+      if (threshold && webhook.threshold_value) {
+        const shouldTrigger = 
+          (triggerType === 'low_open_rate' && summary.avgOpenRate < webhook.threshold_value) ||
+          (triggerType === 'low_click_rate' && summary.avgClickRate < webhook.threshold_value) ||
+          (triggerType === 'high_engagement' && summary.avgOpenRate >= webhook.threshold_value) ||
+          (triggerType === 'low_engagement' && summary.avgOpenRate < webhook.threshold_value);
+        
+        if (!shouldTrigger) continue;
+      }
+
+      try {
+        const response = await fetch(webhook.webhook_url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            trigger_type: triggerType,
+            timestamp: new Date().toISOString(),
+            webhook_name: webhook.name,
+            data: {
+              total_recipients: summary.totalRecipients,
+              avg_open_rate: summary.avgOpenRate,
+              avg_click_rate: summary.avgClickRate,
+              total_sent: summary.totalSent,
+              threshold_value: webhook.threshold_value,
+            },
+          }),
+        });
+
+        if (response.ok) {
+          // Update last triggered timestamp
+          await supabase
+            .from('zapier_webhook_config')
+            .update({ last_triggered_at: new Date().toISOString() })
+            .eq('id', webhook.id);
+
+          console.log(`Webhook triggered successfully: ${webhook.name}`);
+        }
+      } catch (webhookError) {
+        console.error(`Error triggering webhook ${webhook.name}:`, webhookError);
+      }
+    }
+  } catch (error) {
+    console.error('Error in triggerWebhooks:', error);
   }
 }
 
