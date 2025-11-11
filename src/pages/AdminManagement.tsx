@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Shield, ShieldOff, Users, Building2, Clock } from "lucide-react";
 import { ClinicBrandingSettings } from "@/components/ClinicBrandingSettings";
 import { PendingEpisodeThresholdManagement } from "@/components/PendingEpisodeThresholdManagement";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface UserWithRole {
   id: string;
@@ -20,31 +21,12 @@ interface UserWithRole {
 const AdminManagement = () => {
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
+  const { isAdmin } = useUserRole();
 
   useEffect(() => {
     loadUsers();
-    checkAdminStatus();
   }, []);
-
-  const checkAdminStatus = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", user.id)
-          .eq("role", "admin")
-          .maybeSingle();
-        
-        setIsAdmin(!!data);
-      }
-    } catch (error) {
-      console.error("Error checking admin status:", error);
-    }
-  };
 
   const loadUsers = async () => {
     try {

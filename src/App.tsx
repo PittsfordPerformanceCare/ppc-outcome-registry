@@ -77,8 +77,22 @@ const App = () => (
                     <Route path="/dashboards" element={<Dashboards />} />
                     <Route path="/pcp-summary" element={<PCPSummary />} />
                     <Route path="/episode-summary" element={<EpisodeSummary />} />
-                    <Route path="/admin" element={<AdminManagement />} />
-                    <Route path="/compliance" element={<ComplianceAudit />} />
+                    <Route
+                      path="/admin"
+                      element={
+                        <ProtectedRoute requireAdmin>
+                          <AdminManagement />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/compliance"
+                      element={
+                        <ProtectedRoute requireAdmin>
+                          <ComplianceAudit />
+                        </ProtectedRoute>
+                      }
+                    />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/intake-review" element={<IntakeReview />} />
                     <Route path="/intake-validation" element={<IntakeValidation />} />
@@ -93,7 +107,14 @@ const App = () => (
                     <Route path="/automation-status" element={<AutomationStatus />} />
                     <Route path="/clinician-inbox" element={<ClinicianInbox />} />
                     <Route path="/quick-start" element={<ClinicianQuickStart />} />
-                    <Route path="/admin-quick-start" element={<AdministratorQuickStart />} />
+                    <Route
+                      path="/admin-quick-start"
+                      element={
+                        <ProtectedRoute requireAdmin>
+                          <AdministratorQuickStart />
+                        </ProtectedRoute>
+                      }
+                    />
                     <Route path="/analytics-dashboard" element={<AnalyticsDashboard />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
