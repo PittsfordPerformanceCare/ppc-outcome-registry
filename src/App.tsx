@@ -39,6 +39,7 @@ import ClinicianInbox from "./pages/ClinicianInbox";
 import PatientWelcome from "./pages/PatientWelcome";
 import ClinicianQuickStart from "./pages/ClinicianQuickStart";
 import AdministratorQuickStart from "./pages/AdministratorQuickStart";
+import PatientQuickStart from "./pages/PatientQuickStart";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/patient-episode/:id" element={<PatientEpisodeView />} />
           <Route path="/patient-preferences" element={<PatientNotificationPreferences />} />
           <Route path="/patient-intake" element={<PatientIntake />} />
+          <Route path="/patient-quick-start" element={<PatientQuickStart />} />
           <Route path="/intake-start" element={<IntakeStart />} />
           <Route path="/referral/:referralCode" element={<ReferralLanding />} />
           

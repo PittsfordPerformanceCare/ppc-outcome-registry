@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy, Settings, HeartPulse } from "lucide-react";
+import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy, Settings, HeartPulse, BookOpen } from "lucide-react";
 import { format } from "date-fns";
 import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
 import { PatientAchievements } from "@/components/PatientAchievements";
@@ -373,15 +373,23 @@ export default function PatientDashboard() {
           <div className="flex gap-2">
             <Button 
               variant="outline" 
+              onClick={() => navigate("/patient-quick-start")}
+              className="gap-2"
+            >
+              <BookOpen className="h-4 w-4" />
+              <span className="hidden sm:inline">Quick Start</span>
+            </Button>
+            <Button 
+              variant="outline" 
               onClick={() => navigate("/patient-preferences")}
               className="gap-2"
             >
               <Settings className="h-4 w-4" />
-              Preferences
+              <span className="hidden sm:inline">Preferences</span>
             </Button>
             <Button variant="outline" onClick={handleSignOut} className="gap-2">
               <LogOut className="h-4 w-4" />
-              Sign Out
+              <span className="hidden sm:inline">Sign Out</span>
             </Button>
           </div>
         </div>
