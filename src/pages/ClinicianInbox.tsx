@@ -179,7 +179,19 @@ export default function ClinicianInbox() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("patient_messages")
-        .select("*")
+        .select(`
+          *,
+          patient_accounts (
+            full_name,
+            email,
+            phone
+          ),
+          episodes (
+            patient_name,
+            region,
+            clinician
+          )
+        `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -194,7 +206,19 @@ export default function ClinicianInbox() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("patient_messages")
-        .select("*")
+        .select(`
+          *,
+          patient_accounts (
+            full_name,
+            email,
+            phone
+          ),
+          episodes (
+            patient_name,
+            region,
+            clinician
+          )
+        `)
         .eq("message_type", "callback_request")
         .order("created_at", { ascending: false });
 
