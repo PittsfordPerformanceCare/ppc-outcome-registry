@@ -11,7 +11,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -1268,38 +1269,56 @@ export default function PatientIntake() {
                   Please describe each separate issue or condition you'd like evaluated. Use the category dropdown to specify the body region. <strong>Rank your concerns in order of priority</strong> (1 = treat first, 2 = treat second, etc.). We'll create treatment episodes in the order you prioritize.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-4">
+              <CardContent className="space-y-6">
+                {/* Complaint Overview Summary */}
+                {fields.length > 1 && (
+                  <Alert className="bg-primary/5 border-primary/20">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      <p className="font-medium mb-2">You're reporting {fields.length} concerns</p>
+                      <p className="text-sm text-muted-foreground">
+                        We'll create separate treatment episodes for each concern in the priority order you specify. 
+                        Priority #1 will be converted to an active episode first, and the rest will be queued for future treatment.
+                      </p>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="space-y-6">
                   {fields.map((field, index) => (
-                    <div key={field.id} className="space-y-4 p-4 border rounded-lg relative bg-card">
-                      <div className="flex items-start justify-between gap-2">
-                        {/* Priority Selector */}
-                        <div className="flex items-center gap-3">
+                    <div key={field.id} className="space-y-4 p-5 border-2 rounded-lg relative bg-card shadow-sm hover:shadow-md transition-shadow">
+                      {/* Header with Priority and Remove */}
+                      <div className="flex items-start justify-between gap-2 pb-3 border-b">
+                        <div className="flex items-center gap-3 flex-1">
+                          {/* Complaint Number Badge */}
+                          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
+                            {index + 1}
+                          </div>
+                          
+                          {/* Priority Selector */}
                           <FormField
                             control={form.control}
                             name={`complaints.${index}.priority`}
                             render={({ field: priorityField }) => (
-                              <FormItem className="flex items-center space-y-0">
-                                <FormLabel className="text-sm font-medium mr-2">Priority:</FormLabel>
+                              <FormItem className="flex items-center space-y-0 gap-2">
+                                <FormLabel className="text-sm font-medium whitespace-nowrap">Treatment Priority:</FormLabel>
                                 <Select 
                                   onValueChange={(value) => {
                                     const newPriority = parseInt(value);
-                                    // Set this complaint's priority
                                     priorityField.onChange(newPriority);
-                                    // Update isPrimary based on priority
                                     form.setValue(`complaints.${index}.isPrimary`, newPriority === 1);
                                   }} 
                                   value={priorityField.value?.toString()}
                                 >
                                   <FormControl>
-                                    <SelectTrigger className="w-24">
+                                    <SelectTrigger className="w-28 h-9">
                                       <SelectValue placeholder="Rank" />
                                     </SelectTrigger>
                                   </FormControl>
-                                  <SelectContent>
+                                  <SelectContent className="bg-background">
                                     {Array.from({ length: fields.length }, (_, i) => i + 1).map((num) => (
                                       <SelectItem key={num} value={num.toString()}>
-                                        {num === 1 ? `${num}st` : num === 2 ? `${num}nd` : num === 3 ? `${num}rd` : `${num}th`}
+                                        #{num} {num === 1 ? "(First)" : num === 2 ? "(Second)" : ""}
                                       </SelectItem>
                                     ))}
                                   </SelectContent>
@@ -1307,12 +1326,17 @@ export default function PatientIntake() {
                               </FormItem>
                             )}
                           />
+                          
+                          {/* Primary Badge */}
                           {form.watch(`complaints.${index}.priority`) === 1 && (
-                            <Badge variant="default" className="gap-1">
-                              🎯 Primary
+                            <Badge variant="default" className="gap-1 animate-scale-in">
+                              <CheckCircle2 className="h-3 w-3" />
+                              Primary Concern
                             </Badge>
                           )}
                         </div>
+                        
+                        {/* Remove Button */}
                         {fields.length > 1 && (
                           <Button
                             type="button"
@@ -1320,6 +1344,7 @@ export default function PatientIntake() {
                             size="sm"
                             onClick={() => {
                               remove(index);
+                              toast.success("Concern removed");
                               // Reorder remaining priorities
                               setTimeout(() => {
                                 const remaining = form.getValues('complaints');
@@ -1332,26 +1357,28 @@ export default function PatientIntake() {
                                   });
                               }, 100);
                             }}
+                            className="shrink-0"
                           >
                             <X className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
 
+                      {/* Basic Info */}
                       <div className="grid gap-4 sm:grid-cols-2">
                         <FormField
                           control={form.control}
                           name={`complaints.${index}.category`}
                           render={({ field: categoryField }) => (
                             <FormItem>
-                              <FormLabel>Body Region/Category *</FormLabel>
+                              <FormLabel>Body Region *</FormLabel>
                               <Select onValueChange={categoryField.onChange} value={categoryField.value}>
                                 <FormControl>
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select body region" />
                                   </SelectTrigger>
                                 </FormControl>
-                                <SelectContent>
+                                <SelectContent className="bg-background">
                                   {COMPLAINT_CATEGORIES.map((category) => (
                                     <SelectItem key={category} value={category}>
                                       {category}
@@ -1376,7 +1403,7 @@ export default function PatientIntake() {
                                     <SelectValue placeholder="Select severity" />
                                   </SelectTrigger>
                                 </FormControl>
-                                <SelectContent>
+                                <SelectContent className="bg-background">
                                   {SEVERITY_LEVELS.map((severity) => (
                                     <SelectItem key={severity} value={severity}>
                                       {severity}
@@ -1402,7 +1429,7 @@ export default function PatientIntake() {
                                   <SelectValue placeholder="Select duration" />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent>
+                              <SelectContent className="bg-background">
                                 {DURATION_OPTIONS.map((duration) => (
                                   <SelectItem key={duration} value={duration}>
                                     {duration}
@@ -1420,11 +1447,14 @@ export default function PatientIntake() {
                         name={`complaints.${index}.text`}
                         render={({ field: textField }) => (
                           <FormItem>
-                            <FormLabel>Description *</FormLabel>
+                            <FormLabel>Describe This Concern *</FormLabel>
+                            <FormDescription>
+                              Be as detailed as possible about this specific issue
+                            </FormDescription>
                             <FormControl>
                               <Textarea 
-                                placeholder="Describe this specific concern in detail..." 
-                                rows={3} 
+                                placeholder="Example: Sharp pain in left shoulder when reaching overhead, difficulty sleeping on that side, started after lifting heavy boxes at work..." 
+                                rows={4} 
                                 {...textField} 
                               />
                             </FormControl>
@@ -1438,11 +1468,22 @@ export default function PatientIntake() {
                   <Button
                     type="button"
                     variant="outline"
-                    size="sm"
-                    onClick={() => append({ text: "", category: "", severity: "", duration: "", isPrimary: false })}
-                    className="w-full"
+                    size="lg"
+                    onClick={() => {
+                      const nextPriority = fields.length + 1;
+                      append({ 
+                        text: "", 
+                        category: "", 
+                        severity: "", 
+                        duration: "", 
+                        isPrimary: false,
+                        priority: nextPriority 
+                      });
+                      toast.success(`Concern #${nextPriority} added`);
+                    }}
+                    className="w-full border-dashed border-2 hover:border-primary hover:bg-primary/5"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-5 w-5 mr-2" />
                     Add Another Concern
                   </Button>
 
@@ -1453,70 +1494,81 @@ export default function PatientIntake() {
                   )}
                 </div>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                {/* Additional Details Section */}
+                <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-primary" />
+                    Additional Details (Applied to Primary Concern)
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    These details will be associated with your priority #1 concern
+                  </p>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="injuryDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>When did this start?</FormLabel>
+                          <FormControl>
+                            <Input type="date" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="painLevel"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Current Pain Level (0-10)</FormLabel>
+                          <FormControl>
+                            <div className="pt-2">
+                              <Slider
+                                value={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                                max={10}
+                                step={1}
+                              />
+                              <div className="mt-2 text-center text-2xl font-bold">{field.value}</div>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                   <FormField
                     control={form.control}
-                    name="injuryDate"
+                    name="injuryMechanism"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>When did this start?</FormLabel>
+                        <FormLabel>How did this happen?</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <Textarea placeholder="Describe how the injury or condition occurred" rows={2} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
-                    name="painLevel"
+                    name="symptoms"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Current Pain Level (0-10)</FormLabel>
+                        <FormLabel>Current Symptoms</FormLabel>
                         <FormControl>
-                          <div className="pt-2">
-                            <Slider
-                              value={[field.value]}
-                              onValueChange={(value) => field.onChange(value[0])}
-                              max={10}
-                              step={1}
-                            />
-                            <div className="mt-2 text-center text-2xl font-bold">{field.value}</div>
-                          </div>
+                          <Textarea placeholder="Describe your symptoms (pain, stiffness, weakness, etc.)" rows={3} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="injuryMechanism"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>How did this happen?</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Describe how the injury or condition occurred" rows={2} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="symptoms"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Current Symptoms</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Describe your symptoms (pain, stiffness, weakness, etc.)" rows={3} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </CardContent>
             </Card>
 
