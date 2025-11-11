@@ -142,9 +142,11 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
 
   // Initialize preview and check for duplicates when dialog opens
   useEffect(() => {
-    if (open && !preview) {
+    if (open) {
       const region = inferRegionFromComplaints();
       setSelectedRegion(region);
+      setSelectedDiagnosis("");
+      setHasDuplicate(false);
       setPreview({
         region,
         diagnosis: intakeForm.chief_complaint,
@@ -155,6 +157,12 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
 
       // Check for duplicate patients
       checkForDuplicates();
+    } else {
+      // Reset state when dialog closes
+      setPreview(null);
+      setSelectedRegion("");
+      setSelectedDiagnosis("");
+      setHasDuplicate(false);
     }
   }, [open]);
 
