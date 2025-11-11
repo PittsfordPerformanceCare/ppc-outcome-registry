@@ -9,10 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, AlertCircle, User, FileText, Filter, X, ArrowUpDown, TrendingUp, Clock, AlertTriangle, Flame } from "lucide-react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { PendingEpisodeThresholdSettings } from "./PendingEpisodeThresholdSettings";
 
-// Threshold constants (in days)
-const THRESHOLD_WARNING = 30; // Yellow warning
-const THRESHOLD_CRITICAL = 60; // Red alert
+// Default thresholds (will be overridden by database settings)
+const DEFAULT_THRESHOLD_WARNING = 30;
+const DEFAULT_THRESHOLD_CRITICAL = 60;
 
 interface PendingEpisode {
   id: string;
@@ -36,13 +37,16 @@ export function PendingEpisodesWidget() {
   const [filterPatientName, setFilterPatientName] = useState("");
   const [filterPriority, setFilterPriority] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("priority-asc");
+  const [thresholdWarning, setThresholdWarning] = useState(DEFAULT_THRESHOLD_WARNING);
+  const [thresholdCritical, setThresholdCritical] = useState(DEFAULT_THRESHOLD_CRITICAL);
   const navigate = useNavigate();
 
   useEffect(() => {
     loadPendingEpisodes();
+    loadThresholds();
 
-    // Set up realtime subscription
-    const channel = supabase
+    // Set up realtime subscription for pending episodes
+    const episodesChannel = supabase
       .channel('pending-episodes-changes')
       .on(
         'postgres_changes',
@@ -57,8 +61,25 @@ export function PendingEpisodesWidget() {
       )
       .subscribe();
 
+    // Set up realtime subscription for threshold changes
+    const thresholdsChannel = supabase
+      .channel('threshold-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'pending_episode_thresholds'
+        },
+        () => {
+          loadThresholds();
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(episodesChannel);
+      supabase.removeChannel(thresholdsChannel);
     };
   }, []);
 
@@ -77,6 +98,25 @@ export function PendingEpisodesWidget() {
       console.error("Error loading pending episodes:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadThresholds = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("pending_episode_thresholds")
+        .select("*")
+        .is("clinic_id", null)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        setThresholdWarning(data.warning_days);
+        setThresholdCritical(data.critical_days);
+      }
+    } catch (error) {
+      console.error("Error loading thresholds:", error);
     }
   };
 
@@ -163,8 +203,8 @@ export function PendingEpisodesWidget() {
 
   // Helper function to get threshold status
   const getThresholdStatus = (daysPending: number) => {
-    if (daysPending >= THRESHOLD_CRITICAL) return "critical";
-    if (daysPending >= THRESHOLD_WARNING) return "warning";
+    if (daysPending >= thresholdCritical) return "critical";
+    if (daysPending >= thresholdWarning) return "warning";
     return "normal";
   };
 
@@ -196,10 +236,10 @@ export function PendingEpisodesWidget() {
       : 0;
     
     // Count episodes by threshold
-    const criticalCount = pending.filter(ep => getDaysPending(ep.created_at) >= THRESHOLD_CRITICAL).length;
+    const criticalCount = pending.filter(ep => getDaysPending(ep.created_at) >= thresholdCritical).length;
     const warningCount = pending.filter(ep => {
       const days = getDaysPending(ep.created_at);
-      return days >= THRESHOLD_WARNING && days < THRESHOLD_CRITICAL;
+      return days >= thresholdWarning && days < thresholdCritical;
     }).length;
     
     return {
@@ -213,7 +253,7 @@ export function PendingEpisodesWidget() {
       oldestThresholdStatus: getThresholdStatus(oldestDays),
       avgThresholdStatus: getThresholdStatus(avgDaysPending),
     };
-  }, [pendingEpisodes]);
+  }, [pendingEpisodes, thresholdWarning, thresholdCritical]);
 
   const handleViewDischarge = (episodeId: string) => {
     navigate(`/discharge?episode=${episodeId}`);
@@ -261,6 +301,7 @@ export function PendingEpisodesWidget() {
             <div className="flex gap-2">
               {!noEpisodes && (
                 <>
+                  <PendingEpisodeThresholdSettings />
                   <Button
                     variant="ghost"
                     size="sm"
@@ -393,7 +434,7 @@ export function PendingEpisodesWidget() {
               <Alert variant="destructive" className="border-destructive/50">
                 <Flame className="h-4 w-4" />
                 <AlertDescription>
-                  <span className="font-semibold">{statistics.criticalCount}</span> pending episode{statistics.criticalCount !== 1 ? 's' : ''} have been waiting <span className="font-semibold">over {THRESHOLD_CRITICAL} days</span> - immediate attention required
+                  <span className="font-semibold">{statistics.criticalCount}</span> pending episode{statistics.criticalCount !== 1 ? 's' : ''} have been waiting <span className="font-semibold">over {thresholdCritical} days</span> - immediate attention required
                 </AlertDescription>
               </Alert>
             )}
@@ -401,7 +442,7 @@ export function PendingEpisodesWidget() {
               <Alert className="border-warning/50 bg-warning/5">
                 <AlertTriangle className="h-4 w-4 text-warning" />
                 <AlertDescription className="text-warning-foreground">
-                  <span className="font-semibold">{statistics.warningCount}</span> pending episode{statistics.warningCount !== 1 ? 's' : ''} have been waiting <span className="font-semibold">over {THRESHOLD_WARNING} days</span>
+                  <span className="font-semibold">{statistics.warningCount}</span> pending episode{statistics.warningCount !== 1 ? 's' : ''} have been waiting <span className="font-semibold">over {thresholdWarning} days</span>
                 </AlertDescription>
               </Alert>
             )}

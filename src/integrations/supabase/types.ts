@@ -1206,6 +1206,33 @@ export type Database = {
           },
         ]
       }
+      pending_episode_thresholds: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          critical_days: number
+          id: string
+          updated_at: string
+          warning_days: number
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          critical_days?: number
+          id?: string
+          updated_at?: string
+          warning_days?: number
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          critical_days?: number
+          id?: string
+          updated_at?: string
+          warning_days?: number
+        }
+        Relationships: []
+      }
       pending_episodes: {
         Row: {
           clinic_id: string | null
