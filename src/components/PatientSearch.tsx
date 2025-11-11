@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, User, Calendar, FileText, ChevronDown, ChevronUp, Filter, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
+import { PatientMerge } from "./PatientMerge";
 
 interface PatientData {
   patient_name: string;
@@ -159,17 +161,24 @@ export function PatientSearch({ onPatientSelect }: PatientSearchProps) {
   };
 
   return (
-    <Card className="border-primary/20">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Search className="h-5 w-5" />
-          Patient Search
-        </CardTitle>
-        <CardDescription>
-          Search for existing patients to view their history and create a new episode
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <Tabs defaultValue="search" className="w-full">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="search">Patient Search</TabsTrigger>
+        <TabsTrigger value="merge">Merge Duplicates</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="search">
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Search className="h-5 w-5" />
+              Patient Search
+            </CardTitle>
+            <CardDescription>
+              Search for existing patients to view their history and create a new episode
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="patient-search">Search by Patient Name</Label>
           <div className="relative">
@@ -379,5 +388,11 @@ export function PatientSearch({ onPatientSelect }: PatientSearchProps) {
         )}
       </CardContent>
     </Card>
+      </TabsContent>
+
+      <TabsContent value="merge">
+        <PatientMerge />
+      </TabsContent>
+    </Tabs>
   );
 }
