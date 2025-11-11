@@ -19,6 +19,8 @@ import RecoverySnapshot from "@/components/RecoverySnapshot";
 import CareTeamAccess from "@/components/CareTeamAccess";
 import { addDays } from "date-fns";
 import { PatientDashboardSkeleton } from "@/components/skeletons/PatientDashboardSkeleton";
+import { PullToRefresh } from "@/components/PullToRefresh";
+import { useHaptics } from "@/hooks/useHaptics";
 
 interface PatientEpisode {
   id: string;
@@ -37,6 +39,7 @@ export default function PatientDashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { success } = useHaptics();
   const [loading, setLoading] = useState(true);
   const [episodes, setEpisodes] = useState<PatientEpisode[]>([]);
   const [rewards, setRewards] = useState<any[]>([]);
@@ -170,6 +173,14 @@ export default function PatientDashboard() {
     navigate("/patient-auth");
   };
 
+  const handleRefresh = async () => {
+    if (user) {
+      await loadPatientData(user.id);
+      await refreshRewards();
+      success();
+    }
+  };
+
   const handleClaimCode = async () => {
     if (!accessCode || accessCode.length !== 8) {
       toast({
@@ -233,8 +244,9 @@ export default function PatientDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-      <div className="container mx-auto max-w-6xl py-8 space-y-6">
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <div className="container mx-auto max-w-6xl py-8 space-y-6">
         {/* Header with Personalized Greeting */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -502,7 +514,8 @@ export default function PatientDashboard() {
             <PatientReferralDashboard patientId={user?.id || ''} />
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </div>
+    </PullToRefresh>
   );
 }

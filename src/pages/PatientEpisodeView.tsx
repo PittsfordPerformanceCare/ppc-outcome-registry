@@ -22,6 +22,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import ShareProgress from "@/components/ShareProgress";
 import PostDischargeFeedback from "@/components/PostDischargeFeedback";
 import { PatientEpisodeViewSkeleton } from "@/components/skeletons/PatientEpisodeViewSkeleton";
+import { PullToRefresh } from "@/components/PullToRefresh";
+import { useHaptics } from "@/hooks/useHaptics";
 
 interface EpisodeData {
   id: string;
@@ -53,6 +55,7 @@ export default function PatientEpisodeView() {
   const [searchParams] = useSearchParams();
   const episodeId = searchParams.get("id");
   const { toast } = useToast();
+  const { success } = useHaptics();
 
   const [loading, setLoading] = useState(true);
   const [episode, setEpisode] = useState<EpisodeData | null>(null);
@@ -144,6 +147,11 @@ export default function PatientEpisodeView() {
     }
   };
 
+  const handleRefresh = async () => {
+    await checkAccessAndLoadData();
+    success();
+  };
+
   const prepareChartData = () => {
     if (scores.length === 0) return [];
 
@@ -198,8 +206,9 @@ export default function PatientEpisodeView() {
   const isCompleted = !!episode.discharge_date;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-      <div className="container mx-auto max-w-5xl py-8 space-y-6">
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+        <div className="container mx-auto max-w-5xl py-8 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <Button variant="outline" onClick={() => navigate("/patient-dashboard")} className="gap-2">
@@ -417,7 +426,8 @@ export default function PatientEpisodeView() {
             onComplete={() => setFeedbackGiven(true)}
           />
         )}
+        </div>
       </div>
-    </div>
+    </PullToRefresh>
   );
 }
