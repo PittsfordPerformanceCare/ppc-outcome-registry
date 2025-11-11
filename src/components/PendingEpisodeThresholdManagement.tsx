@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Trash2, RefreshCw, Globe, Building2, Download, Upload } from "lucide-react";
+import { AlertCircle, Trash2, RefreshCw, Globe, Building2, Download, Upload, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { PendingEpisodeThresholdSettings } from "./PendingEpisodeThresholdSettings";
 
@@ -94,6 +94,36 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
       toast.error("Failed to delete threshold configuration");
     } finally {
       setDeleting(null);
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    try {
+      // Create CSV with example data
+      const headers = ["Clinic ID", "Clinic Name", "Warning Days", "Critical Days"];
+      const examples = [
+        ["GLOBAL", "Global Default", "30", "60"],
+        ["clinic-uuid-123", "Downtown Physical Therapy", "21", "45"],
+        ["clinic-uuid-456", "Sports Medicine Center", "14", "30"],
+      ];
+      
+      const csvRows = [headers.join(","), ...examples.map(row => row.join(","))];
+      const csvContent = csvRows.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute("href", url);
+      link.setAttribute("download", "threshold-import-template.csv");
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Template downloaded successfully");
+    } catch (error: any) {
+      console.error("Error downloading template:", error);
+      toast.error("Failed to download template");
     }
   };
 
@@ -249,7 +279,16 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
               View and manage warning and critical day thresholds across all clinics
             </CardDescription>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadTemplate}
+              className="gap-2"
+            >
+              <FileText className="h-4 w-4" />
+              Download Template
+            </Button>
             <Button
               variant="outline"
               size="sm"
