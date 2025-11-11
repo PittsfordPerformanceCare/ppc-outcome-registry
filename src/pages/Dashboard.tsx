@@ -26,6 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExportScheduler } from "@/components/ExportScheduler";
 import { AdvancedFilters, FilterState } from "@/components/AdvancedFilters";
 import { DateRangeComparison } from "@/components/DateRangeComparison";
+import { PendingEpisodesWidget } from "@/components/PendingEpisodesWidget";
 
 interface Episode {
   id: string;
@@ -606,6 +607,9 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Pending Episodes Widget */}
+      <PendingEpisodesWidget />
 
       {/* Data Visualization & Analytics Section */}
       <div className="space-y-6">
