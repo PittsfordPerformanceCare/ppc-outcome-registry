@@ -69,7 +69,7 @@ interface FollowupData {
 
 export default function PCPSummary() {
   const [searchParams] = useSearchParams();
-  const episodeId = searchParams.get("episodeId");
+  const episodeId = searchParams.get("episode");
 
   const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
   const [followup, setFollowup] = useState<FollowupData | null>(null);
