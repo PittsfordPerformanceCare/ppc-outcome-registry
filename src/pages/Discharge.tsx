@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Send, Link2, Mail, AlertCircle } from "lucide-react";
+import { FileText, Send, Link2, Mail, AlertCircle, ArrowLeft, Home } from "lucide-react";
 import { toast } from "sonner";
 import { NDIForm } from "@/components/forms/NDIForm";
 import { ODIForm } from "@/components/forms/ODIForm";
@@ -247,6 +247,16 @@ export default function Discharge() {
         <div>
           <h1 className="text-3xl font-bold">Discharge Assessment</h1>
           <p className="mt-2 text-muted-foreground">Complete discharge, generate PCP summary, and enroll in 90-day follow-up</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => navigate(-1)} className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/")} className="gap-2">
+            <Home className="h-4 w-4" />
+            Home
+          </Button>
         </div>
       </div>
 

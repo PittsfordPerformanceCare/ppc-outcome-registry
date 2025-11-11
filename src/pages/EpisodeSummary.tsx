@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { getEpisode, getOutcomeScores, getFollowup } from "@/lib/dbOperations";
 import { supabase } from "@/integrations/supabase/client";
 import { calculatePatientJourney } from "@/lib/journeyMilestones";
@@ -25,7 +25,8 @@ import {
   Clock,
   FileText,
   AlertCircle,
-  Printer
+  Printer,
+  Home
 } from "lucide-react";
 import { format } from "date-fns";
 import { getMCIDThreshold } from "@/lib/mcidUtils";
@@ -64,6 +65,7 @@ interface FollowupData {
 }
 
 export default function EpisodeSummary() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const episodeId = searchParams.get("id");
   const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
@@ -198,12 +200,10 @@ export default function EpisodeSummary() {
           <CardContent className="py-12 text-center">
             <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             <p className="text-muted-foreground">Episode not found</p>
-            <Link to="/">
-              <Button className="mt-4" variant="outline">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Dashboard
-              </Button>
-            </Link>
+            <Button className="mt-4" variant="outline" onClick={() => navigate("/")}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -236,18 +236,18 @@ export default function EpisodeSummary() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <Link to="/">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Dashboard
-              </Button>
-            </Link>
-          </div>
           <h1 className="text-3xl font-bold text-primary">Episode Summary</h1>
           <p className="text-muted-foreground print:hidden">Complete patient journey and outcomes</p>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => navigate(-1)} className="gap-2 print:hidden">
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/")} className="gap-2 print:hidden">
+            <Home className="h-4 w-4" />
+            Home
+          </Button>
           {isCompleted && episode.baselineScores && episode.dischargeScores && (
             <MCIDReportDialog
               patientName={episode.patientName}
@@ -715,18 +715,18 @@ export default function EpisodeSummary() {
         <CardContent>
           <div className="flex flex-wrap gap-3">
             {!hasFollowup && !isCompleted && (
-              <Link to={`/follow-up?episodeId=${episode.episodeId}`}>
-                <Button>Schedule Follow-up</Button>
-              </Link>
+              <Button onClick={() => navigate(`/follow-up?episodeId=${episode.episodeId}`)}>
+                Schedule Follow-up
+              </Button>
             )}
             {!isCompleted && (
-              <Link to={`/discharge?episodeId=${episode.episodeId}`}>
-                <Button variant="outline">Complete Discharge</Button>
-              </Link>
+              <Button variant="outline" onClick={() => navigate(`/discharge?episodeId=${episode.episodeId}`)}>
+                Complete Discharge
+              </Button>
             )}
-            <Link to={`/pcp-summary?episodeId=${episode.episodeId}`}>
-              <Button variant="outline">Generate PCP Summary</Button>
-            </Link>
+            <Button variant="outline" onClick={() => navigate(`/pcp-summary?episode=${episode.episodeId}`)}>
+              Generate PCP Summary
+            </Button>
             <Button variant="outline" onClick={() => window.print()}>
               Print Summary
             </Button>
