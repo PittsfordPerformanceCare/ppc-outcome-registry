@@ -89,6 +89,53 @@ const DataGovernance = () => {
         </Card>
       </div>
 
+      {/* Platform-Wide Coverage Notice */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-primary" />
+            Unified Platform Governance
+          </CardTitle>
+          <CardDescription>
+            All data governance policies apply across the entire platform
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-sm space-y-3">
+            <p className="font-medium">
+              Our data governance framework provides comprehensive protection across <strong>all platform components</strong>, including:
+            </p>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="font-medium text-primary">Clinician Portal</p>
+                <ul className="space-y-1 text-muted-foreground text-xs">
+                  <li>• Patient management dashboard</li>
+                  <li>• Intake review and validation</li>
+                  <li>• Episode tracking and discharge</li>
+                  <li>• Analytics and reporting</li>
+                  <li>• Administrative settings</li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <p className="font-medium text-primary">Patient Companion App</p>
+                <ul className="space-y-1 text-muted-foreground text-xs">
+                  <li>• Patient authentication and access</li>
+                  <li>• Self-service intake forms</li>
+                  <li>• Progress tracking and outcome measures</li>
+                  <li>• Appointment reminders</li>
+                  <li>• Post-discharge follow-up</li>
+                </ul>
+              </div>
+            </div>
+            <div className="bg-background rounded-lg p-4 border">
+              <p className="text-xs text-muted-foreground">
+                <strong className="text-foreground">Same Infrastructure, Same Protection:</strong> Both the clinician portal and patient companion app share the same backend database, security controls, encryption standards, audit logging, and compliance framework. Whether data is entered by a clinician or a patient, it receives identical HIPAA-compliant protection with role-based access control, Row Level Security policies, and comprehensive audit trails.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
