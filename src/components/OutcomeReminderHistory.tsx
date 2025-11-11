@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Loader2, Search, Mail, MessageSquare, CheckCircle2, XCircle, Clock, RefreshCw, ExternalLink } from "lucide-react";
+import { Loader2, Search, Mail, MessageSquare, CheckCircle2, XCircle, Clock, RefreshCw, ExternalLink, Download } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -122,6 +122,71 @@ export function OutcomeReminderHistory() {
     return <MessageSquare className="h-4 w-4 text-green-500" />;
   };
 
+  const exportToCSV = () => {
+    if (filteredReminders.length === 0) {
+      toast.error('No data to export');
+      return;
+    }
+
+    const headers = [
+      'Date & Time',
+      'Type',
+      'Status',
+      'Patient Name',
+      'Episode ID',
+      'Clinician',
+      'Contact (Email)',
+      'Contact (Phone)',
+      'Email Opens',
+      'Link Clicks',
+      'Retry Count',
+      'Error Message'
+    ];
+
+    const rows = filteredReminders.map((reminder) => [
+      format(new Date(reminder.sent_at), 'yyyy-MM-dd HH:mm:ss'),
+      reminder.notification_type === 'outcome_reminder' ? 'Email' : 'SMS',
+      reminder.status,
+      reminder.patient_name,
+      reminder.episode_id,
+      reminder.clinician_name,
+      reminder.patient_email || '',
+      reminder.patient_phone || '',
+      reminder.open_count?.toString() || '0',
+      reminder.click_count?.toString() || '0',
+      reminder.retry_count?.toString() || '0',
+      reminder.error_message || ''
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => 
+        row.map(cell => {
+          // Escape quotes and wrap in quotes if contains comma, quote, or newline
+          const cellStr = String(cell);
+          if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+            return `"${cellStr.replace(/"/g, '""')}"`;
+          }
+          return cellStr;
+        }).join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `outcome-reminders-${format(new Date(), 'yyyy-MM-dd-HHmmss')}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.success(`Exported ${filteredReminders.length} reminders to CSV`);
+  };
+
   if (loading) {
     return (
       <Card>
@@ -142,10 +207,21 @@ export function OutcomeReminderHistory() {
               Detailed log of all outcome measure reminders sent to patients
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchReminders}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={exportToCSV}
+              disabled={filteredReminders.length === 0}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={fetchReminders}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
