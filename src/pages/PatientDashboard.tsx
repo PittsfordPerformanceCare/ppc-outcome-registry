@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy } from "lucide-react";
+import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
 import { PatientAchievements } from "@/components/PatientAchievements";
@@ -203,10 +203,20 @@ export default function PatientDashboard() {
               <p className="text-muted-foreground">Welcome back!</p>
             </div>
           </div>
-          <Button variant="outline" onClick={handleSignOut} className="gap-2">
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate("/patient-preferences")}
+              className="gap-2"
+            >
+              <Settings className="h-4 w-4" />
+              Preferences
+            </Button>
+            <Button variant="outline" onClick={handleSignOut} className="gap-2">
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </Button>
+          </div>
         </div>
 
         {/* PWA Install Prompt */}

@@ -21,6 +21,7 @@ import PatientIntake from "./pages/PatientIntake";
 import PatientAuth from "./pages/PatientAuth";
 import PatientDashboard from "./pages/PatientDashboard";
 import PatientEpisodeView from "./pages/PatientEpisodeView";
+import PatientNotificationPreferences from "./pages/PatientNotificationPreferences";
 import IntakeReview from "./pages/IntakeReview";
 import IntakeStart from "./pages/IntakeStart";
 import IntakeValidation from "./pages/IntakeValidation";
@@ -47,6 +48,7 @@ const App = () => (
           <Route path="/patient-auth" element={<PatientAuth />} />
           <Route path="/patient-dashboard" element={<PatientDashboard />} />
           <Route path="/patient-episode" element={<PatientEpisodeView />} />
+          <Route path="/patient-preferences" element={<PatientNotificationPreferences />} />
           <Route
             path="/*"
             element={
