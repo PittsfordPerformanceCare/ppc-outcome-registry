@@ -57,6 +57,7 @@ export default function IntakeReview() {
   const [selectedIntakes, setSelectedIntakes] = useState<Set<string>>(new Set());
   const [bulkConvertDialogOpen, setBulkConvertDialogOpen] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
+  const [preparingBulkConversion, setPreparingBulkConversion] = useState(false);
 
   useEffect(() => {
     loadIntakeForms();
@@ -162,28 +163,36 @@ export default function IntakeReview() {
       return;
     }
 
-    // Validate selected intakes
-    const result = validateBulkIntakes(selectedForms);
-    
-    // Check for duplicate patients
-    const duplicates = await checkForDuplicatePatients(selectedForms);
-    
-    // Add duplicate warnings to validation result
-    duplicates.forEach((episodeId, intakeId) => {
-      const validated = result.validatedIntakes.find(v => v.id === intakeId);
-      if (validated) {
-        validated.issues.push({
-          severity: "warning",
-          message: `Patient may have an existing active episode (ID: ${episodeId})`,
-          field: "duplicate"
-        });
-        validated.hasExistingEpisode = true;
-        validated.existingEpisodeId = episodeId;
-      }
-    });
+    setPreparingBulkConversion(true);
 
-    setValidationResult(result);
-    setBulkConvertDialogOpen(true);
+    try {
+      // Validate selected intakes
+      const result = validateBulkIntakes(selectedForms);
+      
+      // Check for duplicate patients
+      const duplicates = await checkForDuplicatePatients(selectedForms);
+      
+      // Add duplicate warnings to validation result
+      duplicates.forEach((episodeId, intakeId) => {
+        const validated = result.validatedIntakes.find(v => v.id === intakeId);
+        if (validated) {
+          validated.issues.push({
+            severity: "warning",
+            message: `Patient may have an existing active episode (ID: ${episodeId})`,
+            field: "duplicate"
+          });
+          validated.hasExistingEpisode = true;
+          validated.existingEpisodeId = episodeId;
+        }
+      });
+
+      setValidationResult(result);
+      setBulkConvertDialogOpen(true);
+    } catch (error: any) {
+      toast.error(`Validation failed: ${error.message}`);
+    } finally {
+      setPreparingBulkConversion(false);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -478,9 +487,19 @@ export default function IntakeReview() {
                   size="sm"
                   onClick={handleBulkConvert}
                   className="gap-2"
+                  disabled={preparingBulkConversion}
                 >
-                  <Layers className="h-4 w-4" />
-                  Convert Selected
+                  {preparingBulkConversion ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Validating...
+                    </>
+                  ) : (
+                    <>
+                      <Layers className="h-4 w-4" />
+                      Convert Selected
+                    </>
+                  )}
                 </Button>
               </>
             )}
