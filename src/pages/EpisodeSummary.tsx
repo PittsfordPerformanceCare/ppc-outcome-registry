@@ -8,6 +8,7 @@ import { PatientJourneyTimeline } from "@/components/PatientJourneyTimeline";
 import { MCIDSummaryCard } from "@/components/MCIDSummaryCard";
 import { MCIDAchievementCard } from "@/components/MCIDAchievementCard";
 import { MCIDReportDialog } from "@/components/MCIDReportDialog";
+import { PatientAccessManager } from "@/components/PatientAccessManager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -718,6 +719,14 @@ export default function EpisodeSummary() {
           </CardContent>
         </Card>
       )}
+
+      {/* Patient Portal Access */}
+      <div className="print:hidden">
+        <PatientAccessManager
+          episodeId={episode.episodeId}
+          patientName={episode.patientName}
+        />
+      </div>
 
       {/* Actions */}
       <Card>
