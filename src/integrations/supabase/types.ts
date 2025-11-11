@@ -332,6 +332,42 @@ export type Database = {
           },
         ]
       }
+      custom_email_templates: {
+        Row: {
+          category: string
+          clinic_id: string
+          created_at: string
+          description: string | null
+          html: string
+          id: string
+          name: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          clinic_id: string
+          created_at?: string
+          description?: string | null
+          html: string
+          id?: string
+          name: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          clinic_id?: string
+          created_at?: string
+          description?: string | null
+          html?: string
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       episodes: {
         Row: {
           cis_delta: number | null

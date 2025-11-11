@@ -3,8 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Check, Eye, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { Check, Eye, Sparkles, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface EmailTemplate {
   id: string;
@@ -14,6 +27,8 @@ interface EmailTemplate {
   subject: string;
   html: string;
   preview: string;
+  isCustom?: boolean;
+  clinic_id?: string;
 }
 
 const EMAIL_TEMPLATES: EmailTemplate[] = [
@@ -339,10 +354,77 @@ interface EmailTemplateGalleryProps {
 export function EmailTemplateGallery({ onSelectTemplate }: EmailTemplateGalleryProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
+  const [customTemplates, setCustomTemplates] = useState<EmailTemplate[]>([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState<EmailTemplate | null>(null);
+  const { user } = useAuth();
 
+  useEffect(() => {
+    fetchCustomTemplates();
+  }, []);
+
+  const fetchCustomTemplates = async () => {
+    if (!user) return;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("clinic_id")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.clinic_id) return;
+
+    const { data, error } = await supabase
+      .from("custom_email_templates")
+      .select("*")
+      .eq("clinic_id", profile.clinic_id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching custom templates:", error);
+      return;
+    }
+
+    if (data) {
+      const templates: EmailTemplate[] = data.map(t => ({
+        id: t.id,
+        name: t.name,
+        description: t.description || "",
+        category: t.category as "professional" | "friendly" | "modern" | "minimal",
+        subject: t.subject,
+        html: t.html,
+        preview: "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=300&fit=crop",
+        isCustom: true,
+        clinic_id: t.clinic_id,
+      }));
+      setCustomTemplates(templates);
+    }
+  };
+
+  const handleDeleteTemplate = async () => {
+    if (!templateToDelete?.isCustom) return;
+
+    const { error } = await supabase
+      .from("custom_email_templates")
+      .delete()
+      .eq("id", templateToDelete.id);
+
+    if (error) {
+      toast.error("Failed to delete template");
+      console.error("Error deleting template:", error);
+      return;
+    }
+
+    toast.success("Template deleted successfully");
+    setCustomTemplates(prev => prev.filter(t => t.id !== templateToDelete.id));
+    setDeleteDialogOpen(false);
+    setTemplateToDelete(null);
+  };
+
+  const allTemplates = [...customTemplates, ...EMAIL_TEMPLATES];
   const filteredTemplates = selectedCategory === "all" 
-    ? EMAIL_TEMPLATES 
-    : EMAIL_TEMPLATES.filter(t => t.category === selectedCategory);
+    ? allTemplates 
+    : allTemplates.filter(t => t.category === selectedCategory);
 
   const getCategoryBadgeColor = (category: string) => {
     switch (category) {
@@ -416,9 +498,16 @@ export function EmailTemplateGallery({ onSelectTemplate }: EmailTemplateGalleryP
                   className="w-full h-full object-cover opacity-60"
                 />
                 <div className="absolute top-2 right-2">
-                  <Badge className={getCategoryBadgeColor(template.category)}>
-                    {template.category}
-                  </Badge>
+                  <div className="flex gap-2">
+                    <Badge className={getCategoryBadgeColor(template.category)}>
+                      {template.category}
+                    </Badge>
+                    {template.isCustom && (
+                      <Badge variant="outline" className="bg-primary/10 text-primary">
+                        Custom
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
               <CardContent className="p-4 space-y-3">
@@ -469,12 +558,41 @@ export function EmailTemplateGallery({ onSelectTemplate }: EmailTemplateGalleryP
                     <Check className="h-4 w-4 mr-2" />
                     Use Template
                   </Button>
+                  {template.isCustom && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => {
+                        setTemplateToDelete(template);
+                        setDeleteDialogOpen(true);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
       </CardContent>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Custom Template</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{templateToDelete?.name}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteTemplate} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

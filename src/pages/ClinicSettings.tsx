@@ -16,6 +16,7 @@ import { ReminderStatusPanel } from "@/components/ReminderStatusPanel";
 import { NotificationAlertSettings } from "@/components/NotificationAlertSettings";
 import { RateLimitConfigPanel } from "@/components/RateLimitConfigPanel";
 import { EmailTemplateGallery } from "@/components/EmailTemplateGallery";
+import { SaveTemplateDialog } from "@/components/SaveTemplateDialog";
 
 export default function ClinicSettings() {
   const navigate = useNavigate();
@@ -237,6 +238,27 @@ export default function ClinicSettings() {
           <strong>Available placeholders:</strong> {`{{patient_name}}, {{clinician_name}}, {{episode_id}}, {{appointment_date}}, {{appointment_time}}, {{clinic_name}}, {{clinic_phone}}`}
         </AlertDescription>
       </Alert>
+
+      {/* Save Current Template Button */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            💾 Save Current Template
+          </CardTitle>
+          <CardDescription>
+            Save your current email template design to your custom gallery for future use
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SaveTemplateDialog 
+            currentSubject={emailSubject}
+            currentHtml={emailTemplate}
+            onSave={() => {
+              toast.success("Template saved! Check the gallery below.");
+            }}
+          />
+        </CardContent>
+      </Card>
 
       {/* Email Template Gallery */}
       <EmailTemplateGallery 
