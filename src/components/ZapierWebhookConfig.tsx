@@ -15,6 +15,7 @@ import { Zap, Trash2, Edit, ExternalLink, TestTube } from "lucide-react";
 import { format } from "date-fns";
 import { WebhookActivityLog } from "./WebhookActivityLog";
 import { WebhookRetryQueue } from "./WebhookRetryQueue";
+import { WebhookAnalytics } from "./WebhookAnalytics";
 
 interface WebhookConfig {
   id: string;
@@ -246,8 +247,9 @@ export function ZapierWebhookConfig() {
 
   return (
     <Tabs defaultValue="config" className="w-full space-y-4">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="config">Configuration</TabsTrigger>
+        <TabsTrigger value="analytics">Analytics</TabsTrigger>
         <TabsTrigger value="retry">Retry Queue</TabsTrigger>
         <TabsTrigger value="activity">Activity Log</TabsTrigger>
       </TabsList>
@@ -449,12 +451,16 @@ export function ZapierWebhookConfig() {
         )}
       </TabsContent>
 
-      <TabsContent value="activity">
-        <WebhookActivityLog />
+      <TabsContent value="analytics">
+        <WebhookAnalytics />
       </TabsContent>
 
       <TabsContent value="retry">
         <WebhookRetryQueue />
+      </TabsContent>
+
+      <TabsContent value="activity">
+        <WebhookActivityLog />
       </TabsContent>
     </Tabs>
   );
