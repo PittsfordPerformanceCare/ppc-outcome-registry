@@ -24,6 +24,7 @@ import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationS
 import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorTreatmentSelector";
 import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoalsSelector";
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
+import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 
 interface DischargeScores {
   NDI?: number;
@@ -40,7 +41,7 @@ export default function Discharge() {
   const [episodeId, setEpisodeId] = useState(episodeParam);
 
   // Enable keyboard shortcuts
-  useNavigationShortcuts();
+  const { showHelp, setShowHelp } = useNavigationShortcuts();
   const [patientName, setPatientName] = useState("");
   const [dob, setDob] = useState("");
   const [region, setRegion] = useState("");
@@ -247,6 +248,11 @@ export default function Discharge() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
+      <KeyboardShortcutsDialog 
+        open={showHelp} 
+        onOpenChange={setShowHelp}
+      />
+      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Discharge Assessment</h1>

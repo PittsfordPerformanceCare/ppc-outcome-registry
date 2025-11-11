@@ -1,13 +1,19 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+interface UseNavigationShortcutsOptions {
+  onShowHelp?: () => void;
+}
 
 /**
  * Custom hook for global navigation keyboard shortcuts
  * - Escape: Go back to previous page
  * - H: Go to home page
+ * - ?: Show keyboard shortcuts help
  */
-export function useNavigationShortcuts() {
+export function useNavigationShortcuts(options?: UseNavigationShortcutsOptions) {
   const navigate = useNavigate();
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -28,10 +34,19 @@ export function useNavigationShortcuts() {
         case "h":
           navigate("/");
           break;
+        case "?":
+          if (options?.onShowHelp) {
+            options.onShowHelp();
+          } else {
+            setShowHelp(true);
+          }
+          break;
       }
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [navigate]);
+  }, [navigate, options]);
+
+  return { showHelp, setShowHelp };
 }

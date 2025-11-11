@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
+import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { 
   ArrowLeft, 
   User, 
@@ -75,7 +76,7 @@ export default function EpisodeSummary() {
   const [journey, setJourney] = useState<ReturnType<typeof calculatePatientJourney> | null>(null);
 
   // Enable keyboard shortcuts
-  useNavigationShortcuts();
+  const { showHelp, setShowHelp } = useNavigationShortcuts();
 
   useEffect(() => {
     const loadEpisodeData = async () => {
@@ -237,6 +238,14 @@ export default function EpisodeSummary() {
 
   return (
     <div className="container mx-auto max-w-5xl space-y-6 py-8">
+      <KeyboardShortcutsDialog 
+        open={showHelp} 
+        onOpenChange={setShowHelp}
+        additionalShortcuts={[
+          { keys: ["P"], description: "Print summary", category: "Actions" },
+        ]}
+      />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">

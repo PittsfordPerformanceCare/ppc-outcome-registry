@@ -10,6 +10,7 @@ import { FileText, Download, Printer, AlertCircle, ArrowRight, ArrowLeft, Home }
 import { toast } from "sonner";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
+import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 
 interface OutcomeScore {
   index_type: string;
@@ -78,7 +79,7 @@ export default function PCPSummary() {
   const [loading, setLoading] = useState(true);
 
   // Enable keyboard shortcuts
-  useNavigationShortcuts();
+  const { showHelp, setShowHelp } = useNavigationShortcuts();
 
   useEffect(() => {
     if (episodeId) {
@@ -290,6 +291,15 @@ export default function PCPSummary() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
+      <KeyboardShortcutsDialog 
+        open={showHelp} 
+        onOpenChange={setShowHelp}
+        additionalShortcuts={[
+          { keys: ["P"], description: "Print summary", category: "Actions" },
+          { keys: ["E"], description: "Export summary", category: "Actions" },
+        ]}
+      />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
