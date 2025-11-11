@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { DevToolbar } from "./components/DevToolbar";
 import Dashboard from "./pages/Dashboard";
 import NewEpisode from "./pages/NewEpisode";
 import FollowUp from "./pages/FollowUp";
@@ -49,6 +50,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <DevToolbar />
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
