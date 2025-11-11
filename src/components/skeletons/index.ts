@@ -6,3 +6,5 @@ export { ChartSkeleton } from "./ChartSkeleton";
 export { DashboardSkeleton } from "./DashboardSkeleton";
 export { InboxSkeleton } from "./InboxSkeleton";
 export { AnalyticsSkeleton } from "./AnalyticsSkeleton";
+export { PatientDashboardSkeleton } from "./PatientDashboardSkeleton";
+export { PatientEpisodeViewSkeleton } from "./PatientEpisodeViewSkeleton";

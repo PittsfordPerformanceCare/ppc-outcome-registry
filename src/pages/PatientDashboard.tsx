@@ -18,6 +18,7 @@ import { usePatientRewards } from "@/hooks/usePatientRewards";
 import RecoverySnapshot from "@/components/RecoverySnapshot";
 import CareTeamAccess from "@/components/CareTeamAccess";
 import { addDays } from "date-fns";
+import { PatientDashboardSkeleton } from "@/components/skeletons/PatientDashboardSkeleton";
 
 interface PatientEpisode {
   id: string;
@@ -228,11 +229,7 @@ export default function PatientDashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <PatientDashboardSkeleton />;
   }
 
   return (

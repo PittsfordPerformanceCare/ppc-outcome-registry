@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import ShareProgress from "@/components/ShareProgress";
 import PostDischargeFeedback from "@/components/PostDischargeFeedback";
+import { PatientEpisodeViewSkeleton } from "@/components/skeletons/PatientEpisodeViewSkeleton";
 
 interface EpisodeData {
   id: string;
@@ -170,11 +171,7 @@ export default function PatientEpisodeView() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <PatientEpisodeViewSkeleton />;
   }
 
   if (!hasAccess || !episode) {
