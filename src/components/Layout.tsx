@@ -8,6 +8,7 @@ import { useDarkMode } from "@/hooks/useDarkMode";
 import { SessionTimeoutWarning } from "./SessionTimeoutWarning";
 import { IntakeNotificationsPanel } from "./IntakeNotificationsPanel";
 import { FloatingActionButton } from "./FloatingActionButton";
+import { BottomTabNavigation } from "./BottomTabNavigation";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -456,10 +457,10 @@ export function Layout({ children }: LayoutProps) {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">{children}</main>
+      <main className="container mx-auto px-4 py-8 pb-24 lg:pb-8">{children}</main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t bg-muted/30">
+      <footer className="mt-auto border-t bg-muted/30 mb-16 lg:mb-0">
         <div className="container mx-auto px-6 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center space-x-2">
@@ -477,6 +478,9 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </div>
       </footer>
+
+      {/* Bottom Tab Navigation - Mobile Only */}
+      <BottomTabNavigation isAdmin={isAdmin} />
 
       {/* Floating Action Button */}
       <FloatingActionButton />
