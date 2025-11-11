@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AnalyticsSkeleton } from "@/components/skeletons/AnalyticsSkeleton";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { MetricDrillDownDialog } from "@/components/MetricDrillDownDialog";
 
 interface MetricsData {
   // Patient Flow Metrics
@@ -67,6 +68,24 @@ export default function AnalyticsDashboard() {
   const [dateRange, setDateRange] = useState("30");
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [regions, setRegions] = useState<string[]>([]);
+  
+  // Drill-down dialog state
+  const [drillDownOpen, setDrillDownOpen] = useState(false);
+  const [drillDownData, setDrillDownData] = useState<{
+    title: string;
+    description: string;
+    episodes: any[];
+    metricType: 'mcid' | 'active' | 'completed' | 'regional' | 'outcome' | 'generic';
+  }>({
+    title: '',
+    description: '',
+    episodes: [],
+    metricType: 'generic'
+  });
+  
+  // Store full episodes data for drill-down
+  const [allEpisodesData, setAllEpisodesData] = useState<any[]>([]);
+  const [allOutcomeScores, setAllOutcomeScores] = useState<any[]>([]);
 
   const loadMetrics = async () => {
     if (!user) return;
@@ -97,6 +116,10 @@ export default function AnalyticsDashboard() {
         .from("outcome_scores")
         .select("*")
         .gte("recorded_at", startDate.toISOString());
+
+      // Store data for drill-down
+      setAllEpisodesData(episodes || []);
+      setAllOutcomeScores(outcomeScores || []);
 
       // Fetch referrals
       const { data: referrals } = await supabase
@@ -299,6 +322,119 @@ export default function AnalyticsDashboard() {
     return days;
   };
 
+  // Helper function to prepare episode data with MCID information
+  const prepareEpisodeDataWithMCID = (episodes: any[]) => {
+    return episodes.map(ep => {
+      const epScores = allOutcomeScores.filter(os => os.episode_id === ep.id);
+      const indexTypes = [...new Set(epScores.map(s => s.index_type))];
+      
+      // Get the primary index type (first one)
+      const primaryIndexType = indexTypes[0];
+      const baselineScore = primaryIndexType 
+        ? epScores.find(s => s.index_type === primaryIndexType && s.score_type === 'baseline')?.score
+        : undefined;
+      const finalScores = primaryIndexType
+        ? epScores.filter(s => s.index_type === primaryIndexType && (s.score_type === 'discharge' || s.score_type === 'followup'))
+        : [];
+      const finalScore = finalScores.length > 0 ? Math.min(...finalScores.map(s => s.score)) : undefined;
+      
+      let mcidAchieved = undefined;
+      let improvement = undefined;
+      
+      if (baselineScore !== undefined && finalScore !== undefined) {
+        improvement = baselineScore - finalScore;
+        const mcidThreshold = primaryIndexType === 'NDI' ? 7.5 
+          : primaryIndexType === 'ODI' ? 6 
+          : primaryIndexType === 'QuickDASH' ? 10 
+          : primaryIndexType === 'LEFS' ? 9 
+          : 0;
+        mcidAchieved = improvement >= mcidThreshold;
+      }
+      
+      return {
+        ...ep,
+        mcidAchieved,
+        improvement,
+        baselineScore,
+        finalScore,
+        indexType: primaryIndexType
+      };
+    });
+  };
+
+  // Click handlers for drill-down
+  const handleMetricCardClick = (metricType: 'total' | 'active' | 'completed' | 'mcid') => {
+    let filteredEpisodes: any[] = [];
+    let title = '';
+    let description = '';
+    let type: 'mcid' | 'active' | 'completed' | 'regional' | 'outcome' | 'generic' = 'generic';
+
+    switch (metricType) {
+      case 'total':
+        filteredEpisodes = allEpisodesData;
+        title = 'All Episodes';
+        description = `Showing all ${allEpisodesData.length} episodes in the selected time period`;
+        type = 'generic';
+        break;
+      case 'active':
+        filteredEpisodes = allEpisodesData.filter(e => !e.discharge_date);
+        title = 'Active Episodes';
+        description = `Showing ${filteredEpisodes.length} active episodes`;
+        type = 'active';
+        break;
+      case 'completed':
+        filteredEpisodes = allEpisodesData.filter(e => e.discharge_date);
+        title = 'Completed Episodes';
+        description = `Showing ${filteredEpisodes.length} completed episodes`;
+        type = 'completed';
+        break;
+      case 'mcid':
+        const episodesWithMCID = prepareEpisodeDataWithMCID(allEpisodesData);
+        filteredEpisodes = episodesWithMCID.filter(e => e.mcidAchieved === true);
+        title = 'MCID Achieved Episodes';
+        description = `Showing ${filteredEpisodes.length} episodes that achieved clinically meaningful improvement`;
+        type = 'mcid';
+        break;
+    }
+
+    setDrillDownData({
+      title,
+      description,
+      episodes: filteredEpisodes,
+      metricType: type
+    });
+    setDrillDownOpen(true);
+  };
+
+  const handleRegionalBarClick = (data: any) => {
+    const region = data.region;
+    const regionEpisodes = allEpisodesData.filter(e => e.region === region);
+    const episodesWithMCID = prepareEpisodeDataWithMCID(regionEpisodes);
+    
+    setDrillDownData({
+      title: `${region} Episodes`,
+      description: `Showing all episodes for ${region} region`,
+      episodes: episodesWithMCID,
+      metricType: 'regional'
+    });
+    setDrillDownOpen(true);
+  };
+
+  const handlePieChartClick = (data: any) => {
+    const status = data.name;
+    const filteredEpisodes = status === 'Active' 
+      ? allEpisodesData.filter(e => !e.discharge_date)
+      : allEpisodesData.filter(e => e.discharge_date);
+    
+    setDrillDownData({
+      title: `${status} Episodes`,
+      description: `Showing all ${status.toLowerCase()} episodes`,
+      episodes: filteredEpisodes,
+      metricType: status === 'Completed' ? 'completed' : 'active'
+    });
+    setDrillDownOpen(true);
+  };
+
   useEffect(() => {
     loadMetrics();
   }, [user, dateRange, selectedRegion]);
@@ -372,7 +508,10 @@ export default function AnalyticsDashboard() {
         <TabsContent value="overview" className="space-y-6">
           {/* Key Metrics Cards */}
           <div className="grid gap-4 md:grid-cols-4">
-            <Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow" 
+              onClick={() => handleMetricCardClick('total')}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Episodes</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
@@ -382,10 +521,14 @@ export default function AnalyticsDashboard() {
                 <p className="text-xs text-muted-foreground">
                   {metrics.activeEpisodes} active, {metrics.completedEpisodes} completed
                 </p>
+                <p className="text-xs text-primary mt-1">Click to view details →</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card 
+              className="cursor-pointer hover:shadow-lg transition-shadow" 
+              onClick={() => handleMetricCardClick('mcid')}
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">MCID Achievement</CardTitle>
                 <Award className="h-4 w-4 text-muted-foreground" />
@@ -395,6 +538,7 @@ export default function AnalyticsDashboard() {
                 <p className="text-xs text-muted-foreground">
                   Avg improvement: {metrics.avgImprovement.toFixed(1)} points
                 </p>
+                <p className="text-xs text-primary mt-1">Click to view details →</p>
               </CardContent>
             </Card>
 
@@ -457,7 +601,7 @@ export default function AnalyticsDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Regional Performance</CardTitle>
-              <CardDescription>Episode count and outcomes by body region</CardDescription>
+              <CardDescription>Episode count and outcomes by body region (click bars to view details)</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer config={{
@@ -470,7 +614,13 @@ export default function AnalyticsDashboard() {
                     <YAxis className="text-xs" />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     <Legend />
-                    <Bar dataKey="count" fill="hsl(var(--chart-1))" name="Episodes" />
+                    <Bar 
+                      dataKey="count" 
+                      fill="hsl(var(--chart-1))" 
+                      name="Episodes" 
+                      onClick={handleRegionalBarClick}
+                      className="cursor-pointer"
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartContainer>
@@ -613,7 +763,7 @@ export default function AnalyticsDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Episode Status Distribution</CardTitle>
-              <CardDescription>Current breakdown of episode statuses</CardDescription>
+              <CardDescription>Current breakdown of episode statuses (click segments to view details)</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer config={{
@@ -633,6 +783,8 @@ export default function AnalyticsDashboard() {
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"
+                      onClick={handlePieChartClick}
+                      className="cursor-pointer"
                     >
                       {[0, 1].map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -687,6 +839,16 @@ export default function AnalyticsDashboard() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Drill-down Dialog */}
+      <MetricDrillDownDialog
+        open={drillDownOpen}
+        onOpenChange={setDrillDownOpen}
+        title={drillDownData.title}
+        description={drillDownData.description}
+        episodes={drillDownData.episodes}
+        metricType={drillDownData.metricType}
+      />
     </div>
   );
 }
