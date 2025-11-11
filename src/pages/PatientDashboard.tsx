@@ -44,6 +44,7 @@ export default function PatientDashboard() {
   const [hasAwardedWelcome, setHasAwardedWelcome] = useState(false);
   const [patientAccount, setPatientAccount] = useState<any>(null);
   const [latestScore, setLatestScore] = useState<any>(null);
+  const [clinicSettings, setClinicSettings] = useState<any>(null);
 
   const {
     totalPoints,
@@ -90,6 +91,16 @@ export default function PatientDashboard() {
 
       if (accountData) {
         setPatientAccount(accountData);
+      }
+
+      // Load clinic settings
+      const { data: settingsData } = await supabase
+        .from("clinic_settings")
+        .select("*")
+        .single();
+
+      if (settingsData) {
+        setClinicSettings(settingsData);
       }
 
       // Load episodes the patient has access to
@@ -278,6 +289,11 @@ export default function PatientDashboard() {
         {/* Recovery Snapshot Widget */}
         {episodes.filter(e => !e.discharge_date).length > 0 && (
           <RecoverySnapshot
+            patientName={patientAccount?.full_name}
+            treatmentArea={episodes.find(e => !e.discharge_date)?.region}
+            clinicName={clinicSettings?.clinic_name}
+            clinicAddress={clinicSettings?.address}
+            clinicPhone={clinicSettings?.phone}
             nextVisit={
               episodes.find(e => e.followup_date && !e.discharge_date) 
                 ? {

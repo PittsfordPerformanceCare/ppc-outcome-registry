@@ -2,8 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, TrendingDown, CheckCircle2, Bell } from "lucide-react";
 import { format } from "date-fns";
+import AddToCalendarButton from "./AddToCalendarButton";
 
 interface RecoverySnapshotProps {
+  patientName?: string;
+  treatmentArea?: string;
+  clinicName?: string;
+  clinicAddress?: string;
+  clinicPhone?: string;
   nextVisit?: {
     date: string;
     time?: string;
@@ -22,7 +28,16 @@ interface RecoverySnapshotProps {
   };
 }
 
-export default function RecoverySnapshot({ nextVisit, lastScore, nextAction }: RecoverySnapshotProps) {
+export default function RecoverySnapshot({ 
+  patientName,
+  treatmentArea,
+  clinicName = "PPC Outcome Registry",
+  clinicAddress,
+  clinicPhone,
+  nextVisit, 
+  lastScore, 
+  nextAction 
+}: RecoverySnapshotProps) {
   return (
     <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
       <CardHeader>
@@ -34,7 +49,7 @@ export default function RecoverySnapshot({ nextVisit, lastScore, nextAction }: R
       <CardContent className="space-y-4">
         {/* Next Visit */}
         {nextVisit && (
-          <div className="p-3 rounded-lg bg-background/80 backdrop-blur-sm">
+          <div className="p-3 rounded-lg bg-background/80 backdrop-blur-sm space-y-3">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <p className="text-xs text-muted-foreground mb-1">Next Visit</p>
@@ -50,6 +65,20 @@ export default function RecoverySnapshot({ nextVisit, lastScore, nextAction }: R
               </div>
               <Calendar className="h-8 w-8 text-primary opacity-20" />
             </div>
+            {patientName && treatmentArea && (
+              <AddToCalendarButton
+                appointmentDate={nextVisit.date}
+                appointmentTime={nextVisit.time}
+                clinicianName={nextVisit.clinician}
+                patientName={patientName}
+                treatmentArea={treatmentArea}
+                clinicName={clinicName}
+                clinicAddress={clinicAddress}
+                clinicPhone={clinicPhone}
+                variant="outline"
+                size="sm"
+              />
+            )}
           </div>
         )}
 
