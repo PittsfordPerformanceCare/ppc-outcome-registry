@@ -75,6 +75,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "Dashboards", href: "/dashboards", icon: BarChart3 },
     { name: "Notifications", href: "/notification-history", icon: Bell },
     { name: "Analytics", href: "/notification-analytics", icon: TrendingUp },
+    { name: "Referral Analytics", href: "/referral-analytics", icon: TrendingUp },
     { name: "Link Analytics", href: "/link-analytics", icon: Link2 },
     { name: "Alert History", href: "/alert-history", icon: AlertTriangle },
     { name: "Export History", href: "/export-history", icon: History },
