@@ -368,6 +368,51 @@ export type Database = {
         }
         Relationships: []
       }
+      email_template_usage: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          custom_template_id: string | null
+          episode_id: string | null
+          id: string
+          notification_id: string | null
+          patient_email: string | null
+          sent_at: string
+          template_id: string
+          template_name: string
+          template_type: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          custom_template_id?: string | null
+          episode_id?: string | null
+          id?: string
+          notification_id?: string | null
+          patient_email?: string | null
+          sent_at?: string
+          template_id: string
+          template_name: string
+          template_type: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          custom_template_id?: string | null
+          episode_id?: string | null
+          id?: string
+          notification_id?: string | null
+          patient_email?: string | null
+          sent_at?: string
+          template_id?: string
+          template_name?: string
+          template_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       episodes: {
         Row: {
           cis_delta: number | null

@@ -17,6 +17,7 @@ import { NotificationAlertSettings } from "@/components/NotificationAlertSetting
 import { RateLimitConfigPanel } from "@/components/RateLimitConfigPanel";
 import { EmailTemplateGallery } from "@/components/EmailTemplateGallery";
 import { SaveTemplateDialog } from "@/components/SaveTemplateDialog";
+import { EmailTemplateAnalytics } from "@/components/EmailTemplateAnalytics";
 
 export default function ClinicSettings() {
   const navigate = useNavigate();
@@ -238,6 +239,9 @@ export default function ClinicSettings() {
           <strong>Available placeholders:</strong> {`{{patient_name}}, {{clinician_name}}, {{episode_id}}, {{appointment_date}}, {{appointment_time}}, {{clinic_name}}, {{clinic_phone}}`}
         </AlertDescription>
       </Alert>
+
+      {/* Email Template Analytics */}
+      <EmailTemplateAnalytics />
 
       {/* Save Current Template Button */}
       <Card>
