@@ -6,7 +6,7 @@ import { calculateMCID } from "@/lib/mcidUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Printer, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react";
+import { FileText, Download, Printer, AlertCircle, ArrowRight, ArrowLeft, Home } from "lucide-react";
 import { toast } from "sonner";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 
@@ -296,6 +296,10 @@ export default function PCPSummary() {
           <Button variant="outline" onClick={() => navigate(-1)} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back
+          </Button>
+          <Button variant="outline" onClick={() => navigate("/")} className="gap-2">
+            <Home className="h-4 w-4" />
+            Home
           </Button>
           <Button variant="outline" onClick={handleExport} className="gap-2">
             <Download className="h-4 w-4" />
