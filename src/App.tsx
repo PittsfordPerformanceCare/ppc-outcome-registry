@@ -50,8 +50,8 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <DevToolbar />
       <BrowserRouter>
+        <DevToolbar />
         <Routes>
           <Route path="/auth" element={<Auth />} />
           <Route path="/patient-auth" element={<PatientAuth />} />
