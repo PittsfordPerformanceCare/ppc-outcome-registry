@@ -259,6 +259,20 @@ export function Layout({ children }: LayoutProps) {
                           </DrawerClose>
                         );
                       })}
+                      <DrawerClose asChild>
+                        <Link
+                          to="/admin-quick-start"
+                          className={cn(
+                            "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                            location.pathname === "/admin-quick-start"
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                          )}
+                        >
+                          <BookOpen className="h-5 w-5" />
+                          <span>Administrator Guide</span>
+                        </Link>
+                      </DrawerClose>
                     </div>
                   </>
                 )}
@@ -474,6 +488,12 @@ export function Layout({ children }: LayoutProps) {
                   <BookOpen className="mr-2 h-4 w-4" />
                   <span>Quick Start Guide</span>
                 </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate("/admin-quick-start")} className="cursor-pointer">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Administrator Guide</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
