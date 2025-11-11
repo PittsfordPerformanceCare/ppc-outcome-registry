@@ -35,6 +35,7 @@ import AlertHistory from "./pages/AlertHistory";
 import ExportHistory from "./pages/ExportHistory";
 import ReferralAnalytics from "./pages/ReferralAnalytics";
 import AutomationStatus from "./pages/AutomationStatus";
+import ClinicianInbox from "./pages/ClinicianInbox";
 
 const queryClient = new QueryClient();
 
@@ -46,13 +47,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route path="/intake-start" element={<IntakeStart />} />
-          <Route path="/patient-intake" element={<PatientIntake />} />
           <Route path="/patient-auth" element={<PatientAuth />} />
-          <Route path="/referral" element={<ReferralLanding />} />
-          <Route path="/patient-dashboard" element={<PatientDashboard />} />
-          <Route path="/patient-episode/:episodeId" element={<PatientEpisodeView />} />
-          <Route path="/patient-preferences" element={<PatientNotificationPreferences />} />
+          <Route path="/patient-intake" element={<PatientIntake />} />
+          <Route path="/intake-start" element={<IntakeStart />} />
+          <Route path="/referral/:referralCode" element={<ReferralLanding />} />
+          
           <Route
             path="/*"
             element={
@@ -71,7 +70,7 @@ const App = () => (
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/intake-review" element={<IntakeReview />} />
                     <Route path="/intake-validation" element={<IntakeValidation />} />
-                    <Route path="/clinic-settings" element={<ClinicSettings />} />
+                    <Route path="/settings" element={<ClinicSettings />} />
                     <Route path="/notification-history" element={<NotificationHistory />} />
                     <Route path="/notification-analytics" element={<NotificationAnalytics />} />
                     <Route path="/retry-analytics" element={<RetryAnalytics />} />
@@ -80,6 +79,7 @@ const App = () => (
                     <Route path="/export-history" element={<ExportHistory />} />
                     <Route path="/referral-analytics" element={<ReferralAnalytics />} />
                     <Route path="/automation-status" element={<AutomationStatus />} />
+                    <Route path="/clinician-inbox" element={<ClinicianInbox />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
