@@ -31,6 +31,7 @@ import { PendingEpisodesWidget } from "@/components/PendingEpisodesWidget";
 import { OutcomeReminderCronStatus } from "@/components/OutcomeReminderCronStatus";
 import { OutcomeReminderHistory } from "@/components/OutcomeReminderHistory";
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 
 interface Episode {
   id: string;
@@ -546,13 +547,7 @@ export default function Dashboard() {
   }, [episodesWithScores]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center">
-          <div className="text-lg">Loading episodes...</div>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

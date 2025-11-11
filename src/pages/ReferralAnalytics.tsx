@@ -8,6 +8,7 @@ import { format, subDays, startOfMonth, endOfMonth } from "date-fns";
 import { ReferralReportScheduler } from "@/components/ReferralReportScheduler";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { useToast } from "@/hooks/use-toast";
+import { AnalyticsSkeleton } from "@/components/skeletons/AnalyticsSkeleton";
 
 interface ReferralStats {
   totalReferrals: number;
@@ -189,18 +190,7 @@ export default function ReferralAnalytics() {
   };
 
   if (loading) {
-    return (
-      <div className="container mx-auto py-8">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-muted rounded w-1/3"></div>
-          <div className="grid gap-4 md:grid-cols-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="h-32 bg-muted rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <AnalyticsSkeleton />;
   }
 
   // Pull to refresh handler

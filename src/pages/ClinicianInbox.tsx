@@ -14,6 +14,7 @@ import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ClinicianNotificationSettings from "@/components/ClinicianNotificationSettings";
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { InboxSkeleton } from "@/components/skeletons/InboxSkeleton";
 
 interface PatientMessage {
   id: string;
@@ -291,6 +292,11 @@ export default function ClinicianInbox() {
 
   const unreadCount = messages.filter((m) => m.status === "pending").length;
   const pendingCallbacks = callbacks.filter((c) => c.status === "pending").length;
+
+  // Show loading skeleton
+  if (messagesLoading || callbacksLoading) {
+    return <InboxSkeleton />;
+  }
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "outline"> = {
