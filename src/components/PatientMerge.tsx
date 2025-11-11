@@ -188,6 +188,27 @@ export function PatientMerge() {
 
     setIsMerging(true);
     try {
+      // Get current user for audit log
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      // Get user profile for clinic_id
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("clinic_id")
+        .eq("id", user.id)
+        .single();
+
+      // Collect all records being merged
+      const mergedRecords = duplicates
+        .filter((p) => `${p.patient_name}-${p.date_of_birth}` !== selectedPrimary)
+        .map((p) => ({
+          patient_name: p.patient_name,
+          date_of_birth: p.date_of_birth,
+          episode_ids: p.episodes.map((e) => e.id),
+          episode_count: p.episodeCount,
+        }));
+
       // Get all episode IDs that need to be updated
       const episodeIdsToUpdate: string[] = [];
       duplicates.forEach((patient) => {
@@ -197,7 +218,7 @@ export function PatientMerge() {
       });
 
       // Update all episodes to match the primary patient's name and DOB
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from("episodes")
         .update({
           patient_name: primaryPatient.patient_name,
@@ -205,7 +226,39 @@ export function PatientMerge() {
         })
         .in("id", episodeIdsToUpdate);
 
-      if (error) throw error;
+      if (updateError) throw updateError;
+
+      // Create audit log entry for the merge
+      const auditLogData = {
+        action: "patient_merge",
+        table_name: "episodes",
+        record_id: `merge_${Date.now()}`,
+        user_id: user.id,
+        clinic_id: profile?.clinic_id || null,
+        old_data: {
+          merged_patients: mergedRecords,
+          total_episodes_affected: episodeIdsToUpdate.length,
+        },
+        new_data: {
+          primary_patient: {
+            patient_name: primaryPatient.patient_name,
+            date_of_birth: primaryPatient.date_of_birth,
+            total_episodes: primaryPatient.episodeCount + episodeIdsToUpdate.length,
+          },
+          episode_ids_updated: episodeIdsToUpdate,
+        },
+        user_agent: navigator.userAgent,
+        ip_address: null, // Client-side doesn't have access to IP
+      };
+
+      const { error: auditError } = await supabase
+        .from("audit_logs")
+        .insert(auditLogData);
+
+      if (auditError) {
+        console.error("Failed to create audit log:", auditError);
+        // Don't fail the merge if audit log fails
+      }
 
       toast.success(
         `Successfully merged ${episodeIdsToUpdate.length} episodes into ${primaryPatient.patient_name}'s record`

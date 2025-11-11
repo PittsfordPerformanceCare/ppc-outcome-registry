@@ -12,6 +12,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { PatientMerge } from "./PatientMerge";
+import { PatientMergeHistory } from "./PatientMergeHistory";
 
 interface PatientData {
   patient_name: string;
@@ -162,9 +163,10 @@ export function PatientSearch({ onPatientSelect }: PatientSearchProps) {
 
   return (
     <Tabs defaultValue="search" className="w-full">
-      <TabsList className="grid w-full grid-cols-2">
+      <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="search">Patient Search</TabsTrigger>
         <TabsTrigger value="merge">Merge Duplicates</TabsTrigger>
+        <TabsTrigger value="history">Merge History</TabsTrigger>
       </TabsList>
 
       <TabsContent value="search">
@@ -392,6 +394,10 @@ export function PatientSearch({ onPatientSelect }: PatientSearchProps) {
 
       <TabsContent value="merge">
         <PatientMerge />
+      </TabsContent>
+
+      <TabsContent value="history">
+        <PatientMergeHistory />
       </TabsContent>
     </Tabs>
   );
