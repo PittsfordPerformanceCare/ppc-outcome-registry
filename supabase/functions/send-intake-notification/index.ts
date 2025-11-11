@@ -185,18 +185,66 @@ const handler = async (req: Request): Promise<Response> => {
           let emailHtml = clinicSettings?.email_template
             ? replacePlaceholders(clinicSettings.email_template)
             : replacePlaceholders(`
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                  <h1 style="color: #2563eb;">Welcome to {{clinic_name}}!</h1>
-                  <p>Dear {{patient_name}},</p>
-                  <p>Your intake form has been reviewed and your physical therapy episode has been successfully created.</p>
-                  <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                    <h2 style="color: #1f2937; margin-top: 0;">Episode Details</h2>
-                    <p><strong>Clinician:</strong> {{clinician_name}}</p>
-                    <p><strong>Episode ID:</strong> {{episode_id}}</p>
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px;">
+                  <div style="background-color: #a51c30; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0; font-size: 28px;">🎉 Welcome to {{clinic_name}}!</h1>
                   </div>
-                  <p>Your clinician will be working with you to develop a personalized treatment plan to help you achieve your recovery goals.</p>
-                  <p>If you have any questions, please call us at <a href="tel:{{clinic_phone}}">{{clinic_phone}}</a>.</p>
-                  <p style="margin-top: 30px;">Best regards,<br/>{{clinic_name}} Team</p>
+                  
+                  <div style="padding: 30px; background-color: #f9fafb; border-radius: 0 0 8px 8px;">
+                    <p style="font-size: 16px; line-height: 1.6; color: #374151;">Dear <strong>{{patient_name}}</strong>,</p>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; color: #374151;">
+                      Great news! Your intake form has been reviewed and approved. Your physical therapy episode has been successfully created, and we're excited to begin your journey to recovery.
+                    </p>
+                    
+                    <div style="background-color: #ffffff; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #a51c30;">
+                      <h2 style="color: #1f2937; margin-top: 0; font-size: 20px;">📋 Your Episode Details</h2>
+                      <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                          <td style="padding: 8px 0; color: #6b7280; font-weight: 600;">Assigned Clinician:</td>
+                          <td style="padding: 8px 0; color: #111827;">{{clinician_name}}</td>
+                        </tr>
+                        <tr>
+                          <td style="padding: 8px 0; color: #6b7280; font-weight: 600;">Episode ID:</td>
+                          <td style="padding: 8px 0; color: #111827;">{{episode_id}}</td>
+                        </tr>
+                      </table>
+                    </div>
+                    
+                    <div style="background-color: #dcfce7; padding: 20px; border-radius: 8px; margin: 25px 0; border: 1px solid #86efac;">
+                      <h3 style="color: #166534; margin-top: 0; font-size: 18px;">✅ Next Steps</h3>
+                      <ol style="color: #166534; line-height: 1.8; margin: 10px 0; padding-left: 20px;">
+                        <li>Our team will contact you within 1-2 business days to schedule your first appointment</li>
+                        <li>Please have your insurance information ready</li>
+                        <li>Bring any previous medical records or imaging results to your first visit</li>
+                      </ol>
+                    </div>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; color: #374151;">
+                      Your clinician, <strong>{{clinician_name}}</strong>, will be working closely with you to develop a personalized treatment plan designed to help you achieve your recovery goals.
+                    </p>
+                    
+                    <div style="background-color: #fff7ed; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #f59e0b;">
+                      <p style="margin: 0; color: #92400e; font-size: 15px;">
+                        <strong>📞 Questions or Need to Reschedule?</strong><br/>
+                        Call us at <a href="tel:{{clinic_phone}}" style="color: #a51c30; text-decoration: none; font-weight: 600;">{{clinic_phone}}</a>
+                      </p>
+                    </div>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; color: #374151; margin-top: 30px;">
+                      We're honored to be part of your healthcare journey and look forward to helping you feel your best!
+                    </p>
+                    
+                    <p style="font-size: 16px; line-height: 1.6; color: #374151;">
+                      Best regards,<br/>
+                      <strong>The {{clinic_name}} Team</strong>
+                    </p>
+                  </div>
+                  
+                  <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
+                    <p style="margin: 5px 0;">This email was sent because your intake form was converted to an active treatment episode.</p>
+                    <p style="margin: 5px 0;">© 2025 {{clinic_name}}. All rights reserved.</p>
+                  </div>
                 </div>
               `);
           
@@ -370,7 +418,7 @@ const handler = async (req: Request): Promise<Response> => {
           // Get custom SMS template or use default
           let smsMessage = clinicSettings?.sms_template
             ? replacePlaceholders(clinicSettings.sms_template)
-            : replacePlaceholders(`{{clinic_name}}: Your PT episode has been created with {{clinician_name}}. Call {{clinic_phone}} with questions.`);
+            : replacePlaceholders(`🎉 {{clinic_name}}: Great news! Your PT episode with {{clinician_name}} is confirmed (ID: {{episode_id}}). We'll call you within 1-2 days to schedule your first appointment. Questions? Call {{clinic_phone}}`);
           
           // Add TEST prefix for test SMS
           if (isTest) {

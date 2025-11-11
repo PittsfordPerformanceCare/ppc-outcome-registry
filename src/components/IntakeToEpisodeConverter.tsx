@@ -241,8 +241,25 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
 
       if (updateError) throw updateError;
 
-      // Send notification to patient
+      // Send notification to patient with episode confirmation
       try {
+        // Calculate next business day for suggested first appointment
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        // Skip weekends
+        while (tomorrow.getDay() === 0 || tomorrow.getDay() === 6) {
+          tomorrow.setDate(tomorrow.getDate() + 1);
+        }
+        
+        const appointmentDate = tomorrow.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        
         await supabase.functions.invoke('send-intake-notification', {
           body: {
             episodeId,
@@ -250,11 +267,13 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
             patientEmail: intakeForm.email,
             patientPhone: intakeForm.phone,
             clinicianName: profile?.clinician_name || profile?.full_name || "Your Clinician",
+            appointmentDate: appointmentDate,
+            appointmentTime: "Please call to schedule",
             userId: user.id,
             clinicId: profile?.clinic_id || null,
           }
         });
-        console.log('Notification sent to patient');
+        console.log('Episode confirmation notification sent to patient');
       } catch (notifError) {
         console.error('Failed to send notification:', notifError);
         // Don't fail the whole conversion if notification fails
