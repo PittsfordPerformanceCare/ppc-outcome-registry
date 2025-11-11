@@ -27,6 +27,7 @@ import { ExportScheduler } from "@/components/ExportScheduler";
 import { AdvancedFilters, FilterState } from "@/components/AdvancedFilters";
 import { DateRangeComparison } from "@/components/DateRangeComparison";
 import { PendingEpisodesWidget } from "@/components/PendingEpisodesWidget";
+import { OutcomeReminderCronStatus } from "@/components/OutcomeReminderCronStatus";
 
 interface Episode {
   id: string;
@@ -610,6 +611,9 @@ export default function Dashboard() {
 
       {/* Pending Episodes Widget */}
       <PendingEpisodesWidget />
+
+      {/* Outcome Reminder Cron Status */}
+      <OutcomeReminderCronStatus />
 
       {/* Data Visualization & Analytics Section */}
       <div className="space-y-6">
