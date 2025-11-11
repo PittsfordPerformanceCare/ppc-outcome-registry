@@ -15,7 +15,8 @@ import {
   TrendingUp,
   Loader2,
   Target,
-  AlertCircle
+  AlertCircle,
+  HeartPulse
 } from "lucide-react";
 import { format } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -254,7 +255,12 @@ export default function PatientEpisodeView() {
                 <span className="hidden sm:inline">Back to Dashboard</span>
                 <span className="sm:hidden">Back</span>
               </Button>
-              <span className="text-sm font-semibold text-primary hidden sm:inline">PPC Patient Hub</span>
+              <div className="hidden sm:flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center shadow-md shadow-primary/20">
+                  <HeartPulse className="h-4 w-4 text-primary-foreground" />
+                </div>
+                <span className="text-sm font-semibold text-primary">PPC Patient Hub</span>
+              </div>
               {hasPrevious && (
                 <Button 
                   variant="ghost" 

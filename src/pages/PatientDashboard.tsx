@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy, Settings } from "lucide-react";
+import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy, Settings, HeartPulse } from "lucide-react";
 import { format } from "date-fns";
 import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
 import { PatientAchievements } from "@/components/PatientAchievements";
@@ -333,8 +333,8 @@ export default function PatientDashboard() {
         {/* Header with Personalized Greeting */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-              <Activity className="h-6 w-6 text-primary" />
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
+              <HeartPulse className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
