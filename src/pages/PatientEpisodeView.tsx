@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import ShareProgress from "@/components/ShareProgress";
+import PostDischargeFeedback from "@/components/PostDischargeFeedback";
 
 interface EpisodeData {
   id: string;
@@ -55,6 +57,8 @@ export default function PatientEpisodeView() {
   const [episode, setEpisode] = useState<EpisodeData | null>(null);
   const [scores, setScores] = useState<OutcomeScore[]>([]);
   const [hasAccess, setHasAccess] = useState(false);
+  const [feedbackGiven, setFeedbackGiven] = useState(false);
+  const [patientId, setPatientId] = useState<string>("");
 
   useEffect(() => {
     checkAccessAndLoadData();
@@ -73,6 +77,8 @@ export default function PatientEpisodeView() {
         navigate("/patient-auth");
         return;
       }
+
+      setPatientId(session.user.id);
 
       // Check if patient has access to this episode
       const { data: accessData, error: accessError } = await supabase
@@ -113,6 +119,18 @@ export default function PatientEpisodeView() {
 
       if (scoresError) throw scoresError;
       setScores(scoresData || []);
+
+      // Check if feedback has been given
+      if (episodeData.discharge_date) {
+        const { data: feedbackData } = await supabase
+          .from("patient_feedback")
+          .select("id")
+          .eq("patient_id", session.user.id)
+          .eq("episode_id", episodeId)
+          .single();
+
+        setFeedbackGiven(!!feedbackData);
+      }
     } catch (error: any) {
       console.error("Error loading episode:", error);
       toast({
@@ -186,16 +204,24 @@ export default function PatientEpisodeView() {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       <div className="container mx-auto max-w-5xl py-8 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <Button variant="outline" onClick={() => navigate("/patient-dashboard")} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back to Dashboard
           </Button>
-          {isCompleted && (
-            <Badge className="bg-success/15 text-success border-success/30">
-              Treatment Completed
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {scores.length > 0 && (
+              <ShareProgress 
+                episodeId={episodeId} 
+                patientName={episode.patient_name}
+              />
+            )}
+            {isCompleted && (
+              <Badge className="bg-success/15 text-success border-success/30">
+                Treatment Completed
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Episode Info */}
@@ -384,6 +410,15 @@ export default function PatientEpisodeView() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Post-Discharge Feedback */}
+        {isCompleted && !feedbackGiven && patientId && (
+          <PostDischargeFeedback
+            patientId={patientId}
+            episodeId={episodeId}
+            onComplete={() => setFeedbackGiven(true)}
+          />
         )}
       </div>
     </div>

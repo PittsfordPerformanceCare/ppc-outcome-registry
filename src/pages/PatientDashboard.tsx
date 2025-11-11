@@ -15,6 +15,9 @@ import PatientReferralCard from "@/components/PatientReferralCard";
 import PatientReferralDashboard from "@/components/PatientReferralDashboard";
 import { useAuth } from "@/hooks/useAuth";
 import { usePatientRewards } from "@/hooks/usePatientRewards";
+import RecoverySnapshot from "@/components/RecoverySnapshot";
+import CareTeamAccess from "@/components/CareTeamAccess";
+import { addDays } from "date-fns";
 
 interface PatientEpisode {
   id: string;
@@ -23,6 +26,8 @@ interface PatientEpisode {
   date_of_service: string;
   start_date: string | null;
   discharge_date: string | null;
+  followup_date: string | null;
+  followup_time: string | null;
   clinician: string | null;
   diagnosis: string | null;
 }
@@ -37,6 +42,8 @@ export default function PatientDashboard() {
   const [accessCode, setAccessCode] = useState("");
   const [claimingCode, setClaimingCode] = useState(false);
   const [hasAwardedWelcome, setHasAwardedWelcome] = useState(false);
+  const [patientAccount, setPatientAccount] = useState<any>(null);
+  const [latestScore, setLatestScore] = useState<any>(null);
 
   const {
     totalPoints,
@@ -74,6 +81,17 @@ export default function PatientDashboard() {
 
   const loadPatientData = async (userId: string) => {
     try {
+      // Load patient account info
+      const { data: accountData } = await supabase
+        .from("patient_accounts")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (accountData) {
+        setPatientAccount(accountData);
+      }
+
       // Load episodes the patient has access to
       const { data: accessData, error: accessError } = await supabase
         .from("patient_episode_access")
@@ -97,6 +115,21 @@ export default function PatientDashboard() {
 
         if (episodesError) throw episodesError;
         setEpisodes(episodesData || []);
+
+        // Load latest outcome score for active episode
+        if (episodeIds.length > 0) {
+          const { data: scoresData } = await supabase
+            .from("outcome_scores")
+            .select("*")
+            .in("episode_id", episodeIds)
+            .order("recorded_at", { ascending: false })
+            .limit(1)
+            .single();
+
+          if (scoresData) {
+            setLatestScore(scoresData);
+          }
+        }
       }
 
       // Load rewards
@@ -194,15 +227,33 @@ export default function PatientDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       <div className="container mx-auto max-w-6xl py-8 space-y-6">
-        {/* Header */}
+        {/* Header with Personalized Greeting */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
               <Activity className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">My Health Journey</h1>
-              <p className="text-muted-foreground">Welcome back!</p>
+              <h1 className="text-2xl font-bold">
+                Welcome back, {patientAccount?.full_name?.split(' ')[0] || 'there'}! 👋
+              </h1>
+              <p className="text-muted-foreground">
+                {episodes.filter(e => !e.discharge_date).length > 0 
+                  ? "Keep up the great work on your recovery journey"
+                  : "View your completed treatment history"}
+              </p>
+              {achievements.length > 0 && (
+                <div className="flex gap-2 mt-2">
+                  {achievements.slice(0, 3).map((achievement) => (
+                    <Badge 
+                      key={achievement.id} 
+                      className="bg-primary/10 text-primary border-primary/20"
+                    >
+                      {achievement.badge_icon} {achievement.name}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="flex gap-2">
@@ -223,6 +274,47 @@ export default function PatientDashboard() {
 
         {/* PWA Install Prompt */}
         <PatientPWAInstallPrompt />
+
+        {/* Recovery Snapshot Widget */}
+        {episodes.filter(e => !e.discharge_date).length > 0 && (
+          <RecoverySnapshot
+            nextVisit={
+              episodes.find(e => e.followup_date && !e.discharge_date) 
+                ? {
+                    date: episodes.find(e => e.followup_date && !e.discharge_date)!.followup_date!,
+                    time: episodes.find(e => e.followup_time && !e.discharge_date)?.followup_time,
+                    clinician: episodes.find(e => e.clinician && !e.discharge_date)?.clinician,
+                  }
+                : undefined
+            }
+            lastScore={
+              latestScore
+                ? {
+                    index: latestScore.index_type,
+                    score: latestScore.score,
+                    date: latestScore.recorded_at,
+                  }
+                : undefined
+            }
+            nextAction={
+              episodes.find(e => e.followup_date && !e.discharge_date)
+                ? {
+                    title: "Complete outcome assessment",
+                    dueDate: episodes.find(e => e.followup_date && !e.discharge_date)!.followup_date!,
+                    priority: "medium" as const,
+                  }
+                : undefined
+            }
+          />
+        )}
+
+        {/* Care Team Access */}
+        {episodes.filter(e => !e.discharge_date).length > 0 && (
+          <CareTeamAccess 
+            patientId={user?.id || ''} 
+            episodeId={episodes.find(e => !e.discharge_date)?.id}
+          />
+        )}
 
         {/* Claim Access Code */}
         <Card>

@@ -1490,6 +1490,87 @@ export type Database = {
           },
         ]
       }
+      patient_feedback: {
+        Row: {
+          additional_comments: string | null
+          allow_testimonial: boolean | null
+          confidence_level: number | null
+          created_at: string
+          episode_id: string
+          id: string
+          patient_id: string
+          recovery_surprise: string | null
+          would_recommend: boolean | null
+        }
+        Insert: {
+          additional_comments?: string | null
+          allow_testimonial?: boolean | null
+          confidence_level?: number | null
+          created_at?: string
+          episode_id: string
+          id?: string
+          patient_id: string
+          recovery_surprise?: string | null
+          would_recommend?: boolean | null
+        }
+        Update: {
+          additional_comments?: string | null
+          allow_testimonial?: boolean | null
+          confidence_level?: number | null
+          created_at?: string
+          episode_id?: string
+          id?: string
+          patient_id?: string
+          recovery_surprise?: string | null
+          would_recommend?: boolean | null
+        }
+        Relationships: []
+      }
+      patient_messages: {
+        Row: {
+          clinician_response: string | null
+          created_at: string
+          episode_id: string | null
+          id: string
+          message: string
+          message_type: string
+          patient_id: string
+          responded_at: string | null
+          responded_by: string | null
+          status: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          clinician_response?: string | null
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          message: string
+          message_type: string
+          patient_id: string
+          responded_at?: string | null
+          responded_by?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          clinician_response?: string | null
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          message?: string
+          message_type?: string
+          patient_id?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          status?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       patient_notification_preferences: {
         Row: {
           appointment_reminders: boolean | null
