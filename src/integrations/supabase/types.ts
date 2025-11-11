@@ -194,6 +194,42 @@ export type Database = {
         }
         Relationships: []
       }
+      clinician_notification_preferences: {
+        Row: {
+          created_at: string
+          email_enabled: boolean
+          id: string
+          notification_email: string | null
+          notify_on_callback_request: boolean
+          notify_on_new_message: boolean
+          notify_on_pending_feedback: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_enabled?: boolean
+          id?: string
+          notification_email?: string | null
+          notify_on_callback_request?: boolean
+          notify_on_new_message?: boolean
+          notify_on_pending_feedback?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_enabled?: boolean
+          id?: string
+          notification_email?: string | null
+          notify_on_callback_request?: boolean
+          notify_on_new_message?: boolean
+          notify_on_pending_feedback?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       clinics: {
         Row: {
           created_at: string

@@ -8,9 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { MessageSquare, Phone, MessageCircle, CheckCircle, Clock } from "lucide-react";
+import { MessageSquare, Phone, MessageCircle, CheckCircle, Clock, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import ClinicianNotificationSettings from "@/components/ClinicianNotificationSettings";
 
 interface PatientMessage {
   id: string;
@@ -211,6 +212,10 @@ export default function ClinicianInbox() {
           </TabsTrigger>
           <TabsTrigger value="callbacks">
             Callback Requests {pendingCallbacks > 0 && `(${pendingCallbacks})`}
+          </TabsTrigger>
+          <TabsTrigger value="settings">
+            <Settings className="h-4 w-4 mr-2" />
+            Notification Settings
           </TabsTrigger>
         </TabsList>
 
@@ -455,6 +460,10 @@ export default function ClinicianInbox() {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <ClinicianNotificationSettings />
         </TabsContent>
       </Tabs>
     </div>
