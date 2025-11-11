@@ -75,9 +75,6 @@ export default function EpisodeSummary() {
   const [loading, setLoading] = useState(true);
   const [journey, setJourney] = useState<ReturnType<typeof calculatePatientJourney> | null>(null);
 
-  // Enable keyboard shortcuts
-  const { showHelp, setShowHelp } = useNavigationShortcuts();
-
   useEffect(() => {
     const loadEpisodeData = async () => {
       if (!episodeId) {
@@ -185,6 +182,11 @@ export default function EpisodeSummary() {
     window.print();
     toast.success("Opening print dialog...");
   };
+
+  // Enable keyboard shortcuts with print handler
+  const { showHelp, setShowHelp } = useNavigationShortcuts({
+    onPrint: handlePrint,
+  });
 
   if (loading) {
     return (

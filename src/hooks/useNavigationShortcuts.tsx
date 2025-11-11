@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 interface UseNavigationShortcutsOptions {
   onShowHelp?: () => void;
+  onPrint?: () => void;
+  onExport?: () => void;
 }
 
 /**
@@ -10,6 +12,8 @@ interface UseNavigationShortcutsOptions {
  * - Escape: Go back to previous page
  * - H: Go to home page
  * - ?: Show keyboard shortcuts help
+ * - P: Print (if handler provided)
+ * - E: Export (if handler provided)
  */
 export function useNavigationShortcuts(options?: UseNavigationShortcutsOptions) {
   const navigate = useNavigate();
@@ -39,6 +43,18 @@ export function useNavigationShortcuts(options?: UseNavigationShortcutsOptions) 
             options.onShowHelp();
           } else {
             setShowHelp(true);
+          }
+          break;
+        case "p":
+          if (options?.onPrint) {
+            event.preventDefault();
+            options.onPrint();
+          }
+          break;
+        case "e":
+          if (options?.onExport) {
+            event.preventDefault();
+            options.onExport();
           }
           break;
       }

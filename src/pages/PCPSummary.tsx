@@ -78,9 +78,6 @@ export default function PCPSummary() {
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Enable keyboard shortcuts
-  const { showHelp, setShowHelp } = useNavigationShortcuts();
-
   useEffect(() => {
     if (episodeId) {
       loadEpisodeData();
@@ -226,6 +223,12 @@ export default function PCPSummary() {
 
     toast.success("Summary exported successfully!");
   };
+
+  // Enable keyboard shortcuts with print and export handlers
+  const { showHelp, setShowHelp } = useNavigationShortcuts({
+    onPrint: handlePrint,
+    onExport: handleExport,
+  });
 
   if (loading) {
     return (
