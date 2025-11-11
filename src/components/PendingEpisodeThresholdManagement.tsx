@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Trash2, RefreshCw, Globe, Building2 } from "lucide-react";
+import { AlertCircle, Trash2, RefreshCw, Globe, Building2, Download, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { PendingEpisodeThresholdSettings } from "./PendingEpisodeThresholdSettings";
 
@@ -26,6 +26,8 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
   const [thresholds, setThresholds] = useState<ThresholdConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isAdmin) {
@@ -95,6 +97,144 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
     }
   };
 
+  const handleExportCSV = () => {
+    try {
+      // Create CSV header
+      const headers = ["Clinic ID", "Clinic Name", "Warning Days", "Critical Days"];
+      const csvRows = [headers.join(",")];
+
+      // Add data rows
+      thresholds.forEach((threshold) => {
+        const row = [
+          threshold.clinic_id || "GLOBAL",
+          threshold.clinic_name || "Global Default",
+          threshold.warning_days,
+          threshold.critical_days,
+        ];
+        csvRows.push(row.join(","));
+      });
+
+      // Create and download file
+      const csvContent = csvRows.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute("href", url);
+      link.setAttribute("download", `threshold-config-${new Date().toISOString().split("T")[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Configuration exported successfully");
+    } catch (error: any) {
+      console.error("Error exporting CSV:", error);
+      toast.error("Failed to export configuration");
+    }
+  };
+
+  const handleImportCSV = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const lines = text.split("\n").filter(line => line.trim());
+      
+      if (lines.length < 2) {
+        throw new Error("CSV file is empty or invalid");
+      }
+
+      // Skip header row
+      const dataRows = lines.slice(1);
+      
+      // Fetch all clinics to validate IDs
+      const { data: clinics, error: clinicsError } = await supabase
+        .from("clinics")
+        .select("id, name");
+
+      if (clinicsError) throw clinicsError;
+
+      const clinicMap = new Map(clinics.map(c => [c.id, c.name]));
+      const updates: Array<{ clinic_id: string | null; warning_days: number; critical_days: number }> = [];
+      let skipped = 0;
+
+      for (const line of dataRows) {
+        const [clinicId, , warningDays, criticalDays] = line.split(",").map(s => s.trim());
+        
+        // Validate data
+        const warning = parseInt(warningDays);
+        const critical = parseInt(criticalDays);
+
+        if (isNaN(warning) || isNaN(critical) || warning <= 0 || critical <= 0 || warning >= critical) {
+          skipped++;
+          continue;
+        }
+
+        // Validate clinic ID
+        const targetClinicId = clinicId === "GLOBAL" ? null : clinicId;
+        if (targetClinicId && !clinicMap.has(targetClinicId)) {
+          skipped++;
+          continue;
+        }
+
+        updates.push({
+          clinic_id: targetClinicId,
+          warning_days: warning,
+          critical_days: critical,
+        });
+      }
+
+      if (updates.length === 0) {
+        throw new Error("No valid rows found in CSV file");
+      }
+
+      // Process updates
+      let imported = 0;
+      for (const config of updates) {
+        // Check if threshold exists
+        const { data: existing } = await supabase
+          .from("pending_episode_thresholds")
+          .select("id")
+          .eq("clinic_id", config.clinic_id ?? null)
+          .maybeSingle();
+
+        if (existing) {
+          // Update existing
+          const { error } = await supabase
+            .from("pending_episode_thresholds")
+            .update({
+              warning_days: config.warning_days,
+              critical_days: config.critical_days,
+            })
+            .eq("id", existing.id);
+
+          if (!error) imported++;
+        } else {
+          // Insert new
+          const { error } = await supabase
+            .from("pending_episode_thresholds")
+            .insert(config);
+
+          if (!error) imported++;
+        }
+      }
+
+      toast.success(`Imported ${imported} configurations${skipped > 0 ? `, skipped ${skipped} invalid rows` : ""}`);
+      loadThresholds();
+    } catch (error: any) {
+      console.error("Error importing CSV:", error);
+      toast.error(`Failed to import: ${error.message}`);
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
   if (!isAdmin) {
     return null;
   }
@@ -110,6 +250,33 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
             </CardDescription>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCSV}
+              disabled={loading || thresholds.length === 0}
+              className="gap-2"
+            >
+              <Download className="h-4 w-4" />
+              Export CSV
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importing}
+              className="gap-2"
+            >
+              <Upload className="h-4 w-4" />
+              {importing ? "Importing..." : "Import CSV"}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv"
+              onChange={handleImportCSV}
+              className="hidden"
+            />
             <Button
               variant="outline"
               size="sm"
@@ -208,11 +375,20 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
           </div>
         )}
 
-        <div className="mt-4 text-sm text-muted-foreground">
-          <p>
-            <strong>Global settings</strong> apply to all clinics by default. 
-            <strong> Clinic-specific overrides</strong> take precedence when configured.
-          </p>
+        <div className="mt-4 space-y-2">
+          <div className="text-sm text-muted-foreground">
+            <p>
+              <strong>Global settings</strong> apply to all clinics by default. 
+              <strong> Clinic-specific overrides</strong> take precedence when configured.
+            </p>
+          </div>
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>CSV Format:</strong> Use columns: "Clinic ID" (or "GLOBAL"), "Clinic Name", "Warning Days", "Critical Days". 
+              Export current config as a template to get started.
+            </AlertDescription>
+          </Alert>
         </div>
       </CardContent>
     </Card>
