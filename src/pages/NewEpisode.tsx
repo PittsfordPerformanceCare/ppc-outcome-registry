@@ -18,6 +18,7 @@ import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationS
 import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorTreatmentSelector";
 import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoalsSelector";
 import { SmartOutcomeMeasureSelector } from "@/components/SmartOutcomeMeasureSelector";
+import { PatientSearch } from "@/components/PatientSearch";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -71,6 +72,27 @@ export default function NewEpisode() {
     };
     loadClinicianInfo();
   }, []);
+
+  const handlePatientSelect = (patient: any) => {
+    // Get the most recent episode for this patient
+    const recentEpisode = patient.episodes[0];
+    
+    // Populate form with patient data
+    setPatientName(patient.patient_name);
+    setDob(patient.date_of_birth);
+    
+    // Populate with data from most recent episode if available
+    if (recentEpisode) {
+      setInsurance(recentEpisode.insurance || "");
+      setEmergencyContact(recentEpisode.emergency_contact || "");
+      setEmergencyPhone(recentEpisode.emergency_phone || "");
+      setReferringPhysician(recentEpisode.referring_physician || "");
+      setMedications(recentEpisode.medications || "");
+      setMedicalHistory(recentEpisode.medical_history || "");
+    }
+    
+    toast.success(`Patient ${patient.patient_name} selected - ${patient.episodes.length} previous episode(s) found`);
+  };
 
   // Check for intake data from sessionStorage
   useEffect(() => {
@@ -246,6 +268,9 @@ export default function NewEpisode() {
           Enter baseline patient information and outcome scores
         </p>
       </div>
+
+      {/* Patient Search */}
+      <PatientSearch onPatientSelect={handlePatientSelect} />
 
       <form onSubmit={handleSubmit}>
         <Card>
