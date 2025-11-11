@@ -174,6 +174,28 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
     }
   }, [open]);
 
+  // Keyboard shortcuts for episode navigation
+  useEffect(() => {
+    if (!open || !showDuplicateDetails || duplicateEpisodes.length === 0) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Ctrl/Cmd + number (1-9)
+      if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '9') {
+        e.preventDefault();
+        const index = parseInt(e.key) - 1;
+        
+        if (index < duplicateEpisodes.length) {
+          const episode = duplicateEpisodes[index];
+          window.open(`/episode-summary?id=${episode.id}`, '_blank');
+          toast.success(`Opening episode ${episode.id} in new tab`);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, showDuplicateDetails, duplicateEpisodes]);
+
   const checkForDuplicates = async () => {
     try {
       const { data: episodes, error } = await supabase
@@ -411,7 +433,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
                             size="sm"
                             className="w-full justify-between text-sm h-8 hover:bg-destructive/20"
                           >
-                            <span>{showDuplicateDetails ? 'Hide' : 'Show'} Episode Details</span>
+                            <span>{showDuplicateDetails ? 'Hide' : 'Show'} Episode Details {duplicateEpisodes.length > 0 && duplicateEpisodes.length <= 9 && '(Ctrl/Cmd + 1-9 to navigate)'}</span>
                             {showDuplicateDetails ? (
                               <ChevronUp className="h-4 w-4" />
                             ) : (
@@ -428,9 +450,18 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
                                   // Open episode in new window to avoid losing conversion dialog
                                   window.open(`/episode-summary?id=${episode.id}`, '_blank');
                                 }}
-                                className="rounded-md bg-background/80 p-3 text-foreground space-y-1.5 cursor-pointer hover:bg-background hover:ring-2 hover:ring-primary/50 transition-all"
+                                className="rounded-md bg-background/80 p-3 text-foreground space-y-1.5 cursor-pointer hover:bg-background hover:ring-2 hover:ring-primary/50 transition-all relative"
                               >
-                                <div className="flex items-center justify-between">
+                                {/* Keyboard Shortcut Badge */}
+                                {idx < 9 && (
+                                  <div className="absolute top-2 right-2">
+                                    <Badge variant="outline" className="text-xs bg-background/90 font-mono">
+                                      {navigator.platform.includes('Mac') ? '⌘' : 'Ctrl'} + {idx + 1}
+                                    </Badge>
+                                  </div>
+                                )}
+                                
+                                <div className="flex items-center justify-between pr-16">
                                   <span className="font-medium text-sm hover:text-primary transition-colors">
                                     {episode.id}
                                   </span>
