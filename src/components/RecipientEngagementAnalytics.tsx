@@ -4,8 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Users, Search, TrendingUp, TrendingDown, Mail, Eye, MousePointerClick } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Users, Search, TrendingUp, TrendingDown, Mail, Eye, MousePointerClick, Download, FileSpreadsheet } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
 interface RecipientMetrics {
   email: string;
@@ -24,6 +27,7 @@ export function RecipientEngagementAnalytics() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<keyof RecipientMetrics>("openRate");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const { toast } = useToast();
 
   useEffect(() => {
     loadRecipientAnalytics();
@@ -137,6 +141,142 @@ export function RecipientEngagementAnalytics() {
     return { label: 'Very Low', color: 'bg-red-500' };
   };
 
+  const exportToCSV = () => {
+    try {
+      const headers = [
+        'Recipient Email',
+        'Reports Received',
+        'Reports Opened',
+        'Open Rate (%)',
+        'Reports Clicked',
+        'Click Rate (%)',
+        'Engagement Level',
+        'Last Received'
+      ];
+
+      const rows = filteredRecipients.map(r => {
+        const engagement = getEngagementLevel(r.openRate);
+        return [
+          r.email,
+          r.totalReceived,
+          r.totalOpened,
+          r.openRate,
+          r.totalClicked,
+          r.clickRate,
+          engagement.label,
+          format(new Date(r.lastReceived), 'yyyy-MM-dd HH:mm:ss')
+        ];
+      });
+
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `recipient-engagement-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast({
+        title: "Export successful",
+        description: "Recipient engagement data has been exported to CSV",
+      });
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      toast({
+        title: "Export failed",
+        description: "Failed to export recipient engagement data",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const exportToExcel = async () => {
+    try {
+      // Create a simple HTML table that Excel can open
+      const headers = [
+        'Recipient Email',
+        'Reports Received',
+        'Reports Opened',
+        'Open Rate (%)',
+        'Reports Clicked',
+        'Click Rate (%)',
+        'Engagement Level',
+        'Last Received'
+      ];
+
+      const rows = filteredRecipients.map(r => {
+        const engagement = getEngagementLevel(r.openRate);
+        return [
+          r.email,
+          r.totalReceived,
+          r.totalOpened,
+          r.openRate,
+          r.totalClicked,
+          r.clickRate,
+          engagement.label,
+          format(new Date(r.lastReceived), 'yyyy-MM-dd HH:mm:ss')
+        ];
+      });
+
+      const htmlContent = `
+        <html xmlns:x="urn:schemas-microsoft-com:office:excel">
+          <head>
+            <meta charset="UTF-8">
+            <style>
+              table { border-collapse: collapse; width: 100%; }
+              th { background-color: #4472C4; color: white; font-weight: bold; padding: 8px; border: 1px solid #ddd; }
+              td { padding: 8px; border: 1px solid #ddd; }
+              tr:nth-child(even) { background-color: #f2f2f2; }
+            </style>
+          </head>
+          <body>
+            <table>
+              <thead>
+                <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+              </thead>
+              <tbody>
+                ${rows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `;
+
+      const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `recipient-engagement-${format(new Date(), 'yyyy-MM-dd')}.xls`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast({
+        title: "Export successful",
+        description: "Recipient engagement data has been exported to Excel",
+      });
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+      toast({
+        title: "Export failed",
+        description: "Failed to export recipient engagement data",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Card className="p-6">
@@ -166,11 +306,33 @@ export function RecipientEngagementAnalytics() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold mb-1">Recipient Engagement Analytics</h3>
-        <p className="text-sm text-muted-foreground">
-          Track which recipients engage most with comparison reports
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold mb-1">Recipient Engagement Analytics</h3>
+          <p className="text-sm text-muted-foreground">
+            Track which recipients engage most with comparison reports
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            onClick={exportToCSV}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Export CSV
+          </Button>
+          <Button
+            onClick={exportToExcel}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            Export Excel
+          </Button>
+        </div>
       </div>
 
       {/* Top Recipients Summary */}
