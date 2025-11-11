@@ -169,6 +169,27 @@ export default function IntakeReview() {
       // Validate selected intakes
       const result = validateBulkIntakes(selectedForms);
       
+      // Check for all intakes already converted
+      if (result.alreadyConverted === result.totalSelected) {
+        toast.error("All selected intakes have already been converted to episodes");
+        setPreparingBulkConversion(false);
+        return;
+      }
+
+      // Check if no intakes are valid for conversion
+      if (result.validForConversion === 0) {
+        const errorCount = result.validatedIntakes.filter(v => 
+          v.issues.some(i => i.severity === "error")
+        ).length;
+        
+        toast.error(
+          `Cannot convert any of the selected intakes. ${errorCount} have validation errors that must be fixed first.`,
+          { duration: 5000 }
+        );
+        setPreparingBulkConversion(false);
+        return;
+      }
+
       // Check for duplicate patients
       const duplicates = await checkForDuplicatePatients(selectedForms);
       
@@ -186,10 +207,38 @@ export default function IntakeReview() {
         }
       });
 
+      // Show validation summary
+      if (result.requiresReview > 0 || duplicates.size > 0) {
+        const messages = [];
+        if (result.validForConversion > 0) {
+          messages.push(`${result.validForConversion} ready to convert`);
+        }
+        if (result.requiresReview > 0) {
+          messages.push(`${result.requiresReview} need review`);
+        }
+        if (duplicates.size > 0) {
+          messages.push(`${duplicates.size} potential duplicates detected`);
+        }
+        
+        toast.warning(
+          messages.join(", "),
+          { duration: 4000 }
+        );
+      } else {
+        toast.success(
+          `${result.validForConversion} intakes validated successfully`,
+          { duration: 3000 }
+        );
+      }
+
       setValidationResult(result);
       setBulkConvertDialogOpen(true);
     } catch (error: any) {
-      toast.error(`Validation failed: ${error.message}`);
+      console.error("Bulk validation error:", error);
+      toast.error(
+        `Validation failed: ${error.message || "Unknown error occurred"}`,
+        { duration: 5000 }
+      );
     } finally {
       setPreparingBulkConversion(false);
     }
