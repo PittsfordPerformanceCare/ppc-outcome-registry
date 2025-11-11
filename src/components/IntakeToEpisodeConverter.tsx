@@ -70,7 +70,9 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [selectedDiagnosis, setSelectedDiagnosis] = useState<string>("");
   const [hasDuplicate, setHasDuplicate] = useState(false);
+  const [duplicateEpisodes, setDuplicateEpisodes] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [confirmDuplicate, setConfirmDuplicate] = useState(false);
 
   // Extract region from complaints
   const inferRegionFromComplaints = (): string => {
@@ -163,6 +165,8 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
       setSelectedRegion("");
       setSelectedDiagnosis("");
       setHasDuplicate(false);
+      setDuplicateEpisodes([]);
+      setConfirmDuplicate(false);
     }
   }, [open]);
 
@@ -170,15 +174,24 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
     try {
       const { data: episodes, error } = await supabase
         .from("episodes")
-        .select("id")
+        .select("id, region, diagnosis, date_of_service, discharge_date, clinician")
         .ilike("patient_name", intakeForm.patient_name)
-        .eq("date_of_birth", intakeForm.date_of_birth)
-        .limit(1);
+        .eq("date_of_birth", intakeForm.date_of_birth);
 
       if (error) throw error;
       
       if (episodes && episodes.length > 0) {
         setHasDuplicate(true);
+        setDuplicateEpisodes(episodes);
+        
+        // Check if there are any active (non-discharged) episodes
+        const activeEpisodes = episodes.filter(ep => !ep.discharge_date);
+        if (activeEpisodes.length > 0) {
+          toast.warning(
+            `Warning: ${activeEpisodes.length} active episode${activeEpisodes.length > 1 ? 's' : ''} found for this patient`,
+            { duration: 5000 }
+          );
+        }
       }
     } catch (error) {
       console.error("Error checking for duplicates:", error);
@@ -189,6 +202,33 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
     if (!selectedRegion) {
       toast.error("Please select a body region");
       return;
+    }
+
+    // Check for duplicate episodes with same date of service
+    if (hasDuplicate && !confirmDuplicate) {
+      const todayDate = new Date().toISOString().split('T')[0];
+      const duplicateToday = duplicateEpisodes.some(
+        ep => ep.date_of_service === todayDate && !ep.discharge_date
+      );
+      
+      if (duplicateToday) {
+        toast.error(
+          "An episode already exists for this patient with today's date. Please review existing episodes before creating a new one.",
+          { duration: 6000 }
+        );
+        return;
+      }
+
+      // Check for any active episodes
+      const activeEpisodes = duplicateEpisodes.filter(ep => !ep.discharge_date);
+      if (activeEpisodes.length > 0) {
+        toast.warning(
+          `This patient has ${activeEpisodes.length} active episode${activeEpisodes.length > 1 ? 's' : ''}. Please confirm you want to create a new episode.`,
+          { duration: 5000 }
+        );
+        setConfirmDuplicate(true);
+        return;
+      }
     }
 
     setConverting(true);
@@ -327,14 +367,28 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription className="flex items-center justify-between">
-                    <span className="font-semibold">
-                      Warning: This patient may already have episodes in the system
-                    </span>
+                    <div>
+                      <span className="font-semibold block mb-1">
+                        Warning: This patient has {duplicateEpisodes.length} existing episode{duplicateEpisodes.length > 1 ? 's' : ''}
+                      </span>
+                      <span className="text-sm">
+                        {duplicateEpisodes.filter(ep => !ep.discharge_date).length > 0 && (
+                          <>
+                            {duplicateEpisodes.filter(ep => !ep.discharge_date).length} active episode{duplicateEpisodes.filter(ep => !ep.discharge_date).length > 1 ? 's' : ''} found.
+                            {confirmDuplicate && (
+                              <span className="block mt-1 text-amber-200 font-medium">
+                                Click "Create Episode" again to confirm creation of a new episode.
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </span>
+                    </div>
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={() => setShowHistory(true)}
-                      className="ml-4"
+                      className="ml-4 shrink-0"
                     >
                       View History
                     </Button>
@@ -445,7 +499,11 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
           <Button variant="outline" onClick={onClose} disabled={converting}>
             Cancel
           </Button>
-          <Button onClick={handleConvert} disabled={converting || !selectedRegion}>
+          <Button 
+            onClick={handleConvert} 
+            disabled={converting || !selectedRegion}
+            variant={confirmDuplicate ? "destructive" : "default"}
+          >
             {converting ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -454,7 +512,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
             ) : (
               <>
                 <CheckCircle2 className="h-4 w-4 mr-2" />
-                Create Episode
+                {confirmDuplicate ? "Confirm & Create Episode" : "Create Episode"}
               </>
             )}
           </Button>
