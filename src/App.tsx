@@ -18,6 +18,9 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import PatientIntake from "./pages/PatientIntake";
+import PatientAuth from "./pages/PatientAuth";
+import PatientDashboard from "./pages/PatientDashboard";
+import PatientEpisodeView from "./pages/PatientEpisodeView";
 import IntakeReview from "./pages/IntakeReview";
 import IntakeStart from "./pages/IntakeStart";
 import IntakeValidation from "./pages/IntakeValidation";
@@ -41,6 +44,9 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/patient-intake" element={<PatientIntake />} />
           <Route path="/intake-start" element={<IntakeStart />} />
+          <Route path="/patient-auth" element={<PatientAuth />} />
+          <Route path="/patient-dashboard" element={<PatientDashboard />} />
+          <Route path="/patient-episode" element={<PatientEpisodeView />} />
           <Route
             path="/*"
             element={
