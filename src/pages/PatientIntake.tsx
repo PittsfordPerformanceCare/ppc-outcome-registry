@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,6 +24,26 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import SignatureCanvas from "react-signature-canvas";
 import jsPDF from "jspdf";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { SortableComplaintItem } from "@/components/SortableComplaintItem";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -192,6 +212,19 @@ export default function PatientIntake() {
   });
   
   const signatureRef = useRef<SignatureCanvas>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px movement required before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const form = useForm<IntakeFormValues>({
     resolver: zodResolver(intakeFormSchema),
@@ -236,10 +269,42 @@ export default function PatientIntake() {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, move } = useFieldArray({
     control: form.control,
     name: "complaints",
   });
+
+  // Handle drag end
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = fields.findIndex((field) => field.id === active.id);
+    const newIndex = fields.findIndex((field) => field.id === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      // Move the item in the array
+      move(oldIndex, newIndex);
+
+      // Update priorities after reordering
+      setTimeout(() => {
+        const complaints = form.getValues('complaints');
+        complaints.forEach((_, i) => {
+          form.setValue(`complaints.${i}.priority`, i + 1);
+          form.setValue(`complaints.${i}.isPrimary`, i === 0);
+        });
+        toast.success("Complaints reordered");
+      }, 0);
+    }
+  };
 
   // Calculate form completion percentage
   useEffect(() => {
@@ -1266,7 +1331,7 @@ export default function PatientIntake() {
                   )}
                 </div>
                 <CardDescription>
-                  Please describe each separate issue or condition you'd like evaluated. Use the category dropdown to specify the body region. <strong>Rank your concerns in order of priority</strong> (1 = treat first, 2 = treat second, etc.). We'll create treatment episodes in the order you prioritize.
+                  <strong>Drag and drop to reorder</strong> your concerns by treatment priority. The top concern will be treated first, and subsequent concerns will be queued for future treatment episodes.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -1284,215 +1349,86 @@ export default function PatientIntake() {
                   </Alert>
                 )}
 
-                <div className="space-y-6">
-                  {fields.map((field, index) => (
-                    <div key={field.id} className="space-y-4 p-5 border-2 rounded-lg relative bg-card shadow-sm hover:shadow-md transition-shadow">
-                      {/* Header with Priority and Remove */}
-                      <div className="flex items-start justify-between gap-2 pb-3 border-b">
-                        <div className="flex items-center gap-3 flex-1">
-                          {/* Complaint Number Badge */}
-                          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
-                            {index + 1}
-                          </div>
-                          
-                          {/* Priority Selector */}
-                          <FormField
-                            control={form.control}
-                            name={`complaints.${index}.priority`}
-                            render={({ field: priorityField }) => (
-                              <FormItem className="flex items-center space-y-0 gap-2">
-                                <FormLabel className="text-sm font-medium whitespace-nowrap">Treatment Priority:</FormLabel>
-                                <Select 
-                                  onValueChange={(value) => {
-                                    const newPriority = parseInt(value);
-                                    priorityField.onChange(newPriority);
-                                    form.setValue(`complaints.${index}.isPrimary`, newPriority === 1);
-                                  }} 
-                                  value={priorityField.value?.toString()}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger className="w-28 h-9">
-                                      <SelectValue placeholder="Rank" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent className="bg-background">
-                                    {Array.from({ length: fields.length }, (_, i) => i + 1).map((num) => (
-                                      <SelectItem key={num} value={num.toString()}>
-                                        #{num} {num === 1 ? "(First)" : num === 2 ? "(Second)" : ""}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormItem>
-                            )}
-                          />
-                          
-                          {/* Primary Badge */}
-                          {form.watch(`complaints.${index}.priority`) === 1 && (
-                            <Badge variant="default" className="gap-1 animate-scale-in">
-                              <CheckCircle2 className="h-3 w-3" />
-                              Primary Concern
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        {/* Remove Button */}
-                        {fields.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              remove(index);
-                              toast.success("Concern removed");
-                              // Reorder remaining priorities
-                              setTimeout(() => {
-                                const remaining = form.getValues('complaints');
-                                remaining
-                                  .filter(c => c.priority)
-                                  .sort((a, b) => (a.priority || 999) - (b.priority || 999))
-                                  .forEach((_, i) => {
-                                    form.setValue(`complaints.${i}.priority`, i + 1);
-                                    form.setValue(`complaints.${i}.isPrimary`, i === 0);
-                                  });
-                              }, 100);
-                            }}
-                            className="shrink-0"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-
-                      {/* Basic Info */}
-                      <div className="grid gap-4 sm:grid-cols-2">
-                        <FormField
-                          control={form.control}
-                          name={`complaints.${index}.category`}
-                          render={({ field: categoryField }) => (
-                            <FormItem>
-                              <FormLabel>Body Region *</FormLabel>
-                              <Select onValueChange={categoryField.onChange} value={categoryField.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select body region" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className="bg-background">
-                                  {COMPLAINT_CATEGORIES.map((category) => (
-                                    <SelectItem key={category} value={category}>
-                                      {category}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name={`complaints.${index}.severity`}
-                          render={({ field: severityField }) => (
-                            <FormItem>
-                              <FormLabel>Severity *</FormLabel>
-                              <Select onValueChange={severityField.onChange} value={severityField.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select severity" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent className="bg-background">
-                                  {SEVERITY_LEVELS.map((severity) => (
-                                    <SelectItem key={severity} value={severity}>
-                                      {severity}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <FormField
-                        control={form.control}
-                        name={`complaints.${index}.duration`}
-                        render={({ field: durationField }) => (
-                          <FormItem>
-                            <FormLabel>How long have you had this issue? *</FormLabel>
-                            <Select onValueChange={durationField.onChange} value={durationField.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select duration" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className="bg-background">
-                                {DURATION_OPTIONS.map((duration) => (
-                                  <SelectItem key={duration} value={duration}>
-                                    {duration}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name={`complaints.${index}.text`}
-                        render={({ field: textField }) => (
-                          <FormItem>
-                            <FormLabel>Describe This Concern *</FormLabel>
-                            <FormDescription>
-                              Be as detailed as possible about this specific issue
-                            </FormDescription>
-                            <FormControl>
-                              <Textarea 
-                                placeholder="Example: Sharp pain in left shoulder when reaching overhead, difficulty sleeping on that side, started after lifting heavy boxes at work..." 
-                                rows={4} 
-                                {...textField} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  ))}
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="lg"
-                    onClick={() => {
-                      const nextPriority = fields.length + 1;
-                      append({ 
-                        text: "", 
-                        category: "", 
-                        severity: "", 
-                        duration: "", 
-                        isPrimary: false,
-                        priority: nextPriority 
-                      });
-                      toast.success(`Concern #${nextPriority} added`);
-                    }}
-                    className="w-full border-dashed border-2 hover:border-primary hover:bg-primary/5"
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={fields.map(f => f.id)}
+                    strategy={verticalListSortingStrategy}
                   >
-                    <Plus className="h-5 w-5 mr-2" />
-                    Add Another Concern
-                  </Button>
+                    <div className="space-y-6">
+                      {fields.map((field, index) => (
+                        <SortableComplaintItem
+                          key={field.id}
+                          id={field.id}
+                          index={index}
+                          complaint={field}
+                          form={form}
+                          fieldsLength={fields.length}
+                          categories={COMPLAINT_CATEGORIES}
+                          severityLevels={SEVERITY_LEVELS}
+                          durationOptions={DURATION_OPTIONS}
+                          onRemove={() => {
+                            remove(index);
+                            toast.success("Concern removed");
+                            // Reorder remaining priorities
+                            setTimeout(() => {
+                              const remaining = form.getValues('complaints');
+                              remaining.forEach((_, i) => {
+                                form.setValue(`complaints.${i}.priority`, i + 1);
+                                form.setValue(`complaints.${i}.isPrimary`, i === 0);
+                              });
+                            }, 100);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
 
-                  {form.formState.errors.complaints?.root && (
-                    <p className="text-sm font-medium text-destructive">
-                      {form.formState.errors.complaints.root.message}
-                    </p>
-                  )}
-                </div>
+                  <DragOverlay>
+                    {activeId ? (
+                      <div className="opacity-50">
+                        <div className="p-5 border-2 border-primary rounded-lg bg-card shadow-lg">
+                          <div className="flex items-center gap-3">
+                            <GripVertical className="h-5 w-5 text-primary" />
+                            <span className="font-medium">Dragging complaint...</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+                  </DragOverlay>
+                </DndContext>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => {
+                    const nextPriority = fields.length + 1;
+                    append({ 
+                      text: "", 
+                      category: "", 
+                      severity: "", 
+                      duration: "", 
+                      isPrimary: false,
+                      priority: nextPriority 
+                    });
+                    toast.success(`Concern #${nextPriority} added`);
+                  }}
+                  className="w-full border-dashed border-2 hover:border-primary hover:bg-primary/5"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Add Another Concern
+                </Button>
+
+                {form.formState.errors.complaints?.root && (
+                  <p className="text-sm font-medium text-destructive">
+                    {form.formState.errors.complaints.root.message}
+                  </p>
+                )}
 
                 {/* Additional Details Section */}
                 <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
