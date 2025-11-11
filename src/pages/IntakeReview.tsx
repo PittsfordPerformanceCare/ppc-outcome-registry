@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, ArrowRight, FileText, CheckSquare, Layers } from "lucide-react";
+import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, ArrowRight, FileText, CheckSquare, Layers, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { IntakeToEpisodeConverter } from "@/components/IntakeToEpisodeConverter";
 import { BulkIntakeConverter } from "@/components/BulkIntakeConverter";
@@ -51,6 +51,7 @@ export default function IntakeReview() {
   const [selectedForm, setSelectedForm] = useState<IntakeForm | null>(null);
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
   const [formToConvert, setFormToConvert] = useState<IntakeForm | null>(null);
+  const [preparingConversion, setPreparingConversion] = useState(false);
   
   // Bulk selection states
   const [selectedIntakes, setSelectedIntakes] = useState<Set<string>>(new Set());
@@ -97,9 +98,13 @@ export default function IntakeReview() {
     }
   };
 
-  const handleConvertToEpisode = (form: IntakeForm) => {
+  const handleConvertToEpisode = async (form: IntakeForm) => {
+    setPreparingConversion(true);
+    // Brief delay to show loading state
+    await new Promise(resolve => setTimeout(resolve, 300));
     setFormToConvert(form);
     setConvertDialogOpen(true);
+    setPreparingConversion(false);
   };
 
   const handleConversionSuccess = () => {
@@ -421,9 +426,19 @@ export default function IntakeReview() {
                   onClick={() => handleConvertToEpisode(selectedForm)}
                   className="flex-1"
                   size="lg"
+                  disabled={preparingConversion}
                 >
-                  <ArrowRight className="h-4 w-4 mr-2" />
-                  Convert to Episode
+                  {preparingConversion ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Preparing...
+                    </>
+                  ) : (
+                    <>
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                      Convert to Episode
+                    </>
+                  )}
                 </Button>
                 {selectedForm.status === "pending" && (
                   <Button
