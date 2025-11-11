@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, User, Calendar, FileText, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, User, Calendar, FileText, ChevronDown, ChevronUp, Filter, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PPC_CONFIG } from "@/lib/ppcConfig";
 
 interface PatientData {
   patient_name: string;
@@ -36,10 +38,22 @@ export function PatientSearch({ onPatientSelect }: PatientSearchProps) {
   const [searchResults, setSearchResults] = useState<PatientData[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  
+  // Advanced filter states
+  const [dobFilter, setDobFilter] = useState("");
+  const [diagnosisFilter, setDiagnosisFilter] = useState("");
+  const [regionFilter, setRegionFilter] = useState("");
+  const [dateFromFilter, setDateFromFilter] = useState("");
+  const [dateToFilter, setDateToFilter] = useState("");
 
   useEffect(() => {
     const searchPatients = async () => {
-      if (searchQuery.trim().length < 2) {
+      // Need at least 2 characters in name search OR at least one advanced filter
+      const hasNameSearch = searchQuery.trim().length >= 2;
+      const hasAdvancedFilter = dobFilter || diagnosisFilter || regionFilter || dateFromFilter || dateToFilter;
+      
+      if (!hasNameSearch && !hasAdvancedFilter) {
         setSearchResults([]);
         setShowResults(false);
         return;
@@ -47,12 +61,38 @@ export function PatientSearch({ onPatientSelect }: PatientSearchProps) {
 
       setIsSearching(true);
       try {
-        const { data: episodes, error } = await supabase
+        let query = supabase
           .from("episodes")
           .select("*")
-          .ilike("patient_name", `%${searchQuery}%`)
           .order("date_of_service", { ascending: false })
-          .limit(50);
+          .limit(100);
+
+        // Apply filters
+        if (hasNameSearch) {
+          query = query.ilike("patient_name", `%${searchQuery}%`);
+        }
+        
+        if (dobFilter) {
+          query = query.eq("date_of_birth", dobFilter);
+        }
+        
+        if (diagnosisFilter) {
+          query = query.ilike("diagnosis", `%${diagnosisFilter}%`);
+        }
+        
+        if (regionFilter) {
+          query = query.eq("region", regionFilter);
+        }
+        
+        if (dateFromFilter) {
+          query = query.gte("date_of_service", dateFromFilter);
+        }
+        
+        if (dateToFilter) {
+          query = query.lte("date_of_service", dateToFilter);
+        }
+
+        const { data: episodes, error } = await query;
 
         if (error) throw error;
 
@@ -94,13 +134,25 @@ export function PatientSearch({ onPatientSelect }: PatientSearchProps) {
 
     const debounce = setTimeout(searchPatients, 300);
     return () => clearTimeout(debounce);
-  }, [searchQuery]);
+  }, [searchQuery, dobFilter, diagnosisFilter, regionFilter, dateFromFilter, dateToFilter]);
 
   const handlePatientSelect = (patient: PatientData) => {
     onPatientSelect(patient);
     setSearchQuery("");
     setShowResults(false);
   };
+
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setDobFilter("");
+    setDiagnosisFilter("");
+    setRegionFilter("");
+    setDateFromFilter("");
+    setDateToFilter("");
+    setShowResults(false);
+  };
+
+  const hasActiveFilters = dobFilter || diagnosisFilter || regionFilter || dateFromFilter || dateToFilter;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
@@ -131,6 +183,113 @@ export function PatientSearch({ onPatientSelect }: PatientSearchProps) {
             />
           </div>
         </div>
+
+        {/* Advanced Filters Toggle */}
+        <div className="flex items-center justify-between pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className="gap-2"
+          >
+            <Filter className="h-4 w-4" />
+            Advanced Filters
+            {hasActiveFilters && (
+              <Badge variant="secondary" className="ml-1">
+                {[dobFilter, diagnosisFilter, regionFilter, dateFromFilter, dateToFilter].filter(Boolean).length}
+              </Badge>
+            )}
+            {showAdvancedFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </Button>
+          
+          {hasActiveFilters && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={clearAllFilters}
+              className="gap-2"
+            >
+              <X className="h-4 w-4" />
+              Clear Filters
+            </Button>
+          )}
+        </div>
+
+        {/* Advanced Filter Options */}
+        {showAdvancedFilters && (
+          <Card className="border-dashed">
+            <CardContent className="pt-6 space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="dob-filter">Date of Birth</Label>
+                  <Input
+                    id="dob-filter"
+                    type="date"
+                    value={dobFilter}
+                    onChange={(e) => setDobFilter(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="region-filter">Region</Label>
+                  <Select value={regionFilter} onValueChange={setRegionFilter}>
+                    <SelectTrigger id="region-filter">
+                      <SelectValue placeholder="All regions" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All regions</SelectItem>
+                      {PPC_CONFIG.regionEnum.map((region) => (
+                        <SelectItem key={region} value={region}>
+                          {region}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="diagnosis-filter">Diagnosis</Label>
+                <Input
+                  id="diagnosis-filter"
+                  placeholder="Search by diagnosis..."
+                  value={diagnosisFilter}
+                  onChange={(e) => setDiagnosisFilter(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Episode Date Range</Label>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="date-from-filter" className="text-sm text-muted-foreground">
+                      From
+                    </Label>
+                    <Input
+                      id="date-from-filter"
+                      type="date"
+                      value={dateFromFilter}
+                      onChange={(e) => setDateFromFilter(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="date-to-filter" className="text-sm text-muted-foreground">
+                      To
+                    </Label>
+                    <Input
+                      id="date-to-filter"
+                      type="date"
+                      value={dateToFilter}
+                      onChange={(e) => setDateToFilter(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {showResults && searchResults.length > 0 && (
           <ScrollArea className="h-[400px] rounded-md border">
