@@ -79,6 +79,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "Link Analytics", href: "/link-analytics", icon: Link2 },
     { name: "Alert History", href: "/alert-history", icon: AlertTriangle },
     { name: "Export History", href: "/export-history", icon: History },
+    { name: "Automation Status", href: "/automation-status", icon: Activity },
     { name: "PCP Summary", href: "/pcp-summary", icon: FileText },
   ];
 

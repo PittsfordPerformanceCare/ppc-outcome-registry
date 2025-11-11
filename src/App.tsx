@@ -34,6 +34,7 @@ import LinkAnalytics from "./pages/LinkAnalytics";
 import AlertHistory from "./pages/AlertHistory";
 import ExportHistory from "./pages/ExportHistory";
 import ReferralAnalytics from "./pages/ReferralAnalytics";
+import AutomationStatus from "./pages/AutomationStatus";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const App = () => (
                     <Route path="/alert-history" element={<AlertHistory />} />
                     <Route path="/export-history" element={<ExportHistory />} />
                     <Route path="/referral-analytics" element={<ReferralAnalytics />} />
+                    <Route path="/automation-status" element={<AutomationStatus />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
