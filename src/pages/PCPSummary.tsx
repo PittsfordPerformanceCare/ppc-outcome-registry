@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { getEpisode, getOutcomeScores, getFollowup } from "@/lib/dbOperations";
 import type { Episode } from "@/lib/dbOperations";
 import { calculateMCID } from "@/lib/mcidUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Download, Printer, AlertCircle, ArrowRight } from "lucide-react";
+import { FileText, Download, Printer, AlertCircle, ArrowRight, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 
@@ -68,6 +68,7 @@ interface FollowupData {
 }
 
 export default function PCPSummary() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const episodeId = searchParams.get("episode");
 
@@ -292,6 +293,10 @@ export default function PCPSummary() {
           <p className="mt-2 text-muted-foreground print:hidden">Primary Care Provider Outcome Summary</p>
         </div>
         <div className="flex gap-2 print:hidden">
+          <Button variant="outline" onClick={() => navigate(-1)} className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
           <Button variant="outline" onClick={handleExport} className="gap-2">
             <Download className="h-4 w-4" />
             Export
