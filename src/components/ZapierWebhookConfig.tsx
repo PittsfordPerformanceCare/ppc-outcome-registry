@@ -9,9 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Zap, Trash2, Edit, ExternalLink, TestTube } from "lucide-react";
 import { format } from "date-fns";
+import { WebhookActivityLog } from "./WebhookActivityLog";
 
 interface WebhookConfig {
   id: string;
@@ -242,34 +244,40 @@ export function ZapierWebhookConfig() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Zap className="h-5 w-5 text-orange-500" />
-            Zapier Webhook Integration
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Trigger custom workflows when engagement events occur
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={() => window.open('https://zapier.com/app/zaps', '_blank')}
-          >
-            <ExternalLink className="h-4 w-4" />
-            Open Zapier
-          </Button>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => setEditingWebhook(null)} className="gap-2" size="sm">
-                <Zap className="h-4 w-4" />
-                Add Webhook
-              </Button>
-            </DialogTrigger>
+    <Tabs defaultValue="config" className="w-full space-y-4">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="config">Configuration</TabsTrigger>
+        <TabsTrigger value="activity">Activity Log</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="config" className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <Zap className="h-5 w-5 text-orange-500" />
+              Zapier Webhook Integration
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Trigger custom workflows when engagement events occur
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => window.open('https://zapier.com/app/zaps', '_blank')}
+            >
+              <ExternalLink className="h-4 w-4" />
+              Open Zapier
+            </Button>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button onClick={() => setEditingWebhook(null)} className="gap-2" size="sm">
+                  <Zap className="h-4 w-4" />
+                  Add Webhook
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>
@@ -356,14 +364,14 @@ export function ZapierWebhookConfig() {
                 </div>
               </div>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+          </div>
         </div>
-      </div>
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading webhooks...</p>
-      ) : webhooks.length === 0 ? (
-        <Card className="p-6 text-center">
+        {loading ? (
+          <p className="text-sm text-muted-foreground">Loading webhooks...</p>
+        ) : webhooks.length === 0 ? (
+          <Card className="p-6 text-center">
           <Zap className="mx-auto h-12 w-12 text-muted-foreground mb-3" />
           <p className="text-muted-foreground mb-2">
             No webhooks configured yet
@@ -371,72 +379,77 @@ export function ZapierWebhookConfig() {
           <p className="text-sm text-muted-foreground">
             Connect Zapier to trigger custom workflows based on engagement events
           </p>
-        </Card>
-      ) : (
-        <div className="grid gap-3">
-          {webhooks.map((webhook) => (
-            <Card key={webhook.id} className="p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-orange-500" />
-                    <h4 className="font-semibold">{webhook.name}</h4>
-                    <Badge variant="secondary">
-                      {getTriggerLabel(webhook.trigger_type)}
-                    </Badge>
-                    {webhook.threshold_value && (
-                      <Badge variant="outline">
-                        {webhook.threshold_value}% threshold
+          </Card>
+        ) : (
+          <div className="grid gap-3">
+            {webhooks.map((webhook) => (
+              <Card key={webhook.id} className="p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-orange-500" />
+                      <h4 className="font-semibold">{webhook.name}</h4>
+                      <Badge variant="secondary">
+                        {getTriggerLabel(webhook.trigger_type)}
                       </Badge>
-                    )}
-                  </div>
-                  <div className="text-sm text-muted-foreground space-y-1">
-                    <p className="font-mono text-xs truncate">
-                      {webhook.webhook_url}
-                    </p>
-                    {webhook.last_triggered_at && (
-                      <p className="text-xs">
-                        Last triggered: {format(new Date(webhook.last_triggered_at), "MMM d, yyyy 'at' h:mm a")}
+                      {webhook.threshold_value && (
+                        <Badge variant="outline">
+                          {webhook.threshold_value}% threshold
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="text-sm text-muted-foreground space-y-1">
+                      <p className="font-mono text-xs truncate">
+                        {webhook.webhook_url}
                       </p>
-                    )}
+                      {webhook.last_triggered_at && (
+                        <p className="text-xs">
+                          Last triggered: {format(new Date(webhook.last_triggered_at), "MMM d, yyyy 'at' h:mm a")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleTestWebhook(webhook)}
+                      disabled={testing === webhook.id}
+                      title="Test webhook"
+                    >
+                      <TestTube className="h-4 w-4" />
+                    </Button>
+                    <Switch
+                      checked={webhook.enabled}
+                      onCheckedChange={(checked) => handleToggleEnabled(webhook.id, checked)}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEditWebhook(webhook)}
+                      title="Edit webhook"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteWebhook(webhook.id)}
+                      title="Delete webhook"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex gap-1">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleTestWebhook(webhook)}
-                    disabled={testing === webhook.id}
-                    title="Test webhook"
-                  >
-                    <TestTube className="h-4 w-4" />
-                  </Button>
-                  <Switch
-                    checked={webhook.enabled}
-                    onCheckedChange={(checked) => handleToggleEnabled(webhook.id, checked)}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleEditWebhook(webhook)}
-                    title="Edit webhook"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDeleteWebhook(webhook.id)}
-                    title="Delete webhook"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+              </Card>
+            ))}
+          </div>
+        )}
+      </TabsContent>
+
+      <TabsContent value="activity">
+        <WebhookActivityLog />
+      </TabsContent>
+    </Tabs>
   );
 }

@@ -348,64 +348,141 @@ async function triggerWebhooks(
   triggerType: string,
   summary: any,
   threshold?: number
-) {
+): Promise<void> {
+  console.log(`Triggering webhooks for type: ${triggerType}, threshold: ${threshold}`);
+  
   try {
-    // Get enabled webhooks for this trigger type
-    const { data: webhooks, error } = await supabase
+    // Build the query
+    let query = supabase
       .from('zapier_webhook_config')
       .select('*')
       .eq('user_id', userId)
       .eq('trigger_type', triggerType)
       .eq('enabled', true);
 
-    if (error || !webhooks || webhooks.length === 0) {
+    // Filter by threshold if provided
+    if (threshold !== undefined) {
+      query = query.lte('threshold_value', threshold);
+    }
+
+    const { data: webhooks, error } = await query;
+
+    if (error) {
+      console.error('Error fetching webhooks:', error);
       return;
     }
 
+    if (!webhooks || webhooks.length === 0) {
+      console.log('No webhooks found for trigger');
+      return;
+    }
+
+    console.log(`Found ${webhooks.length} webhooks to trigger`);
+
     // Trigger each webhook
     for (const webhook of webhooks) {
-      // Check threshold if applicable
-      if (threshold && webhook.threshold_value) {
-        const shouldTrigger = 
-          (triggerType === 'low_open_rate' && summary.avgOpenRate < webhook.threshold_value) ||
-          (triggerType === 'low_click_rate' && summary.avgClickRate < webhook.threshold_value) ||
-          (triggerType === 'high_engagement' && summary.avgOpenRate >= webhook.threshold_value) ||
-          (triggerType === 'low_engagement' && summary.avgOpenRate < webhook.threshold_value);
-        
-        if (!shouldTrigger) continue;
-      }
+      const startTime = Date.now();
+      let status = 'failed';
+      let responseStatus: number | null = null;
+      let responseBody: string | null = null;
+      let errorMessage: string | null = null;
 
       try {
+        console.log(`Triggering webhook: ${webhook.name} to ${webhook.webhook_url}`);
+        
+        const payload = {
+          trigger_type: triggerType,
+          webhook_name: webhook.name,
+          timestamp: new Date().toISOString(),
+          data: summary
+        };
+
         const response = await fetch(webhook.webhook_url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            trigger_type: triggerType,
-            timestamp: new Date().toISOString(),
-            webhook_name: webhook.name,
-            data: {
-              total_recipients: summary.totalRecipients,
-              avg_open_rate: summary.avgOpenRate,
-              avg_click_rate: summary.avgClickRate,
-              total_sent: summary.totalSent,
-              threshold_value: webhook.threshold_value,
-            },
-          }),
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(30000), // 30 second timeout
         });
 
+        const duration = Date.now() - startTime;
+        responseStatus = response.status;
+
+        try {
+          responseBody = await response.text();
+        } catch (e) {
+          responseBody = 'Unable to read response body';
+        }
+
         if (response.ok) {
-          // Update last triggered timestamp
+          status = 'success';
+          console.log(`Webhook ${webhook.name} triggered successfully`);
+          
+          // Update last_triggered_at
           await supabase
             .from('zapier_webhook_config')
             .update({ last_triggered_at: new Date().toISOString() })
             .eq('id', webhook.id);
-
-          console.log(`Webhook triggered successfully: ${webhook.name}`);
+        } else {
+          status = 'failed';
+          errorMessage = `HTTP ${response.status}: ${responseBody}`;
+          console.error(`Webhook ${webhook.name} failed with status ${response.status}`);
         }
-      } catch (webhookError) {
+
+        // Log the webhook activity
+        await supabase
+          .from('webhook_activity_log')
+          .insert({
+            webhook_config_id: webhook.id,
+            user_id: userId,
+            clinic_id: webhook.clinic_id,
+            webhook_name: webhook.name,
+            trigger_type: triggerType,
+            webhook_url: webhook.webhook_url,
+            status,
+            request_payload: payload,
+            response_status: responseStatus,
+            response_body: responseBody?.substring(0, 5000), // Limit response body size
+            error_message: errorMessage,
+            duration_ms: duration,
+          });
+
+      } catch (webhookError: any) {
+        const duration = Date.now() - startTime;
+        
+        if (webhookError.name === 'TimeoutError') {
+          status = 'timeout';
+          errorMessage = 'Request timed out after 30 seconds';
+        } else {
+          status = 'failed';
+          errorMessage = webhookError.message || 'Unknown error';
+        }
+
         console.error(`Error triggering webhook ${webhook.name}:`, webhookError);
+
+        // Log the failed webhook activity
+        await supabase
+          .from('webhook_activity_log')
+          .insert({
+            webhook_config_id: webhook.id,
+            user_id: userId,
+            clinic_id: webhook.clinic_id,
+            webhook_name: webhook.name,
+            trigger_type: triggerType,
+            webhook_url: webhook.webhook_url,
+            status,
+            request_payload: {
+              trigger_type: triggerType,
+              webhook_name: webhook.name,
+              timestamp: new Date().toISOString(),
+              data: summary
+            },
+            response_status: responseStatus,
+            response_body: responseBody,
+            error_message: errorMessage,
+            duration_ms: duration,
+          });
       }
     }
   } catch (error) {

@@ -1350,6 +1350,68 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_activity_log: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          request_payload: Json
+          response_body: string | null
+          response_status: number | null
+          status: string
+          trigger_type: string
+          triggered_at: string
+          user_id: string
+          webhook_config_id: string | null
+          webhook_name: string
+          webhook_url: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          request_payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          status: string
+          trigger_type: string
+          triggered_at?: string
+          user_id: string
+          webhook_config_id?: string | null
+          webhook_name: string
+          webhook_url: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          request_payload?: Json
+          response_body?: string | null
+          response_status?: number | null
+          status?: string
+          trigger_type?: string
+          triggered_at?: string
+          user_id?: string
+          webhook_config_id?: string | null
+          webhook_name?: string
+          webhook_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_activity_log_webhook_config_id_fkey"
+            columns: ["webhook_config_id"]
+            isOneToOne: false
+            referencedRelation: "zapier_webhook_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       zapier_webhook_config: {
         Row: {
           clinic_id: string | null
