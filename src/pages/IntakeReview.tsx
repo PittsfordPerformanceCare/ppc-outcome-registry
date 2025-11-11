@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, ArrowRight, FileText, CheckSquare, Layers, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { IntakeToEpisodeConverter } from "@/components/IntakeToEpisodeConverter";
@@ -46,6 +47,7 @@ interface IntakeForm {
 export default function IntakeReview() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const [intakeForms, setIntakeForms] = useState<IntakeForm[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedForm, setSelectedForm] = useState<IntakeForm | null>(null);
@@ -101,6 +103,39 @@ export default function IntakeReview() {
 
   const handleConvertToEpisode = async (form: IntakeForm) => {
     setPreparingConversion(true);
+    
+    // Get clinician name for notification
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("clinician_name")
+      .eq("id", user?.id)
+      .single();
+
+    // Send post-review notification
+    if (form.email) {
+      try {
+        await supabase.functions.invoke("send-post-review-notification", {
+          body: {
+            intakeFormId: form.id,
+            patientEmail: form.email,
+            patientName: form.patient_name,
+            clinicianName: profile?.clinician_name || "Your therapist",
+          },
+        });
+      } catch (error) {
+        console.error("Failed to send notification:", error);
+        // Don't block the conversion if notification fails
+      }
+    }
+
+    // Update referral if exists
+    if ((form as any).referral_code) {
+      await supabase
+        .from("patient_referrals")
+        .update({ status: "converted", converted_at: new Date().toISOString() })
+        .eq("referral_code", (form as any).referral_code);
+    }
+    
     // Brief delay to show loading state
     await new Promise(resolve => setTimeout(resolve, 300));
     setFormToConvert(form);

@@ -11,6 +11,9 @@ import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Tr
 import { format } from "date-fns";
 import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
 import { PatientAchievements } from "@/components/PatientAchievements";
+import PatientReferralCard from "@/components/PatientReferralCard";
+import PatientReferralDashboard from "@/components/PatientReferralDashboard";
+import { useAuth } from "@/hooks/useAuth";
 import { usePatientRewards } from "@/hooks/usePatientRewards";
 
 interface PatientEpisode {
@@ -26,9 +29,9 @@ interface PatientEpisode {
 
 export default function PatientDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
   const [episodes, setEpisodes] = useState<PatientEpisode[]>([]);
   const [rewards, setRewards] = useState<any[]>([]);
   const [accessCode, setAccessCode] = useState("");
@@ -66,7 +69,6 @@ export default function PatientDashboard() {
       return;
     }
 
-    setUser(session.user);
     await loadPatientData(session.user.id);
   };
 
@@ -295,14 +297,15 @@ export default function PatientDashboard() {
           </Card>
         </div>
 
-        {/* Tabs for Episodes and Achievements */}
+        {/* Tabs for Episodes, Achievements, and Referrals */}
         <Tabs defaultValue="episodes" className="space-y-4">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="episodes">My Episodes</TabsTrigger>
             <TabsTrigger value="achievements">
               <Trophy className="h-4 w-4 mr-2" />
               Achievements
             </TabsTrigger>
+            <TabsTrigger value="referrals">Refer Friends</TabsTrigger>
           </TabsList>
 
           <TabsContent value="episodes">
@@ -387,6 +390,11 @@ export default function PatientDashboard() {
               nextMilestone={nextMilestone}
               progressToNext={progressToNext}
             />
+          </TabsContent>
+
+          <TabsContent value="referrals" className="space-y-6">
+            <PatientReferralCard patientId={user?.id || ''} />
+            <PatientReferralDashboard patientId={user?.id || ''} />
           </TabsContent>
         </Tabs>
       </div>

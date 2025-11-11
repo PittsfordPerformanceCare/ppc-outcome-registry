@@ -313,6 +313,10 @@ export default function PatientIntake() {
   const onSubmit = async (data: IntakeFormValues) => {
     try {
       const code = generateAccessCode();
+      
+      // Get referral code from session storage if it exists
+      const referralCode = sessionStorage.getItem("referral_code");
+      
       const primaryComplaint = data.complaints.find(c => c.isPrimary);
       
       const { error } = await supabase
@@ -357,10 +361,36 @@ export default function PatientIntake() {
           hipaa_date: data.hipaaDate,
           consent_clinic_updates: data.consentClinicUpdates,
           opt_out_newsletter: data.optOutNewsletter,
+          referral_code: referralCode,
           status: "pending"
         });
 
       if (error) throw error;
+
+      // If there's a referral code, update the referral record
+      if (referralCode) {
+        const { data: insertedData } = await supabase
+          .from("intake_forms")
+          .select("id")
+          .eq("access_code", code)
+          .single();
+
+        if (insertedData) {
+          await supabase
+            .from("patient_referrals")
+            .update({
+              referred_patient_email: data.email,
+              referred_patient_name: data.patientName,
+              intake_form_id: insertedData.id,
+              status: "completed",
+              intake_submitted_at: new Date().toISOString(),
+            })
+            .eq("referral_code", referralCode);
+          
+          // Clear from session storage
+          sessionStorage.removeItem("referral_code");
+        }
+      }
 
       setAccessCode(code);
       setSubmittedComplaints(data.complaints);

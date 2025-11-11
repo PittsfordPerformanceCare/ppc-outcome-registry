@@ -18,12 +18,13 @@ import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import PatientIntake from "./pages/PatientIntake";
+import IntakeStart from "./pages/IntakeStart";
 import PatientAuth from "./pages/PatientAuth";
 import PatientDashboard from "./pages/PatientDashboard";
+import ReferralLanding from "./pages/ReferralLanding";
 import PatientEpisodeView from "./pages/PatientEpisodeView";
 import PatientNotificationPreferences from "./pages/PatientNotificationPreferences";
 import IntakeReview from "./pages/IntakeReview";
-import IntakeStart from "./pages/IntakeStart";
 import IntakeValidation from "./pages/IntakeValidation";
 import ClinicSettings from "./pages/ClinicSettings";
 import NotificationHistory from "./pages/NotificationHistory";
@@ -43,11 +44,12 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/auth" element={<Auth />} />
-          <Route path="/patient-intake" element={<PatientIntake />} />
           <Route path="/intake-start" element={<IntakeStart />} />
+          <Route path="/patient-intake" element={<PatientIntake />} />
           <Route path="/patient-auth" element={<PatientAuth />} />
+          <Route path="/referral" element={<ReferralLanding />} />
           <Route path="/patient-dashboard" element={<PatientDashboard />} />
-          <Route path="/patient-episode" element={<PatientEpisodeView />} />
+          <Route path="/patient-episode/:episodeId" element={<PatientEpisodeView />} />
           <Route path="/patient-preferences" element={<PatientNotificationPreferences />} />
           <Route
             path="/*"

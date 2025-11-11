@@ -842,6 +842,7 @@ export type Database = {
           pcp_phone: string | null
           phone: string | null
           primary_care_physician: string | null
+          referral_code: string | null
           referral_source: string | null
           referring_physician: string | null
           review_of_systems: Json | null
@@ -891,6 +892,7 @@ export type Database = {
           pcp_phone?: string | null
           phone?: string | null
           primary_care_physician?: string | null
+          referral_code?: string | null
           referral_source?: string | null
           referring_physician?: string | null
           review_of_systems?: Json | null
@@ -940,6 +942,7 @@ export type Database = {
           pcp_phone?: string | null
           phone?: string | null
           primary_care_physician?: string | null
+          referral_code?: string | null
           referral_source?: string | null
           referring_physician?: string | null
           review_of_systems?: Json | null
@@ -1557,6 +1560,76 @@ export type Database = {
           reason?: string
         }
         Relationships: []
+      }
+      patient_referrals: {
+        Row: {
+          converted_at: string | null
+          created_at: string
+          episode_id: string | null
+          id: string
+          intake_form_id: string | null
+          intake_submitted_at: string | null
+          metadata: Json | null
+          points_awarded_at: string | null
+          referral_code: string
+          referred_patient_email: string | null
+          referred_patient_name: string | null
+          referrer_patient_id: string | null
+          status: string
+        }
+        Insert: {
+          converted_at?: string | null
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          intake_form_id?: string | null
+          intake_submitted_at?: string | null
+          metadata?: Json | null
+          points_awarded_at?: string | null
+          referral_code: string
+          referred_patient_email?: string | null
+          referred_patient_name?: string | null
+          referrer_patient_id?: string | null
+          status?: string
+        }
+        Update: {
+          converted_at?: string | null
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          intake_form_id?: string | null
+          intake_submitted_at?: string | null
+          metadata?: Json | null
+          points_awarded_at?: string | null
+          referral_code?: string
+          referred_patient_email?: string | null
+          referred_patient_name?: string | null
+          referrer_patient_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_referrals_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_referrals_intake_form_id_fkey"
+            columns: ["intake_form_id"]
+            isOneToOne: false
+            referencedRelation: "intake_forms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_referrals_referrer_patient_id_fkey"
+            columns: ["referrer_patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       patient_rewards: {
         Row: {
@@ -2360,6 +2433,10 @@ export type Database = {
         }[]
       }
       cleanup_old_sessions: { Args: never; Returns: undefined }
+      generate_referral_code: {
+        Args: { p_patient_id: string }
+        Returns: string
+      }
       get_patient_episode_view: {
         Args: { _episode_id: string; _patient_id: string }
         Returns: {
