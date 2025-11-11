@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift } from "lucide-react";
 import { format } from "date-fns";
+import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
 
 interface PatientEpisode {
   id: string;
@@ -184,6 +185,9 @@ export default function PatientDashboard() {
             Sign Out
           </Button>
         </div>
+
+        {/* PWA Install Prompt */}
+        <PatientPWAInstallPrompt />
 
         {/* Claim Access Code */}
         <Card>
