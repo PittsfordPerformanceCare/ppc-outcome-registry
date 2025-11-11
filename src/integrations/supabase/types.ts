@@ -2325,6 +2325,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_on_time_bonus: { Args: never; Returns: undefined }
       award_patient_points: {
         Args: {
           p_episode_id?: string
@@ -2335,6 +2336,7 @@ export type Database = {
         }
         Returns: string
       }
+      backfill_outcome_points: { Args: never; Returns: undefined }
       calculate_next_retry: {
         Args: { base_delay_minutes?: number; current_retry_count: number }
         Returns: string
