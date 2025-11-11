@@ -76,6 +76,9 @@ export type Database = {
           address: string | null
           clinic_name: string
           created_at: string
+          discharge_email_subject: string | null
+          discharge_email_template: string | null
+          discharge_sms_template: string | null
           email: string | null
           email_subject: string | null
           email_template: string | null
@@ -96,6 +99,9 @@ export type Database = {
           address?: string | null
           clinic_name?: string
           created_at?: string
+          discharge_email_subject?: string | null
+          discharge_email_template?: string | null
+          discharge_sms_template?: string | null
           email?: string | null
           email_subject?: string | null
           email_template?: string | null
@@ -116,6 +122,9 @@ export type Database = {
           address?: string | null
           clinic_name?: string
           created_at?: string
+          discharge_email_subject?: string | null
+          discharge_email_template?: string | null
+          discharge_sms_template?: string | null
           email?: string | null
           email_subject?: string | null
           email_template?: string | null

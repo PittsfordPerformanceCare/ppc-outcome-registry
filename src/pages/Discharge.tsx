@@ -26,6 +26,7 @@ import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoa
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { PendingComplaintConfirmation } from "@/components/PendingComplaintConfirmation";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DischargeScores {
   NDI?: number;
@@ -147,9 +148,11 @@ export default function Discharge() {
       const cisDelta = cisPre != null && cisPost != null ? cisPost - cisPre : null;
       const painDelta = painPre != null && painPost != null ? painPre - painPost : null;
 
+      const dischargeDate = new Date().toISOString().split("T")[0];
+
       // Update episode with discharge information
       await updateEpisode(episodeId, {
-        discharge_date: new Date().toISOString().split("T")[0],
+        discharge_date: dischargeDate,
         compliance_rating: complianceRating,
         compliance_notes: complianceNotes,
         referred_out: referredOut,
@@ -174,6 +177,55 @@ export default function Discharge() {
         if (score != null) {
           await saveOutcomeScore(episodeId, indexType, "discharge", score);
         }
+      }
+
+      // Send discharge notification to patient
+      try {
+        const { data: intakeForm } = await supabase
+          .from("intake_forms")
+          .select("email, phone")
+          .eq("converted_to_episode_id", episodeId)
+          .maybeSingle();
+
+        if (intakeForm?.email || intakeForm?.phone) {
+          // Build improvement summary
+          const improvements: string[] = [];
+          if (cisDelta !== null && cisDelta > 0) {
+            improvements.push(`CIS improved by ${cisDelta.toFixed(1)} points`);
+          }
+          if (painDelta !== null && painDelta > 0) {
+            improvements.push(`Pain reduced by ${painDelta.toFixed(1)} points`);
+          }
+          const improvementSummary = improvements.length > 0 
+            ? improvements.join(", ")
+            : "Great progress throughout treatment";
+
+          const { data: { user } } = await supabase.auth.getUser();
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("clinic_id")
+            .eq("id", user?.id || "")
+            .single();
+
+          await supabase.functions.invoke('send-discharge-notification', {
+            body: {
+              episodeId,
+              patientName,
+              patientEmail: intakeForm.email,
+              patientPhone: intakeForm.phone,
+              clinicianName: clinician,
+              dischargeDate,
+              improvementSummary,
+              userId: user?.id,
+              clinicId: profile?.clinic_id
+            }
+          });
+          
+          console.log('Discharge notification sent');
+        }
+      } catch (notifError: any) {
+        console.error('Failed to send discharge notification:', notifError);
+        // Don't fail the discharge if notification fails
       }
 
       // Check for pending complaints before navigating

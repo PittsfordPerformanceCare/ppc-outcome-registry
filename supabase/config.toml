@@ -6,6 +6,9 @@ verify_jwt = false
 [functions.send-intake-notification]
 verify_jwt = false
 
+[functions.send-discharge-notification]
+verify_jwt = false
+
 [functions.send-appointment-reminders]
 verify_jwt = false
 

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Loader2, Save, AlertCircle, Send, Mail, MessageSquare, Bell, Clock } from "lucide-react";
+import { Loader2, Save, AlertCircle, Send, Mail, MessageSquare, Bell, Clock, FileText } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -29,6 +29,10 @@ export default function ClinicSettings() {
   const [emailSubject, setEmailSubject] = useState("");
   const [emailTemplate, setEmailTemplate] = useState("");
   const [smsTemplate, setSmsTemplate] = useState("");
+  
+  const [dischargeEmailSubject, setDischargeEmailSubject] = useState("");
+  const [dischargeEmailTemplate, setDischargeEmailTemplate] = useState("");
+  const [dischargeSmsTemplate, setDischargeSmsTemplate] = useState("");
   
   const [testEmail, setTestEmail] = useState("");
   const [testPhone, setTestPhone] = useState("");
@@ -67,7 +71,7 @@ export default function ClinicSettings() {
         // Load clinic settings
         const { data: settings, error } = await supabase
           .from("clinic_settings")
-          .select("email_subject, email_template, sms_template, reminder_enabled, reminder_hours_before, reminder_email_subject, reminder_email_template, reminder_sms_template")
+          .select("email_subject, email_template, sms_template, discharge_email_subject, discharge_email_template, discharge_sms_template, reminder_enabled, reminder_hours_before, reminder_email_subject, reminder_email_template, reminder_sms_template")
           .single();
         
         if (error) throw error;
@@ -76,6 +80,9 @@ export default function ClinicSettings() {
           setEmailSubject(settings.email_subject || "");
           setEmailTemplate(settings.email_template || "");
           setSmsTemplate(settings.sms_template || "");
+          setDischargeEmailSubject(settings.discharge_email_subject || "");
+          setDischargeEmailTemplate(settings.discharge_email_template || "");
+          setDischargeSmsTemplate(settings.discharge_sms_template || "");
           setReminderEnabled(settings.reminder_enabled ?? true);
           setReminderHoursBefore(settings.reminder_hours_before || 24);
           setReminderEmailSubject(settings.reminder_email_subject || "");
@@ -107,6 +114,9 @@ export default function ClinicSettings() {
           email_subject: emailSubject,
           email_template: emailTemplate,
           sms_template: smsTemplate,
+          discharge_email_subject: dischargeEmailSubject,
+          discharge_email_template: dischargeEmailTemplate,
+          discharge_sms_template: dischargeSmsTemplate,
           reminder_enabled: reminderEnabled,
           reminder_hours_before: reminderHoursBefore,
           reminder_email_subject: reminderEmailSubject,
@@ -693,6 +703,63 @@ export default function ClinicSettings() {
                   (Warning: Message may be split into multiple SMS)
                 </span>
               )}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Discharge Notification Templates */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-green-600" />
+            Discharge Notification Templates
+          </CardTitle>
+          <CardDescription>
+            Customize notifications sent when a patient completes their treatment episode
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <Alert className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
+            <AlertCircle className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800 dark:text-green-200">
+              These templates are sent automatically when a clinician marks an episode as discharged. Additional placeholders: <code className="font-mono text-xs">{`{{discharge_date}}, {{improvement_summary}}`}</code>
+            </AlertDescription>
+          </Alert>
+
+          <div className="space-y-2">
+            <Label htmlFor="discharge-email-subject">Discharge Email Subject</Label>
+            <Input
+              id="discharge-email-subject"
+              value={dischargeEmailSubject}
+              onChange={(e) => setDischargeEmailSubject(e.target.value)}
+              placeholder="🎉 Congratulations on Completing Your Physical Therapy!"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="discharge-email-template">Discharge Email Template (HTML)</Label>
+            <Textarea
+              id="discharge-email-template"
+              value={dischargeEmailTemplate}
+              onChange={(e) => setDischargeEmailTemplate(e.target.value)}
+              rows={12}
+              className="font-mono text-sm"
+              placeholder="Enter HTML template..."
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="discharge-sms-template">Discharge SMS Template</Label>
+            <Textarea
+              id="discharge-sms-template"
+              value={dischargeSmsTemplate}
+              onChange={(e) => setDischargeSmsTemplate(e.target.value)}
+              rows={4}
+              placeholder="Enter SMS template..."
+            />
+            <p className="text-xs text-muted-foreground">
+              Current length: {dischargeSmsTemplate.length} characters
             </p>
           </div>
         </CardContent>
