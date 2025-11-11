@@ -27,6 +27,11 @@ const PatientReferralDashboard = ({ patientId }: PatientReferralDashboardProps) 
     completed: 0,
     converted: 0,
   });
+  const [milestones, setMilestones] = useState({
+    milestone3: false,
+    milestone5: false,
+    milestone10: false,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -52,6 +57,16 @@ const PatientReferralDashboard = ({ patientId }: PatientReferralDashboardProps) 
       const converted = data?.filter(r => r.status === "converted").length || 0;
 
       setStats({ total, pending, completed, converted });
+
+      // Check milestone status from first record
+      if (data && data.length > 0) {
+        const firstRecord = data[0] as any;
+        setMilestones({
+          milestone3: !!firstRecord.milestone_3_awarded_at,
+          milestone5: !!firstRecord.milestone_5_awarded_at,
+          milestone10: !!firstRecord.milestone_10_awarded_at,
+        });
+      }
     } catch (error) {
       console.error("Error fetching referrals:", error);
     } finally {
@@ -93,6 +108,42 @@ const PatientReferralDashboard = ({ patientId }: PatientReferralDashboardProps) 
 
   return (
     <div className="space-y-6">
+      {/* Milestone Badges */}
+      {(milestones.milestone3 || milestones.milestone5 || milestones.milestone10) && (
+        <Card className="p-6 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5 border-primary/20">
+          <h3 className="font-semibold text-lg mb-4">🏆 Your Milestones</h3>
+          <div className="flex gap-4 flex-wrap">
+            {milestones.milestone3 && (
+              <div className="flex items-center gap-2 bg-background/80 backdrop-blur rounded-lg px-4 py-2 border border-primary/20">
+                <span className="text-2xl">🌟</span>
+                <div>
+                  <p className="text-sm font-medium">Community Builder</p>
+                  <p className="text-xs text-muted-foreground">3 Referrals</p>
+                </div>
+              </div>
+            )}
+            {milestones.milestone5 && (
+              <div className="flex items-center gap-2 bg-background/80 backdrop-blur rounded-lg px-4 py-2 border border-purple-500/20">
+                <span className="text-2xl">⭐</span>
+                <div>
+                  <p className="text-sm font-medium">Trusted Ambassador</p>
+                  <p className="text-xs text-muted-foreground">5 Referrals</p>
+                </div>
+              </div>
+            )}
+            {milestones.milestone10 && (
+              <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10 backdrop-blur rounded-lg px-4 py-2 border-2 border-amber-500/30">
+                <span className="text-2xl">💎</span>
+                <div>
+                  <p className="text-sm font-medium text-amber-700 dark:text-amber-400">VIP Care Advocate</p>
+                  <p className="text-xs text-muted-foreground">10 Referrals - Elite Status!</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4 bg-gradient-to-br from-card to-card/50 border-primary/20">

@@ -1570,6 +1570,9 @@ export type Database = {
           intake_form_id: string | null
           intake_submitted_at: string | null
           metadata: Json | null
+          milestone_10_awarded_at: string | null
+          milestone_3_awarded_at: string | null
+          milestone_5_awarded_at: string | null
           points_awarded_at: string | null
           referral_code: string
           referred_patient_email: string | null
@@ -1585,6 +1588,9 @@ export type Database = {
           intake_form_id?: string | null
           intake_submitted_at?: string | null
           metadata?: Json | null
+          milestone_10_awarded_at?: string | null
+          milestone_3_awarded_at?: string | null
+          milestone_5_awarded_at?: string | null
           points_awarded_at?: string | null
           referral_code: string
           referred_patient_email?: string | null
@@ -1600,6 +1606,9 @@ export type Database = {
           intake_form_id?: string | null
           intake_submitted_at?: string | null
           metadata?: Json | null
+          milestone_10_awarded_at?: string | null
+          milestone_3_awarded_at?: string | null
+          milestone_5_awarded_at?: string | null
           points_awarded_at?: string | null
           referral_code?: string
           referred_patient_email?: string | null
