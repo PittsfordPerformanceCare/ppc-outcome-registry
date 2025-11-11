@@ -881,6 +881,47 @@ export type Database = {
         }
         Relationships: []
       }
+      merge_report_presets: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          date_from: string
+          date_to: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          date_from: string
+          date_to: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          date_from?: string
+          date_to?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "merge_report_presets_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_alert_config: {
         Row: {
           alert_recipients: string[]

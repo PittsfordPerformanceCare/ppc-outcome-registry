@@ -4,10 +4,30 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { History, Calendar as CalendarIcon, User, FileText, ChevronDown, ChevronUp, Download, FileSpreadsheet, X, CalendarRange } from "lucide-react";
+import { History, Calendar as CalendarIcon, User, FileText, ChevronDown, ChevronUp, Download, FileSpreadsheet, X, CalendarRange, Save, Trash2, Bookmark } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -42,15 +62,26 @@ interface UserProfile {
   email: string;
 }
 
+interface SavedPreset {
+  id: string;
+  name: string;
+  date_from: string;
+  date_to: string;
+}
+
 export function PatientMergeHistory() {
   const [mergeHistory, setMergeHistory] = useState<MergeAuditLog[]>([]);
   const [userProfiles, setUserProfiles] = useState<Record<string, UserProfile>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [dateFrom, setDateFrom] = useState<Date>();
   const [dateTo, setDateTo] = useState<Date>();
+  const [savedPresets, setSavedPresets] = useState<SavedPreset[]>([]);
+  const [showSavePresetDialog, setShowSavePresetDialog] = useState(false);
+  const [presetName, setPresetName] = useState("");
 
   useEffect(() => {
     loadMergeHistory();
+    loadSavedPresets();
   }, []);
 
   const loadMergeHistory = async () => {
@@ -92,6 +123,87 @@ export function PatientMergeHistory() {
       toast.error("Failed to load merge history");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadSavedPresets = async () => {
+    try {
+      const { data: presets, error } = await supabase
+        .from("merge_report_presets")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setSavedPresets(presets || []);
+    } catch (error) {
+      console.error("Error loading saved presets:", error);
+    }
+  };
+
+  const saveCurrentPreset = async () => {
+    if (!presetName.trim()) {
+      toast.error("Please enter a name for this preset");
+      return;
+    }
+
+    if (!dateFrom || !dateTo) {
+      toast.error("Please select a date range to save");
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("clinic_id")
+        .eq("id", user.id)
+        .single();
+
+      const { error } = await supabase
+        .from("merge_report_presets")
+        .insert({
+          user_id: user.id,
+          clinic_id: profile?.clinic_id || null,
+          name: presetName.trim(),
+          date_from: format(dateFrom, "yyyy-MM-dd"),
+          date_to: format(dateTo, "yyyy-MM-dd"),
+        });
+
+      if (error) throw error;
+
+      toast.success("Date range preset saved");
+      setPresetName("");
+      setShowSavePresetDialog(false);
+      loadSavedPresets();
+    } catch (error) {
+      console.error("Error saving preset:", error);
+      toast.error("Failed to save preset");
+    }
+  };
+
+  const loadPreset = (preset: SavedPreset) => {
+    setDateFrom(new Date(preset.date_from));
+    setDateTo(new Date(preset.date_to));
+    toast.success(`Loaded preset: ${preset.name}`);
+  };
+
+  const deletePreset = async (presetId: string, presetName: string) => {
+    try {
+      const { error } = await supabase
+        .from("merge_report_presets")
+        .delete()
+        .eq("id", presetId);
+
+      if (error) throw error;
+
+      toast.success(`Deleted preset: ${presetName}`);
+      loadSavedPresets();
+    } catch (error) {
+      console.error("Error deleting preset:", error);
+      toast.error("Failed to delete preset");
     }
   };
 
@@ -387,6 +499,39 @@ export function PatientMergeHistory() {
                 </div>
               </div>
 
+              {/* Saved Presets */}
+              {savedPresets.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Bookmark className="h-4 w-4" />
+                    Saved Presets
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {savedPresets.map((preset) => (
+                      <div key={preset.id} className="flex items-center gap-1 rounded-md border bg-card">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => loadPreset(preset)}
+                          className="gap-2"
+                        >
+                          <Bookmark className="h-3 w-3" />
+                          {preset.name}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deletePreset(preset.id, preset.name)}
+                          className="h-8 w-8 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Custom Date Range */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Custom Date Range</label>
@@ -457,6 +602,18 @@ export function PatientMergeHistory() {
                       Clear
                     </Button>
                   )}
+
+                  {dateFrom && dateTo && (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setShowSavePresetDialog(true)}
+                      className="gap-2"
+                    >
+                      <Save className="h-4 w-4" />
+                      Save Preset
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -473,6 +630,51 @@ export function PatientMergeHistory() {
             </CardContent>
           </Card>
         )}
+        
+        {/* Save Preset Dialog */}
+        <Dialog open={showSavePresetDialog} onOpenChange={setShowSavePresetDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Save Date Range Preset</DialogTitle>
+              <DialogDescription>
+                Save this date range as a preset for quick access in future reports
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="preset-name">Preset Name</Label>
+                <Input
+                  id="preset-name"
+                  placeholder="e.g., Q1 2024, Monthly Review, etc."
+                  value={presetName}
+                  onChange={(e) => setPresetName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && saveCurrentPreset()}
+                />
+              </div>
+              <div className="rounded-lg bg-muted p-3 text-sm space-y-1">
+                <p className="font-medium">Date Range:</p>
+                <p className="text-muted-foreground">
+                  {dateFrom && format(dateFrom, "MMM dd, yyyy")} to {dateTo && format(dateTo, "MMM dd, yyyy")}
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowSavePresetDialog(false);
+                  setPresetName("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={saveCurrentPreset}>
+                <Save className="h-4 w-4 mr-2" />
+                Save Preset
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         {isLoading ? (
           <div className="text-center py-8 text-muted-foreground">
             Loading merge history...
