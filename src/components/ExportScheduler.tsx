@@ -20,6 +20,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import jsPDF from "jspdf";
 import { ComparisonReportScheduler } from "./ComparisonReportScheduler";
 import { ComparisonReportAnalytics } from "./ComparisonReportAnalytics";
+import { RecipientEngagementAnalytics } from "./RecipientEngagementAnalytics";
 
 interface ScheduledExport {
   id: string;
@@ -1453,6 +1454,8 @@ export function ExportScheduler({ currentFilters = {} }: ExportSchedulerProps) {
           <TabsContent value="reports" className="mt-4">
             <div className="space-y-6">
               <ComparisonReportAnalytics />
+              
+              <RecipientEngagementAnalytics />
               
               <ComparisonReportScheduler
                 availableExports={exports.map(exp => ({ id: exp.id, name: exp.name }))}
