@@ -9,6 +9,7 @@ import { ReferralReportScheduler } from "@/components/ReferralReportScheduler";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { useToast } from "@/hooks/use-toast";
 import { AnalyticsSkeleton } from "@/components/skeletons/AnalyticsSkeleton";
+import { useHaptics } from "@/hooks/useHaptics";
 
 interface ReferralStats {
   totalReferrals: number;
@@ -195,7 +196,13 @@ export default function ReferralAnalytics() {
 
   // Pull to refresh handler
   const handleRefresh = async () => {
+    const { success } = useHaptics();
+    
     await loadAnalytics();
+    
+    // Trigger success haptic on successful refresh
+    success();
+    
     toast({
       title: "Refreshed",
       description: "Referral analytics data has been updated.",

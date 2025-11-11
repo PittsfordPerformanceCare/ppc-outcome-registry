@@ -32,6 +32,7 @@ import { OutcomeReminderCronStatus } from "@/components/OutcomeReminderCronStatu
 import { OutcomeReminderHistory } from "@/components/OutcomeReminderHistory";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
+import { useHaptics } from "@/hooks/useHaptics";
 
 interface Episode {
   id: string;
@@ -448,7 +449,13 @@ export default function Dashboard() {
 
   // Pull to refresh handler
   const handleRefresh = async () => {
+    const { success } = useHaptics();
+    
     await loadEpisodes();
+    
+    // Trigger success haptic on successful refresh
+    success();
+    
     toast({
       title: "Refreshed",
       description: "Dashboard data has been updated.",

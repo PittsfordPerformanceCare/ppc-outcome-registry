@@ -15,6 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import ClinicianNotificationSettings from "@/components/ClinicianNotificationSettings";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { InboxSkeleton } from "@/components/skeletons/InboxSkeleton";
+import { useHaptics } from "@/hooks/useHaptics";
 
 interface PatientMessage {
   id: string;
@@ -320,7 +321,13 @@ export default function ClinicianInbox() {
 
   // Pull to refresh handler
   const handleRefresh = async () => {
+    const { success } = useHaptics();
+    
     await Promise.all([refetchMessages(), refetchCallbacks()]);
+    
+    // Trigger success haptic on successful refresh
+    success();
+    
     toast("Refreshed", {
       description: "Inbox data has been updated.",
     });

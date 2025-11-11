@@ -76,6 +76,9 @@ export function BottomTabNavigation({ isAdmin }: BottomTabNavigationProps) {
             <Link
               key={tab.name}
               to={tab.href}
+              onClick={() => {
+                // Additional haptic feedback for navigation (already handled by Link)
+              }}
               className={cn(
                 "flex flex-col items-center justify-center min-w-[64px] h-full space-y-1 rounded-lg",
                 "transition-all duration-200 ease-out",
