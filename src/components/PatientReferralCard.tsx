@@ -127,9 +127,9 @@ const PatientReferralCard = ({ patientId }: PatientReferralCardProps) => {
           <Gift className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <h3 className="font-semibold text-lg">Refer a Friend, Earn Rewards!</h3>
+          <h3 className="font-semibold text-lg">Share the Care</h3>
           <p className="text-sm text-muted-foreground">
-            Share your positive experience and earn 100 points when they complete their intake
+            Help others discover the same quality care you've experienced. Share your referral code with friends and family.
           </p>
         </div>
       </div>
@@ -188,10 +188,13 @@ const PatientReferralCard = ({ patientId }: PatientReferralCardProps) => {
         <div className="bg-muted/50 rounded-lg p-4 text-sm">
           <p className="font-medium mb-2">How it works:</p>
           <ol className="list-decimal list-inside space-y-1 text-muted-foreground">
-            <li>Share your QR code or link with friends</li>
+            <li>Share your QR code or link with friends and family</li>
             <li>They scan/click and complete the intake form</li>
-            <li>When they're approved, you both earn rewards!</li>
+            <li>Our team will reach out to help them on their recovery journey</li>
           </ol>
+          <p className="text-xs text-muted-foreground mt-3 italic">
+            We'll recognize your support privately after they're approved
+          </p>
         </div>
       </div>
     </Card>

@@ -77,10 +77,9 @@ const ReferralLanding = () => {
         {/* Hero Section */}
         <div className="text-center mb-12">
           {referrerName && (
-            <div className="inline-block bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 rounded-full px-6 py-2 mb-6">
-              <p className="text-sm font-medium">
-                <Heart className="inline w-4 h-4 mr-2" />
-                Referred by <span className="font-bold">{referrerName}</span>
+            <div className="mb-6">
+              <p className="text-lg text-muted-foreground">
+                {referrerName} recommended you reach out to us
               </p>
             </div>
           )}
@@ -90,7 +89,7 @@ const ReferralLanding = () => {
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
             {referrerName 
-              ? `${referrerName} trusts us with their care, and we'd be honored to help you too.`
+              ? `We're here to provide the same quality care that ${referrerName} experienced.`
               : "Start your path to better health with expert physical therapy care."
             }
           </p>
