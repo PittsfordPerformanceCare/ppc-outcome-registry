@@ -40,6 +40,7 @@ import PatientWelcome from "./pages/PatientWelcome";
 import ClinicianQuickStart from "./pages/ClinicianQuickStart";
 import AdministratorQuickStart from "./pages/AdministratorQuickStart";
 import PatientQuickStart from "./pages/PatientQuickStart";
+import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +92,7 @@ const App = () => (
                     <Route path="/clinician-inbox" element={<ClinicianInbox />} />
                     <Route path="/quick-start" element={<ClinicianQuickStart />} />
                     <Route path="/admin-quick-start" element={<AdministratorQuickStart />} />
+                    <Route path="/analytics-dashboard" element={<AnalyticsDashboard />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
