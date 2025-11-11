@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { MessageSquare, Phone, MessageCircle, CheckCircle, Clock, Settings } from "lucide-react";
+import { MessageSquare, Phone, MessageCircle, CheckCircle, Clock, Settings, Bell } from "lucide-react";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ClinicianNotificationSettings from "@/components/ClinicianNotificationSettings";
@@ -46,6 +46,111 @@ export default function ClinicianInbox() {
   const [selectedCallback, setSelectedCallback] = useState<CallbackRequest | null>(null);
   const [responseText, setResponseText] = useState("");
   const [callbackNotes, setCallbackNotes] = useState("");
+  const [realtimeConnected, setRealtimeConnected] = useState(false);
+
+  // Set up real-time subscriptions
+  useEffect(() => {
+    if (!user) return;
+
+    console.log("Setting up real-time subscription for patient messages");
+
+    const channel = supabase
+      .channel("patient-messages-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "patient_messages",
+        },
+        async (payload) => {
+          console.log("New message received via realtime:", payload);
+
+          const newMessage = payload.new as any;
+
+          // Fetch patient details for the notification
+          const { data: patientData } = await supabase
+            .from("patient_accounts")
+            .select("full_name")
+            .eq("id", newMessage.patient_id)
+            .single();
+
+          // Fetch episode details if available
+          let episodeInfo = "";
+          if (newMessage.episode_id) {
+            const { data: episodeData } = await supabase
+              .from("episodes")
+              .select("patient_name, region")
+              .eq("id", newMessage.episode_id)
+              .single();
+            
+            if (episodeData) {
+              episodeInfo = ` - ${episodeData.patient_name} (${episodeData.region})`;
+            }
+          }
+
+          const patientName = patientData?.full_name || "A patient";
+          const isCallback = newMessage.message_type === "callback_request";
+
+          // Show toast notification with action button
+          toast(
+            isCallback ? "🔔 New Callback Request" : "💬 New Message",
+            {
+              description: `${patientName}${episodeInfo}\n"${newMessage.subject}"`,
+              action: {
+                label: "View",
+                onClick: () => {
+                  // Scroll to top and refresh
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  queryClient.invalidateQueries({ queryKey: ["patient-messages"] });
+                  queryClient.invalidateQueries({ queryKey: ["callback-requests"] });
+                },
+              },
+              duration: 10000,
+            }
+          );
+
+          // Refresh the queries to show the new message
+          queryClient.invalidateQueries({ queryKey: ["patient-messages"] });
+          queryClient.invalidateQueries({ queryKey: ["callback-requests"] });
+
+          // Play notification sound (optional)
+          try {
+            const audio = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OagTgwOUKzn77dmHAU2jdXvxnkpBSh+zPLaizsKGGS36eylUxELTKXh8bllHgU1iM/u0H8yBSl+y+3ajDwMFmW56+uhUBELSKPi8bxnHwU4h9Hs0oA0Bit7yu3cjDoLFW");
+            audio.volume = 0.3;
+            audio.play().catch(() => {
+              // Ignore if audio play fails (browser restrictions)
+            });
+          } catch (e) {
+            // Ignore audio errors
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "patient_messages",
+        },
+        (payload) => {
+          console.log("Message updated via realtime:", payload);
+          // Refresh queries when messages are updated (e.g., marked as read/responded)
+          queryClient.invalidateQueries({ queryKey: ["patient-messages"] });
+          queryClient.invalidateQueries({ queryKey: ["callback-requests"] });
+        }
+      )
+      .subscribe((status) => {
+        console.log("Realtime subscription status:", status);
+        setRealtimeConnected(status === "SUBSCRIBED");
+      });
+
+    return () => {
+      console.log("Cleaning up realtime subscription");
+      supabase.removeChannel(channel);
+      setRealtimeConnected(false);
+    };
+  }, [user, queryClient]);
 
   // Fetch messages
   const { data: messages = [], isLoading: messagesLoading } = useQuery({
@@ -168,11 +273,29 @@ export default function ClinicianInbox() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Clinician Inbox</h1>
-        <p className="text-muted-foreground">
-          Manage patient messages, callback requests, and feedback
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Clinician Inbox</h1>
+          <p className="text-muted-foreground">
+            Manage patient messages, callback requests, and feedback
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          {realtimeConnected ? (
+            <Badge variant="outline" className="gap-1">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              Live
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="gap-1">
+              <span className="relative flex h-2 w-2 bg-gray-400 rounded-full"></span>
+              Connecting...
+            </Badge>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
