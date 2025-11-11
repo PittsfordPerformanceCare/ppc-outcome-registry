@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertCircle, Trash2, RefreshCw, Globe, Building2, Download, Upload, FileText, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { AlertCircle, Trash2, RefreshCw, Globe, Building2, Download, Upload, FileText, CheckCircle, XCircle, AlertTriangle, Edit, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { PendingEpisodeThresholdSettings } from "./PendingEpisodeThresholdSettings";
 
@@ -41,6 +42,11 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
   const [importing, setImporting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editValues, setEditValues] = useState<{ warning_days: string; critical_days: string }>({
+    warning_days: "",
+    critical_days: "",
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -370,9 +376,88 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
   const handleCancelImport = () => {
     setShowPreview(false);
     setValidationResults([]);
+    setEditingIndex(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  const handleStartEdit = (index: number, result: ValidationResult) => {
+    setEditingIndex(index);
+    setEditValues({
+      warning_days: result.warning_days.toString(),
+      critical_days: result.critical_days.toString(),
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingIndex(null);
+    setEditValues({ warning_days: "", critical_days: "" });
+  };
+
+  const validateEditedValues = (warning: number, critical: number): { valid: boolean; error?: string } => {
+    if (isNaN(warning) || isNaN(critical)) {
+      return { valid: false, error: "Invalid number format" };
+    }
+    if (warning <= 0 || critical <= 0) {
+      return { valid: false, error: "Days must be greater than 0" };
+    }
+    if (warning >= critical) {
+      return { valid: false, error: "Warning days must be less than critical days" };
+    }
+    return { valid: true };
+  };
+
+  const handleSaveEdit = async (index: number) => {
+    const warning = parseInt(editValues.warning_days);
+    const critical = parseInt(editValues.critical_days);
+
+    const validation = validateEditedValues(warning, critical);
+    
+    if (!validation.valid) {
+      toast.error(validation.error);
+      return;
+    }
+
+    const updatedResults = [...validationResults];
+    const result = updatedResults[index];
+
+    // Update the values
+    result.warning_days = warning;
+    result.critical_days = critical;
+
+    // If it was skipped, check if we should change it to create/update
+    if (result.action === "skip") {
+      // Check if clinic exists for non-global settings
+      if (result.clinic_id !== null) {
+        const { data: clinic } = await supabase
+          .from("clinics")
+          .select("id")
+          .eq("id", result.clinic_id)
+          .maybeSingle();
+
+        if (!clinic) {
+          toast.error("Clinic ID not found in database");
+          return;
+        }
+      }
+
+      // Check if threshold already exists
+      const { data: existing } = await supabase
+        .from("pending_episode_thresholds")
+        .select("id")
+        .eq("clinic_id", result.clinic_id ?? null)
+        .maybeSingle();
+
+      result.action = existing ? "update" : "create";
+      result.existing_id = existing?.id;
+      result.reason = undefined;
+    }
+
+    setValidationResults(updatedResults);
+    setEditingIndex(null);
+    setEditValues({ warning_days: "", critical_days: "" });
+    toast.success("Values updated");
   };
 
   if (!isAdmin) {
@@ -409,27 +494,85 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
                           <TableHead>Clinic</TableHead>
                           <TableHead className="text-right">Warning Days</TableHead>
                           <TableHead className="text-right">Critical Days</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {validationResults
                           .filter(r => r.action === "create")
-                          .map((result, idx) => (
-                            <TableRow key={idx}>
-                              <TableCell>
-                                {result.clinic_id === null ? (
-                                  <Badge variant="secondary" className="gap-1">
-                                    <Globe className="h-3 w-3" />
-                                    {result.clinic_name}
-                                  </Badge>
-                                ) : (
-                                  result.clinic_name
-                                )}
-                              </TableCell>
-                              <TableCell className="text-right font-mono">{result.warning_days}</TableCell>
-                              <TableCell className="text-right font-mono">{result.critical_days}</TableCell>
-                            </TableRow>
-                          ))}
+                          .map((result, idx) => {
+                            const actualIndex = validationResults.indexOf(result);
+                            const isEditing = editingIndex === actualIndex;
+                            
+                            return (
+                              <TableRow key={idx}>
+                                <TableCell>
+                                  {result.clinic_id === null ? (
+                                    <Badge variant="secondary" className="gap-1">
+                                      <Globe className="h-3 w-3" />
+                                      {result.clinic_name}
+                                    </Badge>
+                                  ) : (
+                                    result.clinic_name
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {isEditing ? (
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      value={editValues.warning_days}
+                                      onChange={(e) => setEditValues(prev => ({ ...prev, warning_days: e.target.value }))}
+                                      className="w-20 ml-auto text-right"
+                                    />
+                                  ) : (
+                                    <span className="font-mono">{result.warning_days}</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {isEditing ? (
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      value={editValues.critical_days}
+                                      onChange={(e) => setEditValues(prev => ({ ...prev, critical_days: e.target.value }))}
+                                      className="w-20 ml-auto text-right"
+                                    />
+                                  ) : (
+                                    <span className="font-mono">{result.critical_days}</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {isEditing ? (
+                                    <div className="flex items-center justify-end gap-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleSaveEdit(actualIndex)}
+                                      >
+                                        <Save className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleCancelEdit}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleStartEdit(actualIndex, result)}
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
                       </TableBody>
                     </Table>
                   </div>
@@ -449,27 +592,85 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
                           <TableHead>Clinic</TableHead>
                           <TableHead className="text-right">Warning Days</TableHead>
                           <TableHead className="text-right">Critical Days</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {validationResults
                           .filter(r => r.action === "update")
-                          .map((result, idx) => (
-                            <TableRow key={idx}>
-                              <TableCell>
-                                {result.clinic_id === null ? (
-                                  <Badge variant="secondary" className="gap-1">
-                                    <Globe className="h-3 w-3" />
-                                    {result.clinic_name}
-                                  </Badge>
-                                ) : (
-                                  result.clinic_name
-                                )}
-                              </TableCell>
-                              <TableCell className="text-right font-mono">{result.warning_days}</TableCell>
-                              <TableCell className="text-right font-mono">{result.critical_days}</TableCell>
-                            </TableRow>
-                          ))}
+                          .map((result, idx) => {
+                            const actualIndex = validationResults.indexOf(result);
+                            const isEditing = editingIndex === actualIndex;
+                            
+                            return (
+                              <TableRow key={idx}>
+                                <TableCell>
+                                  {result.clinic_id === null ? (
+                                    <Badge variant="secondary" className="gap-1">
+                                      <Globe className="h-3 w-3" />
+                                      {result.clinic_name}
+                                    </Badge>
+                                  ) : (
+                                    result.clinic_name
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {isEditing ? (
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      value={editValues.warning_days}
+                                      onChange={(e) => setEditValues(prev => ({ ...prev, warning_days: e.target.value }))}
+                                      className="w-20 ml-auto text-right"
+                                    />
+                                  ) : (
+                                    <span className="font-mono">{result.warning_days}</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {isEditing ? (
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      value={editValues.critical_days}
+                                      onChange={(e) => setEditValues(prev => ({ ...prev, critical_days: e.target.value }))}
+                                      className="w-20 ml-auto text-right"
+                                    />
+                                  ) : (
+                                    <span className="font-mono">{result.critical_days}</span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {isEditing ? (
+                                    <div className="flex items-center justify-end gap-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleSaveEdit(actualIndex)}
+                                      >
+                                        <Save className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleCancelEdit}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleStartEdit(actualIndex, result)}
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
                       </TableBody>
                     </Table>
                   </div>
@@ -490,23 +691,81 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
                           <TableHead className="text-right">Warning Days</TableHead>
                           <TableHead className="text-right">Critical Days</TableHead>
                           <TableHead>Reason</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {validationResults
                           .filter(r => r.action === "skip")
-                          .map((result, idx) => (
-                            <TableRow key={idx}>
-                              <TableCell className="text-muted-foreground">{result.clinic_name}</TableCell>
-                              <TableCell className="text-right font-mono text-muted-foreground">
-                                {result.warning_days || "-"}
-                              </TableCell>
-                              <TableCell className="text-right font-mono text-muted-foreground">
-                                {result.critical_days || "-"}
-                              </TableCell>
-                              <TableCell className="text-sm text-destructive">{result.reason}</TableCell>
-                            </TableRow>
-                          ))}
+                          .map((result, idx) => {
+                            const actualIndex = validationResults.indexOf(result);
+                            const isEditing = editingIndex === actualIndex;
+                            
+                            return (
+                              <TableRow key={idx}>
+                                <TableCell className="text-muted-foreground">{result.clinic_name}</TableCell>
+                                <TableCell className="text-right">
+                                  {isEditing ? (
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      value={editValues.warning_days}
+                                      onChange={(e) => setEditValues(prev => ({ ...prev, warning_days: e.target.value }))}
+                                      className="w-20 ml-auto text-right"
+                                    />
+                                  ) : (
+                                    <span className="font-mono text-muted-foreground">
+                                      {result.warning_days || "-"}
+                                    </span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {isEditing ? (
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      value={editValues.critical_days}
+                                      onChange={(e) => setEditValues(prev => ({ ...prev, critical_days: e.target.value }))}
+                                      className="w-20 ml-auto text-right"
+                                    />
+                                  ) : (
+                                    <span className="font-mono text-muted-foreground">
+                                      {result.critical_days || "-"}
+                                    </span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-sm text-destructive">{result.reason}</TableCell>
+                                <TableCell className="text-right">
+                                  {isEditing ? (
+                                    <div className="flex items-center justify-end gap-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleSaveEdit(actualIndex)}
+                                      >
+                                        <Save className="h-4 w-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleCancelEdit}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleStartEdit(actualIndex, result)}
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
                       </TableBody>
                     </Table>
                   </div>
