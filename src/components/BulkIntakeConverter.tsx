@@ -42,11 +42,24 @@ export function BulkIntakeConverter({
   const [currentProcessing, setCurrentProcessing] = useState("");
   const [showHistory, setShowHistory] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<{name: string; dob: string} | null>(null);
+  const [excludedIds, setExcludedIds] = useState<Set<string>>(new Set());
   const [results, setResults] = useState<{
     success: number;
     failed: number;
     errors: string[];
   } | null>(null);
+
+  const handleToggleExclude = (intakeId: string) => {
+    setExcludedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(intakeId)) {
+        newSet.delete(intakeId);
+      } else {
+        newSet.add(intakeId);
+      }
+      return newSet;
+    });
+  };
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
@@ -123,7 +136,9 @@ export function BulkIntakeConverter({
     setConverting(true);
     setProgress(0);
     
-    const validIntakes = validationResult.validatedIntakes.filter(v => v.canConvert);
+    const validIntakes = validationResult.validatedIntakes.filter(
+      v => v.canConvert && !excludedIds.has(v.id)
+    );
     const intakesToConvert = intakes.filter(intake => 
       validIntakes.some(v => v.id === intake.id)
     );
@@ -260,7 +275,11 @@ export function BulkIntakeConverter({
           <div className="space-y-4 py-4">
             {/* Show ValidationSummaryPanel before conversion starts */}
             {!converting && !results && (
-              <ValidationSummaryPanel validationResult={validationResult} />
+              <ValidationSummaryPanel 
+                validationResult={validationResult}
+                excludedIds={excludedIds}
+                onToggleExclude={handleToggleExclude}
+              />
             )}
 
             {/* Conversion Progress */}
@@ -309,7 +328,10 @@ export function BulkIntakeConverter({
 
             {/* Show ValidationSummaryPanel after conversion completes with results */}
             {results && (
-              <ValidationSummaryPanel validationResult={validationResult} />
+              <ValidationSummaryPanel 
+                validationResult={validationResult}
+                excludedIds={excludedIds}
+              />
             )}
           </div>
         </ScrollArea>
@@ -320,7 +342,7 @@ export function BulkIntakeConverter({
           </Button>
           <Button 
             onClick={handleBulkConvert} 
-            disabled={converting || validationResult.validForConversion === 0}
+            disabled={converting || validationResult.validForConversion === 0 || excludedIds.size >= validationResult.validForConversion}
           >
             {converting ? (
               <>
@@ -330,7 +352,7 @@ export function BulkIntakeConverter({
             ) : (
               <>
                 <CheckCircle2 className="h-4 w-4 mr-2" />
-                Convert {validationResult.validForConversion} Intake{validationResult.validForConversion !== 1 ? 's' : ''}
+                Convert {validationResult.validForConversion - excludedIds.size} Intake{(validationResult.validForConversion - excludedIds.size) !== 1 ? 's' : ''}
               </>
             )}
           </Button>

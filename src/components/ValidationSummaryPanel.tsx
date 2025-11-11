@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   CheckCircle2, 
   AlertCircle, 
@@ -14,9 +15,15 @@ import type { IntakeBulkValidationResult, ValidatedIntake, IntakeValidationIssue
 
 interface ValidationSummaryPanelProps {
   validationResult: IntakeBulkValidationResult;
+  excludedIds?: Set<string>;
+  onToggleExclude?: (intakeId: string) => void;
 }
 
-export function ValidationSummaryPanel({ validationResult }: ValidationSummaryPanelProps) {
+export function ValidationSummaryPanel({ 
+  validationResult, 
+  excludedIds = new Set(), 
+  onToggleExclude 
+}: ValidationSummaryPanelProps) {
   const getIssueSeverityIcon = (severity: IntakeValidationIssue["severity"]) => {
     switch (severity) {
       case "error":
@@ -86,16 +93,18 @@ export function ValidationSummaryPanel({ validationResult }: ValidationSummaryPa
             <div className="text-xs text-muted-foreground">Total Selected</div>
           </div>
           <div className="rounded-lg border p-3 border-green-500/20 bg-green-500/5">
-            <div className="text-2xl font-bold text-green-600">{validationResult.validForConversion}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {validationResult.validForConversion - excludedIds.size}
+            </div>
             <div className="text-xs text-muted-foreground">Ready to Convert</div>
           </div>
           <div className="rounded-lg border p-3 border-amber-500/20 bg-amber-500/5">
             <div className="text-2xl font-bold text-amber-600">{validationResult.requiresReview}</div>
             <div className="text-xs text-muted-foreground">Need Review</div>
           </div>
-          <div className="rounded-lg border p-3 border-destructive/20 bg-destructive/5">
-            <div className="text-2xl font-bold text-destructive">{validationResult.alreadyConverted}</div>
-            <div className="text-xs text-muted-foreground">Already Converted</div>
+          <div className="rounded-lg border p-3 border-muted/20 bg-muted/5">
+            <div className="text-2xl font-bold text-muted-foreground">{excludedIds.size}</div>
+            <div className="text-xs text-muted-foreground">Excluded</div>
           </div>
         </div>
 
@@ -133,10 +142,24 @@ export function ValidationSummaryPanel({ validationResult }: ValidationSummaryPa
           <h3 className="font-semibold mb-3">Detailed Validation Results</h3>
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-3">
-              {validationResult.validatedIntakes.map((intake, index) => (
-                <Card key={intake.id} className={intake.canConvert ? "" : "border-destructive"}>
+              {validationResult.validatedIntakes.map((intake, index) => {
+                const isExcluded = excludedIds.has(intake.id);
+                return (
+                <Card 
+                  key={intake.id} 
+                  className={`transition-opacity ${
+                    intake.canConvert ? "" : "border-destructive"
+                  } ${isExcluded ? "opacity-50" : ""}`}
+                >
                   <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start justify-between gap-3">
+                      {onToggleExclude && intake.canConvert && (
+                        <Checkbox
+                          checked={!isExcluded}
+                          onCheckedChange={() => onToggleExclude(intake.id)}
+                          className="mt-1"
+                        />
+                      )}
                       <div className="flex-1">
                         <CardTitle className="text-base">{intake.patient_name}</CardTitle>
                         <CardDescription className="text-xs">
@@ -171,7 +194,8 @@ export function ValidationSummaryPanel({ validationResult }: ValidationSummaryPa
                     </CardContent>
                   )}
                 </Card>
-              ))}
+              );
+              })}
             </div>
           </ScrollArea>
         </div>
