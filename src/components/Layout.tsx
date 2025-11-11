@@ -44,41 +44,60 @@ export function Layout({ children }: LayoutProps) {
     checkAdmin();
   }, [user]);
 
-  const navigation = [
+  const primaryNav = [
     { name: "Dashboard", href: "/", icon: Home },
     { name: "New Episode", href: "/new-episode", icon: ClipboardList },
+  ];
+
+  const episodesNav = [
     { name: "Follow-up", href: "/follow-up", icon: Activity },
     { name: "Discharge", href: "/discharge", icon: LogOut },
-    { name: "Intake Forms", href: "/intake-review", icon: Inbox },
-    { name: "Intake Validation", href: "/intake-validation", icon: ClipboardCheck },
+  ];
+
+  const intakeNav = [
+    { name: "Review Forms", href: "/intake-review", icon: Inbox },
+    { name: "Validation", href: "/intake-validation", icon: ClipboardCheck },
+  ];
+
+  const analyticsNav = [
     { name: "Dashboards", href: "/dashboards", icon: BarChart3 },
-    { name: "PCP Summary", href: "/pcp-summary", icon: FileText },
     { name: "Notifications", href: "/notification-history", icon: Bell },
     { name: "Analytics", href: "/notification-analytics", icon: TrendingUp },
     { name: "Link Analytics", href: "/link-analytics", icon: Link2 },
     { name: "Alert History", href: "/alert-history", icon: AlertTriangle },
     { name: "Export History", href: "/export-history", icon: History },
-    ...(isAdmin ? [
-      { name: "Admin", href: "/admin", icon: Shield },
-      { name: "Compliance", href: "/compliance", icon: FileCheck },
-      { name: "Settings", href: "/clinic-settings", icon: Settings }
-    ] : []),
+    { name: "PCP Summary", href: "/pcp-summary", icon: FileText },
   ];
+
+  const adminNav = isAdmin ? [
+    { name: "Admin", href: "/admin", icon: Shield },
+    { name: "Compliance", href: "/compliance", icon: FileCheck },
+    { name: "Settings", href: "/clinic-settings", icon: Settings }
+  ] : [];
 
   return (
     <div className="min-h-screen bg-background">
       <SessionTimeoutWarning open={showWarning} onExtend={extendSession} />
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
-        <div className="container mx-auto flex h-16 items-center px-4">
-          <div className="flex items-center space-x-2">
-            <Activity className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-semibold text-primary">
-              PPC Outcome Registry
-            </h1>
-          </div>
-          <nav className="ml-auto flex items-center space-x-1">
-            {navigation.map((item) => {
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto flex h-16 items-center justify-between px-6">
+          {/* Logo & Brand */}
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="rounded-lg bg-primary/10 p-2 transition-colors group-hover:bg-primary/20">
+              <Activity className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-lg font-bold leading-none text-foreground">
+                PPC Outcome Registry
+              </h1>
+              <span className="text-xs text-muted-foreground">Clinical Excellence Platform</span>
+            </div>
+          </Link>
+
+          {/* Main Navigation */}
+          <nav className="hidden lg:flex items-center space-x-1">
+            {/* Primary Navigation */}
+            {primaryNav.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.href;
               return (
@@ -86,18 +105,139 @@ export function Layout({ children }: LayoutProps) {
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    "flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium transition-all",
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                   )}
                 >
                   <Icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{item.name}</span>
+                  <span>{item.name}</span>
                 </Link>
               );
             })}
-            
+
+            {/* Episodes Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className={cn(
+                    "flex items-center space-x-2 text-sm font-medium",
+                    episodesNav.some(item => location.pathname === item.href) && "bg-accent text-accent-foreground"
+                  )}
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  <span>Episodes</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48 bg-background">
+                {episodesNav.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link to={item.href} className="flex items-center space-x-2 cursor-pointer">
+                        <Icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Intake Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className={cn(
+                    "flex items-center space-x-2 text-sm font-medium",
+                    intakeNav.some(item => location.pathname === item.href) && "bg-accent text-accent-foreground"
+                  )}
+                >
+                  <Inbox className="h-4 w-4" />
+                  <span>Intake</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48 bg-background">
+                {intakeNav.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link to={item.href} className="flex items-center space-x-2 cursor-pointer">
+                        <Icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Analytics Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className={cn(
+                    "flex items-center space-x-2 text-sm font-medium",
+                    analyticsNav.some(item => location.pathname === item.href) && "bg-accent text-accent-foreground"
+                  )}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  <span>Analytics</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 bg-background">
+                {analyticsNav.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link to={item.href} className="flex items-center space-x-2 cursor-pointer">
+                        <Icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Admin Dropdown */}
+            {isAdmin && adminNav.length > 0 && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className={cn(
+                      "flex items-center space-x-2 text-sm font-medium",
+                      adminNav.some(item => location.pathname === item.href) && "bg-accent text-accent-foreground"
+                    )}
+                  >
+                    <Shield className="h-4 w-4" />
+                    <span>Admin</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48 bg-background">
+                  {adminNav.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <DropdownMenuItem key={item.name} asChild>
+                        <Link to={item.href} className="flex items-center space-x-2 cursor-pointer">
+                          <Icon className="h-4 w-4" />
+                          <span>{item.name}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </nav>
+
+          {/* Right Side Actions */}
+          <div className="flex items-center space-x-2">
             {/* Intake Notifications */}
             <IntakeNotificationsPanel />
             
@@ -106,7 +246,7 @@ export function Layout({ children }: LayoutProps) {
               variant="ghost"
               size="icon"
               onClick={toggleDarkMode}
-              className="ml-2"
+              className="rounded-full"
             >
               {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
@@ -114,31 +254,35 @@ export function Layout({ children }: LayoutProps) {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="ml-2">
-                  <User className="h-5 w-5" />
+                <Button variant="outline" className="flex items-center space-x-2 rounded-full pl-2 pr-3">
+                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="hidden sm:inline text-sm font-medium">Account</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-56 bg-background">
                 <DropdownMenuLabel>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium">Account</span>
-                    <span className="text-xs text-muted-foreground">
+                  <div className="flex flex-col space-y-1">
+                    <span className="text-sm font-semibold">My Account</span>
+                    <span className="text-xs text-muted-foreground truncate">
                       {user?.email}
                     </span>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
-                  Profile Settings
+                  <span>Profile Settings</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={signOut} className="text-destructive">
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
-                  Logout
+                  <span>Logout</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </nav>
+          </div>
         </div>
       </header>
 
@@ -146,9 +290,22 @@ export function Layout({ children }: LayoutProps) {
       <main className="container mx-auto px-4 py-8">{children}</main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t bg-card py-6">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>PPC Outcome Registry v1.0 | © 2025 NeuroEdvance</p>
+      <footer className="mt-auto border-t bg-muted/30">
+        <div className="container mx-auto px-6 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center space-x-2">
+              <div className="rounded-lg bg-primary/10 p-1.5">
+                <Activity className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-sm">
+                <span className="font-semibold text-foreground">PPC Outcome Registry</span>
+                <span className="text-muted-foreground"> v1.0</span>
+              </div>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              © 2025 NeuroEdvance. All rights reserved.
+            </div>
+          </div>
         </div>
       </footer>
     </div>
