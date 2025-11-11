@@ -1,8 +1,13 @@
-import { Check, AlertTriangle, X, FileText, User, Activity, Clipboard } from "lucide-react";
+import { Check, AlertTriangle, X, FileText, User, Activity, Clipboard, Download } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { toast } from "sonner";
 
 interface DataField {
   label: string;
@@ -131,16 +136,190 @@ export function DataTransferSummary({ intakeData, episodeData }: DataTransferSum
   );
   const completionRate = Math.round((populatedFields / totalFields) * 100);
 
+  // Export as CSV
+  const exportAsCSV = () => {
+    try {
+      // Create CSV header
+      const headers = ["Category", "Field", "Intake Value", "Episode Field", "Status", "Critical"];
+      
+      // Create CSV rows
+      const rows: string[][] = [];
+      dataCategories.forEach(category => {
+        category.fields.forEach(field => {
+          const status = getFieldStatus(field);
+          const statusText = status === "populated" ? "Transferred" : 
+                           status === "missing-critical" ? "Critical Missing" : "Not Provided";
+          const value = formatValue(field.intakeValue).replace(/"/g, '""'); // Escape quotes
+          
+          rows.push([
+            category.title,
+            field.label,
+            `"${value}"`,
+            field.episodeField,
+            statusText,
+            field.isCritical ? "Yes" : "No"
+          ]);
+        });
+      });
+      
+      // Combine into CSV string
+      const csvContent = [
+        headers.join(","),
+        ...rows.map(row => row.join(","))
+      ].join("\n");
+      
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `data-transfer-summary-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success("CSV exported successfully");
+    } catch (error) {
+      console.error("Error exporting CSV:", error);
+      toast.error("Failed to export CSV");
+    }
+  };
+
+  // Export as PDF
+  const exportAsPDF = () => {
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      
+      // Add title
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text("Data Transfer Summary", pageWidth / 2, 15, { align: "center" });
+      
+      // Add patient info
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Patient: ${intakeData.patient_name}`, 14, 25);
+      doc.text(`DOB: ${new Date(intakeData.date_of_birth).toLocaleDateString()}`, 14, 32);
+      doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 39);
+      
+      // Add statistics
+      doc.setFontSize(10);
+      doc.text(`Transferred: ${populatedFields}/${totalFields} (${completionRate}%)`, 14, 46);
+      doc.text(`Critical Missing: ${missingCritical}`, 14, 52);
+      
+      let yPos = 60;
+      
+      // Add data by category
+      dataCategories.forEach((category, categoryIndex) => {
+        // Check if we need a new page
+        if (yPos > 250) {
+          doc.addPage();
+          yPos = 20;
+        }
+        
+        // Category header
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text(category.title, 14, yPos);
+        yPos += 8;
+        
+        // Create table data for this category
+        const tableData = category.fields.map(field => {
+          const status = getFieldStatus(field);
+          const statusText = status === "populated" ? "✓" : 
+                           status === "missing-critical" ? "⚠" : "✗";
+          let value = formatValue(field.intakeValue);
+          // Truncate long values for PDF
+          if (value.length > 60) {
+            value = value.substring(0, 57) + "...";
+          }
+          
+          return [
+            field.label,
+            value,
+            field.episodeField,
+            statusText
+          ];
+        });
+        
+        // Add table
+        autoTable(doc, {
+          startY: yPos,
+          head: [["Field", "Intake Value", "Episode Field", "Status"]],
+          body: tableData,
+          theme: "grid",
+          headStyles: { 
+            fillColor: [59, 130, 246],
+            fontSize: 9,
+            fontStyle: "bold"
+          },
+          bodyStyles: { 
+            fontSize: 8
+          },
+          columnStyles: {
+            0: { cellWidth: 35 },
+            1: { cellWidth: 65 },
+            2: { cellWidth: 50 },
+            3: { cellWidth: 15, halign: "center" }
+          },
+          margin: { left: 14 },
+        });
+        
+        yPos = (doc as any).lastAutoTable.finalY + 10;
+      });
+      
+      // Add footer with legend
+      const finalY = (doc as any).lastAutoTable?.finalY || yPos;
+      if (finalY < 270) {
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "italic");
+        doc.text("Legend: ✓ = Transferred, ⚠ = Critical Missing, ✗ = Not Provided", 14, finalY + 5);
+      }
+      
+      // Save the PDF
+      doc.save(`data-transfer-summary-${new Date().toISOString().split('T')[0]}.pdf`);
+      
+      toast.success("PDF exported successfully");
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      toast.error("Failed to export PDF");
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
-          Data Transfer Summary
-        </CardTitle>
-        <CardDescription>
-          Review what information was transferred from the intake form to the episode
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Data Transfer Summary
+            </CardTitle>
+            <CardDescription>
+              Review what information was transferred from the intake form to the episode
+            </CardDescription>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Download className="h-4 w-4" />
+                Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={exportAsCSV} className="gap-2">
+                <FileText className="h-4 w-4" />
+                Export as CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={exportAsPDF} className="gap-2">
+                <FileText className="h-4 w-4" />
+                Export as PDF
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <div className="flex gap-4 mt-4">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
