@@ -13,6 +13,7 @@ import { MessageSquare, Phone, MessageCircle, CheckCircle, Clock, Settings, Bell
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ClinicianNotificationSettings from "@/components/ClinicianNotificationSettings";
+import { PullToRefresh } from "@/components/PullToRefresh";
 
 interface PatientMessage {
   id: string;
@@ -174,7 +175,7 @@ export default function ClinicianInbox() {
   }, [user, queryClient, browserNotificationsEnabled, sendNotification]);
 
   // Fetch messages
-  const { data: messages = [], isLoading: messagesLoading } = useQuery({
+  const { data: messages = [], isLoading: messagesLoading, refetch: refetchMessages } = useQuery({
     queryKey: ["patient-messages"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -201,7 +202,7 @@ export default function ClinicianInbox() {
   });
 
   // Fetch callback requests (they're also in patient_messages with message_type='callback_request')
-  const { data: callbacks = [], isLoading: callbacksLoading } = useQuery({
+  const { data: callbacks = [], isLoading: callbacksLoading, refetch: refetchCallbacks } = useQuery({
     queryKey: ["callback-requests"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -311,8 +312,17 @@ export default function ClinicianInbox() {
     );
   };
 
+  // Pull to refresh handler
+  const handleRefresh = async () => {
+    await Promise.all([refetchMessages(), refetchCallbacks()]);
+    toast("Refreshed", {
+      description: "Inbox data has been updated.",
+    });
+  };
+
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Clinician Inbox</h1>
@@ -629,6 +639,7 @@ export default function ClinicianInbox() {
           <ClinicianNotificationSettings />
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </PullToRefresh>
   );
 }

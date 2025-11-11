@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Users, TrendingUp, Award, Target, Calendar, Trophy, Settings } from "lucide-react";
 import { format, subDays, startOfMonth, endOfMonth } from "date-fns";
 import { ReferralReportScheduler } from "@/components/ReferralReportScheduler";
+import { PullToRefresh } from "@/components/PullToRefresh";
+import { useToast } from "@/hooks/use-toast";
 
 interface ReferralStats {
   totalReferrals: number;
@@ -34,6 +36,7 @@ interface ReferralTrend {
 }
 
 export default function ReferralAnalytics() {
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<ReferralStats>({
     totalReferrals: 0,
@@ -200,8 +203,18 @@ export default function ReferralAnalytics() {
     );
   }
 
+  // Pull to refresh handler
+  const handleRefresh = async () => {
+    await loadAnalytics();
+    toast({
+      title: "Refreshed",
+      description: "Referral analytics data has been updated.",
+    });
+  };
+
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="container mx-auto py-8 space-y-6">
       {/* Main Tabs */}
       <Tabs defaultValue="analytics" className="space-y-6">
         <div className="flex items-center justify-between">
@@ -418,6 +431,7 @@ export default function ReferralAnalytics() {
           <ReferralReportScheduler />
         </TabsContent>
       </Tabs>
-    </div>
+      </div>
+    </PullToRefresh>
   );
 }

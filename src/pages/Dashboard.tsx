@@ -30,6 +30,7 @@ import { DateRangeComparison } from "@/components/DateRangeComparison";
 import { PendingEpisodesWidget } from "@/components/PendingEpisodesWidget";
 import { OutcomeReminderCronStatus } from "@/components/OutcomeReminderCronStatus";
 import { OutcomeReminderHistory } from "@/components/OutcomeReminderHistory";
+import { PullToRefresh } from "@/components/PullToRefresh";
 
 interface Episode {
   id: string;
@@ -444,6 +445,15 @@ export default function Dashboard() {
     window.print();
   };
 
+  // Pull to refresh handler
+  const handleRefresh = async () => {
+    await loadEpisodes();
+    toast({
+      title: "Refreshed",
+      description: "Dashboard data has been updated.",
+    });
+  };
+
   // TODO: Fetch followups from database
   const pendingFollowups: Episode[] = [];
 
@@ -546,7 +556,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="space-y-8">
       {/* Hero Section */}
       <div className="rounded-lg bg-gradient-to-br from-primary/10 via-primary/5 to-background p-8">
         <h1 className="mb-2 text-3xl font-bold text-primary">Welcome to PPC Outcome Registry</h1>
@@ -1057,6 +1068,7 @@ export default function Dashboard() {
           patientName={selectedEpisodeForInvitation.patient_name}
         />
       )}
-    </div>
+      </div>
+    </PullToRefresh>
   );
 }
