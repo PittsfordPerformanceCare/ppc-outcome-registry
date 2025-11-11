@@ -17,6 +17,7 @@ import { WebhookActivityLog } from "./WebhookActivityLog";
 import { WebhookRetryQueue } from "./WebhookRetryQueue";
 import { WebhookAnalytics } from "./WebhookAnalytics";
 import { WebhookAlertSettings } from "./WebhookAlertSettings";
+import { WebhookHealthDashboard } from "./WebhookHealthDashboard";
 
 interface WebhookConfig {
   id: string;
@@ -247,8 +248,9 @@ export function ZapierWebhookConfig() {
   };
 
   return (
-    <Tabs defaultValue="config" className="w-full space-y-4">
-      <TabsList className="grid w-full grid-cols-5">
+    <Tabs defaultValue="health" className="w-full space-y-4">
+      <TabsList className="grid w-full grid-cols-6">
+        <TabsTrigger value="health">Health</TabsTrigger>
         <TabsTrigger value="config">Configuration</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
         <TabsTrigger value="alerts">Alerts</TabsTrigger>
@@ -256,7 +258,11 @@ export function ZapierWebhookConfig() {
         <TabsTrigger value="activity">Activity Log</TabsTrigger>
       </TabsList>
 
-      <TabsContent value="config" className="space-y-4">
+        <TabsContent value="health" className="space-y-4">
+          <WebhookHealthDashboard />
+        </TabsContent>
+
+        <TabsContent value="config" className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold flex items-center gap-2">
