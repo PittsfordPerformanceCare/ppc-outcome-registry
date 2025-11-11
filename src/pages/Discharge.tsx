@@ -25,6 +25,7 @@ import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorT
 import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoalsSelector";
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
+import { PendingComplaintConfirmation } from "@/components/PendingComplaintConfirmation";
 
 interface DischargeScores {
   NDI?: number;
@@ -74,6 +75,7 @@ export default function Discharge() {
   const [priorTreatmentsOther, setPriorTreatmentsOther] = useState("");
   const [goalsData, setGoalsData] = useState<GoalItem[]>([]);
   const [goalsOther, setGoalsOther] = useState("");
+  const [showPendingComplaints, setShowPendingComplaints] = useState(false);
 
   useEffect(() => {
     // Load all available episodes for dropdown
@@ -174,8 +176,9 @@ export default function Discharge() {
         }
       }
 
-      navigate(`/pcp-summary?episode=${episodeId}`);
-      toast.success("Opening PCP Summary...");
+      // Check for pending complaints before navigating
+      setShowPendingComplaints(true);
+      toast.success("Discharge saved. Checking for pending complaints...");
     } catch (error: any) {
       toast.error(`Failed to save discharge: ${error.message}`);
     }
@@ -658,6 +661,18 @@ export default function Discharge() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Pending Complaints Confirmation */}
+      {showPendingComplaints && episodeId && (
+        <PendingComplaintConfirmation
+          currentEpisodeId={episodeId}
+          patientName={patientName}
+          onComplete={() => {
+            setShowPendingComplaints(false);
+            navigate(`/pcp-summary?episode=${episodeId}`);
+          }}
+        />
+      )}
     </div>
   );
 }
