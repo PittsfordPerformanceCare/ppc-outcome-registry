@@ -5,7 +5,9 @@ import { Table, TableBody, TableCell, TableHead, TableRow, TableHeader } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Trash2, RefreshCw, Globe, Building2, Download, Upload, FileText } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AlertCircle, Trash2, RefreshCw, Globe, Building2, Download, Upload, FileText, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { PendingEpisodeThresholdSettings } from "./PendingEpisodeThresholdSettings";
 
@@ -18,6 +20,16 @@ interface ThresholdConfig {
   is_global: boolean;
 }
 
+interface ValidationResult {
+  action: "create" | "update" | "skip";
+  clinic_id: string | null;
+  clinic_name: string;
+  warning_days: number;
+  critical_days: number;
+  reason?: string;
+  existing_id?: string;
+}
+
 interface PendingEpisodeThresholdManagementProps {
   isAdmin: boolean;
 }
@@ -27,6 +39,8 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -188,74 +202,162 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
       if (clinicsError) throw clinicsError;
 
       const clinicMap = new Map(clinics.map(c => [c.id, c.name]));
-      const updates: Array<{ clinic_id: string | null; warning_days: number; critical_days: number }> = [];
-      let skipped = 0;
+      
+      // Fetch existing thresholds
+      const { data: existingThresholds } = await supabase
+        .from("pending_episode_thresholds")
+        .select("id, clinic_id");
+
+      const existingMap = new Map(
+        existingThresholds?.map(t => [t.clinic_id ?? "GLOBAL", t.id]) || []
+      );
+
+      const results: ValidationResult[] = [];
 
       for (const line of dataRows) {
-        const [clinicId, , warningDays, criticalDays] = line.split(",").map(s => s.trim());
+        const [clinicId, clinicNameRaw, warningDays, criticalDays] = line.split(",").map(s => s.trim());
         
         // Validate data
         const warning = parseInt(warningDays);
         const critical = parseInt(criticalDays);
 
-        if (isNaN(warning) || isNaN(critical) || warning <= 0 || critical <= 0 || warning >= critical) {
-          skipped++;
+        // Validation checks
+        if (!clinicId || !warningDays || !criticalDays) {
+          results.push({
+            action: "skip",
+            clinic_id: clinicId || null,
+            clinic_name: clinicNameRaw || "Unknown",
+            warning_days: warning || 0,
+            critical_days: critical || 0,
+            reason: "Missing required fields",
+          });
+          continue;
+        }
+
+        if (isNaN(warning) || isNaN(critical)) {
+          results.push({
+            action: "skip",
+            clinic_id: clinicId === "GLOBAL" ? null : clinicId,
+            clinic_name: clinicNameRaw,
+            warning_days: 0,
+            critical_days: 0,
+            reason: "Invalid number format",
+          });
+          continue;
+        }
+
+        if (warning <= 0 || critical <= 0) {
+          results.push({
+            action: "skip",
+            clinic_id: clinicId === "GLOBAL" ? null : clinicId,
+            clinic_name: clinicNameRaw,
+            warning_days: warning,
+            critical_days: critical,
+            reason: "Days must be greater than 0",
+          });
+          continue;
+        }
+
+        if (warning >= critical) {
+          results.push({
+            action: "skip",
+            clinic_id: clinicId === "GLOBAL" ? null : clinicId,
+            clinic_name: clinicNameRaw,
+            warning_days: warning,
+            critical_days: critical,
+            reason: "Warning days must be less than critical days",
+          });
           continue;
         }
 
         // Validate clinic ID
         const targetClinicId = clinicId === "GLOBAL" ? null : clinicId;
+        const clinicName = clinicId === "GLOBAL" 
+          ? "Global Default" 
+          : clinicMap.get(clinicId) || clinicNameRaw;
+
         if (targetClinicId && !clinicMap.has(targetClinicId)) {
-          skipped++;
+          results.push({
+            action: "skip",
+            clinic_id: targetClinicId,
+            clinic_name: clinicName,
+            warning_days: warning,
+            critical_days: critical,
+            reason: "Clinic ID not found in database",
+          });
           continue;
         }
 
-        updates.push({
+        // Check if exists
+        const existingId = existingMap.get(targetClinicId ?? "GLOBAL");
+        
+        results.push({
+          action: existingId ? "update" : "create",
           clinic_id: targetClinicId,
+          clinic_name: clinicName,
           warning_days: warning,
           critical_days: critical,
+          existing_id: existingId,
         });
       }
 
-      if (updates.length === 0) {
-        throw new Error("No valid rows found in CSV file");
+      if (results.length === 0) {
+        throw new Error("No rows found in CSV file");
       }
 
-      // Process updates
-      let imported = 0;
-      for (const config of updates) {
-        // Check if threshold exists
-        const { data: existing } = await supabase
-          .from("pending_episode_thresholds")
-          .select("id")
-          .eq("clinic_id", config.clinic_id ?? null)
-          .maybeSingle();
+      setValidationResults(results);
+      setShowPreview(true);
+    } catch (error: any) {
+      console.error("Error validating CSV:", error);
+      toast.error(`Failed to validate: ${error.message}`);
+    } finally {
+      setImporting(false);
+    }
+  };
 
-        if (existing) {
-          // Update existing
+  const handleConfirmImport = async () => {
+    setImporting(true);
+    try {
+      let imported = 0;
+      let updated = 0;
+
+      const toProcess = validationResults.filter(r => r.action !== "skip");
+
+      for (const result of toProcess) {
+        if (result.action === "update" && result.existing_id) {
           const { error } = await supabase
             .from("pending_episode_thresholds")
             .update({
-              warning_days: config.warning_days,
-              critical_days: config.critical_days,
+              warning_days: result.warning_days,
+              critical_days: result.critical_days,
             })
-            .eq("id", existing.id);
+            .eq("id", result.existing_id);
 
-          if (!error) imported++;
-        } else {
-          // Insert new
+          if (!error) updated++;
+        } else if (result.action === "create") {
           const { error } = await supabase
             .from("pending_episode_thresholds")
-            .insert(config);
+            .insert({
+              clinic_id: result.clinic_id,
+              warning_days: result.warning_days,
+              critical_days: result.critical_days,
+            });
 
           if (!error) imported++;
         }
       }
 
-      toast.success(`Imported ${imported} configurations${skipped > 0 ? `, skipped ${skipped} invalid rows` : ""}`);
+      const skipped = validationResults.filter(r => r.action === "skip").length;
+      
+      toast.success(
+        `Import complete: ${imported} created, ${updated} updated${skipped > 0 ? `, ${skipped} skipped` : ""}`
+      );
+      
+      setShowPreview(false);
+      setValidationResults([]);
       loadThresholds();
     } catch (error: any) {
-      console.error("Error importing CSV:", error);
+      console.error("Error importing:", error);
       toast.error(`Failed to import: ${error.message}`);
     } finally {
       setImporting(false);
@@ -265,12 +367,169 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
     }
   };
 
+  const handleCancelImport = () => {
+    setShowPreview(false);
+    setValidationResults([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   if (!isAdmin) {
     return null;
   }
 
+  const createCount = validationResults.filter(r => r.action === "create").length;
+  const updateCount = validationResults.filter(r => r.action === "update").length;
+  const skipCount = validationResults.filter(r => r.action === "skip").length;
+
   return (
-    <Card>
+    <>
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-4xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>Import Preview</DialogTitle>
+            <DialogDescription>
+              Review the changes before importing. {createCount} will be created, {updateCount} will be updated, and {skipCount} will be skipped.
+            </DialogDescription>
+          </DialogHeader>
+
+          <ScrollArea className="h-[400px] w-full">
+            <div className="space-y-4">
+              {createCount > 0 && (
+                <div>
+                  <h3 className="font-semibold text-sm flex items-center gap-2 mb-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    New Configurations ({createCount})
+                  </h3>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Clinic</TableHead>
+                          <TableHead className="text-right">Warning Days</TableHead>
+                          <TableHead className="text-right">Critical Days</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {validationResults
+                          .filter(r => r.action === "create")
+                          .map((result, idx) => (
+                            <TableRow key={idx}>
+                              <TableCell>
+                                {result.clinic_id === null ? (
+                                  <Badge variant="secondary" className="gap-1">
+                                    <Globe className="h-3 w-3" />
+                                    {result.clinic_name}
+                                  </Badge>
+                                ) : (
+                                  result.clinic_name
+                                )}
+                              </TableCell>
+                              <TableCell className="text-right font-mono">{result.warning_days}</TableCell>
+                              <TableCell className="text-right font-mono">{result.critical_days}</TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
+
+              {updateCount > 0 && (
+                <div>
+                  <h3 className="font-semibold text-sm flex items-center gap-2 mb-2">
+                    <AlertTriangle className="h-4 w-4 text-warning" />
+                    Updates ({updateCount})
+                  </h3>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Clinic</TableHead>
+                          <TableHead className="text-right">Warning Days</TableHead>
+                          <TableHead className="text-right">Critical Days</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {validationResults
+                          .filter(r => r.action === "update")
+                          .map((result, idx) => (
+                            <TableRow key={idx}>
+                              <TableCell>
+                                {result.clinic_id === null ? (
+                                  <Badge variant="secondary" className="gap-1">
+                                    <Globe className="h-3 w-3" />
+                                    {result.clinic_name}
+                                  </Badge>
+                                ) : (
+                                  result.clinic_name
+                                )}
+                              </TableCell>
+                              <TableCell className="text-right font-mono">{result.warning_days}</TableCell>
+                              <TableCell className="text-right font-mono">{result.critical_days}</TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
+
+              {skipCount > 0 && (
+                <div>
+                  <h3 className="font-semibold text-sm flex items-center gap-2 mb-2">
+                    <XCircle className="h-4 w-4 text-destructive" />
+                    Skipped ({skipCount})
+                  </h3>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Clinic</TableHead>
+                          <TableHead className="text-right">Warning Days</TableHead>
+                          <TableHead className="text-right">Critical Days</TableHead>
+                          <TableHead>Reason</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {validationResults
+                          .filter(r => r.action === "skip")
+                          .map((result, idx) => (
+                            <TableRow key={idx}>
+                              <TableCell className="text-muted-foreground">{result.clinic_name}</TableCell>
+                              <TableCell className="text-right font-mono text-muted-foreground">
+                                {result.warning_days || "-"}
+                              </TableCell>
+                              <TableCell className="text-right font-mono text-muted-foreground">
+                                {result.critical_days || "-"}
+                              </TableCell>
+                              <TableCell className="text-sm text-destructive">{result.reason}</TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelImport} disabled={importing}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleConfirmImport} 
+              disabled={importing || (createCount === 0 && updateCount === 0)}
+            >
+              {importing ? "Importing..." : `Confirm Import (${createCount + updateCount} changes)`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -431,5 +690,6 @@ export function PendingEpisodeThresholdManagement({ isAdmin }: PendingEpisodeThr
         </div>
       </CardContent>
     </Card>
+    </>
   );
 }
