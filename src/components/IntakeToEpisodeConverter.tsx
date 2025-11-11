@@ -19,9 +19,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
-import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2, ChevronDown, ChevronUp, Calendar, Activity } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { format } from "date-fns";
 
 interface IntakeForm {
   id: string;
@@ -73,6 +75,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
   const [duplicateEpisodes, setDuplicateEpisodes] = useState<any[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [confirmDuplicate, setConfirmDuplicate] = useState(false);
+  const [showDuplicateDetails, setShowDuplicateDetails] = useState(false);
 
   // Extract region from complaints
   const inferRegionFromComplaints = (): string => {
@@ -167,6 +170,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
       setHasDuplicate(false);
       setDuplicateEpisodes([]);
       setConfirmDuplicate(false);
+      setShowDuplicateDetails(false);
     }
   }, [open]);
 
@@ -366,32 +370,99 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
               {hasDuplicate && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="flex items-center justify-between">
-                    <div>
-                      <span className="font-semibold block mb-1">
-                        Warning: This patient has {duplicateEpisodes.length} existing episode{duplicateEpisodes.length > 1 ? 's' : ''}
-                      </span>
-                      <span className="text-sm">
-                        {duplicateEpisodes.filter(ep => !ep.discharge_date).length > 0 && (
-                          <>
-                            {duplicateEpisodes.filter(ep => !ep.discharge_date).length} active episode{duplicateEpisodes.filter(ep => !ep.discharge_date).length > 1 ? 's' : ''} found.
-                            {confirmDuplicate && (
-                              <span className="block mt-1 text-amber-200 font-medium">
-                                Click "Create Episode" again to confirm creation of a new episode.
-                              </span>
+                  <AlertDescription>
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <span className="font-semibold block mb-1">
+                            Warning: This patient has {duplicateEpisodes.length} existing episode{duplicateEpisodes.length > 1 ? 's' : ''}
+                          </span>
+                          <span className="text-sm">
+                            {duplicateEpisodes.filter(ep => !ep.discharge_date).length > 0 && (
+                              <>
+                                {duplicateEpisodes.filter(ep => !ep.discharge_date).length} active episode{duplicateEpisodes.filter(ep => !ep.discharge_date).length > 1 ? 's' : ''} found.
+                                {confirmDuplicate && (
+                                  <span className="block mt-1 text-amber-200 font-medium">
+                                    Click "Create Episode" again to confirm creation of a new episode.
+                                  </span>
+                                )}
+                              </>
                             )}
-                          </>
-                        )}
-                      </span>
+                          </span>
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => setShowHistory(true)}
+                          className="ml-4 shrink-0"
+                        >
+                          View Full History
+                        </Button>
+                      </div>
+
+                      {/* Expandable Episode Details */}
+                      <Collapsible
+                        open={showDuplicateDetails}
+                        onOpenChange={setShowDuplicateDetails}
+                      >
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full justify-between text-sm h-8 hover:bg-destructive/20"
+                          >
+                            <span>{showDuplicateDetails ? 'Hide' : 'Show'} Episode Details</span>
+                            {showDuplicateDetails ? (
+                              <ChevronUp className="h-4 w-4" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-2">
+                          <div className="space-y-2 max-h-48 overflow-y-auto rounded-md bg-destructive/10 p-3">
+                            {duplicateEpisodes.map((episode, idx) => (
+                              <div
+                                key={episode.id}
+                                className="rounded-md bg-background/80 p-3 text-foreground space-y-1.5"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className="font-medium text-sm">{episode.id}</span>
+                                  {!episode.discharge_date ? (
+                                    <Badge variant="default" className="text-xs">Active</Badge>
+                                  ) : (
+                                    <Badge variant="outline" className="text-xs">Discharged</Badge>
+                                  )}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    <span>DOS: {episode.date_of_service ? format(new Date(episode.date_of_service), 'MMM d, yyyy') : 'N/A'}</span>
+                                  </div>
+                                  {episode.discharge_date && (
+                                    <div className="flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      <span>D/C: {format(new Date(episode.discharge_date), 'MMM d, yyyy')}</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-xs space-y-0.5">
+                                  {episode.region && (
+                                    <div><span className="text-muted-foreground">Region:</span> {episode.region}</div>
+                                  )}
+                                  {episode.diagnosis && (
+                                    <div><span className="text-muted-foreground">Diagnosis:</span> {episode.diagnosis}</div>
+                                  )}
+                                  {episode.clinician && (
+                                    <div><span className="text-muted-foreground">Clinician:</span> {episode.clinician}</div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setShowHistory(true)}
-                      className="ml-4 shrink-0"
-                    >
-                      View History
-                    </Button>
                   </AlertDescription>
                 </Alert>
               )}
