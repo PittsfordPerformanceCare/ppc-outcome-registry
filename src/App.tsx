@@ -42,6 +42,7 @@ import ClinicianQuickStart from "./pages/ClinicianQuickStart";
 import AdministratorQuickStart from "./pages/AdministratorQuickStart";
 import PatientQuickStart from "./pages/PatientQuickStart";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
+import DataGovernance from "./pages/DataGovernance";
 
 const queryClient = new QueryClient();
 
@@ -116,6 +117,7 @@ const App = () => (
                       }
                     />
                     <Route path="/analytics-dashboard" element={<AnalyticsDashboard />} />
+                    <Route path="/data-governance" element={<DataGovernance />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

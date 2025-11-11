@@ -12,7 +12,8 @@ import {
   LayoutDashboard,
   ClipboardList,
   Users,
-  ChevronRight
+  ChevronRight,
+  Database
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +46,7 @@ export const DevToolbar = () => {
       category: "Admin Flows",
       items: [
         { label: "Admin Management", path: "/admin", icon: Users },
+        { label: "Data Governance", path: "/data-governance", icon: Database },
         { label: "Clinic Settings", path: "/settings", icon: LayoutDashboard },
         { label: "Analytics Dashboard", path: "/analytics-dashboard", icon: LayoutDashboard },
       ]

@@ -1,10 +1,11 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle, History, Menu, MessageSquare, BookOpen } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle, History, Menu, MessageSquare, BookOpen, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { useUserRole } from "@/hooks/useUserRole";
 import { SessionTimeoutWarning } from "./SessionTimeoutWarning";
 import { IntakeNotificationsPanel } from "./IntakeNotificationsPanel";
 import { FloatingActionButton } from "./FloatingActionButton";
@@ -40,22 +41,8 @@ export function Layout({ children }: LayoutProps) {
   const { user, signOut } = useAuth();
   const { showWarning, extendSession } = useSessionTimeout();
   const { isDark, toggleDarkMode } = useDarkMode();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin } = useUserRole();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      if (!user) return;
-      const { data } = await supabase
-        .from("user_roles")
-        .select()
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      setIsAdmin(!!data);
-    };
-    checkAdmin();
-  }, [user]);
 
   const primaryNav = [
     { name: "Dashboard", href: "/", icon: Home },
@@ -90,6 +77,7 @@ export function Layout({ children }: LayoutProps) {
   const adminNav = isAdmin ? [
     { name: "Admin", href: "/admin", icon: Shield },
     { name: "Compliance", href: "/compliance", icon: FileCheck },
+    { name: "Data Governance", href: "/data-governance", icon: Database },
     { name: "Settings", href: "/clinic-settings", icon: Settings }
   ] : [];
 
