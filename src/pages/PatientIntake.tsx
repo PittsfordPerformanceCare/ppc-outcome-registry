@@ -111,6 +111,7 @@ const complaintSchema = z.object({
   severity: z.string().min(1, "Please select a severity level"),
   duration: z.string().min(1, "Please select how long you've had this issue"),
   isPrimary: z.boolean(),
+  priority: z.number().min(1).optional(), // 1 = highest priority, 2 = second, etc.
 });
 
 const intakeFormSchema = z.object({
@@ -138,8 +139,19 @@ const intakeFormSchema = z.object({
   allergies: z.string().max(500, "Information is too long").optional(),
   medicalHistory: z.string().max(1000, "Information is too long").optional(),
   complaints: z.array(complaintSchema).min(1, "At least one complaint is required").refine(
-    (complaints) => complaints.some(c => c.isPrimary),
-    "Please select a primary complaint"
+    (complaints) => {
+      // Check if we have priorities set
+      const hasPriorities = complaints.some(c => c.priority !== undefined);
+      if (hasPriorities) {
+        // If priorities are set, validate they're unique and sequential
+        const priorities = complaints.filter(c => c.priority).map(c => c.priority).sort();
+        const uniquePriorities = new Set(priorities);
+        return uniquePriorities.size === priorities.length;
+      }
+      // Otherwise, check for isPrimary (backwards compatibility)
+      return complaints.some(c => c.isPrimary);
+    },
+    "Please rank your complaints in order of priority (each complaint must have a unique priority)"
   ),
   injuryDate: z.string().optional(),
   injuryMechanism: z.string().max(500, "Description is too long").optional(),
@@ -206,7 +218,7 @@ export default function PatientIntake() {
       currentMedications: "",
       allergies: "",
       medicalHistory: "",
-      complaints: [{ text: "", category: "", severity: "", duration: "", isPrimary: true }],
+      complaints: [{ text: "", category: "", severity: "", duration: "", isPrimary: true, priority: 1 }],
       injuryDate: "",
       injuryMechanism: "",
       painLevel: 5,
@@ -1223,7 +1235,7 @@ export default function PatientIntake() {
                   )}
                 </div>
                 <CardDescription>
-                  Please describe each separate issue or condition you'd like evaluated. Use the category dropdown to specify the body region. Then select which concern you want us to prioritize and treat first.
+                  Please describe each separate issue or condition you'd like evaluated. Use the category dropdown to specify the body region. <strong>Rank your concerns in order of priority</strong> (1 = treat first, 2 = treat second, etc.). We'll create treatment episodes in the order you prioritize.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -1231,43 +1243,64 @@ export default function PatientIntake() {
                   {fields.map((field, index) => (
                     <div key={field.id} className="space-y-4 p-4 border rounded-lg relative bg-card">
                       <div className="flex items-start justify-between gap-2">
-                        <FormField
-                          control={form.control}
-                          name={`complaints.${index}.isPrimary`}
-                          render={({ field: radioField }) => (
-                            <FormItem className="flex items-center space-y-0">
-                              <FormControl>
-                                <div className="flex items-center space-x-2">
-                                  <input
-                                    type="radio"
-                                    checked={radioField.value}
-                                    onChange={() => {
-                                      // Uncheck all others
-                                      fields.forEach((_, i) => {
-                                        form.setValue(`complaints.${i}.isPrimary`, i === index);
-                                      });
-                                    }}
-                                    className="h-4 w-4"
-                                  />
-                                  <FormLabel className="font-normal cursor-pointer">
-                                    {radioField.value ? "🎯 Treat this concern first" : "Set as priority"}
-                                  </FormLabel>
-                                </div>
-                              </FormControl>
-                            </FormItem>
+                        {/* Priority Selector */}
+                        <div className="flex items-center gap-3">
+                          <FormField
+                            control={form.control}
+                            name={`complaints.${index}.priority`}
+                            render={({ field: priorityField }) => (
+                              <FormItem className="flex items-center space-y-0">
+                                <FormLabel className="text-sm font-medium mr-2">Priority:</FormLabel>
+                                <Select 
+                                  onValueChange={(value) => {
+                                    const newPriority = parseInt(value);
+                                    // Set this complaint's priority
+                                    priorityField.onChange(newPriority);
+                                    // Update isPrimary based on priority
+                                    form.setValue(`complaints.${index}.isPrimary`, newPriority === 1);
+                                  }} 
+                                  value={priorityField.value?.toString()}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger className="w-24">
+                                      <SelectValue placeholder="Rank" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {Array.from({ length: fields.length }, (_, i) => i + 1).map((num) => (
+                                      <SelectItem key={num} value={num.toString()}>
+                                        {num === 1 ? `${num}st` : num === 2 ? `${num}nd` : num === 3 ? `${num}rd` : `${num}th`}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormItem>
+                            )}
+                          />
+                          {form.watch(`complaints.${index}.priority`) === 1 && (
+                            <Badge variant="default" className="gap-1">
+                              🎯 Primary
+                            </Badge>
                           )}
-                        />
+                        </div>
                         {fields.length > 1 && (
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              if (form.getValues(`complaints.${index}.isPrimary`)) {
-                                toast.error("Cannot remove the primary concern. Please set another concern as priority first.");
-                                return;
-                              }
                               remove(index);
+                              // Reorder remaining priorities
+                              setTimeout(() => {
+                                const remaining = form.getValues('complaints');
+                                remaining
+                                  .filter(c => c.priority)
+                                  .sort((a, b) => (a.priority || 999) - (b.priority || 999))
+                                  .forEach((_, i) => {
+                                    form.setValue(`complaints.${i}.priority`, i + 1);
+                                    form.setValue(`complaints.${i}.isPrimary`, i === 0);
+                                  });
+                              }, 100);
                             }}
                           >
                             <X className="h-4 w-4" />
