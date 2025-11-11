@@ -25,6 +25,7 @@ import SignatureCanvas from "react-signature-canvas";
 import jsPDF from "jspdf";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { SortableComplaintItem } from "@/components/SortableComplaintItem";
+import { useHaptics } from "@/hooks/useHaptics";
 import {
   DndContext,
   closestCenter,
@@ -213,6 +214,7 @@ export default function PatientIntake() {
   
   const signatureRef = useRef<SignatureCanvas>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const { medium, light, success } = useHaptics();
 
   // Drag and drop sensors
   const sensors = useSensors(
@@ -277,6 +279,8 @@ export default function PatientIntake() {
   // Handle drag end
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
+    // Haptic feedback when picking up complaint
+    medium();
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -284,6 +288,8 @@ export default function PatientIntake() {
     setActiveId(null);
 
     if (!over || active.id === over.id) {
+      // Light haptic for cancelled drag
+      light();
       return;
     }
 
@@ -294,6 +300,9 @@ export default function PatientIntake() {
       // Move the item in the array
       move(oldIndex, newIndex);
 
+      // Success haptic for successful reorder
+      success();
+
       // Update priorities after reordering
       setTimeout(() => {
         const complaints = form.getValues('complaints');
@@ -303,6 +312,9 @@ export default function PatientIntake() {
         });
         toast.success("Complaints reordered");
       }, 0);
+    } else {
+      // Light haptic for failed reorder
+      light();
     }
   };
 
