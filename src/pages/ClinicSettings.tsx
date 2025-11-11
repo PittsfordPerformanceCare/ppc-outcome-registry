@@ -15,6 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { ReminderStatusPanel } from "@/components/ReminderStatusPanel";
 import { NotificationAlertSettings } from "@/components/NotificationAlertSettings";
 import { RateLimitConfigPanel } from "@/components/RateLimitConfigPanel";
+import { EmailTemplateGallery } from "@/components/EmailTemplateGallery";
 
 export default function ClinicSettings() {
   const navigate = useNavigate();
@@ -236,6 +237,19 @@ export default function ClinicSettings() {
           <strong>Available placeholders:</strong> {`{{patient_name}}, {{clinician_name}}, {{episode_id}}, {{appointment_date}}, {{appointment_time}}, {{clinic_name}}, {{clinic_phone}}`}
         </AlertDescription>
       </Alert>
+
+      {/* Email Template Gallery */}
+      <EmailTemplateGallery 
+        onSelectTemplate={(subject, html) => {
+          setEmailSubject(subject);
+          setEmailTemplate(html);
+          toast.success("Template applied! You can now customize it further.");
+          // Scroll to editor
+          setTimeout(() => {
+            document.getElementById("email-template")?.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 100);
+        }}
+      />
 
       {/* Appointment Reminder Settings */}
       <Card className="border-purple-200 dark:border-purple-800">
