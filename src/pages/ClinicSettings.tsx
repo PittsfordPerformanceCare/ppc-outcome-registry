@@ -467,38 +467,163 @@ export default function ClinicSettings() {
       {/* Email Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Email Notification Template</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="h-5 w-5 text-primary" />
+            Episode Confirmation Email Template
+          </CardTitle>
           <CardDescription>
-            Customize the email sent to patients when their episode is created
+            Customize the email sent to patients when their intake form is converted to an episode
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
+          {/* Template Variable Helper */}
+          <Alert className="bg-primary/5 border-primary/20">
+            <AlertCircle className="h-4 w-4 text-primary" />
+            <AlertDescription>
+              <div className="space-y-2">
+                <p className="font-semibold text-primary">Available Template Variables:</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                  {[
+                    '{{patient_name}}',
+                    '{{clinician_name}}',
+                    '{{episode_id}}',
+                    '{{clinic_name}}',
+                    '{{clinic_phone}}',
+                    '{{clinic_email}}',
+                    '{{appointment_date}}',
+                    '{{appointment_time}}'
+                  ].map((variable) => (
+                    <Button
+                      key={variable}
+                      variant="outline"
+                      size="sm"
+                      className="justify-start text-xs font-mono"
+                      onClick={() => {
+                        const textarea = document.getElementById('email-template') as HTMLTextAreaElement;
+                        if (textarea) {
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const newValue = emailTemplate.substring(0, start) + variable + emailTemplate.substring(end);
+                          setEmailTemplate(newValue);
+                          setTimeout(() => {
+                            textarea.focus();
+                            textarea.setSelectionRange(start + variable.length, start + variable.length);
+                          }, 0);
+                        }
+                      }}
+                    >
+                      {variable}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </AlertDescription>
+          </Alert>
+
           <div className="space-y-2">
-            <Label htmlFor="email-subject">Email Subject</Label>
+            <Label htmlFor="email-subject">Email Subject Line</Label>
             <Input
               id="email-subject"
               value={emailSubject}
               onChange={(e) => setEmailSubject(e.target.value)}
-              placeholder="Your Physical Therapy Episode Has Been Created"
+              placeholder="🎉 Welcome! Your Physical Therapy Episode Has Been Created"
+              className="text-base"
             />
             <p className="text-xs text-muted-foreground">
-              You can use {`{{patient_name}}`} and {`{{clinic_name}}`} in the subject
+              Use emojis and variables to personalize the subject line
             </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email-template">Email Body (HTML)</Label>
-            <Textarea
-              id="email-template"
-              value={emailTemplate}
-              onChange={(e) => setEmailTemplate(e.target.value)}
-              rows={15}
-              className="font-mono text-sm"
-              placeholder="Enter HTML email template..."
-            />
-            <p className="text-xs text-muted-foreground">
-              Use HTML formatting for rich emails. Placeholders will be automatically replaced.
-            </p>
+          <Separator />
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Editor Side */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="email-template">HTML Email Template</Label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    const defaultTemplate = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px;">
+  <div style="background-color: #a51c30; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 28px;">🎉 Welcome to {{clinic_name}}!</h1>
+  </div>
+  
+  <div style="padding: 30px; background-color: #f9fafb; border-radius: 0 0 8px 8px;">
+    <p style="font-size: 16px; line-height: 1.6; color: #374151;">Dear <strong>{{patient_name}}</strong>,</p>
+    
+    <p style="font-size: 16px; line-height: 1.6; color: #374151;">
+      Great news! Your intake form has been reviewed and approved. Your physical therapy episode has been successfully created.
+    </p>
+    
+    <div style="background-color: #ffffff; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #a51c30;">
+      <h2 style="color: #1f2937; margin-top: 0; font-size: 20px;">📋 Your Episode Details</h2>
+      <p style="margin: 8px 0; color: #6b7280;"><strong>Assigned Clinician:</strong> {{clinician_name}}</p>
+      <p style="margin: 8px 0; color: #6b7280;"><strong>Episode ID:</strong> {{episode_id}}</p>
+    </div>
+    
+    <p style="font-size: 16px; line-height: 1.6; color: #374151;">
+      We'll contact you within 1-2 business days to schedule your first appointment.
+    </p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <p style="margin: 0; color: #6b7280;">Questions? Call us at</p>
+      <a href="tel:{{clinic_phone}}" style="color: #a51c30; font-size: 20px; font-weight: 600; text-decoration: none;">{{clinic_phone}}</a>
+    </div>
+    
+    <p style="font-size: 16px; line-height: 1.6; color: #374151;">
+      Best regards,<br/>
+      <strong>The {{clinic_name}} Team</strong>
+    </p>
+  </div>
+</div>`;
+                    setEmailTemplate(defaultTemplate);
+                    toast.success("Reset to default template");
+                  }}
+                >
+                  Reset to Default
+                </Button>
+              </div>
+              <Textarea
+                id="email-template"
+                value={emailTemplate}
+                onChange={(e) => setEmailTemplate(e.target.value)}
+                rows={20}
+                className="font-mono text-sm resize-none"
+                placeholder="Enter HTML email template..."
+              />
+              <p className="text-xs text-muted-foreground">
+                Use HTML/CSS for styling. Template variables will be replaced with actual patient data.
+              </p>
+            </div>
+
+            {/* Preview Side */}
+            <div className="space-y-2">
+              <Label>Live Preview</Label>
+              <div className="border rounded-lg bg-white dark:bg-slate-900 overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-3 text-sm font-semibold">
+                  Preview with Sample Data
+                </div>
+                <div 
+                  className="p-4 overflow-auto max-h-[500px]"
+                  dangerouslySetInnerHTML={{ 
+                    __html: emailTemplate
+                      .replace(/\{\{patient_name\}\}/g, 'John Doe')
+                      .replace(/\{\{clinician_name\}\}/g, 'Dr. Sarah Smith')
+                      .replace(/\{\{episode_id\}\}/g, 'EP-2025-001')
+                      .replace(/\{\{clinic_name\}\}/g, 'Acme Physical Therapy')
+                      .replace(/\{\{clinic_phone\}\}/g, '(555) 123-4567')
+                      .replace(/\{\{clinic_email\}\}/g, 'info@acmept.com')
+                      .replace(/\{\{appointment_date\}\}/g, new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }))
+                      .replace(/\{\{appointment_time\}\}/g, '10:00 AM')
+                  }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                This preview shows how your email will look with sample patient data
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
