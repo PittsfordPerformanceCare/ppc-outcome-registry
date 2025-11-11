@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle, History, Menu, MessageSquare } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle, History, Menu, MessageSquare, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
@@ -136,6 +136,20 @@ export function Layout({ children }: LayoutProps) {
                       </DrawerClose>
                     );
                   })}
+                  <DrawerClose asChild>
+                    <Link
+                      to="/quick-start"
+                      className={cn(
+                        "flex items-center space-x-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                        location.pathname === "/quick-start"
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      <BookOpen className="h-5 w-5" />
+                      <span>Quick Start Guide</span>
+                    </Link>
+                  </DrawerClose>
                 </div>
 
                 <Separator className="my-4" />
@@ -455,6 +469,10 @@ export function Layout({ children }: LayoutProps) {
                 <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Profile Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/quick-start")} className="cursor-pointer">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  <span>Quick Start Guide</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">

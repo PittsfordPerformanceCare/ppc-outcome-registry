@@ -37,6 +37,7 @@ import ReferralAnalytics from "./pages/ReferralAnalytics";
 import AutomationStatus from "./pages/AutomationStatus";
 import ClinicianInbox from "./pages/ClinicianInbox";
 import PatientWelcome from "./pages/PatientWelcome";
+import ClinicianQuickStart from "./pages/ClinicianQuickStart";
 
 const queryClient = new QueryClient();
 
@@ -85,6 +86,7 @@ const App = () => (
                     <Route path="/referral-analytics" element={<ReferralAnalytics />} />
                     <Route path="/automation-status" element={<AutomationStatus />} />
                     <Route path="/clinician-inbox" element={<ClinicianInbox />} />
+                    <Route path="/quick-start" element={<ClinicianQuickStart />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
