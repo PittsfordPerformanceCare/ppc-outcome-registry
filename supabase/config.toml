@@ -1,5 +1,8 @@
 project_id = "qpsoytsyrdgouqrgkura"
 
+[functions.send-reward-notification]
+verify_jwt = false
+
 [functions.send-followup-reminders]
 verify_jwt = false
 
