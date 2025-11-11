@@ -7,6 +7,7 @@ import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { SessionTimeoutWarning } from "./SessionTimeoutWarning";
 import { IntakeNotificationsPanel } from "./IntakeNotificationsPanel";
+import { FloatingActionButton } from "./FloatingActionButton";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -472,6 +473,9 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </div>
       </footer>
+
+      {/* Floating Action Button */}
+      <FloatingActionButton />
     </div>
   );
 }
