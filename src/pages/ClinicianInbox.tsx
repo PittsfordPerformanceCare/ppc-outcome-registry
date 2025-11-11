@@ -181,7 +181,7 @@ export default function ClinicianInbox() {
         .from("patient_messages")
         .select(`
           *,
-          patient_accounts!patient_messages_patient_id_fkey (full_name, email, phone),
+          patient_accounts!patient_id (full_name, email, phone),
           episodes (patient_name, region, clinician)
         `)
         .order("created_at", { ascending: false });
@@ -200,7 +200,7 @@ export default function ClinicianInbox() {
         .from("patient_messages")
         .select(`
           *,
-          patient_accounts!patient_messages_patient_id_fkey (full_name, email, phone),
+          patient_accounts!patient_id (full_name, email, phone),
           episodes (patient_name, region, clinician)
         `)
         .eq("message_type", "callback_request")
