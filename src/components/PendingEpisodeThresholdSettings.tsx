@@ -6,13 +6,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Settings, Save, AlertCircle } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Settings, Save, AlertCircle, Building2, Globe } from "lucide-react";
 import { toast } from "sonner";
 
 interface ThresholdSettings {
   id: string;
+  clinic_id: string | null;
   warning_days: number;
   critical_days: number;
+}
+
+interface Clinic {
+  id: string;
+  name: string;
 }
 
 interface PendingEpisodeThresholdSettingsProps {
@@ -21,7 +29,11 @@ interface PendingEpisodeThresholdSettingsProps {
 }
 
 export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: PendingEpisodeThresholdSettingsProps) {
-  const [settings, setSettings] = useState<ThresholdSettings | null>(null);
+  const [globalSettings, setGlobalSettings] = useState<ThresholdSettings | null>(null);
+  const [clinicSettings, setClinicSettings] = useState<ThresholdSettings | null>(null);
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [settingsType, setSettingsType] = useState<"global" | "clinic">("global");
+  const [selectedClinicId, setSelectedClinicId] = useState<string>("");
   const [warningDays, setWarningDays] = useState(30);
   const [criticalDays, setCriticalDays] = useState(60);
   const [loading, setLoading] = useState(true);
@@ -31,11 +43,39 @@ export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: P
 
   useEffect(() => {
     if (open) {
+      loadClinics();
       loadSettings();
     }
   }, [open]);
 
+  useEffect(() => {
+    if (settingsType === "clinic" && selectedClinicId) {
+      loadClinicSettings(selectedClinicId);
+    } else if (settingsType === "global") {
+      loadGlobalSettings();
+    }
+  }, [settingsType, selectedClinicId]);
+
+  const loadClinics = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("clinics")
+        .select("id, name")
+        .order("name");
+
+      if (error) throw error;
+      setClinics(data || []);
+    } catch (error: any) {
+      console.error("Error loading clinics:", error);
+    }
+  };
+
   const loadSettings = async () => {
+    await loadGlobalSettings();
+    setLoading(false);
+  };
+
+  const loadGlobalSettings = async () => {
     try {
       const { data, error } = await supabase
         .from("pending_episode_thresholds")
@@ -46,15 +86,42 @@ export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: P
       if (error) throw error;
 
       if (data) {
-        setSettings(data);
-        setWarningDays(data.warning_days);
-        setCriticalDays(data.critical_days);
+        setGlobalSettings(data);
+        if (settingsType === "global") {
+          setWarningDays(data.warning_days);
+          setCriticalDays(data.critical_days);
+        }
       }
     } catch (error: any) {
-      console.error("Error loading threshold settings:", error);
-      toast.error("Failed to load threshold settings");
-    } finally {
-      setLoading(false);
+      console.error("Error loading global settings:", error);
+    }
+  };
+
+  const loadClinicSettings = async (clinicId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("pending_episode_thresholds")
+        .select("*")
+        .eq("clinic_id", clinicId)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (data) {
+        setClinicSettings(data);
+        setWarningDays(data.warning_days);
+        setCriticalDays(data.critical_days);
+      } else {
+        // No clinic-specific settings, use global defaults
+        setClinicSettings(null);
+        if (globalSettings) {
+          setWarningDays(globalSettings.warning_days);
+          setCriticalDays(globalSettings.critical_days);
+        }
+      }
+    } catch (error: any) {
+      console.error("Error loading clinic settings:", error);
+      toast.error("Failed to load clinic threshold settings");
     }
   };
 
@@ -78,9 +145,17 @@ export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: P
   const handleSave = async () => {
     if (!validateInputs()) return;
 
+    if (settingsType === "clinic" && !selectedClinicId) {
+      toast.error("Please select a clinic");
+      return;
+    }
+
     setSaving(true);
     try {
-      if (settings) {
+      const targetClinicId = settingsType === "clinic" ? selectedClinicId : null;
+      const existingSettings = settingsType === "clinic" ? clinicSettings : globalSettings;
+
+      if (existingSettings) {
         // Update existing settings
         const { error } = await supabase
           .from("pending_episode_thresholds")
@@ -88,7 +163,7 @@ export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: P
             warning_days: warningDays,
             critical_days: criticalDays,
           })
-          .eq("id", settings.id);
+          .eq("id", existingSettings.id);
 
         if (error) throw error;
       } else {
@@ -96,7 +171,7 @@ export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: P
         const { error } = await supabase
           .from("pending_episode_thresholds")
           .insert({
-            clinic_id: null,
+            clinic_id: targetClinicId,
             warning_days: warningDays,
             critical_days: criticalDays,
           });
@@ -104,7 +179,11 @@ export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: P
         if (error) throw error;
       }
 
-      toast.success("Threshold settings updated successfully");
+      toast.success(
+        settingsType === "clinic"
+          ? "Clinic threshold settings updated successfully"
+          : "Global threshold settings updated successfully"
+      );
       setOpen(false);
       onSettingsChange?.();
     } catch (error: any) {
@@ -143,11 +222,11 @@ export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: P
           Configure
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Pending Episode Threshold Settings</DialogTitle>
           <DialogDescription>
-            Configure warning and critical day thresholds for pending episodes. These settings apply to all pending episodes in the system.
+            Configure warning and critical day thresholds. Set global defaults or customize per clinic.
           </DialogDescription>
         </DialogHeader>
 
@@ -158,6 +237,57 @@ export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: P
               Episodes pending longer than these thresholds will be highlighted with visual indicators.
             </AlertDescription>
           </Alert>
+
+          {/* Settings Type Selection */}
+          <div className="space-y-3">
+            <Label>Configuration Scope</Label>
+            <RadioGroup value={settingsType} onValueChange={(value: "global" | "clinic") => setSettingsType(value)}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="global" id="global" />
+                <Label htmlFor="global" className="flex items-center gap-2 cursor-pointer font-normal">
+                  <Globe className="h-4 w-4" />
+                  Global Settings (Default for all clinics)
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="clinic" id="clinic" />
+                <Label htmlFor="clinic" className="flex items-center gap-2 cursor-pointer font-normal">
+                  <Building2 className="h-4 w-4" />
+                  Clinic-Specific Settings
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          {/* Clinic Selection */}
+          {settingsType === "clinic" && (
+            <div>
+              <Label htmlFor="clinicSelect">Select Clinic</Label>
+              <Select value={selectedClinicId} onValueChange={setSelectedClinicId}>
+                <SelectTrigger id="clinicSelect" className="mt-2">
+                  <SelectValue placeholder="Choose a clinic..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {clinics.length === 0 ? (
+                    <div className="p-4 text-center text-sm text-muted-foreground">
+                      No clinics found
+                    </div>
+                  ) : (
+                    clinics.map((clinic) => (
+                      <SelectItem key={clinic.id} value={clinic.id}>
+                        {clinic.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              {selectedClinicId && !clinicSettings && globalSettings && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  No clinic-specific settings found. Using global defaults: {globalSettings.warning_days}/{globalSettings.critical_days} days
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="space-y-4">
             <div>
@@ -223,11 +353,11 @@ export function PendingEpisodeThresholdSettings({ isAdmin, onSettingsChange }: P
           <div className="flex gap-2">
             <Button
               onClick={handleSave}
-              disabled={loading || saving || !!validationError}
+              disabled={loading || saving || !!validationError || (settingsType === "clinic" && !selectedClinicId)}
               className="flex-1 gap-2"
             >
               <Save className="h-4 w-4" />
-              {saving ? "Saving..." : "Save Settings"}
+              {saving ? "Saving..." : `Save ${settingsType === "clinic" ? "Clinic" : "Global"} Settings`}
             </Button>
             <Button
               variant="outline"

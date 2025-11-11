@@ -136,7 +136,7 @@ export function PendingEpisodesWidget() {
         .from("pending_episode_thresholds")
         .select("warning_days, critical_days")
         .is("clinic_id", null)
-        .single();
+        .maybeSingle();
 
       if (globalData) {
         setThresholdWarning(globalData.warning_days);
