@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -35,6 +36,27 @@ export function ValidationSummaryPanel({
   const allSelected = convertibleIntakes.length > 0 && excludedIds.size === 0;
   const noneSelected = excludedIds.size === convertibleIntakes.length;
   const someSelected = !allSelected && !noneSelected;
+
+  // Keyboard shortcut for Select All / Deselect All
+  useEffect(() => {
+    if (!onSelectAll || !onDeselectAll || convertibleIntakes.length === 0) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Ctrl+A (Windows/Linux) or Cmd+A (Mac)
+      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+        e.preventDefault(); // Prevent browser's default select all behavior
+        
+        if (allSelected || someSelected) {
+          onDeselectAll();
+        } else {
+          onSelectAll();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onSelectAll, onDeselectAll, allSelected, someSelected, convertibleIntakes.length]);
   const getIssueSeverityIcon = (severity: IntakeValidationIssue["severity"]) => {
     switch (severity) {
       case "error":
