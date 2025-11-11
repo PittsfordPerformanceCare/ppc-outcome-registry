@@ -11,8 +11,8 @@ import {
 export function FloatingActionButton() {
   const location = useLocation();
   
-  // Hide FAB on the new-episode page itself
-  if (location.pathname === "/new-episode") {
+  // Hide FAB on the patient-intake page itself
+  if (location.pathname === "/patient-intake") {
     return null;
   }
 
@@ -20,7 +20,7 @@ export function FloatingActionButton() {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Link to="/new-episode" className="group">
+          <Link to="/patient-intake" className="group">
             <Button
               size="lg"
               className="fixed bottom-6 right-6 z-50 h-16 w-16 rounded-full p-0 shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-primary/50 animate-fade-in bg-gradient-to-br from-primary via-primary to-primary/90 border-2 border-primary/30 hover:border-primary/60"
@@ -43,7 +43,7 @@ export function FloatingActionButton() {
           </Link>
         </TooltipTrigger>
         <TooltipContent side="left" className="font-semibold">
-          <p>Create New Episode</p>
+          <p>Create New Patient</p>
           <p className="text-xs text-muted-foreground">Quick access from anywhere</p>
         </TooltipContent>
       </Tooltip>

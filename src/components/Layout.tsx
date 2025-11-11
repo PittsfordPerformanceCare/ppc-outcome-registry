@@ -57,12 +57,13 @@ export function Layout({ children }: LayoutProps) {
 
   const primaryNav = [
     { name: "Dashboard", href: "/", icon: Home },
-    { name: "New Episode", href: "/new-episode", icon: ClipboardList },
+    { name: "Create New Patient", href: "/patient-intake", icon: ClipboardList },
   ];
 
   const episodesNav = [
-    { name: "Follow-up", href: "/follow-up", icon: Activity },
+    { name: "New Episode", href: "/new-episode", icon: ClipboardList },
     { name: "Discharge", href: "/discharge", icon: LogOut },
+    { name: "Follow-up", href: "/follow-up", icon: Activity },
   ];
 
   const intakeNav = [
