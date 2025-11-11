@@ -546,10 +546,15 @@ export default function Dashboard() {
           Track patient progress and clinical outcomes with evidence-based MCID calculations
         </p>
         <div className="mt-6">
-          <Link to="/new-episode">
-            <Button size="lg" className="gap-2">
-              <ClipboardPlus className="h-5 w-5" />
-              Create New Episode
+          <Link to="/new-episode" className="group inline-block">
+            <Button 
+              size="lg" 
+              className="gap-3 relative overflow-hidden bg-gradient-to-r from-primary via-primary/90 to-primary hover:from-primary hover:via-primary/80 hover:to-primary/90 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in px-8 py-7 text-lg font-bold border-2 border-primary/20 hover:border-primary/40"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+              <ClipboardPlus className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+              <span className="relative">Create New Episode</span>
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse" />
             </Button>
           </Link>
         </div>
