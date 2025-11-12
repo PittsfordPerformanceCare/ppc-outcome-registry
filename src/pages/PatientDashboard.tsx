@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -42,23 +42,25 @@ interface EpisodeCardProps {
   onNavigate: () => void;
 }
 
-function EpisodeCard({ episode, isActive, onNavigate }: EpisodeCardProps) {
+const EpisodeCard = memo(({ episode, isActive, onNavigate }: EpisodeCardProps) => {
   const { light } = useHaptics();
   const [dismissed, setDismissed] = useState(false);
 
+  const handleDismiss = useCallback(() => {
+    light();
+    setDismissed(true);
+    setTimeout(() => setDismissed(false), 2000);
+  }, [light]);
+
   const { elementRef, dragOffset } = useSwipeGesture({
-    onSwipeLeft: () => {
-      light();
-      setDismissed(true);
-      setTimeout(() => setDismissed(false), 2000);
-    },
+    onSwipeLeft: handleDismiss,
     threshold: 100,
     enabled: true,
   });
 
   if (dismissed) {
     return (
-      <Card className="border-dashed opacity-50">
+      <Card className="border-dashed opacity-50 animate-fade-in">
         <CardContent className="py-8 text-center">
           <p className="text-sm text-muted-foreground">Swipe to undo</p>
         </CardContent>
@@ -69,7 +71,7 @@ function EpisodeCard({ episode, isActive, onNavigate }: EpisodeCardProps) {
   return (
     <Card
       ref={elementRef}
-      className="cursor-pointer hover:border-primary/50 transition-all"
+      className="cursor-pointer hover:border-primary/50 transition-all animate-fade-in hover-scale"
       style={{
         transform: `translateX(${dragOffset.x}px)`,
         opacity: Math.max(0.5, 1 - Math.abs(dragOffset.x) / 200),
@@ -116,7 +118,7 @@ function EpisodeCard({ episode, isActive, onNavigate }: EpisodeCardProps) {
       </CardContent>
     </Card>
   );
-}
+});
 
 export default function PatientDashboard() {
   const navigate = useNavigate();
@@ -263,15 +265,15 @@ export default function PatientDashboard() {
     navigate("/patient-auth");
   };
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     if (user) {
       await loadPatientData(user.id);
       await refreshRewards();
       success();
     }
-  };
+  }, [user, success]);
 
-  const handleClaimCode = async () => {
+  const handleClaimCode = useCallback(async () => {
     if (!accessCode || accessCode.length !== 8) {
       toast({
         title: "Invalid Code",
@@ -327,7 +329,23 @@ export default function PatientDashboard() {
     } finally {
       setClaimingCode(false);
     }
-  };
+  }, [accessCode, user, toast]);
+
+  // Memoize computed values
+  const activeEpisodes = useMemo(() => 
+    episodes.filter(e => !e.discharge_date), 
+    [episodes]
+  );
+  
+  const completedEpisodes = useMemo(() => 
+    episodes.filter(e => e.discharge_date), 
+    [episodes]
+  );
+  
+  const firstActiveEpisode = useMemo(() => 
+    activeEpisodes[0], 
+    [activeEpisodes]
+  );
 
   if (loading) {
     return <PatientDashboardSkeleton />;
@@ -352,7 +370,7 @@ export default function PatientDashboard() {
                 </span>
               </div>
               <p className="text-muted-foreground">
-                {episodes.filter(e => !e.discharge_date).length > 0 
+                {activeEpisodes.length > 0 
                   ? "Keep up the great work on your recovery journey"
                   : "View your completed treatment history"}
               </p>
@@ -398,10 +416,10 @@ export default function PatientDashboard() {
         <PatientPWAInstallPrompt />
 
         {/* Recovery Snapshot Widget */}
-        {episodes.filter(e => !e.discharge_date).length > 0 && (
+        {activeEpisodes.length > 0 && (
           <RecoverySnapshot
             patientName={patientAccount?.full_name}
-            treatmentArea={episodes.find(e => !e.discharge_date)?.region}
+            treatmentArea={firstActiveEpisode?.region}
             clinicName={clinicSettings?.clinic_name}
             clinicAddress={clinicSettings?.address}
             clinicPhone={clinicSettings?.phone}
@@ -436,10 +454,10 @@ export default function PatientDashboard() {
         )}
 
         {/* Care Team Access */}
-        {episodes.filter(e => !e.discharge_date).length > 0 && (
+        {activeEpisodes.length > 0 && (
           <CareTeamAccess 
             patientId={user?.id || ''} 
-            episodeId={episodes.find(e => !e.discharge_date)?.id}
+            episodeId={firstActiveEpisode?.id}
           />
         )}
 
@@ -483,7 +501,7 @@ export default function PatientDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {episodes.filter(e => !e.discharge_date).length}
+                {activeEpisodes.length}
               </div>
               <p className="text-xs text-muted-foreground">Currently in treatment</p>
             </CardContent>
@@ -496,7 +514,7 @@ export default function PatientDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {episodes.filter(e => e.discharge_date).length}
+                {completedEpisodes.length}
               </div>
               <p className="text-xs text-muted-foreground">Successfully completed</p>
             </CardContent>

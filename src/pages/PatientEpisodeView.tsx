@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -159,12 +159,12 @@ export default function PatientEpisodeView() {
     }
   };
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     await checkAccessAndLoadData();
     success();
-  };
+  }, [success]);
 
-  const navigateToEpisode = (direction: "prev" | "next") => {
+  const navigateToEpisode = useCallback((direction: "prev" | "next") => {
     if (currentIndex === -1) return;
     
     const newIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
@@ -172,7 +172,7 @@ export default function PatientEpisodeView() {
     
     light();
     navigate(`/patient-episode/${allEpisodes[newIndex]}`);
-  };
+  }, [currentIndex, allEpisodes, light, navigate]);
 
   const { elementRef, dragOffset } = useSwipeGesture({
     onSwipeLeft: () => navigateToEpisode("next"),
@@ -181,7 +181,8 @@ export default function PatientEpisodeView() {
     enabled: allEpisodes.length > 1,
   });
 
-  const prepareChartData = () => {
+  // Memoize expensive computations
+  const chartData = useMemo(() => {
     if (scores.length === 0) return [];
 
     const groupedByDate: Record<string, any> = {};
@@ -195,17 +196,18 @@ export default function PatientEpisodeView() {
     });
 
     return Object.values(groupedByDate);
-  };
+  }, [scores]);
 
-  const getScoreIndices = () => {
-    return Array.from(new Set(scores.map(s => s.index_type)));
-  };
+  const indices = useMemo(() => 
+    Array.from(new Set(scores.map(s => s.index_type))),
+    [scores]
+  );
 
-  const getBaselineAndDischarge = (indexType: string) => {
+  const getBaselineAndDischarge = useCallback((indexType: string) => {
     const baseline = scores.find(s => s.index_type === indexType && s.score_type === "baseline");
     const discharge = scores.find(s => s.index_type === indexType && s.score_type === "discharge");
     return { baseline: baseline?.score, discharge: discharge?.score };
-  };
+  }, [scores]);
 
   if (loading) {
     return <PatientEpisodeViewSkeleton />;
@@ -213,7 +215,7 @@ export default function PatientEpisodeView() {
 
   if (!hasAccess || !episode) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 animate-fade-in">
         <Card className="max-w-md">
           <CardContent className="py-12 text-center">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -230,8 +232,6 @@ export default function PatientEpisodeView() {
     );
   }
 
-  const chartData = prepareChartData();
-  const indices = getScoreIndices();
   const isCompleted = !!episode.discharge_date;
   const hasPrevious = currentIndex > 0;
   const hasNext = currentIndex < allEpisodes.length - 1;
@@ -303,7 +303,7 @@ export default function PatientEpisodeView() {
         </div>
 
         {/* Episode Info */}
-        <Card>
+        <Card className="animate-fade-in">
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -386,7 +386,7 @@ export default function PatientEpisodeView() {
 
         {/* Treatment Goals */}
         {episode.treatment_goals && Array.isArray(episode.treatment_goals) && episode.treatment_goals.length > 0 && (
-          <Card>
+          <Card className="animate-fade-in">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Target className="h-5 w-5 text-primary" />
@@ -410,7 +410,7 @@ export default function PatientEpisodeView() {
 
         {/* Progress Chart */}
         {scores.length > 0 && (
-          <Card>
+          <Card className="animate-fade-in">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-primary" />

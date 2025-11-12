@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -38,12 +39,12 @@ const iconMap: Record<string, any> = {
   Sparkles
 };
 
-export function PatientAchievements({ 
+export const PatientAchievements = memo(({ 
   achievements, 
   totalPoints, 
   nextMilestone,
   progressToNext 
-}: PatientAchievementsProps) {
+}: PatientAchievementsProps) => {
   const getIcon = (iconName: string) => {
     const Icon = iconMap[iconName] || Trophy;
     return Icon;
@@ -112,7 +113,7 @@ export function PatientAchievements({
               {achievements.map((achievement) => {
                 const Icon = getIcon(achievement.badge_icon);
                 return (
-                  <Card key={achievement.id} className="border-border/50 hover:border-primary/50 transition-colors">
+                  <Card key={achievement.id} className="border-border/50 hover:border-primary/50 transition-colors animate-fade-in hover-scale">
                     <CardContent className="pt-6">
                       <div className="flex items-start gap-4">
                         <div className={`h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0`}>
@@ -147,4 +148,4 @@ export function PatientAchievements({
       </Card>
     </div>
   );
-}
+});
