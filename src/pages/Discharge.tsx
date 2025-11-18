@@ -18,6 +18,7 @@ import { NDIForm } from "@/components/forms/NDIForm";
 import { ODIForm } from "@/components/forms/ODIForm";
 import { QuickDASHForm } from "@/components/forms/QuickDASHForm";
 import { LEFSForm } from "@/components/forms/LEFSForm";
+import { RPQForm } from "@/components/forms/RPQForm";
 import { MetricCard } from "@/components/MetricCard";
 import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
@@ -33,6 +34,7 @@ interface DischargeScores {
   ODI?: number;
   QuickDASH?: number;
   LEFS?: number;
+  RPQ?: number;
 }
 
 export default function Discharge() {
@@ -508,6 +510,13 @@ export default function Discharge() {
             <LEFSForm onScoreChange={(score) => {
               console.log("LEFS score changed:", score);
               setScores(prev => ({ ...prev, LEFS: score }));
+            }} />
+          )}
+
+          {activeIndices.includes("RPQ") && (
+            <RPQForm onScoreChange={(score) => {
+              console.log("RPQ score changed:", score);
+              setScores(prev => ({ ...prev, RPQ: score }));
             }} />
           )}
         </div>

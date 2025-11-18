@@ -12,6 +12,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Save } from "lucide-react";
 import { NDIForm } from "@/components/forms/NDIForm";
+import { ODIForm } from "@/components/forms/ODIForm";
+import { QuickDASHForm } from "@/components/forms/QuickDASHForm";
+import { LEFSForm } from "@/components/forms/LEFSForm";
+import { RPQForm } from "@/components/forms/RPQForm";
 import { MetricCard } from "@/components/MetricCard";
 import { DiagnosisSelector } from "@/components/DiagnosisSelector";
 import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
@@ -23,6 +27,7 @@ import { PatientSearch } from "@/components/PatientSearch";
 export default function NewEpisode() {
   const navigate = useNavigate();
   const [patientName, setPatientName] = useState("");
+  const [episodeType, setEpisodeType] = useState<string>("MSK");
   const [region, setRegion] = useState<string>("");
   const [dateOfService, setDateOfService] = useState("");
   const [selectedIndices, setSelectedIndices] = useState<IndexType[]>([]);
@@ -124,9 +129,24 @@ export default function NewEpisode() {
     }
   }, []);
 
+  // Handle episode type change
+  const handleEpisodeTypeChange = (value: string) => {
+    setEpisodeType(value);
+    if (value === "Neurology") {
+      // Automatically select RPQ for Neurology episodes
+      setSelectedIndices(["RPQ"]);
+      setBaselineScores({ RPQ: "" });
+      setRegion(""); // Clear region for neurology
+    } else {
+      // Clear selections for MSK - wait for region selection
+      setSelectedIndices([]);
+      setBaselineScores({});
+    }
+  };
+
   const handleRegionChange = (value: string) => {
     setRegion(value);
-    const recommendedIndices = PPC_CONFIG.regionToIndices(value) as IndexType[];
+    const recommendedIndices = PPC_CONFIG.regionToIndices(value, episodeType) as IndexType[];
     setSelectedIndices(recommendedIndices);
     
     // Initialize baseline scores
@@ -161,8 +181,8 @@ export default function NewEpisode() {
       toast.error("Please enter patient name");
       return;
     }
-    if (!region) {
-      toast.error("Please select a region");
+    if (episodeType === "MSK" && !region) {
+      toast.error("Please select a region for MSK episode");
       return;
     }
     if (!dateOfService) {
@@ -219,7 +239,8 @@ export default function NewEpisode() {
         id: episodeId,
         patient_name: patientName.trim(),
         date_of_birth: dob.trim(),
-        region,
+        episode_type: episodeType,
+        region: episodeType === "MSK" ? region : "Neurology",
         diagnosis: diagnosis.trim(),
         date_of_service: dateOfService,
         injury_date: injuryDate,
@@ -275,10 +296,31 @@ export default function NewEpisode() {
       <form onSubmit={handleSubmit}>
         <Card>
           <CardHeader>
-            <CardTitle>Patient Information</CardTitle>
-            <CardDescription>Basic demographics and episode details</CardDescription>
+            <CardTitle>Episode Type & Patient Information</CardTitle>
+            <CardDescription>Select episode type and enter basic demographics</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="episodeType">Episode Type *</Label>
+              <Select value={episodeType} onValueChange={handleEpisodeTypeChange} required>
+                <SelectTrigger id="episodeType">
+                  <SelectValue placeholder="Select episode type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PPC_CONFIG.episodeTypeEnum.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {episodeType === "Neurology" && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  RPQ (Rivermead Post-Concussion Symptoms Questionnaire) will be automatically assigned
+                </p>
+              )}
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="patientName">Patient Name *</Label>
               <Input
@@ -291,21 +333,23 @@ export default function NewEpisode() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="region">Anatomical Region *</Label>
-                <Select value={region} onValueChange={handleRegionChange} required>
-                  <SelectTrigger id="region">
-                    <SelectValue placeholder="Select region" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {PPC_CONFIG.regionEnum.map((r) => (
-                      <SelectItem key={r} value={r}>
-                        {r}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {episodeType === "MSK" && (
+                <div className="space-y-2">
+                  <Label htmlFor="region">Anatomical Region *</Label>
+                  <Select value={region} onValueChange={handleRegionChange} required>
+                    <SelectTrigger id="region">
+                      <SelectValue placeholder="Select region" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PPC_CONFIG.regionEnum.map((r) => (
+                        <SelectItem key={r} value={r}>
+                          {r}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="dateOfService">Date of Service *</Label>
@@ -321,7 +365,7 @@ export default function NewEpisode() {
           </CardContent>
         </Card>
 
-        {region && (
+        {((episodeType === "MSK" && region) || episodeType === "Neurology") && (
           <>
             {/* Smart Outcome Measure Recommendations */}
             <div className="mt-6">
@@ -573,25 +617,48 @@ export default function NewEpisode() {
             </div>
 
             <div className="mt-6 space-y-6">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="NDI"
-                  checked={selectedIndices.includes("NDI")}
-                  onCheckedChange={(checked) => handleIndexToggle("NDI", checked as boolean)}
-                />
-                <Label htmlFor="NDI" className="text-lg font-semibold cursor-pointer">
-                  Complete Neck Disability Index (NDI)
-                </Label>
-              </div>
-              
-              {selectedIndices.includes("NDI") && (
-                <NDIForm
-                  onScoreChange={(score) => handleScoreChange("NDI", score.toString())}
-                  initialScore={parseFloat(baselineScores["NDI"] || "0")}
-                />
+              {episodeType === "Neurology" && selectedIndices.includes("RPQ") && (
+                <div>
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Checkbox
+                      id="RPQ"
+                      checked={true}
+                      disabled={true}
+                    />
+                    <Label htmlFor="RPQ" className="text-lg font-semibold">
+                      Rivermead Post-Concussion Symptoms Questionnaire (RPQ) - Required
+                    </Label>
+                  </div>
+                  <RPQForm
+                    onScoreChange={(score) => handleScoreChange("RPQ", score.toString())}
+                    initialScore={parseFloat(baselineScores["RPQ"] || "0")}
+                  />
+                </div>
               )}
 
-              {(["ODI", "QuickDASH", "LEFS"] as IndexType[]).map((index) => (
+              {episodeType === "MSK" && (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="NDI"
+                      checked={selectedIndices.includes("NDI")}
+                      onCheckedChange={(checked) => handleIndexToggle("NDI", checked as boolean)}
+                    />
+                    <Label htmlFor="NDI" className="text-lg font-semibold cursor-pointer">
+                      Complete Neck Disability Index (NDI)
+                    </Label>
+                  </div>
+                  
+                  {selectedIndices.includes("NDI") && (
+                    <NDIForm
+                      onScoreChange={(score) => handleScoreChange("NDI", score.toString())}
+                      initialScore={parseFloat(baselineScores["NDI"] || "0")}
+                    />
+                  )}
+                </>
+              )}
+
+              {episodeType === "MSK" && (["ODI", "QuickDASH", "LEFS"] as IndexType[]).map((index) => (
                 <div key={index}>
                   <div className="flex items-start space-x-4 rounded-lg border p-4">
                     <Checkbox

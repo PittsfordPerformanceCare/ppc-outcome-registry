@@ -6,6 +6,7 @@ export interface Episode {
   user_id: string;
   patient_name: string;
   date_of_birth?: string;
+  episode_type?: string;
   region: string;
   diagnosis?: string;
   date_of_service: string;
