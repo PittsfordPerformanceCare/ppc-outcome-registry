@@ -526,6 +526,7 @@ export type Database = {
           discharge_date: string | null
           emergency_contact: string | null
           emergency_phone: string | null
+          episode_type: string | null
           followup_date: string | null
           followup_time: string | null
           functional_limitation: string | null
@@ -574,6 +575,7 @@ export type Database = {
           discharge_date?: string | null
           emergency_contact?: string | null
           emergency_phone?: string | null
+          episode_type?: string | null
           followup_date?: string | null
           followup_time?: string | null
           functional_limitation?: string | null
@@ -622,6 +624,7 @@ export type Database = {
           discharge_date?: string | null
           emergency_contact?: string | null
           emergency_phone?: string | null
+          episode_type?: string | null
           followup_date?: string | null
           followup_time?: string | null
           functional_limitation?: string | null

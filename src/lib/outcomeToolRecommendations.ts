@@ -116,7 +116,8 @@ export function getMCIDValue(tool: IndexType): number {
     NDI: 5,     // 5 points or 10% change
     ODI: 10,    // 10 points or 10-point reduction
     LEFS: 9,    // 9-point improvement
-    QuickDASH: 8 // 8-point change
+    QuickDASH: 8, // 8-point change
+    RPQ: 12     // 12-point improvement (to be validated)
   };
   
   return mcidValues[tool] || 0;

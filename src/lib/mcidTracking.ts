@@ -29,7 +29,8 @@ const TOOL_NAMES: Record<IndexType, string> = {
   NDI: "Neck Disability Index",
   ODI: "Oswestry Disability Index",
   LEFS: "Lower Extremity Functional Scale",
-  QuickDASH: "QuickDASH"
+  QuickDASH: "QuickDASH",
+  RPQ: "Rivermead Post-Concussion Symptoms Questionnaire"
 };
 
 /**
