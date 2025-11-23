@@ -30,6 +30,7 @@ import { IntakeWizardSteps } from "@/components/IntakeWizardSteps";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import {
   DndContext,
   closestCenter,
@@ -248,6 +249,7 @@ export default function PatientIntake() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const { medium, light, success } = useHaptics();
   const isMobile = useIsMobile();
+  const { isOnline } = useNetworkStatus();
 
   // Drag and drop sensors
   const sensors = useSensors(
@@ -647,6 +649,15 @@ export default function PatientIntake() {
   };
 
   const onSubmit = async (data: IntakeFormValues) => {
+    // Check network connectivity before starting
+    if (!navigator.onLine) {
+      toast.error("No internet connection", {
+        description: "Please connect to the internet before submitting your form.",
+      });
+      medium();
+      return;
+    }
+    
     setIsSubmitting(true);
     medium(); // Haptic feedback on submit start
     
@@ -670,8 +681,21 @@ export default function PatientIntake() {
     }
   };
 
-  const submitIntakeForm = async (data: IntakeFormValues) => {
+  const submitIntakeForm = async (data: IntakeFormValues, retryCount = 0) => {
+    const MAX_RETRIES = 3;
+    const RETRY_DELAY = 2000; // 2 seconds
+    
     setIsSubmitting(true);
+    
+    // Check network connectivity first
+    if (!navigator.onLine) {
+      toast.error("No internet connection", {
+        description: "Please connect to the internet and try again.",
+      });
+      setIsSubmitting(false);
+      medium();
+      return;
+    }
     
     try {
       const code = generateAccessCode();
@@ -776,7 +800,40 @@ export default function PatientIntake() {
       success(); // Haptic feedback on success
       toast.success("Intake form submitted successfully!");
     } catch (error: any) {
-      toast.error(`Failed to submit form: ${error.message}`);
+      // Check if it's a network error
+      const isNetworkError = 
+        error.message?.includes('fetch') || 
+        error.message?.includes('network') ||
+        error.message?.includes('Failed to fetch') ||
+        !navigator.onLine;
+      
+      // Retry logic for network errors
+      if (isNetworkError && retryCount < MAX_RETRIES) {
+        const nextRetry = retryCount + 1;
+        toast.error(`Connection issue - Retrying (${nextRetry}/${MAX_RETRIES})...`, {
+          description: "Please ensure you have a stable internet connection.",
+        });
+        medium();
+        
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+        
+        // Retry
+        return submitIntakeForm(data, nextRetry);
+      }
+      
+      // Show appropriate error message
+      if (isNetworkError) {
+        toast.error("Network error - Unable to submit", {
+          description: "Please check your internet connection and try again. Your progress has been saved.",
+          duration: 6000,
+        });
+      } else {
+        toast.error("Failed to submit form", {
+          description: error.message || "An unexpected error occurred. Please try again.",
+          duration: 6000,
+        });
+      }
       medium(); // Haptic feedback on error
     } finally {
       setIsSubmitting(false);
