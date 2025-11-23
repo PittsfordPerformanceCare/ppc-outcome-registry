@@ -222,6 +222,9 @@ export default function PatientIntake() {
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
   const [pendingSubmitData, setPendingSubmitData] = useState<IntakeFormValues | null>(null);
   const [useTypedSignature, setUseTypedSignature] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [hasFormChanged, setHasFormChanged] = useState(false);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   const signatureRef = useRef<SignatureCanvas>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -342,16 +345,22 @@ export default function PatientIntake() {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   };
 
-  // Save progress function
-  const saveProgress = async () => {
-    setIsSaving(true);
+  // Save progress function (can be called manually or automatically)
+  const saveProgress = async (isAutomatic = false) => {
+    if (isAutomatic) {
+      setIsAutoSaving(true);
+    } else {
+      setIsSaving(true);
+    }
+    
     try {
       const values = form.getValues();
       
       // Need at least name to save progress
       if (!values.patientName) {
-        toast.error("Please enter your name before saving progress");
-        setIsSaving(false);
+        if (!isAutomatic) {
+          toast.error("Please enter your name before saving progress");
+        }
         return;
       }
 
@@ -388,43 +397,87 @@ export default function PatientIntake() {
       }
 
       setLastSaved(new Date());
+      setHasFormChanged(false);
 
-      // Generate resume link
-      const resumeLink = `${window.location.origin}/patient-intake?resume=${token}`;
+      // Only show detailed toast for manual saves
+      if (!isAutomatic) {
+        // Generate resume link
+        const resumeLink = `${window.location.origin}/patient-intake?resume=${token}`;
 
-      toast.success(
-        <div className="space-y-2">
-          <p className="font-semibold">Progress saved!</p>
-          <p className="text-sm">You can resume anytime using this link:</p>
-          <div className="flex gap-2">
-            <Input 
-              value={resumeLink} 
-              readOnly 
-              className="text-xs h-8"
-            />
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8"
-              onClick={() => {
-                navigator.clipboard.writeText(resumeLink);
-                toast.success("Link copied!");
-              }}
-            >
-              <Copy className="h-3 w-3" />
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground">Link expires in 7 days</p>
-        </div>,
-        { duration: 10000 }
-      );
+        toast.success(
+          <div className="space-y-2">
+            <p className="font-semibold">Progress saved!</p>
+            <p className="text-sm">You can resume anytime using this link:</p>
+            <div className="flex gap-2">
+              <Input 
+                value={resumeLink} 
+                readOnly 
+                className="text-xs h-8"
+              />
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8"
+                onClick={() => {
+                  navigator.clipboard.writeText(resumeLink);
+                  toast.success("Link copied!");
+                }}
+              >
+                <Copy className="h-3 w-3" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">Link expires in 7 days</p>
+          </div>,
+          { duration: 10000 }
+        );
+      }
     } catch (error: any) {
       console.error('Error saving progress:', error);
-      toast.error("Failed to save progress");
+      if (!isAutomatic) {
+        toast.error("Failed to save progress");
+      }
     } finally {
-      setIsSaving(false);
+      if (isAutomatic) {
+        setIsAutoSaving(false);
+      } else {
+        setIsSaving(false);
+      }
     }
   };
+
+  // Auto-save effect
+  useEffect(() => {
+    // Don't auto-save if form is submitted or restoring
+    if (submitted || isRestoringProgress) return;
+
+    // Clear existing timer
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    // Set up auto-save timer if form has changed and has patient name
+    const values = form.getValues();
+    if (hasFormChanged && values.patientName) {
+      autoSaveTimerRef.current = setTimeout(() => {
+        saveProgress(true);
+      }, 30000); // Auto-save every 30 seconds
+    }
+
+    // Cleanup
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [hasFormChanged, submitted, isRestoringProgress]);
+
+  // Watch for form changes
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      setHasFormChanged(true);
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   // Handle drag end
   const handleDragStart = (event: DragStartEvent) => {
@@ -1061,13 +1114,18 @@ export default function PatientIntake() {
                   <div className="flex items-center gap-2">
                     <Save className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">Save & Resume Later</span>
+                    {isAutoSaving && (
+                      <Badge variant="secondary" className="text-xs animate-pulse">
+                        Auto-saving...
+                      </Badge>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Save your progress and return anytime within 7 days
+                    Auto-saves every 30 seconds • Progress expires in 7 days
                   </p>
                   {lastSaved && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                      <Clock className="h-3 w-3" />
+                    <div className="flex items-center gap-1 text-xs text-success mt-1">
+                      <CheckCircle2 className="h-3 w-3" />
                       <span>Last saved: {lastSaved.toLocaleTimeString()}</span>
                     </div>
                   )}
@@ -1075,8 +1133,8 @@ export default function PatientIntake() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={saveProgress}
-                  disabled={isSaving}
+                  onClick={() => saveProgress(false)}
+                  disabled={isSaving || isAutoSaving}
                   className="w-full sm:w-auto"
                 >
                   {isSaving ? (
@@ -1087,7 +1145,7 @@ export default function PatientIntake() {
                   ) : (
                     <>
                       <Save className="h-4 w-4 mr-2" />
-                      Save Progress
+                      Save Now
                     </>
                   )}
                 </Button>
