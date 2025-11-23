@@ -829,6 +829,70 @@ export default function PatientIntake() {
       
       setSubmitted(true);
       success(); // Haptic feedback on success
+      
+      // Trigger confetti effect
+      const duration = 3000;
+      const animationEnd = Date.now() + duration;
+      const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b'];
+
+      const randomInRange = (min: number, max: number) => {
+        return Math.random() * (max - min) + min;
+      };
+
+      const confettiInterval = setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+        
+        if (timeLeft <= 0) {
+          clearInterval(confettiInterval);
+          return;
+        }
+
+        const particleCount = 3;
+        
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.style.position = 'fixed';
+          particle.style.width = '10px';
+          particle.style.height = '10px';
+          particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          particle.style.left = Math.random() * window.innerWidth + 'px';
+          particle.style.top = '-10px';
+          particle.style.opacity = '1';
+          particle.style.borderRadius = '50%';
+          particle.style.pointerEvents = 'none';
+          particle.style.zIndex = '9999';
+          
+          document.body.appendChild(particle);
+          
+          const angle = randomInRange(-30, 30);
+          const velocity = randomInRange(3, 6);
+          const rotation = randomInRange(0, 360);
+          
+          let posY = -10;
+          let posX = parseFloat(particle.style.left);
+          let currentRotation = 0;
+          
+          const animate = () => {
+            posY += velocity;
+            posX += Math.sin(angle * Math.PI / 180) * 2;
+            currentRotation += 5;
+            
+            particle.style.top = posY + 'px';
+            particle.style.left = posX + 'px';
+            particle.style.transform = `rotate(${currentRotation}deg)`;
+            particle.style.opacity = String(Math.max(0, 1 - posY / window.innerHeight));
+            
+            if (posY < window.innerHeight && parseFloat(particle.style.opacity) > 0) {
+              requestAnimationFrame(animate);
+            } else {
+              particle.remove();
+            }
+          };
+          
+          requestAnimationFrame(animate);
+        }
+      }, 50);
+
       toast.success("Intake form submitted successfully!");
     } catch (error: any) {
       // Check if it's a network error
@@ -1135,19 +1199,44 @@ export default function PatientIntake() {
     const otherComplaints = submittedComplaints.filter(c => !c.isPrimary);
     
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-        <Card className="w-full max-w-2xl">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <ClipboardCheck className="h-8 w-8 text-primary" />
+      <div className="min-h-screen bg-gradient-to-br from-success/5 via-background to-primary/5 p-4 py-8 animate-fade-in">
+        <div className="mx-auto max-w-3xl">
+          {/* Success Header with Animation */}
+          <div className="text-center mb-8 space-y-4 animate-scale-in">
+            <div className="relative inline-block">
+              <div className="absolute inset-0 bg-success/20 blur-3xl animate-pulse"></div>
+              <div className="relative bg-success/10 backdrop-blur-sm border-2 border-success/30 rounded-full p-8 inline-block">
+                <CheckCircle2 className="h-20 w-20 text-success animate-[scale-in_0.5s_ease-out]" strokeWidth={2.5} />
+              </div>
             </div>
-            <CardTitle className="text-2xl">Form Submitted!</CardTitle>
-            <CardDescription>Thank you for completing your intake form</CardDescription>
+            <div className="space-y-2">
+              <h1 className="text-4xl font-bold text-success animate-[slide-up_0.6s_ease-out]">
+                Form Submitted Successfully! 🎉
+              </h1>
+              <p className="text-lg text-muted-foreground animate-[fade-in_0.8s_ease-out]">
+                Thank you for completing your intake form
+              </p>
+            </div>
+          </div>
+
+        <Card className="animate-[slide-up_0.5s_ease-out]">
+          <CardHeader className="text-center space-y-4">
+            <div className="flex justify-center">
+              <div className="bg-success/10 backdrop-blur-sm p-4 rounded-2xl border border-success/20 animate-scale-in">
+                <ClipboardCheck className="h-16 w-16 text-success" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <CardTitle className="text-3xl">Intake Form Submitted</CardTitle>
+              <CardDescription className="text-base">
+                Your information has been received and will be reviewed by our clinical team
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-lg bg-muted p-4 text-center">
+            <div className="rounded-lg bg-success/10 border border-success/20 backdrop-blur-sm p-4 text-center animate-[scale-in_0.3s_ease-out_0.2s_both]">
               <p className="text-sm text-muted-foreground mb-2">Your access code:</p>
-              <p className="text-3xl font-bold tracking-wider">{accessCode}</p>
+              <p className="text-3xl font-bold tracking-wider text-success">{accessCode}</p>
               <p className="text-xs text-muted-foreground mt-2">
                 Please save this code. Our staff will use it to process your information.
               </p>
@@ -1158,7 +1247,7 @@ export default function PatientIntake() {
                 }}
                 variant="outline"
                 size="sm"
-                className="mt-3 print:hidden"
+                className="mt-3 print:hidden border-success/30 hover:bg-success/10 hover:border-success/50"
               >
                 <Copy className="h-4 w-4 mr-2" />
                 Copy Access Code
@@ -1166,12 +1255,15 @@ export default function PatientIntake() {
             </div>
 
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Summary of Your Concerns</h3>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-success animate-scale-in" />
+                <h3 className="font-semibold text-lg">Summary of Your Concerns</h3>
+              </div>
               
               {primaryComplaint && (
-                <div className="border rounded-lg p-4 bg-primary/5 border-primary/20">
+                <div className="border rounded-lg p-4 bg-success/5 border-success/20 animate-[scale-in_0.3s_ease-out_0.3s_both]">
                   <div className="flex items-start gap-2 mb-2">
-                    <Badge className="bg-primary text-primary-foreground">🎯 Priority</Badge>
+                    <Badge className="bg-success text-success-foreground">🎯 Priority</Badge>
                   </div>
                   <div className="flex flex-wrap gap-2 mb-2">
                     <Badge variant="outline">{primaryComplaint.category}</Badge>
@@ -1189,7 +1281,7 @@ export default function PatientIntake() {
               )}
 
               {otherComplaints.length > 0 && (
-                <div className="space-y-3">
+                <div className="space-y-3 animate-[fade-in_0.4s_ease-out_0.4s_both]">
                   <p className="text-sm font-medium text-muted-foreground">Additional Concerns:</p>
                   {otherComplaints.map((complaint, index) => (
                     <div key={index} className="border rounded-lg p-4 bg-card">
@@ -1212,8 +1304,9 @@ export default function PatientIntake() {
             </div>
 
             {submittedReviewOfSystems.length > 0 && (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-[fade-in_0.5s_ease-out_0.5s_both]">
                 <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-5 w-5 text-success animate-scale-in" />
                   <h3 className="font-semibold text-lg">Review of Systems</h3>
                   <Badge variant="secondary" className="text-xs">
                     {submittedReviewOfSystems.length} selected
@@ -1246,11 +1339,11 @@ export default function PatientIntake() {
               </div>
             )}
 
-            <p className="text-sm text-center text-muted-foreground">
+            <p className="text-sm text-center text-muted-foreground animate-[fade-in_0.6s_ease-out_0.6s_both]">
               A staff member will review your information shortly.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:hidden animate-[slide-up_0.5s_ease-out_0.7s_both]">
               <Button 
                 onClick={generatePDF} 
                 className="w-full min-h-[52px]"
@@ -1271,14 +1364,15 @@ export default function PatientIntake() {
 
             <Button 
               onClick={() => navigate("/")} 
-              className="w-full print:hidden min-h-[52px]"
-              variant="secondary"
+              className="w-full print:hidden min-h-[52px] animate-[fade-in_0.5s_ease-out_0.8s_both] bg-success hover:bg-success/90"
+              variant="default"
             >
               <Home className="h-4 w-4 mr-2" />
               Return to Home
             </Button>
           </CardContent>
         </Card>
+        </div>
       </div>
     );
   }
@@ -1312,7 +1406,7 @@ export default function PatientIntake() {
               <Progress 
                 value={completionPercentage} 
                 className={`h-2 transition-all duration-500 ${
-                  completionPercentage === 100 ? 'animate-pulse' : ''
+                  completionPercentage === 100 ? 'bg-success/20' : ''
                 }`}
               />
               {completionPercentage === 100 ? (
