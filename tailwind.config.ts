@@ -221,6 +221,18 @@ export default {
         "slide-down": {
           "0%": { transform: "translateY(-10px)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" }
+        },
+        "glow": {
+          "0%, 100%": { boxShadow: "0 0 0 0 rgba(59, 130, 246, 0)" },
+          "50%": { boxShadow: "0 0 20px 5px rgba(59, 130, 246, 0.3)" }
+        },
+        "check": {
+          "0%": { strokeDashoffset: "100" },
+          "100%": { strokeDashoffset: "0" }
+        },
+        "ripple": {
+          "0%": { transform: "scale(0)", opacity: "1" },
+          "100%": { transform: "scale(4)", opacity: "0" }
         }
       },
       animation: {
@@ -233,7 +245,10 @@ export default {
         "shimmer": "shimmer 2s linear infinite",
         "scale-in": "scale-in 0.2s ease-out",
         "shake": "shake 0.4s ease-in-out",
-        "slide-down": "slide-down 0.3s ease-out"
+        "slide-down": "slide-down 0.3s ease-out",
+        "glow": "glow 2s ease-in-out infinite",
+        "check": "check 0.3s ease-out",
+        "ripple": "ripple 0.6s ease-out"
       },
       transitionDelay: {
         '75': '75ms',
