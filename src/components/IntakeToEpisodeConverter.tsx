@@ -629,7 +629,15 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
 
             {/* Region Selection */}
             <div className="space-y-2">
-              <Label htmlFor="region">Body Region *</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="region">Body Region *</Label>
+                {selectedRegion && preview && (
+                  <Badge variant="secondary" className="text-xs">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    Auto-selected from complaint
+                  </Badge>
+                )}
+              </div>
               <Select value={selectedRegion} onValueChange={(value) => {
                 setSelectedRegion(value);
                 if (preview) {
@@ -640,7 +648,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
                   });
                 }
               }}>
-                <SelectTrigger id="region">
+                <SelectTrigger id="region" className={selectedRegion ? "border-success/50 bg-success/5" : ""}>
                   <SelectValue placeholder="Select body region" />
                 </SelectTrigger>
                 <SelectContent>
@@ -651,6 +659,12 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
                   ))}
                 </SelectContent>
               </Select>
+              {selectedRegion && intakeForm.complaints && intakeForm.complaints.length > 0 && (
+                <p className="text-xs text-success flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3" />
+                  Based on primary complaint: {(intakeForm.complaints.find((c: any) => c.isPrimary) || intakeForm.complaints[0]).category}
+                </p>
+              )}
               {!selectedRegion && (
                 <p className="text-xs text-amber-600 flex items-center gap-1">
                   <AlertCircle className="h-3 w-3" />
