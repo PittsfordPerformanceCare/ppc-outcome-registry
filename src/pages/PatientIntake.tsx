@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock, ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock, ChevronRight, ChevronLeft, Loader2, Moon, Sun } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,6 +28,7 @@ import { SortableComplaintItem } from "@/components/SortableComplaintItem";
 import { ReturningPatientLookup } from "@/components/ReturningPatientLookup";
 import { IntakeWizardSteps } from "@/components/IntakeWizardSteps";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useDarkMode } from "@/hooks/useDarkMode";
 import { useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
@@ -255,6 +256,7 @@ export default function PatientIntake() {
   const signatureRef = useRef<SignatureCanvas>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const { medium, light, success } = useHaptics();
+  const { isDark, toggleDarkMode } = useDarkMode();
   const isMobile = useIsMobile();
   const { isOnline } = useNetworkStatus();
 
@@ -1383,6 +1385,25 @@ export default function PatientIntake() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4 py-8">
       <PWAInstallPrompt />
+      
+      {/* Dark Mode Toggle */}
+      <Button
+        onClick={() => {
+          toggleDarkMode();
+          light();
+        }}
+        size="icon"
+        variant="outline"
+        className="fixed top-4 right-4 z-50 h-12 w-12 rounded-full shadow-lg border-2 transition-all hover:scale-110 print:hidden"
+        aria-label="Toggle dark mode"
+      >
+        {isDark ? (
+          <Sun className="h-5 w-5 text-warning transition-transform duration-300 rotate-0" />
+        ) : (
+          <Moon className="h-5 w-5 text-primary transition-transform duration-300 rotate-0" />
+        )}
+      </Button>
+      
       <div className="mx-auto max-w-3xl">
         <Card className="mb-6">
           <CardHeader className="text-center">
