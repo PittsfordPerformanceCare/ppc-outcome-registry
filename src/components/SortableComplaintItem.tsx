@@ -71,7 +71,9 @@ export function SortableComplaintItem({
             <div
               {...attributes}
               {...listeners}
-              className="flex items-center justify-center h-8 w-8 rounded cursor-grab active:cursor-grabbing hover:bg-muted transition-colors shrink-0 touch-none"
+              className="flex items-center justify-center h-11 w-11 min-h-[44px] min-w-[44px] rounded cursor-grab active:cursor-grabbing hover:bg-muted transition-colors shrink-0 touch-none"
+              role="button"
+              aria-label="Drag to reorder"
             >
               <GripVertical className="h-5 w-5 text-muted-foreground" />
             </div>
@@ -86,9 +88,10 @@ export function SortableComplaintItem({
                 size="sm"
                 onClick={onMoveUp}
                 disabled={index === 0}
-                className="h-6 w-6 p-0"
+                className="h-11 w-11 p-0 min-h-[44px] min-w-[44px]"
+                aria-label="Move concern up"
               >
-                <ChevronUp className="h-4 w-4" />
+                <ChevronUp className="h-5 w-5" />
               </Button>
               <Button
                 type="button"
@@ -96,9 +99,10 @@ export function SortableComplaintItem({
                 size="sm"
                 onClick={onMoveDown}
                 disabled={index === fieldsLength - 1}
-                className="h-6 w-6 p-0"
+                className="h-11 w-11 p-0 min-h-[44px] min-w-[44px]"
+                aria-label="Move concern down"
               >
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-5 w-5" />
               </Button>
             </div>
           )}
@@ -132,9 +136,10 @@ export function SortableComplaintItem({
             variant="ghost"
             size="sm"
             onClick={onRemove}
-            className="shrink-0"
+            className="shrink-0 h-11 w-11 min-h-[44px] min-w-[44px] sm:h-auto sm:w-auto"
+            aria-label="Remove concern"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </Button>
         )}
       </div>

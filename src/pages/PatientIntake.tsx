@@ -1239,7 +1239,7 @@ export default function PatientIntake() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:hidden">
               <Button 
                 onClick={generatePDF} 
-                className="w-full"
+                className="w-full min-h-[52px]"
                 variant="default"
               >
                 <Download className="h-4 w-4 mr-2" />
@@ -1247,7 +1247,7 @@ export default function PatientIntake() {
               </Button>
               <Button 
                 onClick={() => window.print()} 
-                className="w-full"
+                className="w-full min-h-[52px]"
                 variant="outline"
               >
                 <Printer className="h-4 w-4 mr-2" />
@@ -1257,7 +1257,7 @@ export default function PatientIntake() {
 
             <Button 
               onClick={() => navigate("/")} 
-              className="w-full print:hidden"
+              className="w-full print:hidden min-h-[52px]"
               variant="secondary"
             >
               <Home className="h-4 w-4 mr-2" />
@@ -1344,7 +1344,7 @@ export default function PatientIntake() {
                   variant="outline"
                   onClick={() => saveProgress(false)}
                   disabled={isSaving || isAutoSaving}
-                  className="w-full sm:w-auto"
+                  className="w-full sm:w-auto min-h-[48px]"
                 >
                   {isSaving ? (
                     <>
@@ -1970,7 +1970,7 @@ export default function PatientIntake() {
                                       return (
                                         <FormItem
                                           key={symptom}
-                                          className="flex flex-row items-start space-x-2 space-y-0"
+                                          className="flex flex-row items-start space-x-3 space-y-0 py-2"
                                         >
                                           <FormControl>
                                             <Checkbox
@@ -1982,11 +1982,12 @@ export default function PatientIntake() {
                                                       field.value?.filter(
                                                         (value) => value !== symptom
                                                       )
-                                                    );
+                                                    )
                                               }}
+                                              className="mt-0.5"
                                             />
                                           </FormControl>
-                                          <FormLabel className="text-sm font-normal cursor-pointer">
+                                          <FormLabel className="font-normal cursor-pointer">
                                             {symptom}
                                           </FormLabel>
                                         </FormItem>
@@ -2182,7 +2183,7 @@ export default function PatientIntake() {
                     });
                     toast.success(`Concern #${nextPriority} added`);
                   }}
-                  className="w-full border-dashed border-2 hover:border-primary hover:bg-primary/5"
+                  className="w-full border-dashed border-2 hover:border-primary hover:bg-primary/5 min-h-[52px]"
                 >
                   <Plus className="h-5 w-5 mr-2" />
                   Add Another Concern
@@ -2555,11 +2556,12 @@ export default function PatientIntake() {
                     control={form.control}
                     name="hipaaAcknowledged"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
                             onCheckedChange={field.onChange}
+                            className="mt-0.5"
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
@@ -2622,11 +2624,12 @@ export default function PatientIntake() {
                   control={form.control}
                   name="consentClinicUpdates"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
+                          className="mt-0.5"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
@@ -2642,11 +2645,12 @@ export default function PatientIntake() {
                   control={form.control}
                   name="optOutNewsletter"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
+                          className="mt-0.5"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
@@ -2670,7 +2674,7 @@ export default function PatientIntake() {
                 variant="outline"
                 onClick={handlePreviousStep}
                 disabled={currentStep === 0 || isSubmitting}
-                className="flex-1"
+                className="flex-1 min-h-[52px]"
               >
                 <ChevronLeft className="h-4 w-4 mr-2" />
                 Previous
@@ -2681,7 +2685,7 @@ export default function PatientIntake() {
                   type="button"
                   onClick={handleNextStep}
                   disabled={isSubmitting}
-                  className="flex-1"
+                  className="flex-1 min-h-[52px]"
                 >
                   Next
                   <ChevronRight className="h-4 w-4 ml-2" />
@@ -2689,7 +2693,7 @@ export default function PatientIntake() {
               ) : (
                 <Button 
                   type="submit" 
-                  className="flex-1" 
+                  className="flex-1 min-h-[52px]" 
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
