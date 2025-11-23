@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -216,6 +217,9 @@ export default function PatientIntake() {
   const [progressToken, setProgressToken] = useState<string | null>(null);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isRestoringProgress, setIsRestoringProgress] = useState(false);
+  const [duplicateEpisodes, setDuplicateEpisodes] = useState<any[]>([]);
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+  const [pendingSubmitData, setPendingSubmitData] = useState<IntakeFormValues | null>(null);
   
   const signatureRef = useRef<SignatureCanvas>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -531,7 +535,42 @@ export default function PatientIntake() {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
   };
 
+  // Check for duplicate patients
+  const checkForDuplicates = async (name: string, dob: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('episodes')
+        .select('id, patient_name, date_of_birth, region, diagnosis, date_of_service, discharge_date')
+        .ilike('patient_name', name)
+        .eq('date_of_birth', dob)
+        .is('discharge_date', null) // Only check active episodes
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error checking for duplicates:', error);
+      return [];
+    }
+  };
+
   const onSubmit = async (data: IntakeFormValues) => {
+    // Check for duplicates first
+    const duplicates = await checkForDuplicates(data.patientName, data.dateOfBirth);
+    
+    if (duplicates.length > 0) {
+      setDuplicateEpisodes(duplicates);
+      setPendingSubmitData(data);
+      setShowDuplicateWarning(true);
+      return;
+    }
+
+    // Proceed with submission
+    await submitIntakeForm(data);
+  };
+
+  const submitIntakeForm = async (data: IntakeFormValues) => {
     try {
       const code = generateAccessCode();
       
@@ -636,6 +675,21 @@ export default function PatientIntake() {
     } catch (error: any) {
       toast.error(`Failed to submit form: ${error.message}`);
     }
+  };
+
+  const handleProceedWithDuplicate = async () => {
+    setShowDuplicateWarning(false);
+    if (pendingSubmitData) {
+      await submitIntakeForm(pendingSubmitData);
+      setPendingSubmitData(null);
+    }
+  };
+
+  const handleCancelSubmit = () => {
+    setShowDuplicateWarning(false);
+    setPendingSubmitData(null);
+    setDuplicateEpisodes([]);
+    toast.info("Submission cancelled. Please review the existing episodes.");
   };
 
   const generatePDF = () => {
@@ -2036,6 +2090,60 @@ export default function PatientIntake() {
           </form>
         </Form>
         </TooltipProvider>
+
+        {/* Duplicate Patient Warning Dialog */}
+        <AlertDialog open={showDuplicateWarning} onOpenChange={setShowDuplicateWarning}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-warning" />
+                Possible Duplicate Patient Found
+              </AlertDialogTitle>
+              <AlertDialogDescription className="space-y-4">
+                <p>
+                  We found {duplicateEpisodes.length} active episode{duplicateEpisodes.length > 1 ? 's' : ''} for a patient with the same name and date of birth:
+                </p>
+                
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {duplicateEpisodes.map((episode, index) => (
+                    <div key={episode.id} className="border rounded-lg p-3 bg-muted/50">
+                      <div className="space-y-1 text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium">{episode.patient_name}</span>
+                          <Badge variant="outline" className="text-xs">
+                            Episode {index + 1}
+                          </Badge>
+                        </div>
+                        <div className="text-xs text-muted-foreground space-y-0.5">
+                          {episode.region && <p><strong>Region:</strong> {episode.region}</p>}
+                          {episode.diagnosis && <p><strong>Diagnosis:</strong> {episode.diagnosis}</p>}
+                          <p><strong>Service Date:</strong> {new Date(episode.date_of_service).toLocaleDateString()}</p>
+                          <p className="text-warning font-medium">⚠️ Active (not discharged)</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="bg-warning/10 border border-warning/20 rounded-lg p-3">
+                  <p className="text-sm font-medium">What would you like to do?</p>
+                  <ul className="text-xs mt-2 space-y-1 text-muted-foreground">
+                    <li>• <strong>Cancel:</strong> Review the existing episodes before submitting a new intake form</li>
+                    <li>• <strong>Continue:</strong> Submit this intake form as a new episode (e.g., for a different complaint)</li>
+                  </ul>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={handleCancelSubmit}>
+                Cancel Submission
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleProceedWithDuplicate}>
+                Continue Anyway
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
