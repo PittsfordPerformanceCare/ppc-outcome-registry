@@ -238,6 +238,8 @@ export default function PatientIntake() {
   // Wizard state
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+  const [isTransitioning, setIsTransitioning] = useState(false);
   
   const wizardSteps = [
     { id: 0, title: "Patient Info", description: "Personal & Contact" },
@@ -942,17 +944,29 @@ export default function PatientIntake() {
     setCompletedSteps(prev => new Set(prev).add(currentStep));
     
     if (currentStep < wizardSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      light();
+      setSlideDirection('left'); // Slide left when going forward
+      setIsTransitioning(true);
+      
+      setTimeout(() => {
+        setCurrentStep(currentStep + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        light();
+        setIsTransitioning(false);
+      }, 150);
     }
   };
 
   const handlePreviousStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      light();
+      setSlideDirection('right'); // Slide right when going back
+      setIsTransitioning(true);
+      
+      setTimeout(() => {
+        setCurrentStep(currentStep - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        light();
+        setIsTransitioning(false);
+      }, 150);
     }
   };
 
@@ -1283,7 +1297,7 @@ export default function PatientIntake() {
         </Card>
 
         {/* Progress Indicator */}
-        <Card className="mb-6">
+        <Card className="mb-6 animate-fade-in">
           <CardContent className="pt-6">
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
@@ -1316,7 +1330,7 @@ export default function PatientIntake() {
 
         {/* Save Progress */}
         {!isRestoringProgress && (
-          <Card className="mb-6 border-dashed">
+          <Card className="mb-6 border-dashed animate-fade-in">
             <CardContent className="pt-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex-1 space-y-1">
@@ -1441,7 +1455,16 @@ export default function PatientIntake() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Step 0: Patient Info (Personal + Insurance + Emergency) */}
             {currentStep === 0 && (
-              <>
+              <div 
+                key="step-0"
+                className={`space-y-6 ${
+                  isTransitioning 
+                    ? slideDirection === 'left' 
+                      ? 'animate-[slide-out-left_0.15s_ease-out]' 
+                      : 'animate-[slide-out-right_0.15s_ease-out]'
+                    : 'animate-fade-in'
+                }`}
+              >
             {/* Personal Information */}
             <Card>
               <CardHeader>
@@ -1735,12 +1758,21 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
-            </>
+            </div>
             )}
 
             {/* Step 1: Medical History */}
             {currentStep === 1 && (
-              <>
+              <div 
+                key="step-1"
+                className={`space-y-6 ${
+                  isTransitioning 
+                    ? slideDirection === 'left' 
+                      ? 'animate-[slide-out-left_0.15s_ease-out]' 
+                      : 'animate-[slide-out-right_0.15s_ease-out]'
+                    : 'animate-fade-in'
+                }`}
+              >
             {/* Medical Information */}
             <Card>
               <CardHeader>
@@ -1921,12 +1953,21 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
-            </>
+            </div>
             )}
 
             {/* Step 2: Review of Systems */}
             {currentStep === 2 && (
-              <>
+            <div 
+              key="step-2"
+              className={`space-y-6 ${
+                isTransitioning 
+                  ? slideDirection === 'left' 
+                    ? 'animate-[slide-out-left_0.15s_ease-out]' 
+                    : 'animate-[slide-out-right_0.15s_ease-out]'
+                  : 'animate-fade-in'
+              }`}
+            >
             {/* Review of Systems */}
             <Card>
               <CardHeader>
@@ -2007,12 +2048,21 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
-            </>
+            </div>
             )}
 
             {/* Step 3: Areas of Concern */}
             {currentStep === 3 && (
-              <>
+              <div 
+                key="step-3"
+                className={`space-y-6 ${
+                  isTransitioning 
+                    ? slideDirection === 'left' 
+                      ? 'animate-[slide-out-left_0.15s_ease-out]' 
+                      : 'animate-[slide-out-right_0.15s_ease-out]'
+                    : 'animate-fade-in'
+                }`}
+              >
             {/* Areas of Concern */}
             <Card>
               <CardHeader>
@@ -2273,12 +2323,21 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
-            </>
+            </div>
             )}
 
             {/* Step 4: Consent & HIPAA */}
             {currentStep === 4 && (
-              <>
+            <div 
+              key="step-4"
+              className={`space-y-6 ${
+                isTransitioning 
+                  ? slideDirection === 'left' 
+                    ? 'animate-[slide-out-left_0.15s_ease-out]' 
+                    : 'animate-[slide-out-right_0.15s_ease-out]'
+                  : 'animate-fade-in'
+              }`}
+            >
             {/* Informed Consent */}
             <Card>
               <CardHeader>
@@ -2664,7 +2723,7 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
-            </>
+            </div>
             )}
 
             {/* Wizard Navigation */}
