@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,20 +12,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
-import { useEffect, useState as useReactState, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import SignatureCanvas from "react-signature-canvas";
 import jsPDF from "jspdf";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { SortableComplaintItem } from "@/components/SortableComplaintItem";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useRef } from "react";
 import {
   DndContext,
   closestCenter,
@@ -194,6 +194,7 @@ type IntakeFormValues = z.infer<typeof intakeFormSchema>;
 
 export default function PatientIntake() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
   const [accessCode, setAccessCode] = useState("");
   const [submittedComplaints, setSubmittedComplaints] = useState<z.infer<typeof complaintSchema>[]>([]);
@@ -211,6 +212,10 @@ export default function PatientIntake() {
     consent: false,
     hipaa: false,
   });
+  const [isSaving, setIsSaving] = useState(false);
+  const [progressToken, setProgressToken] = useState<string | null>(null);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isRestoringProgress, setIsRestoringProgress] = useState(false);
   
   const signatureRef = useRef<SignatureCanvas>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -275,6 +280,144 @@ export default function PatientIntake() {
     control: form.control,
     name: "complaints",
   });
+
+  // Check for resume token on load
+  useEffect(() => {
+    const token = searchParams.get('resume');
+    if (token) {
+      loadSavedProgress(token);
+    }
+  }, [searchParams]);
+
+  // Load saved progress
+  const loadSavedProgress = async (token: string) => {
+    setIsRestoringProgress(true);
+    try {
+      const { data, error } = await supabase
+        .from('intake_progress')
+        .select('*')
+        .eq('token', token)
+        .single();
+
+      if (error) throw error;
+
+      if (!data) {
+        toast.error("Could not find saved progress with this link");
+        return;
+      }
+
+      // Check if expired
+      if (new Date(data.expires_at) < new Date()) {
+        toast.error("This save link has expired. Please start a new intake form.");
+        return;
+      }
+
+      // Restore form data
+      const savedData = data.form_data as IntakeFormValues;
+      Object.keys(savedData).forEach((key) => {
+        form.setValue(key as any, savedData[key as keyof IntakeFormValues]);
+      });
+
+      setProgressToken(token);
+      setLastSaved(new Date(data.updated_at));
+      
+      toast.success("Progress restored! Continue where you left off.", { duration: 4000 });
+    } catch (error: any) {
+      console.error('Error loading progress:', error);
+      toast.error("Failed to load saved progress");
+    } finally {
+      setIsRestoringProgress(false);
+    }
+  };
+
+  // Generate unique token
+  const generateProgressToken = () => {
+    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  };
+
+  // Save progress function
+  const saveProgress = async () => {
+    setIsSaving(true);
+    try {
+      const values = form.getValues();
+      
+      // Need at least name to save progress
+      if (!values.patientName) {
+        toast.error("Please enter your name before saving progress");
+        setIsSaving(false);
+        return;
+      }
+
+      const token = progressToken || generateProgressToken();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7); // Expires in 7 days
+
+      const progressData = {
+        token,
+        patient_name: values.patientName || null,
+        patient_email: values.email || null,
+        patient_phone: values.phone || null,
+        form_data: values,
+        expires_at: expiresAt.toISOString(),
+        last_accessed_at: new Date().toISOString()
+      };
+
+      if (progressToken) {
+        // Update existing progress
+        const { error } = await supabase
+          .from('intake_progress')
+          .update(progressData)
+          .eq('token', token);
+
+        if (error) throw error;
+      } else {
+        // Insert new progress
+        const { error } = await supabase
+          .from('intake_progress')
+          .insert(progressData);
+
+        if (error) throw error;
+        setProgressToken(token);
+      }
+
+      setLastSaved(new Date());
+
+      // Generate resume link
+      const resumeLink = `${window.location.origin}/patient-intake?resume=${token}`;
+
+      toast.success(
+        <div className="space-y-2">
+          <p className="font-semibold">Progress saved!</p>
+          <p className="text-sm">You can resume anytime using this link:</p>
+          <div className="flex gap-2">
+            <Input 
+              value={resumeLink} 
+              readOnly 
+              className="text-xs h-8"
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8"
+              onClick={() => {
+                navigator.clipboard.writeText(resumeLink);
+                toast.success("Link copied!");
+              }}
+            >
+              <Copy className="h-3 w-3" />
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">Link expires in 7 days</p>
+        </div>,
+        { duration: 10000 }
+      );
+    } catch (error: any) {
+      console.error('Error saving progress:', error);
+      toast.error("Failed to save progress");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Handle drag end
   const handleDragStart = (event: DragStartEvent) => {
@@ -474,6 +617,20 @@ export default function PatientIntake() {
       setSubmittedComplaints(data.complaints);
       setSubmittedReviewOfSystems(data.reviewOfSystems);
       setSubmittedFormData(data);
+      
+      // Mark progress as completed if it exists
+      if (progressToken) {
+        try {
+          await supabase
+            .from('intake_progress')
+            .update({ completed: true })
+            .eq('token', progressToken);
+        } catch (err) {
+          console.error('Error marking progress as complete:', err);
+          // Don't fail the submission if this fails
+        }
+      }
+      
       setSubmitted(true);
       toast.success("Intake form submitted successfully!");
     } catch (error: any) {
@@ -837,6 +994,61 @@ export default function PatientIntake() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Save Progress */}
+        {!isRestoringProgress && (
+          <Card className="mb-6 border-dashed">
+            <CardContent className="pt-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Save className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium">Save & Resume Later</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Save your progress and return anytime within 7 days
+                  </p>
+                  {lastSaved && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                      <Clock className="h-3 w-3" />
+                      <span>Last saved: {lastSaved.toLocaleTimeString()}</span>
+                    </div>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={saveProgress}
+                  disabled={isSaving}
+                  className="w-full sm:w-auto"
+                >
+                  {isSaving ? (
+                    <>
+                      <Clock className="h-4 w-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4 mr-2" />
+                      Save Progress
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {isRestoringProgress && (
+          <Card className="mb-6 border-primary">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 text-primary">
+                <Clock className="h-5 w-5 animate-spin" />
+                <span className="font-medium">Restoring your saved progress...</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <TooltipProvider>
           <Form {...form}>
