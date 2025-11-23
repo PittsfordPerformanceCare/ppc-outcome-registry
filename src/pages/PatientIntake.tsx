@@ -1323,7 +1323,12 @@ export default function PatientIntake() {
                     <FormItem>
                       <FormLabel>Full Name *</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input 
+                          {...field} 
+                          autoComplete="name"
+                          inputMode="text"
+                          enterKeyHint="next"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1338,7 +1343,11 @@ export default function PatientIntake() {
                       <FormItem>
                         <FormLabel>Date of Birth *</FormLabel>
                         <FormControl>
-                          <Input type="date" {...field} />
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            autoComplete="bday"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1376,7 +1385,14 @@ export default function PatientIntake() {
                     <FormItem>
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
-                        <Input type="tel" placeholder="(555) 123-4567" {...field} />
+                        <Input 
+                          type="tel" 
+                          placeholder="(555) 123-4567" 
+                          {...field} 
+                          autoComplete="tel"
+                          inputMode="tel"
+                          enterKeyHint="next"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1390,7 +1406,14 @@ export default function PatientIntake() {
                     <FormItem>
                       <FormLabel>Email Address</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="name@example.com" {...field} />
+                        <Input 
+                          type="email" 
+                          placeholder="name@example.com" 
+                          {...field} 
+                          autoComplete="email"
+                          inputMode="email"
+                          enterKeyHint="next"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1404,7 +1427,11 @@ export default function PatientIntake() {
                     <FormItem>
                       <FormLabel>Full Address</FormLabel>
                       <FormControl>
-                        <Textarea rows={2} {...field} />
+                        <Textarea 
+                          rows={2} 
+                          {...field} 
+                          autoComplete="street-address"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1418,7 +1445,13 @@ export default function PatientIntake() {
                     <FormItem>
                       <FormLabel>Parent/Guardian Phone (if under 18)</FormLabel>
                       <FormControl>
-                        <Input type="tel" placeholder="Required if patient is under 18" {...field} />
+                        <Input 
+                          type="tel" 
+                          placeholder="Required if patient is under 18" 
+                          {...field} 
+                          inputMode="tel"
+                          enterKeyHint="next"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1530,7 +1563,12 @@ export default function PatientIntake() {
                       <FormItem>
                         <FormLabel>Contact Phone</FormLabel>
                         <FormControl>
-                          <Input type="tel" {...field} />
+                          <Input 
+                            type="tel" 
+                            {...field} 
+                            inputMode="tel"
+                            enterKeyHint="next"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1612,7 +1650,12 @@ export default function PatientIntake() {
                       <FormItem>
                         <FormLabel>PCP Phone</FormLabel>
                         <FormControl>
-                          <Input type="tel" {...field} />
+                          <Input 
+                            type="tel" 
+                            {...field} 
+                            inputMode="tel"
+                            enterKeyHint="next"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -2214,6 +2257,8 @@ export default function PatientIntake() {
                                     }
                                   }}
                                   className="text-lg"
+                                  autoComplete="name"
+                                  enterKeyHint="next"
                                 />
                                 {field.value && (
                                   <div className="border-2 border-input rounded-md p-4 bg-muted/30">
@@ -2288,7 +2333,12 @@ export default function PatientIntake() {
                         <FormItem>
                           <FormLabel>Type Your Full Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} />
+                            <Input 
+                              placeholder="John Doe" 
+                              {...field} 
+                              autoComplete="name"
+                              enterKeyHint="next"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -2389,7 +2439,12 @@ export default function PatientIntake() {
                         <FormItem>
                           <FormLabel>Type Your Full Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} />
+                            <Input 
+                              placeholder="John Doe" 
+                              {...field} 
+                              autoComplete="name"
+                              enterKeyHint="done"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
