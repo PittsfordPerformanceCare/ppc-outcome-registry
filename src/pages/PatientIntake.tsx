@@ -1553,17 +1553,25 @@ export default function PatientIntake() {
                     <Save className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">Save & Resume Later</span>
                     {isAutoSaving && (
-                      <Badge variant="secondary" className="text-xs animate-pulse">
-                        Auto-saving...
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <div className="relative">
+                          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                          <div className="absolute inset-0 animate-ping">
+                            <Loader2 className="h-4 w-4 text-primary opacity-20" />
+                          </div>
+                        </div>
+                        <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
+                          Auto-saving...
+                        </Badge>
+                      </div>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Auto-saves every 30 seconds • Progress expires in 7 days
                   </p>
                   {lastSaved && (
-                    <div className="flex items-center gap-1 text-xs text-success mt-1">
-                      <CheckCircle2 className="h-3 w-3" />
+                    <div className="flex items-center gap-1 text-xs text-success mt-1 animate-fade-in">
+                      <CheckCircle2 className="h-3 w-3 animate-scale-in" />
                       <span>Last saved: {lastSaved.toLocaleTimeString()}</span>
                     </div>
                   )}
@@ -1573,11 +1581,11 @@ export default function PatientIntake() {
                   variant="outline"
                   onClick={() => saveProgress(false)}
                   disabled={isSaving || isAutoSaving}
-                  className="w-full sm:w-auto min-h-[48px]"
+                  className="w-full sm:w-auto min-h-[48px] transition-all hover:shadow-md"
                 >
                   {isSaving ? (
                     <>
-                      <Clock className="h-4 w-4 mr-2 animate-spin" />
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                       Saving...
                     </>
                   ) : (
@@ -1593,11 +1601,28 @@ export default function PatientIntake() {
         )}
 
         {isRestoringProgress && (
-          <Card className="mb-6 border-primary">
+          <Card className="mb-6 border-primary/50 bg-primary/5 animate-fade-in">
             <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-primary">
-                <Clock className="h-5 w-5 animate-spin" />
-                <span className="font-medium">Restoring your saved progress...</span>
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    <div className="absolute inset-0 animate-ping">
+                      <Loader2 className="h-6 w-6 text-primary opacity-20" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-primary">Restoring your saved progress...</p>
+                    <p className="text-xs text-muted-foreground mt-1">Please wait while we load your information</p>
+                  </div>
+                </div>
+                
+                {/* Skeleton loading animation */}
+                <div className="space-y-3 pt-2">
+                  <div className="h-4 bg-muted rounded animate-pulse w-3/4"></div>
+                  <div className="h-4 bg-muted rounded animate-pulse w-full"></div>
+                  <div className="h-4 bg-muted rounded animate-pulse w-5/6"></div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -1650,15 +1675,60 @@ export default function PatientIntake() {
 
         {/* Loading Overlay */}
         {isSubmitting && (
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
-            <Card className="p-8 max-w-sm mx-4">
-              <CardContent className="flex flex-col items-center gap-4 p-0">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <div className="text-center space-y-2">
-                  <p className="text-lg font-semibold">Submitting Your Form</p>
-                  <p className="text-sm text-muted-foreground">
-                    Please wait while we process your information...
+          <div className="fixed inset-0 bg-background/90 backdrop-blur-md z-50 flex items-center justify-center animate-fade-in">
+            <Card className="p-8 max-w-sm mx-4 shadow-2xl border-2 animate-scale-in">
+              <CardContent className="flex flex-col items-center gap-6 p-0">
+                {/* Animated loader */}
+                <div className="relative w-24 h-24">
+                  <Loader2 className="h-24 w-24 animate-spin text-primary" />
+                  <div className="absolute inset-0 animate-ping">
+                    <Loader2 className="h-24 w-24 text-primary opacity-10" />
+                  </div>
+                  {/* Progress ring */}
+                  <svg className="absolute inset-0 w-24 h-24 transform -rotate-90">
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="44"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                      className="text-primary/20"
+                    />
+                    <circle
+                      cx="48"
+                      cy="48"
+                      r="44"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 44}`}
+                      className="text-primary animate-[spin_2s_linear_infinite]"
+                      strokeLinecap="round"
+                      style={{ strokeDashoffset: `${2 * Math.PI * 44 * 0.75}` }}
+                    />
+                  </svg>
+                </div>
+                
+                <div className="text-center space-y-3">
+                  <p className="text-xl font-semibold animate-pulse">Submitting Your Form</p>
+                  <p className="text-sm text-muted-foreground max-w-xs">
+                    Please wait while we securely process your information...
                   </p>
+                  
+                  {/* Loading steps */}
+                  <div className="space-y-2 pt-4">
+                    {['Validating data', 'Encrypting information', 'Saving securely'].map((step, index) => (
+                      <div 
+                        key={step}
+                        className="flex items-center gap-2 text-xs text-muted-foreground animate-fade-in"
+                        style={{ animationDelay: `${index * 0.3}s` }}
+                      >
+                        <CheckCircle2 className="h-3 w-3 text-success" />
+                        <span>{step}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -1681,7 +1751,7 @@ export default function PatientIntake() {
                 }`}
               >
             {/* Personal Information */}
-            <Card>
+            <Card className="animate-[fade-in_0.3s_ease-out] hover:shadow-md transition-shadow duration-200">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <CardTitle>Personal Information</CardTitle>
