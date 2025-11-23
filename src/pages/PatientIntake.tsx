@@ -143,6 +143,7 @@ const complaintSchema = z.object({
 const intakeFormSchema = z.object({
   patientName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
+  episodeType: z.string().default("Neurology"),
   phone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
   email: z.string().email("Invalid email address").max(255, "Email is too long").optional().or(z.literal("")),
   address: z.string().max(500, "Address is too long").optional(),
@@ -264,6 +265,7 @@ export default function PatientIntake() {
     defaultValues: {
       patientName: "",
       dateOfBirth: "",
+      episodeType: "Neurology",
       phone: "",
       email: "",
       address: "",
@@ -786,7 +788,7 @@ export default function PatientIntake() {
     
     switch (stepIndex) {
       case 0: // Patient Info
-        return !!(values.patientName && values.dateOfBirth);
+        return !!(values.patientName && values.dateOfBirth && values.episodeType);
       case 1: // Medical History
         return true; // All optional
       case 2: // Health Review  
@@ -875,6 +877,7 @@ export default function PatientIntake() {
     addText("PERSONAL INFORMATION", 12, true);
     addText(`Name: ${submittedFormData.patientName}`);
     addText(`Date of Birth: ${submittedFormData.dateOfBirth}`);
+    addText(`Episode Type: ${submittedFormData.episodeType}`);
     if (submittedFormData.phone) addText(`Phone: ${submittedFormData.phone}`);
     if (submittedFormData.email) addText(`Email: ${submittedFormData.email}`);
     if (submittedFormData.address) addText(`Address: ${submittedFormData.address}`);
@@ -1343,18 +1346,42 @@ export default function PatientIntake() {
                   />
                   <FormField
                     control={form.control}
-                    name="phone"
+                    name="episodeType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <Input type="tel" placeholder="(555) 123-4567" {...field} />
-                        </FormControl>
+                        <FormLabel>Episode Type *</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select episode type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Neurology">Neurology</SelectItem>
+                            <SelectItem value="MSK">MSK</SelectItem>
+                            <SelectItem value="Orthopedic">Orthopedic</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input type="tel" placeholder="(555) 123-4567" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
