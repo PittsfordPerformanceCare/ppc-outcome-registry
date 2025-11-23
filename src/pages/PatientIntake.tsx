@@ -145,7 +145,7 @@ const complaintSchema = z.object({
 const intakeFormSchema = z.object({
   patientName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
-  episodeType: z.string().default("Neurology"),
+  episodeType: z.string().default("MSK"),
   phone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
   email: z.string().email("Invalid email address").max(255, "Email is too long").optional().or(z.literal("")),
   address: z.string().max(500, "Address is too long").optional(),
@@ -277,7 +277,7 @@ export default function PatientIntake() {
     defaultValues: {
       patientName: "",
       dateOfBirth: "",
-      episodeType: "Neurology",
+      episodeType: "MSK",
       phone: "",
       email: "",
       address: "",
@@ -1850,10 +1850,9 @@ export default function PatientIntake() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Neurology">Neurology</SelectItem>
                             <SelectItem value="MSK">MSK</SelectItem>
-                            <SelectItem value="Orthopedic">Orthopedic</SelectItem>
-                            <SelectItem value="Other">Other</SelectItem>
+                            <SelectItem value="Neurology">Neurology</SelectItem>
+                            <SelectItem value="Performance">Performance</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
