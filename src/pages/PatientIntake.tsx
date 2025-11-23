@@ -1815,7 +1815,12 @@ export default function PatientIntake() {
                   )}
                 </div>
                 <CardDescription>
-                  <strong>Drag and drop to reorder</strong> your concerns by treatment priority. The top concern will be treated first, and subsequent concerns will be queued for future treatment episodes.
+                  {isMobile ? (
+                    <strong>Use the ↑ ↓ buttons</strong>
+                  ) : (
+                    <strong>Drag and drop</strong>
+                  )}{" "}
+                  to reorder your concerns by treatment priority. The top concern will be treated first, and subsequent concerns will be queued for future treatment episodes.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -1825,10 +1830,16 @@ export default function PatientIntake() {
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
                       <p className="font-medium mb-2">You're reporting {fields.length} concerns</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground mb-2">
                         We'll create separate treatment episodes for each concern in the priority order you specify. 
                         Priority #1 will be converted to an active episode first, and the rest will be queued for future treatment.
                       </p>
+                      {isMobile && (
+                        <p className="text-xs text-primary font-medium mt-2 flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Tap the ↑ ↓ buttons to change priority order
+                        </p>
+                      )}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -1858,6 +1869,7 @@ export default function PatientIntake() {
                           onRemove={() => {
                             remove(index);
                             toast.success("Concern removed");
+                            medium();
                             // Reorder remaining priorities
                             setTimeout(() => {
                               const remaining = form.getValues('complaints');
@@ -1866,6 +1878,36 @@ export default function PatientIntake() {
                                 form.setValue(`complaints.${i}.isPrimary`, i === 0);
                               });
                             }, 100);
+                          }}
+                          onMoveUp={() => {
+                            if (index > 0) {
+                              move(index, index - 1);
+                              light();
+                              // Update priorities after move
+                              setTimeout(() => {
+                                const complaints = form.getValues('complaints');
+                                complaints.forEach((_, i) => {
+                                  form.setValue(`complaints.${i}.priority`, i + 1);
+                                  form.setValue(`complaints.${i}.isPrimary`, i === 0);
+                                });
+                              }, 100);
+                              toast.success("Moved up in priority");
+                            }
+                          }}
+                          onMoveDown={() => {
+                            if (index < fields.length - 1) {
+                              move(index, index + 1);
+                              light();
+                              // Update priorities after move
+                              setTimeout(() => {
+                                const complaints = form.getValues('complaints');
+                                complaints.forEach((_, i) => {
+                                  form.setValue(`complaints.${i}.priority`, i + 1);
+                                  form.setValue(`complaints.${i}.isPrimary`, i === 0);
+                                });
+                              }, 100);
+                              toast.success("Moved down in priority");
+                            }
                           }}
                         />
                       ))}

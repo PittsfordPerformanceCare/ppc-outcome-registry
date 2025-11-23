@@ -1,11 +1,12 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, X, CheckCircle2 } from "lucide-react";
+import { GripVertical, X, CheckCircle2, ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SortableComplaintItemProps {
   id: string;
@@ -17,6 +18,8 @@ interface SortableComplaintItemProps {
   severityLevels: readonly string[];
   durationOptions: readonly string[];
   onRemove: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
   isDragging?: boolean;
 }
 
@@ -30,8 +33,11 @@ export function SortableComplaintItem({
   severityLevels,
   durationOptions,
   onRemove,
+  onMoveUp,
+  onMoveDown,
   isDragging = false,
 }: SortableComplaintItemProps) {
+  const isMobile = useIsMobile();
   const {
     attributes,
     listeners,
@@ -60,14 +66,42 @@ export function SortableComplaintItem({
       {/* Header with Priority and Remove */}
       <div className="flex items-start justify-between gap-2 pb-3 border-b">
         <div className="flex items-center gap-3 flex-1">
-          {/* Drag Handle */}
-          <div
-            {...attributes}
-            {...listeners}
-            className="flex items-center justify-center h-8 w-8 rounded cursor-grab active:cursor-grabbing hover:bg-muted transition-colors shrink-0 touch-none"
-          >
-            <GripVertical className="h-5 w-5 text-muted-foreground" />
-          </div>
+          {/* Drag Handle - Hidden on mobile, show arrow buttons instead */}
+          {!isMobile && (
+            <div
+              {...attributes}
+              {...listeners}
+              className="flex items-center justify-center h-8 w-8 rounded cursor-grab active:cursor-grabbing hover:bg-muted transition-colors shrink-0 touch-none"
+            >
+              <GripVertical className="h-5 w-5 text-muted-foreground" />
+            </div>
+          )}
+
+          {/* Mobile: Up/Down Buttons */}
+          {isMobile && fieldsLength > 1 && (
+            <div className="flex flex-col gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={onMoveUp}
+                disabled={index === 0}
+                className="h-6 w-6 p-0"
+              >
+                <ChevronUp className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={onMoveDown}
+                disabled={index === fieldsLength - 1}
+                className="h-6 w-6 p-0"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
 
           {/* Complaint Number Badge */}
           <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0">
@@ -86,7 +120,7 @@ export function SortableComplaintItem({
           {priority === 1 && (
             <Badge variant="default" className="gap-1 animate-scale-in">
               <CheckCircle2 className="h-3 w-3" />
-              Primary Concern
+              Primary
             </Badge>
           )}
         </div>
