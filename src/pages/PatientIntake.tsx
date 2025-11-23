@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock, ChevronRight, ChevronLeft } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock, ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -227,6 +227,7 @@ export default function PatientIntake() {
   const [useTypedSignature, setUseTypedSignature] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [hasFormChanged, setHasFormChanged] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [showReturningPatientLookup, setShowReturningPatientLookup] = useState(true);
   const [hasPrefilledData, setHasPrefilledData] = useState(false);
@@ -646,21 +647,32 @@ export default function PatientIntake() {
   };
 
   const onSubmit = async (data: IntakeFormValues) => {
-    // Check for duplicates first
-    const duplicates = await checkForDuplicates(data.patientName, data.dateOfBirth);
+    setIsSubmitting(true);
+    medium(); // Haptic feedback on submit start
     
-    if (duplicates.length > 0) {
-      setDuplicateEpisodes(duplicates);
-      setPendingSubmitData(data);
-      setShowDuplicateWarning(true);
-      return;
-    }
+    try {
+      // Check for duplicates first
+      const duplicates = await checkForDuplicates(data.patientName, data.dateOfBirth);
+      
+      if (duplicates.length > 0) {
+        setDuplicateEpisodes(duplicates);
+        setPendingSubmitData(data);
+        setShowDuplicateWarning(true);
+        setIsSubmitting(false);
+        return;
+      }
 
-    // Proceed with submission
-    await submitIntakeForm(data);
+      // Proceed with submission
+      await submitIntakeForm(data);
+    } catch (error) {
+      console.error('Submission error:', error);
+      setIsSubmitting(false);
+    }
   };
 
   const submitIntakeForm = async (data: IntakeFormValues) => {
+    setIsSubmitting(true);
+    
     try {
       const code = generateAccessCode();
       
@@ -761,14 +773,19 @@ export default function PatientIntake() {
       }
       
       setSubmitted(true);
+      success(); // Haptic feedback on success
       toast.success("Intake form submitted successfully!");
     } catch (error: any) {
       toast.error(`Failed to submit form: ${error.message}`);
+      medium(); // Haptic feedback on error
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleProceedWithDuplicate = async () => {
     setShowDuplicateWarning(false);
+    setIsSubmitting(true);
     if (pendingSubmitData) {
       await submitIntakeForm(pendingSubmitData);
       setPendingSubmitData(null);
@@ -779,6 +796,7 @@ export default function PatientIntake() {
     setShowDuplicateWarning(false);
     setPendingSubmitData(null);
     setDuplicateEpisodes([]);
+    setIsSubmitting(false);
     toast.info("Submission cancelled. Please review the existing episodes.");
   };
 
@@ -1291,6 +1309,23 @@ export default function PatientIntake() {
           currentStep={currentStep}
           completedSteps={completedSteps}
         />
+
+        {/* Loading Overlay */}
+        {isSubmitting && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+            <Card className="p-8 max-w-sm mx-4">
+              <CardContent className="flex flex-col items-center gap-4 p-0">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <div className="text-center space-y-2">
+                  <p className="text-lg font-semibold">Submitting Your Form</p>
+                  <p className="text-sm text-muted-foreground">
+                    Please wait while we process your information...
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <TooltipProvider>
           <Form {...form}>
@@ -2525,7 +2560,7 @@ export default function PatientIntake() {
                 type="button"
                 variant="outline"
                 onClick={handlePreviousStep}
-                disabled={currentStep === 0}
+                disabled={currentStep === 0 || isSubmitting}
                 className="flex-1"
               >
                 <ChevronLeft className="h-4 w-4 mr-2" />
@@ -2536,6 +2571,7 @@ export default function PatientIntake() {
                 <Button
                   type="button"
                   onClick={handleNextStep}
+                  disabled={isSubmitting}
                   className="flex-1"
                 >
                   Next
@@ -2545,9 +2581,16 @@ export default function PatientIntake() {
                 <Button 
                   type="submit" 
                   className="flex-1" 
-                  disabled={form.formState.isSubmitting}
+                  disabled={isSubmitting}
                 >
-                  {form.formState.isSubmitting ? "Submitting..." : "Submit Intake Form"}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit Intake Form"
+                  )}
                 </Button>
               )}
             </div>
