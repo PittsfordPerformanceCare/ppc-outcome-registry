@@ -232,6 +232,8 @@ export default function PatientIntake() {
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [showReturningPatientLookup, setShowReturningPatientLookup] = useState(true);
   const [hasPrefilledData, setHasPrefilledData] = useState(false);
+  const [showExitWarning, setShowExitWarning] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   
   // Wizard state
   const [currentStep, setCurrentStep] = useState(0);
@@ -311,6 +313,16 @@ export default function PatientIntake() {
     control: form.control,
     name: "complaints",
   });
+  
+  // Track form changes
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      if (!hasFormChanged && !hasPrefilledData && !isRestoringProgress) {
+        setHasFormChanged(true);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form, hasFormChanged, hasPrefilledData, isRestoringProgress]);
 
   // Check for resume token on load
   useEffect(() => {
@@ -319,6 +331,23 @@ export default function PatientIntake() {
       loadSavedProgress(token);
     }
   }, [searchParams]);
+
+  // Warn before leaving page with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasFormChanged && !submitted) {
+        e.preventDefault();
+        e.returnValue = '';
+        return '';
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [hasFormChanged, submitted]);
 
   // Load saved progress
   const loadSavedProgress = async (token: string) => {
@@ -855,6 +884,29 @@ export default function PatientIntake() {
     setDuplicateEpisodes([]);
     setIsSubmitting(false);
     toast.info("Submission cancelled. Please review the existing episodes.");
+  };
+  
+  // Handle navigation with unsaved changes warning
+  const handleNavigationAttempt = (path: string) => {
+    if (hasFormChanged && !submitted) {
+      setPendingNavigation(path);
+      setShowExitWarning(true);
+    } else {
+      navigate(path);
+    }
+  };
+  
+  const handleConfirmExit = () => {
+    setShowExitWarning(false);
+    if (pendingNavigation) {
+      navigate(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  };
+  
+  const handleCancelExit = () => {
+    setShowExitWarning(false);
+    setPendingNavigation(null);
   };
 
   // Wizard step validation
@@ -2704,6 +2756,53 @@ export default function PatientIntake() {
               </AlertDialogCancel>
               <AlertDialogAction onClick={handleProceedWithDuplicate}>
                 Continue Anyway
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Exit Warning Dialog */}
+        <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-warning" />
+                Unsaved Changes
+              </AlertDialogTitle>
+              <AlertDialogDescription className="space-y-3">
+                <p>
+                  You have unsaved changes to your intake form. If you leave now, your progress will be lost.
+                </p>
+                
+                <div className="bg-muted/50 border rounded-lg p-3">
+                  <p className="text-sm font-medium mb-2">Options:</p>
+                  <ul className="text-xs space-y-1.5 text-muted-foreground">
+                    <li>• <strong>Stay:</strong> Continue filling out the form</li>
+                    <li>• <strong>Save Progress:</strong> Save your work and come back later</li>
+                    <li>• <strong>Leave:</strong> Exit without saving (changes will be lost)</li>
+                  </ul>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+              <AlertDialogCancel onClick={handleCancelExit}>
+                Stay on Form
+              </AlertDialogCancel>
+              <Button
+                variant="outline"
+                onClick={async () => {
+                  setShowExitWarning(false);
+                  await saveProgress(false);
+                }}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Save & Exit
+              </Button>
+              <AlertDialogAction 
+                onClick={handleConfirmExit}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Leave Without Saving
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
