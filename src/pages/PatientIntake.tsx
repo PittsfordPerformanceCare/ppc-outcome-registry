@@ -1415,33 +1415,130 @@ export default function PatientIntake() {
         </Card>
 
         {/* Progress Indicator */}
-        <Card className="mb-6 animate-fade-in">
+        <Card className="mb-6 animate-fade-in border-2">
           <CardContent className="pt-6">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">Form Completion</span>
-                  {completionPercentage === 100 && (
-                    <PartyPopper className="h-4 w-4 text-success animate-scale-in" />
-                  )}
+            <div className="space-y-4">
+              {/* Circular Progress */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="relative w-20 h-20">
+                    {/* Background circle */}
+                    <svg className="w-20 h-20 transform -rotate-90">
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        stroke="currentColor"
+                        strokeWidth="8"
+                        fill="none"
+                        className="text-muted"
+                      />
+                      {/* Progress circle */}
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        stroke="currentColor"
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={`${2 * Math.PI * 36}`}
+                        strokeDashoffset={`${2 * Math.PI * 36 * (1 - completionPercentage / 100)}`}
+                        className={`transition-all duration-700 ease-out ${
+                          completionPercentage === 100 ? 'text-success' : 'text-primary'
+                        }`}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    {/* Percentage text */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className={`text-lg font-bold transition-colors duration-300 ${
+                        completionPercentage === 100 ? 'text-success' : 'text-primary'
+                      }`}>
+                        {completionPercentage}%
+                      </span>
+                    </div>
+                    {/* Celebration icon */}
+                    {completionPercentage === 100 && (
+                      <div className="absolute -top-1 -right-1">
+                        <PartyPopper className="h-6 w-6 text-success animate-scale-in" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-lg">Form Progress</span>
+                      {completionPercentage === 100 && (
+                        <Badge className="bg-success text-success-foreground animate-scale-in">
+                          Complete!
+                        </Badge>
+                      )}
+                    </div>
+                    {completionPercentage === 100 ? (
+                      <p className="text-sm text-success font-medium">
+                        ✨ Perfect! Your form is ready to submit
+                      </p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        {Math.round((completionPercentage / 100) * Object.keys(sectionCompletion).length)} of {Object.keys(sectionCompletion).length} sections completed
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <span className="text-muted-foreground">{completionPercentage}%</span>
+                
+                {/* Milestone badges */}
+                <div className="hidden sm:flex gap-2">
+                  {[25, 50, 75, 100].map((milestone) => (
+                    <TooltipProvider key={milestone}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                              completionPercentage >= milestone
+                                ? 'bg-success text-success-foreground scale-110 shadow-lg'
+                                : 'bg-muted text-muted-foreground scale-100'
+                            } ${completionPercentage === milestone ? 'animate-scale-in' : ''}`}
+                          >
+                            {milestone === 25 && '🌱'}
+                            {milestone === 50 && '🌿'}
+                            {milestone === 75 && '🌳'}
+                            {milestone === 100 && '🎉'}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{milestone}% Milestone {completionPercentage >= milestone ? '- Achieved!' : ''}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ))}
+                </div>
               </div>
-              <Progress 
-                value={completionPercentage} 
-                className={`h-2 transition-all duration-500 ${
-                  completionPercentage === 100 ? 'bg-success/20' : ''
-                }`}
-              />
-              {completionPercentage === 100 ? (
-                <p className="text-xs text-success font-medium animate-fade-in">
-                  ✨ Perfect! Your form is complete and ready to submit
-                </p>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Complete all sections for the best care experience
-                </p>
-              )}
+
+              {/* Linear progress bar */}
+              <div className="space-y-2">
+                <Progress 
+                  value={completionPercentage} 
+                  className={`h-3 transition-all duration-500 ${
+                    completionPercentage === 100 ? 'bg-success/20' : ''
+                  }`}
+                />
+                
+                {/* Section completion chips */}
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {Object.entries(sectionCompletion).map(([key, completed]) => (
+                    <Badge
+                      key={key}
+                      variant={completed ? "default" : "secondary"}
+                      className={`text-xs transition-all duration-300 ${
+                        completed ? 'bg-success text-success-foreground scale-105' : 'opacity-60'
+                      }`}
+                    >
+                      {completed && <CheckCircle2 className="h-3 w-3 mr-1" />}
+                      {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
