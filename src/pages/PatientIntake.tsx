@@ -25,6 +25,7 @@ import SignatureCanvas from "react-signature-canvas";
 import jsPDF from "jspdf";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { SortableComplaintItem } from "@/components/SortableComplaintItem";
+import { ReturningPatientLookup } from "@/components/ReturningPatientLookup";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -225,6 +226,8 @@ export default function PatientIntake() {
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [hasFormChanged, setHasFormChanged] = useState(false);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [showReturningPatientLookup, setShowReturningPatientLookup] = useState(true);
+  const [hasPrefilledData, setHasPrefilledData] = useState(false);
   
   const signatureRef = useRef<SignatureCanvas>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -589,6 +592,22 @@ export default function PatientIntake() {
 
   const generateAccessCode = () => {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
+  };
+
+  // Handle returning patient selection and pre-fill
+  const handleReturningPatientSelect = (patientData: any) => {
+    // Pre-fill all the fields
+    Object.keys(patientData).forEach((key) => {
+      if (patientData[key]) {
+        form.setValue(key as any, patientData[key]);
+      }
+    });
+    
+    setHasPrefilledData(true);
+    setShowReturningPatientLookup(false);
+    
+    // Trigger haptic feedback
+    success();
   };
 
   // Check for duplicate patients
@@ -1160,6 +1179,44 @@ export default function PatientIntake() {
               <div className="flex items-center gap-2 text-primary">
                 <Clock className="h-5 w-5 animate-spin" />
                 <span className="font-medium">Restoring your saved progress...</span>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Returning Patient Lookup */}
+        {showReturningPatientLookup && !isRestoringProgress && !hasPrefilledData && (
+          <div className="mb-6">
+            <ReturningPatientLookup
+              onPatientSelect={handleReturningPatientSelect}
+              onClose={() => setShowReturningPatientLookup(false)}
+            />
+          </div>
+        )}
+
+        {hasPrefilledData && (
+          <Card className="mb-6 border-success/50 bg-success/5">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-success">
+                  <CheckCircle2 className="h-5 w-5" />
+                  <div>
+                    <p className="font-medium">Information Pre-filled</p>
+                    <p className="text-xs text-success/80">
+                      Your previous information has been loaded. Please update your current complaint below.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setShowReturningPatientLookup(true);
+                    setHasPrefilledData(false);
+                  }}
+                >
+                  Search Again
+                </Button>
               </div>
             </CardContent>
           </Card>
