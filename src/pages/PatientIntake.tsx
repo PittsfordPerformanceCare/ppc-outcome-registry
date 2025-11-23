@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock, ChevronRight, ChevronLeft } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -26,6 +26,7 @@ import jsPDF from "jspdf";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { SortableComplaintItem } from "@/components/SortableComplaintItem";
 import { ReturningPatientLookup } from "@/components/ReturningPatientLookup";
+import { IntakeWizardSteps } from "@/components/IntakeWizardSteps";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useRef } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -228,6 +229,18 @@ export default function PatientIntake() {
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [showReturningPatientLookup, setShowReturningPatientLookup] = useState(true);
   const [hasPrefilledData, setHasPrefilledData] = useState(false);
+  
+  // Wizard state
+  const [currentStep, setCurrentStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  
+  const wizardSteps = [
+    { id: 0, title: "Patient Info", description: "Personal & Contact" },
+    { id: 1, title: "Medical History", description: "Health Background" },
+    { id: 2, title: "Health Review", description: "Systems Check" },
+    { id: 3, title: "Current Concerns", description: "Areas of Pain" },
+    { id: 4, title: "Consent", description: "Signatures" },
+  ];
   
   const signatureRef = useRef<SignatureCanvas>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -767,6 +780,53 @@ export default function PatientIntake() {
     toast.info("Submission cancelled. Please review the existing episodes.");
   };
 
+  // Wizard step validation
+  const validateStep = async (stepIndex: number): Promise<boolean> => {
+    const values = form.getValues();
+    
+    switch (stepIndex) {
+      case 0: // Patient Info
+        return !!(values.patientName && values.dateOfBirth);
+      case 1: // Medical History
+        return true; // All optional
+      case 2: // Health Review  
+        return true; // Optional
+      case 3: // Current Concerns
+        return values.complaints.length > 0 && values.complaints.some(c => c.text && c.category);
+      case 4: // Consent
+        return !!(values.consentSignature && values.consentSignedName && values.hipaaAcknowledged && values.hipaaSignedName);
+      default:
+        return true;
+    }
+  };
+
+  const handleNextStep = async () => {
+    const isValid = await validateStep(currentStep);
+    
+    if (!isValid) {
+      toast.error("Please complete all required fields before proceeding");
+      medium();
+      return;
+    }
+
+    // Mark current step as completed
+    setCompletedSteps(prev => new Set(prev).add(currentStep));
+    
+    if (currentStep < wizardSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      light();
+    }
+  };
+
+  const handlePreviousStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      light();
+    }
+  };
+
   const generatePDF = () => {
     if (!submittedFormData) return;
 
@@ -1222,9 +1282,19 @@ export default function PatientIntake() {
           </Card>
         )}
 
+        {/* Wizard Progress */}
+        <IntakeWizardSteps 
+          steps={wizardSteps}
+          currentStep={currentStep}
+          completedSteps={completedSteps}
+        />
+
         <TooltipProvider>
           <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Step 0: Patient Info (Personal + Insurance + Emergency) */}
+            {currentStep === 0 && (
+              <>
             {/* Personal Information */}
             <Card>
               <CardHeader>
@@ -1456,6 +1526,12 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
+            </>
+            )}
+
+            {/* Step 1: Medical History */}
+            {currentStep === 1 && (
+              <>
             {/* Medical Information */}
             <Card>
               <CardHeader>
@@ -1631,6 +1707,12 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
+            </>
+            )}
+
+            {/* Step 2: Review of Systems */}
+            {currentStep === 2 && (
+              <>
             {/* Review of Systems */}
             <Card>
               <CardHeader>
@@ -1710,6 +1792,12 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
+            </>
+            )}
+
+            {/* Step 3: Areas of Concern */}
+            {currentStep === 3 && (
+              <>
             {/* Areas of Concern */}
             <Card>
               <CardHeader>
@@ -1928,6 +2016,12 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
+            </>
+            )}
+
+            {/* Step 4: Consent & HIPAA */}
+            {currentStep === 4 && (
+              <>
             {/* Informed Consent */}
             <Card>
               <CardHeader>
@@ -2298,9 +2392,41 @@ export default function PatientIntake() {
               </CardContent>
             </Card>
 
-            <Button type="submit" className="w-full" size="lg" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Submitting..." : "Submit Intake Form"}
-            </Button>
+            </>
+            )}
+
+            {/* Wizard Navigation */}
+            <div className="flex items-center justify-between gap-4 pt-6">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handlePreviousStep}
+                disabled={currentStep === 0}
+                className="flex-1"
+              >
+                <ChevronLeft className="h-4 w-4 mr-2" />
+                Previous
+              </Button>
+              
+              {currentStep < wizardSteps.length - 1 ? (
+                <Button
+                  type="button"
+                  onClick={handleNextStep}
+                  className="flex-1"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Button>
+              ) : (
+                <Button 
+                  type="submit" 
+                  className="flex-1" 
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? "Submitting..." : "Submit Intake Form"}
+                </Button>
+              )}
+            </div>
           </form>
         </Form>
         </TooltipProvider>
