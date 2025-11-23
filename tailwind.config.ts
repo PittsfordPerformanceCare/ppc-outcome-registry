@@ -213,6 +213,15 @@ export default {
             opacity: "1",
           },
         },
+        "shake": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "10%, 30%, 50%, 70%, 90%": { transform: "translateX(-4px)" },
+          "20%, 40%, 60%, 80%": { transform: "translateX(4px)" }
+        },
+        "slide-down": {
+          "0%": { transform: "translateY(-10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -223,6 +232,8 @@ export default {
         "zoom-in": "zoom-in 0.3s ease-out",
         "shimmer": "shimmer 2s linear infinite",
         "scale-in": "scale-in 0.2s ease-out",
+        "shake": "shake 0.4s ease-in-out",
+        "slide-down": "slide-down 0.3s ease-out"
       },
       transitionDelay: {
         '75': '75ms',
