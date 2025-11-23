@@ -240,6 +240,9 @@ export default function PatientIntake() {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+  const [validatedFields, setValidatedFields] = useState<Set<string>>(new Set());
+  const [errorFields, setErrorFields] = useState<Set<string>>(new Set());
   
   const wizardSteps = [
     { id: 0, title: "Patient Info", description: "Personal & Contact" },
@@ -1580,39 +1583,71 @@ export default function PatientIntake() {
                 <FormField
                   control={form.control}
                   name="patientName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name *</FormLabel>
-                      <FormControl>
-                        <Input 
-                          {...field} 
-                          autoComplete="name"
-                          inputMode="text"
-                          enterKeyHint="next"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field, fieldState }) => {
+                    const isValid = touchedFields.has('patientName') && !fieldState.error && field.value;
+                    const hasError = touchedFields.has('patientName') && fieldState.error;
+                    return (
+                      <FormItem className={hasError ? 'animate-shake' : ''}>
+                        <FormLabel>Full Name *</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              {...field}
+                              autoComplete="name"
+                              inputMode="text"
+                              enterKeyHint="next"
+                              onBlur={(e) => {
+                                field.onBlur();
+                                setTouchedFields(prev => new Set(prev).add('patientName'));
+                              }}
+                              className={isValid ? 'border-success focus:ring-success pr-10' : ''}
+                            />
+                            {isValid && (
+                              <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success animate-scale-in" />
+                            )}
+                          </div>
+                        </FormControl>
+                        {fieldState.error && (
+                          <FormMessage className="animate-slide-down" />
+                        )}
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="dateOfBirth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Date of Birth *</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="date" 
-                            {...field} 
-                            autoComplete="bday"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field, fieldState }) => {
+                      const isValid = touchedFields.has('dateOfBirth') && !fieldState.error && field.value;
+                      const hasError = touchedFields.has('dateOfBirth') && fieldState.error;
+                      return (
+                        <FormItem className={hasError ? 'animate-shake' : ''}>
+                          <FormLabel>Date of Birth *</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input 
+                                type="date" 
+                                {...field} 
+                                autoComplete="bday"
+                                onBlur={(e) => {
+                                  field.onBlur();
+                                  setTouchedFields(prev => new Set(prev).add('dateOfBirth'));
+                                }}
+                                className={isValid ? 'border-success focus:ring-success pr-10' : ''}
+                              />
+                              {isValid && (
+                                <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success animate-scale-in" />
+                              )}
+                            </div>
+                          </FormControl>
+                          {fieldState.error && (
+                            <FormMessage className="animate-slide-down" />
+                          )}
+                        </FormItem>
+                      );
+                    }}
                   />
                   <FormField
                     control={form.control}
@@ -1642,43 +1677,75 @@ export default function PatientIntake() {
                 <FormField
                   control={form.control}
                   name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="tel" 
-                          placeholder="(555) 123-4567" 
-                          {...field} 
-                          autoComplete="tel"
-                          inputMode="tel"
-                          enterKeyHint="next"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field, fieldState }) => {
+                    const isValid = touchedFields.has('phone') && !fieldState.error && field.value && field.value.length >= 10;
+                    const hasError = touchedFields.has('phone') && fieldState.error;
+                    return (
+                      <FormItem className={hasError ? 'animate-shake' : ''}>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              type="tel" 
+                              placeholder="(555) 123-4567" 
+                              {...field} 
+                              autoComplete="tel"
+                              inputMode="tel"
+                              enterKeyHint="next"
+                              onBlur={(e) => {
+                                field.onBlur();
+                                setTouchedFields(prev => new Set(prev).add('phone'));
+                              }}
+                              className={isValid ? 'border-success focus:ring-success pr-10' : ''}
+                            />
+                            {isValid && (
+                              <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success animate-scale-in" />
+                            )}
+                          </div>
+                        </FormControl>
+                        {fieldState.error && (
+                          <FormMessage className="animate-slide-down" />
+                        )}
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <FormField
                   control={form.control}
                   name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="email" 
-                          placeholder="name@example.com" 
-                          {...field} 
-                          autoComplete="email"
-                          inputMode="email"
-                          enterKeyHint="next"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field, fieldState }) => {
+                    const isValid = touchedFields.has('email') && !fieldState.error && field.value && field.value.includes('@');
+                    const hasError = touchedFields.has('email') && fieldState.error;
+                    return (
+                      <FormItem className={hasError ? 'animate-shake' : ''}>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              type="email" 
+                              placeholder="name@example.com" 
+                              {...field} 
+                              autoComplete="email"
+                              inputMode="email"
+                              enterKeyHint="next"
+                              onBlur={(e) => {
+                                field.onBlur();
+                                setTouchedFields(prev => new Set(prev).add('email'));
+                              }}
+                              className={isValid ? 'border-success focus:ring-success pr-10' : ''}
+                            />
+                            {isValid && (
+                              <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success animate-scale-in" />
+                            )}
+                          </div>
+                        </FormControl>
+                        {fieldState.error && (
+                          <FormMessage className="animate-slide-down" />
+                        )}
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <FormField
