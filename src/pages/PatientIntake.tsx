@@ -27,6 +27,7 @@ import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { SortableComplaintItem } from "@/components/SortableComplaintItem";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useRef } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DndContext,
   closestCenter,
@@ -220,10 +221,12 @@ export default function PatientIntake() {
   const [duplicateEpisodes, setDuplicateEpisodes] = useState<any[]>([]);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
   const [pendingSubmitData, setPendingSubmitData] = useState<IntakeFormValues | null>(null);
+  const [useTypedSignature, setUseTypedSignature] = useState(false);
   
   const signatureRef = useRef<SignatureCanvas>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const { medium, light, success } = useHaptics();
+  const isMobile = useIsMobile();
 
   // Drag and drop sensors
   const sensors = useSensors(
@@ -1860,44 +1863,140 @@ export default function PatientIntake() {
                     name="consentSignature"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Digital Signature *</FormLabel>
-                        <FormDescription>
-                          Please sign in the box below using your mouse or finger
-                        </FormDescription>
-                        <FormControl>
-                          <div className="border-2 border-input rounded-md">
-                            <SignatureCanvas
-                              ref={signatureRef}
-                              canvasProps={{
-                                className: "w-full h-40 rounded-md",
-                              }}
-                              onEnd={() => {
-                                if (signatureRef.current) {
-                                  const dataUrl = signatureRef.current.toDataURL();
-                                  field.onChange(dataUrl);
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Signature *</FormLabel>
+                          {isMobile && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setUseTypedSignature(!useTypedSignature);
+                                if (!useTypedSignature) {
+                                  // Switching to typed - generate signature from typed name
+                                  const name = form.getValues('consentSignedName');
+                                  if (name) {
+                                    // Create a simple text-based signature image
+                                    const canvas = document.createElement('canvas');
+                                    canvas.width = 400;
+                                    canvas.height = 100;
+                                    const ctx = canvas.getContext('2d');
+                                    if (ctx) {
+                                      ctx.font = '30px "Dancing Script", cursive';
+                                      ctx.fillStyle = '#000';
+                                      ctx.fillText(name, 20, 60);
+                                      field.onChange(canvas.toDataURL());
+                                    }
+                                  }
+                                } else {
+                                  // Switching to drawn - clear the field
+                                  field.onChange("");
+                                  if (signatureRef.current) {
+                                    signatureRef.current.clear();
+                                  }
                                 }
                               }}
-                            />
-                          </div>
-                        </FormControl>
-                        <div className="flex gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              if (signatureRef.current) {
-                                signatureRef.current.clear();
-                                field.onChange("");
-                                toast.success("Signature cleared");
-                              }
-                            }}
-                            className="border-accent text-accent hover:bg-accent hover:text-accent-foreground transition-all"
-                          >
-                            <X className="h-4 w-4 mr-2" />
-                            Clear Signature
-                          </Button>
+                              className="text-xs"
+                            >
+                              {useTypedSignature ? "Draw Instead" : "Type Instead"}
+                            </Button>
+                          )}
                         </div>
+                        
+                        {useTypedSignature || (isMobile && !field.value) ? (
+                          <>
+                            <FormDescription>
+                              Your typed name will serve as your digital signature
+                            </FormDescription>
+                            <FormControl>
+                              <div className="space-y-2">
+                                <Input
+                                  placeholder="Type your full legal name"
+                                  value={form.watch('consentSignedName')}
+                                  onChange={(e) => {
+                                    const name = e.target.value;
+                                    form.setValue('consentSignedName', name);
+                                    
+                                    // Generate signature image from typed name
+                                    if (name) {
+                                      const canvas = document.createElement('canvas');
+                                      canvas.width = 400;
+                                      canvas.height = 100;
+                                      const ctx = canvas.getContext('2d');
+                                      if (ctx) {
+                                        ctx.font = '30px "Dancing Script", cursive';
+                                        ctx.fillStyle = '#000';
+                                        ctx.textAlign = 'left';
+                                        ctx.textBaseline = 'middle';
+                                        ctx.fillText(name, 20, 50);
+                                        field.onChange(canvas.toDataURL());
+                                      }
+                                    } else {
+                                      field.onChange("");
+                                    }
+                                  }}
+                                  className="text-lg"
+                                />
+                                {field.value && (
+                                  <div className="border-2 border-input rounded-md p-4 bg-muted/30">
+                                    <p className="text-xs text-muted-foreground mb-2">Preview:</p>
+                                    <img 
+                                      src={field.value} 
+                                      alt="Signature preview" 
+                                      className="h-16 mx-auto"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </FormControl>
+                            <Alert>
+                              <AlertCircle className="h-4 w-4" />
+                              <AlertDescription className="text-xs">
+                                By typing your name, you agree this serves as your legal electronic signature
+                              </AlertDescription>
+                            </Alert>
+                          </>
+                        ) : (
+                          <>
+                            <FormDescription>
+                              Please sign in the box below using your mouse or finger
+                            </FormDescription>
+                            <FormControl>
+                              <div className="border-2 border-input rounded-md">
+                                <SignatureCanvas
+                                  ref={signatureRef}
+                                  canvasProps={{
+                                    className: "w-full h-40 rounded-md",
+                                  }}
+                                  onEnd={() => {
+                                    if (signatureRef.current) {
+                                      const dataUrl = signatureRef.current.toDataURL();
+                                      field.onChange(dataUrl);
+                                    }
+                                  }}
+                                />
+                              </div>
+                            </FormControl>
+                            <div className="flex gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  if (signatureRef.current) {
+                                    signatureRef.current.clear();
+                                    field.onChange("");
+                                    toast.success("Signature cleared");
+                                  }
+                                }}
+                                className="border-accent text-accent hover:bg-accent hover:text-accent-foreground transition-all"
+                              >
+                                <X className="h-4 w-4 mr-2" />
+                                Clear Signature
+                              </Button>
+                            </div>
+                          </>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
