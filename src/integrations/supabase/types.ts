@@ -996,6 +996,48 @@ export type Database = {
         }
         Relationships: []
       }
+      intake_progress: {
+        Row: {
+          completed: boolean | null
+          created_at: string
+          expires_at: string
+          form_data: Json
+          id: string
+          last_accessed_at: string | null
+          patient_email: string | null
+          patient_name: string | null
+          patient_phone: string | null
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string
+          expires_at: string
+          form_data?: Json
+          id?: string
+          last_accessed_at?: string | null
+          patient_email?: string | null
+          patient_name?: string | null
+          patient_phone?: string | null
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string
+          expires_at?: string
+          form_data?: Json
+          id?: string
+          last_accessed_at?: string | null
+          patient_email?: string | null
+          patient_name?: string | null
+          patient_phone?: string | null
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       merge_report_presets: {
         Row: {
           clinic_id: string | null
@@ -2671,6 +2713,7 @@ export type Database = {
           reset_at: string
         }[]
       }
+      cleanup_expired_intake_progress: { Args: never; Returns: undefined }
       cleanup_old_sessions: { Args: never; Returns: undefined }
       generate_referral_code: {
         Args: { p_patient_id: string }
