@@ -57,27 +57,22 @@ export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
     const newResponses = { ...responses, [questionIndex]: numValue };
     setResponses(newResponses);
 
-    // Calculate total score: recode "1" to "0" (no more of a problem than before)
-    const totalScore = Object.values(newResponses).reduce((sum, val) => {
-      return sum + (val === 1 ? 0 : val);
-    }, 0);
+    // Calculate total score (all ratings 0-4 are used directly)
+    const totalScore = Object.values(newResponses).reduce((sum, val) => sum + val, 0);
     onScoreChange(totalScore);
   };
 
-  // Calculate scores with "1" recoded to "0"
-  const getRecodedScore = (val: number) => (val === 1 ? 0 : val);
-  
-  const totalScore = Object.values(responses).reduce((sum, val) => sum + getRecodedScore(val), 0);
+  const totalScore = Object.values(responses).reduce((sum, val) => sum + val, 0);
   const isComplete = Object.keys(responses).length === RPQ_SYMPTOMS.length;
   
   // RPQ-3: First 3 items (headaches, dizziness, nausea) - range 0-12
   const rpq3Score = [0, 1, 2].reduce((sum, idx) => {
-    return sum + (responses[idx] !== undefined ? getRecodedScore(responses[idx]) : 0);
+    return sum + (responses[idx] !== undefined ? responses[idx] : 0);
   }, 0);
   
   // RPQ-13: Remaining 13 items - range 0-52
   const rpq13Score = Array.from({ length: 13 }, (_, i) => i + 3).reduce((sum, idx) => {
-    return sum + (responses[idx] !== undefined ? getRecodedScore(responses[idx]) : 0);
+    return sum + (responses[idx] !== undefined ? responses[idx] : 0);
   }, 0);
   
   // Clinical interpretation
@@ -96,7 +91,7 @@ export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
       <CardHeader>
         <CardTitle>The Rivermead Post-Concussion Symptoms Questionnaire</CardTitle>
         <CardDescription>
-          Total Score: {totalScore}/64 (Rating of "1" recoded to "0" in total)
+          Total Score: {totalScore}/64
           {isComplete && (
             <span className="ml-2 text-primary font-medium">✓ Complete</span>
           )}
@@ -187,7 +182,7 @@ export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
             )}
             
             <div className="text-xs text-muted-foreground">
-              Note: Ratings of "1" (no more of a problem than before) are recoded to "0" in the total score to focus on new or worsened symptoms.
+              Note: All ratings from 0 to 4 are included in the total score.
             </div>
           </div>
         </div>

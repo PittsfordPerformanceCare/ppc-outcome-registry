@@ -18,31 +18,25 @@ const RadioGroupItem = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
 >(({ className, ...props }, ref) => {
   const { toggle } = useHaptics();
-  const [ripple, setRipple] = React.useState(false);
+  
+  const handleSelect = () => {
+    toggle();
+  };
   
   return (
-    <div className="relative inline-flex">
-      <RadioGroupPrimitive.Item
-        ref={ref}
-        className={cn(
-          "aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 hover:scale-110 data-[state=checked]:scale-110",
-          className,
-        )}
-        onClick={() => {
-          toggle();
-          setRipple(true);
-          setTimeout(() => setRipple(false), 600);
-        }}
-        {...props}
-      >
-        <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-          <Circle className="h-2.5 w-2.5 fill-current text-current animate-scale-in" />
-        </RadioGroupPrimitive.Indicator>
-      </RadioGroupPrimitive.Item>
-      {ripple && (
-        <span className="absolute inset-0 rounded-full bg-primary/20 animate-ripple pointer-events-none" />
+    <RadioGroupPrimitive.Item
+      ref={ref}
+      className={cn(
+        "aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 hover:scale-110 data-[state=checked]:scale-110",
+        className,
       )}
-    </div>
+      onSelect={handleSelect}
+      {...props}
+    >
+      <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
+        <Circle className="h-2.5 w-2.5 fill-current text-current animate-scale-in" />
+      </RadioGroupPrimitive.Indicator>
+    </RadioGroupPrimitive.Item>
   );
 });
 RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
