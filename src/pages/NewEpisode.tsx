@@ -27,7 +27,7 @@ import { PatientSearch } from "@/components/PatientSearch";
 export default function NewEpisode() {
   const navigate = useNavigate();
   const [patientName, setPatientName] = useState("");
-  const [episodeType, setEpisodeType] = useState<string>("MSK");
+  const [episodeType, setEpisodeType] = useState<"MSK" | "Neurology" | "Performance">("MSK");
   const [region, setRegion] = useState<string>("");
   const [dateOfService, setDateOfService] = useState("");
   const [selectedIndices, setSelectedIndices] = useState<IndexType[]>([]);
@@ -130,7 +130,7 @@ export default function NewEpisode() {
   }, []);
 
   // Handle episode type change
-  const handleEpisodeTypeChange = (value: string) => {
+  const handleEpisodeTypeChange = (value: "MSK" | "Neurology" | "Performance") => {
     setEpisodeType(value);
     if (value === "Neurology") {
       // Automatically select RPQ for Neurology episodes
@@ -240,7 +240,7 @@ export default function NewEpisode() {
         patient_name: patientName.trim(),
         date_of_birth: dob.trim(),
         episode_type: episodeType,
-        region: episodeType === "MSK" ? region : "Neurology",
+        region: episodeType === "MSK" ? region : episodeType === "Neurology" ? "Neurology" : "Performance",
         diagnosis: diagnosis.trim(),
         date_of_service: dateOfService,
         injury_date: injuryDate,
