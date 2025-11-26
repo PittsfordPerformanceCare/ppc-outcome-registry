@@ -9,36 +9,37 @@ interface RPQFormProps {
 }
 
 // Rivermead Post-Concussion Symptoms Questionnaire (RPQ)
-// 16 symptoms rated 0-4 (Not experienced at all to Severe problem)
+// 16 symptoms rated 0-4 (Not experienced at all to A severe problem)
 const RPQ_SYMPTOMS = [
   "Headaches",
-  "Feelings of dizziness",
-  "Nausea and/or vomiting",
-  "Noise sensitivity (easily upset by loud noise)",
-  "Sleep disturbance",
-  "Fatigue (tiring more easily)",
-  "Being irritable (easily angered)",
-  "Feeling depressed or tearful",
-  "Feeling frustrated or impatient",
-  "Forgetfulness (poor memory)",
-  "Poor concentration",
-  "Taking longer to think",
-  "Blurred vision",
-  "Light sensitivity (easily upset by bright light)",
-  "Double vision",
+  "Feelings of Dizziness",
+  "Nausea and/or Vomiting",
+  "Noise Sensitivity, easily upset by loud noise",
+  "Sleep Disturbance",
+  "Fatigue, tiring more easily",
+  "Being Irritable, easily angered",
+  "Feeling Depressed or Tearful",
+  "Feeling Frustrated or Impatient",
+  "Forgetfulness, poor memory",
+  "Poor Concentration",
+  "Taking Longer to Think",
+  "Blurred Vision",
+  "Light Sensitivity, easily upset by bright light",
+  "Double Vision",
   "Restlessness",
 ];
 
 const RATING_OPTIONS = [
   { value: 0, label: "Not experienced at all" },
   { value: 1, label: "No more of a problem" },
-  { value: 2, label: "Mild problem" },
-  { value: 3, label: "Moderate problem" },
-  { value: 4, label: "Severe problem" },
+  { value: 2, label: "A mild problem" },
+  { value: 3, label: "A moderate problem" },
+  { value: 4, label: "A severe problem" },
 ];
 
 export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
   const [responses, setResponses] = useState<{ [key: number]: number }>({});
+  const [otherDifficulties, setOtherDifficulties] = useState("");
 
   useEffect(() => {
     if (initialScore !== undefined) {
@@ -66,9 +67,9 @@ export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>Rivermead Post-Concussion Symptoms Questionnaire (RPQ)</CardTitle>
+        <CardTitle>The Rivermead Post-Concussion Symptoms Questionnaire</CardTitle>
         <CardDescription>
-          Rate each symptom compared to before your injury/concussion. Total Score: {totalScore}/64
+          Total Score: {totalScore}/64
           {isComplete && (
             <span className="ml-2 text-primary font-medium">✓ Complete</span>
           )}
@@ -76,7 +77,17 @@ export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="text-sm text-muted-foreground mb-4">
-          Please rate the following symptoms as you have experienced them over the past 24 hours:
+          <p className="mb-2">
+            After a head injury or accident some people experience symptoms which can cause worry or nuisance. 
+            We would like to know if you now suffer from any of the symptoms given below.
+          </p>
+          <p className="font-medium">
+            As many of these symptoms occur normally, we would like you to compare yourself now with before the accident. 
+            For each one, please select the rating closest to your answer.
+          </p>
+          <p className="mt-2 font-medium">
+            Compared with before the accident, do you now (i.e., over the last 24 hours) suffer from:
+          </p>
         </div>
 
         {RPQ_SYMPTOMS.map((symptom, index) => (
@@ -104,12 +115,24 @@ export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
           </div>
         ))}
 
-        <div className="pt-4 border-t">
+        <div className="pt-4 border-t space-y-4">
+          <div>
+            <Label className="text-base font-medium">
+              Are you experiencing any other difficulties?
+            </Label>
+            <textarea
+              value={otherDifficulties}
+              onChange={(e) => setOtherDifficulties(e.target.value)}
+              className="w-full mt-2 p-3 border rounded-md min-h-[100px] bg-background text-foreground"
+              placeholder="Please describe any other difficulties you are experiencing..."
+            />
+          </div>
+          
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium">Total Score:</span>
             <span className="text-2xl font-bold text-primary">{totalScore} / 64</span>
           </div>
-          <div className="text-xs text-muted-foreground mt-2">
+          <div className="text-xs text-muted-foreground">
             Higher scores indicate greater symptom severity. A score of 0 means no symptoms.
           </div>
         </div>
