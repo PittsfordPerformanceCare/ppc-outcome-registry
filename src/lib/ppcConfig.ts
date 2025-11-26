@@ -19,6 +19,7 @@ export const PPC_CONFIG = {
     "Hip",
     "Knee",
     "Ankle/Foot",
+    "Brain/Head",
   ],
   episodeTypeEnum: ["MSK", "Neurology"],
   statusLabels: {
@@ -36,6 +37,7 @@ export const PPC_CONFIG = {
     const r = (region || "").toLowerCase();
     const want = new Set<string>();
     
+    if (r.includes("brain") || r.includes("head")) want.add("RPQ");
     if (r.includes("cervical")) want.add("NDI");
     if (r.includes("lumbar") || r.includes("thoracic")) want.add("ODI");
     if (["shoulder", "elbow", "wrist", "hand", "wrist/hand"].some((k) => r.includes(k))) {

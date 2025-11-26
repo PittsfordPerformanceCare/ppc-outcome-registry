@@ -1,5 +1,19 @@
 // Top 12 Diagnoses per Anatomical Region
 export const REGION_DIAGNOSES: Record<string, string[]> = {
+  "Brain/Head": [
+    "Post-concussion syndrome",
+    "Mild traumatic brain injury (mTBI)",
+    "Concussion",
+    "Post-traumatic headache",
+    "Vestibular concussion",
+    "Cervicogenic dizziness (post-head injury)",
+    "Visual dysfunction (post-concussion)",
+    "Cognitive impairment (post-TBI)",
+    "Balance disorder (post-concussion)",
+    "Chronic post-concussion symptoms",
+    "Whiplash-associated concussion",
+    "Persistent post-concussive symptoms"
+  ],
   "Cervical": [
     "Cervical strain/sprain",
     "Cervical radiculopathy",
