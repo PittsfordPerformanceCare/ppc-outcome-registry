@@ -25,6 +25,11 @@ import { toast } from "sonner";
 import { CheckCircle2, AlertCircle, Loader2, ChevronDown, ChevronUp, Calendar, Activity } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
+import { NDIForm } from "@/components/forms/NDIForm";
+import { ODIForm } from "@/components/forms/ODIForm";
+import { QuickDASHForm } from "@/components/forms/QuickDASHForm";
+import { LEFSForm } from "@/components/forms/LEFSForm";
+import { RPQForm } from "@/components/forms/RPQForm";
 
 interface IntakeForm {
   id: string;
@@ -81,6 +86,9 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
   const [confirmDuplicate, setConfirmDuplicate] = useState(false);
   const [showDuplicateDetails, setShowDuplicateDetails] = useState(false);
   const [showDataSummary, setShowDataSummary] = useState(false);
+  const [showBaselineAssessment, setShowBaselineAssessment] = useState(false);
+  const [createdEpisodeId, setCreatedEpisodeId] = useState<string>("");
+  const [baselineScores, setBaselineScores] = useState<Record<string, number>>({});
 
   // Extract region from complaints
   const inferRegionFromComplaints = (): string => {
@@ -342,11 +350,8 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
       const createdEpisode = await createEpisode(newEpisodeData);
       const episodeId = createdEpisode.id;
 
-      // Save baseline pain score as outcome if available  
-      if (intakeForm.pain_level && preview?.indices) {
-        // Pain is tracked separately in episodes, not as an outcome score
-        // Outcome scores are for NDI, ODI, QuickDASH, LEFS only
-      }
+      // Store episode ID for baseline assessment
+      setCreatedEpisodeId(episodeId);
 
       // Update intake form with episode link
       const { error: updateError } = await supabase
@@ -440,26 +445,64 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
         // Don't fail the whole conversion if notification fails
       }
 
-      toast.success(
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4" />
-          <span>Episode created successfully!</span>
-        </div>
-      );
+      // Prompt for baseline assessment instead of immediately closing
+      setConverting(false);
+      setShowBaselineAssessment(true);
+      toast.success("Episode created! Please complete baseline outcome assessments.");
+    } catch (error: any) {
+      console.error("Conversion error:", error);
+      toast.error(`Failed to create episode: ${error.message}`);
+      setConverting(false);
+    }
+  };
 
+  const handleBaselineScoreChange = (index: string, score: number) => {
+    setBaselineScores(prev => ({ ...prev, [index]: score }));
+  };
+
+  const handleSaveBaseline = async () => {
+    try {
+      // Validate all required scores are entered
+      const requiredIndices = preview?.indices || [];
+      const missingScores = requiredIndices.filter(idx => baselineScores[idx] === undefined);
+      
+      if (missingScores.length > 0) {
+        toast.error(`Please complete all baseline assessments: ${missingScores.join(", ")}`);
+        return;
+      }
+
+      setConverting(true);
+
+      // Save baseline scores to database
+      for (const [indexType, score] of Object.entries(baselineScores)) {
+        await saveOutcomeScore(createdEpisodeId, indexType, "baseline", score);
+      }
+
+      toast.success("Baseline assessments saved successfully!");
+      
       onSuccess();
       onClose();
 
       // Navigate to the new episode
       setTimeout(() => {
-        navigate(`/episode-summary?id=${episodeId}`);
+        navigate(`/episode-summary?id=${createdEpisodeId}`);
       }, 500);
     } catch (error: any) {
-      console.error("Conversion error:", error);
-      toast.error(`Failed to create episode: ${error.message}`);
+      console.error("Failed to save baseline scores:", error);
+      toast.error(`Failed to save baseline assessments: ${error.message}`);
     } finally {
       setConverting(false);
     }
+  };
+
+  const handleSkipBaseline = () => {
+    toast.info("You can add baseline assessments later from the episode summary page");
+    onSuccess();
+    onClose();
+    
+    setTimeout(() => {
+      navigate(`/episode-summary?id=${createdEpisodeId}`);
+    }, 500);
   };
 
   return (
@@ -751,6 +794,83 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
                 {confirmDuplicate ? "Confirm & Create Episode" : "Create Episode"}
               </>
             )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* Baseline Assessment Dialog */}
+    <Dialog open={showBaselineAssessment} onOpenChange={(open) => !converting && setShowBaselineAssessment(open)}>
+      <DialogContent className="max-w-4xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle>Baseline Outcome Assessments</DialogTitle>
+          <DialogDescription>
+            Complete the following outcome measures to establish baseline scores for {intakeForm.patient_name}
+          </DialogDescription>
+        </DialogHeader>
+
+        <ScrollArea className="max-h-[calc(90vh-180px)] pr-4">
+          <div className="space-y-6 py-4">
+            <Alert>
+              <Activity className="h-4 w-4" />
+              <AlertDescription>
+                These baseline assessments are critical for measuring patient progress and calculating improvement at discharge.
+                All selected outcome measures must be completed before proceeding.
+              </AlertDescription>
+            </Alert>
+
+            {preview?.indices.includes("NDI") && (
+              <NDIForm 
+                onScoreChange={(score) => handleBaselineScoreChange("NDI", score)}
+                initialScore={baselineScores["NDI"]}
+              />
+            )}
+
+            {preview?.indices.includes("ODI") && (
+              <ODIForm 
+                onScoreChange={(score) => handleBaselineScoreChange("ODI", score)}
+                initialScore={baselineScores["ODI"]}
+              />
+            )}
+
+            {preview?.indices.includes("QuickDASH") && (
+              <QuickDASHForm 
+                onScoreChange={(score) => handleBaselineScoreChange("QuickDASH", score)}
+                initialScore={baselineScores["QuickDASH"]}
+              />
+            )}
+
+            {preview?.indices.includes("LEFS") && (
+              <LEFSForm 
+                onScoreChange={(score) => handleBaselineScoreChange("LEFS", score)}
+                initialScore={baselineScores["LEFS"]}
+              />
+            )}
+
+            {preview?.indices.includes("RPQ") && (
+              <RPQForm 
+                onScoreChange={(score) => handleBaselineScoreChange("RPQ", score)}
+                initialScore={baselineScores["RPQ"]}
+              />
+            )}
+          </div>
+        </ScrollArea>
+
+        <DialogFooter className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleSkipBaseline}
+            disabled={converting}
+          >
+            Skip for Now
+          </Button>
+          <Button
+            onClick={handleSaveBaseline}
+            disabled={converting}
+            className="gap-2"
+          >
+            {converting && <Loader2 className="h-4 w-4 animate-spin" />}
+            Save & Continue
           </Button>
         </DialogFooter>
       </DialogContent>
