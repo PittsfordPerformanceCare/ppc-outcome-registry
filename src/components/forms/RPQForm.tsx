@@ -57,19 +57,46 @@ export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
     const newResponses = { ...responses, [questionIndex]: numValue };
     setResponses(newResponses);
 
-    const totalScore = Object.values(newResponses).reduce((sum, val) => sum + val, 0);
+    // Calculate total score: recode "1" to "0" (no more of a problem than before)
+    const totalScore = Object.values(newResponses).reduce((sum, val) => {
+      return sum + (val === 1 ? 0 : val);
+    }, 0);
     onScoreChange(totalScore);
   };
 
-  const totalScore = Object.values(responses).reduce((sum, val) => sum + val, 0);
+  // Calculate scores with "1" recoded to "0"
+  const getRecodedScore = (val: number) => (val === 1 ? 0 : val);
+  
+  const totalScore = Object.values(responses).reduce((sum, val) => sum + getRecodedScore(val), 0);
   const isComplete = Object.keys(responses).length === RPQ_SYMPTOMS.length;
+  
+  // RPQ-3: First 3 items (headaches, dizziness, nausea) - range 0-12
+  const rpq3Score = [0, 1, 2].reduce((sum, idx) => {
+    return sum + (responses[idx] !== undefined ? getRecodedScore(responses[idx]) : 0);
+  }, 0);
+  
+  // RPQ-13: Remaining 13 items - range 0-52
+  const rpq13Score = Array.from({ length: 13 }, (_, i) => i + 3).reduce((sum, idx) => {
+    return sum + (responses[idx] !== undefined ? getRecodedScore(responses[idx]) : 0);
+  }, 0);
+  
+  // Clinical interpretation
+  const getInterpretation = () => {
+    if (!isComplete) return null;
+    if (totalScore < 12) return { level: "Below threshold", color: "text-green-600", description: "Symptoms are minimal" };
+    if (totalScore >= 16 && totalScore <= 35) return { level: "May indicate Post-Concussion Syndrome", color: "text-orange-600", description: "Consider further evaluation" };
+    if (totalScore > 35) return { level: "Severe symptoms", color: "text-red-600", description: "Recommend comprehensive assessment" };
+    return { level: "Clinically relevant", color: "text-yellow-600", description: "Symptoms warrant monitoring" };
+  };
+  
+  const interpretation = getInterpretation();
 
   return (
     <Card className="w-full">
       <CardHeader>
         <CardTitle>The Rivermead Post-Concussion Symptoms Questionnaire</CardTitle>
         <CardDescription>
-          Total Score: {totalScore}/64
+          Total Score: {totalScore}/64 (Rating of "1" recoded to "0" in total)
           {isComplete && (
             <span className="ml-2 text-primary font-medium">✓ Complete</span>
           )}
@@ -128,12 +155,40 @@ export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
             />
           </div>
           
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-medium">Total Score:</span>
-            <span className="text-2xl font-bold text-primary">{totalScore} / 64</span>
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Higher scores indicate greater symptom severity. A score of 0 means no symptoms.
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium">Total Score:</span>
+              <span className="text-2xl font-bold text-primary">{totalScore} / 64</span>
+            </div>
+            
+            {isComplete && (
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="p-3 bg-muted rounded-md">
+                  <div className="font-medium text-muted-foreground">RPQ-3 (Early symptoms)</div>
+                  <div className="text-lg font-semibold">{rpq3Score} / 12</div>
+                  <div className="text-xs text-muted-foreground mt-1">Headaches, dizziness, nausea</div>
+                </div>
+                <div className="p-3 bg-muted rounded-md">
+                  <div className="font-medium text-muted-foreground">RPQ-13 (Later symptoms)</div>
+                  <div className="text-lg font-semibold">{rpq13Score} / 52</div>
+                  <div className="text-xs text-muted-foreground mt-1">Cognitive & emotional</div>
+                </div>
+              </div>
+            )}
+            
+            {interpretation && (
+              <div className={`p-3 bg-muted rounded-md ${interpretation.color}`}>
+                <div className="font-semibold">{interpretation.level}</div>
+                <div className="text-sm">{interpretation.description}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Clinical threshold: ≥12 | PCS range: 16-35
+                </div>
+              </div>
+            )}
+            
+            <div className="text-xs text-muted-foreground">
+              Note: Ratings of "1" (no more of a problem than before) are recoded to "0" in the total score to focus on new or worsened symptoms.
+            </div>
           </div>
         </div>
       </CardContent>
