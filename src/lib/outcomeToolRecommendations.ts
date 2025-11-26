@@ -18,6 +18,18 @@ export function getOutcomeToolRecommendations(
 ): OutcomeToolRecommendation[] {
   const recommendations: OutcomeToolRecommendation[] = [];
 
+  // Brain/Head → RPQ (Rivermead Post-Concussion Symptoms)
+  if (region === "Brain/Head") {
+    recommendations.push({
+      tool: "RPQ",
+      toolName: "Rivermead Post-Concussion Symptoms Questionnaire",
+      confidence: "high",
+      reason: "Standard outcome measure for concussion and head injury assessment",
+      description: "16-item questionnaire measuring post-concussion symptoms across cognitive, physical, and emotional domains",
+      targetArea: "Brain/Head"
+    });
+  }
+
   // Cervical Spine → NDI (Neck Disability Index)
   if (region === "Cervical") {
     recommendations.push({
