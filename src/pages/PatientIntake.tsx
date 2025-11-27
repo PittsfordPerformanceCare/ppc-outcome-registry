@@ -62,6 +62,7 @@ const COMPLAINT_CATEGORIES = [
   "Hip",
   "Knee",
   "Ankle/Foot",
+  "Brain/Head",
   "Other"
 ] as const;
 
