@@ -588,35 +588,48 @@ export default function NewEpisode() {
               />
             </div>
 
-            {/* Intake Metrics: CIS Standing and Pain Scale */}
-            <div className="mt-6 grid gap-6 md:grid-cols-2">
-              <MetricCard
-                title="CIS Standing"
-                description="Neurologic readiness (0-10)"
-                preLabel="Pre (0-10)"
-                postLabel="Post (captured at Final)"
-                preValue={cisPre}
-                postValue={cisPost}
-                onPreChange={setCisPre}
-                onPostChange={setCisPost}
-                isIntake={true}
-                deltaInverted={false}
-                icon="activity"
-              />
-              <MetricCard
-                title="Patient Verbal Pain Scale"
-                description="Self-reported 0-10"
-                preLabel="Pre (0-10)"
-                postLabel="Post (captured at Final)"
-                preValue={painPre}
-                postValue={painPost}
-                onPreChange={setPainPre}
-                onPostChange={setPainPost}
-                isIntake={true}
-                deltaInverted={true}
-                icon="alert"
-              />
-            </div>
+            {/* Intake Metrics: CIS Standing and Pain Scale - MSK Only */}
+            {episodeType === "Neurology" ? (
+              <div className="mt-6">
+                <Card className="border-blue-200 bg-blue-50">
+                  <CardContent className="pt-6">
+                    <p className="text-sm text-blue-900">
+                      <strong>Note:</strong> For Neurology episodes, the intake is an examination day without treatment. 
+                      CIS and Pain scales are not collected at intake and will be captured during follow-up visits when treatment begins.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-6 md:grid-cols-2">
+                <MetricCard
+                  title="CIS Standing"
+                  description="Neurologic readiness (0-10)"
+                  preLabel="Pre (0-10)"
+                  postLabel="Post (captured at Final)"
+                  preValue={cisPre}
+                  postValue={cisPost}
+                  onPreChange={setCisPre}
+                  onPostChange={setCisPost}
+                  isIntake={true}
+                  deltaInverted={false}
+                  icon="activity"
+                />
+                <MetricCard
+                  title="Patient Verbal Pain Scale"
+                  description="Self-reported 0-10"
+                  preLabel="Pre (0-10)"
+                  postLabel="Post (captured at Final)"
+                  preValue={painPre}
+                  postValue={painPost}
+                  onPreChange={setPainPre}
+                  onPostChange={setPainPost}
+                  isIntake={true}
+                  deltaInverted={true}
+                  icon="alert"
+                />
+              </div>
+            )}
 
             <div className="mt-6 space-y-6">
               {episodeType === "Neurology" && selectedIndices.includes("RPQ") && (
