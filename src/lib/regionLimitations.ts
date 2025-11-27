@@ -125,6 +125,20 @@ export const REGION_LIMITATIONS: Record<string, string[]> = {
     "Pain pushing off while walking",
     "Pain driving or braking",
     "Swelling after activity"
+  ],
+  "Brain/Head": [
+    "Difficulty tolerating visual environments",
+    "Headache that increases with cognitive or visual demand",
+    "Difficulty with balance or spatial orientation",
+    "Light or noise sensitivity",
+    "Slowed processing speed",
+    "Difficulty with reading endurance or comprehension",
+    "Dizziness with head movements",
+    "Fatigue that limits daily activities",
+    "Difficulty with multitasking or divided attention",
+    "Increased emotional reactivity or irritability",
+    "Sleep disruption affecting daytime function",
+    "Reduced exercise or activity tolerance"
   ]
 };
 
