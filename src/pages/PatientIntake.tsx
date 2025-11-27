@@ -1023,7 +1023,7 @@ export default function PatientIntake() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         light();
         setIsTransitioning(false);
-      }, 150);
+      }, 300); // Increased from 150ms to 300ms for smoother transition
     }
   };
 
@@ -1037,7 +1037,7 @@ export default function PatientIntake() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         light();
         setIsTransitioning(false);
-      }, 150);
+      }, 300); // Increased from 150ms to 300ms for smoother transition
     }
   };
 
@@ -1747,9 +1747,9 @@ export default function PatientIntake() {
                 className={`space-y-6 ${
                   isTransitioning 
                     ? slideDirection === 'left' 
-                      ? 'animate-[slide-out-left_0.15s_ease-out]' 
-                      : 'animate-[slide-out-right_0.15s_ease-out]'
-                    : 'animate-fade-in'
+                      ? 'animate-[fade-out_0.3s_ease-out,slide-out-right_0.3s_ease-out]' 
+                      : 'animate-[fade-out_0.3s_ease-out,slide-in-right_0.3s_ease-out]'
+                    : 'animate-[fade-in_0.4s_ease-out,scale-in_0.3s_ease-out]'
                 }`}
               >
             {/* Personal Information */}
@@ -2118,9 +2118,9 @@ export default function PatientIntake() {
                 className={`space-y-6 ${
                   isTransitioning 
                     ? slideDirection === 'left' 
-                      ? 'animate-[slide-out-left_0.15s_ease-out]' 
-                      : 'animate-[slide-out-right_0.15s_ease-out]'
-                    : 'animate-fade-in'
+                      ? 'animate-[fade-out_0.3s_ease-out,slide-out-right_0.3s_ease-out]' 
+                      : 'animate-[fade-out_0.3s_ease-out,slide-in-right_0.3s_ease-out]'
+                    : 'animate-[fade-in_0.4s_ease-out,scale-in_0.3s_ease-out]'
                 }`}
               >
             {/* Medical Information */}
@@ -2313,9 +2313,9 @@ export default function PatientIntake() {
               className={`space-y-6 ${
                 isTransitioning 
                   ? slideDirection === 'left' 
-                    ? 'animate-[slide-out-left_0.15s_ease-out]' 
-                    : 'animate-[slide-out-right_0.15s_ease-out]'
-                  : 'animate-fade-in'
+                    ? 'animate-[fade-out_0.3s_ease-out,slide-out-right_0.3s_ease-out]' 
+                    : 'animate-[fade-out_0.3s_ease-out,slide-in-right_0.3s_ease-out]'
+                  : 'animate-[fade-in_0.4s_ease-out,scale-in_0.3s_ease-out]'
               }`}
             >
             {/* Review of Systems */}
@@ -2408,9 +2408,9 @@ export default function PatientIntake() {
                 className={`space-y-6 ${
                   isTransitioning 
                     ? slideDirection === 'left' 
-                      ? 'animate-[slide-out-left_0.15s_ease-out]' 
-                      : 'animate-[slide-out-right_0.15s_ease-out]'
-                    : 'animate-fade-in'
+                      ? 'animate-[fade-out_0.3s_ease-out,slide-out-right_0.3s_ease-out]' 
+                      : 'animate-[fade-out_0.3s_ease-out,slide-in-right_0.3s_ease-out]'
+                    : 'animate-[fade-in_0.4s_ease-out,scale-in_0.3s_ease-out]'
                 }`}
               >
             {/* Areas of Concern */}
@@ -2683,9 +2683,9 @@ export default function PatientIntake() {
               className={`space-y-6 ${
                 isTransitioning 
                   ? slideDirection === 'left' 
-                    ? 'animate-[slide-out-left_0.15s_ease-out]' 
-                    : 'animate-[slide-out-right_0.15s_ease-out]'
-                  : 'animate-fade-in'
+                    ? 'animate-[fade-out_0.3s_ease-out,slide-out-right_0.3s_ease-out]' 
+                    : 'animate-[fade-out_0.3s_ease-out,slide-in-right_0.3s_ease-out]'
+                  : 'animate-[fade-in_0.4s_ease-out,scale-in_0.3s_ease-out]'
               }`}
             >
             <Card>
@@ -2838,9 +2838,9 @@ export default function PatientIntake() {
               className={`space-y-6 ${
                 isTransitioning 
                   ? slideDirection === 'left' 
-                    ? 'animate-[slide-out-left_0.15s_ease-out]' 
-                    : 'animate-[slide-out-right_0.15s_ease-out]'
-                  : 'animate-fade-in'
+                    ? 'animate-[fade-out_0.3s_ease-out,slide-out-right_0.3s_ease-out]' 
+                    : 'animate-[fade-out_0.3s_ease-out,slide-in-right_0.3s_ease-out]'
+                  : 'animate-[fade-in_0.4s_ease-out,scale-in_0.3s_ease-out]'
               }`}
             >
             {/* Informed Consent */}
