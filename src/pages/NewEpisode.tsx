@@ -578,6 +578,7 @@ export default function NewEpisode() {
             <div className="mt-6">
               <TreatmentGoalsSelector
                 stage="Intake"
+                region={region}
                 initialGoals={goalsData}
                 initialOther={goalsOther}
                 onChange={({ goals, goals_other }) => {
