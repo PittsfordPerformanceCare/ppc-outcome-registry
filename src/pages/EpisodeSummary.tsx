@@ -9,6 +9,7 @@ import { MCIDSummaryCard } from "@/components/MCIDSummaryCard";
 import { MCIDAchievementCard } from "@/components/MCIDAchievementCard";
 import { MCIDReportDialog } from "@/components/MCIDReportDialog";
 import { PatientAccessManager } from "@/components/PatientAccessManager";
+import { NeuroExamDisplay } from "@/components/NeuroExamDisplay";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,6 +59,7 @@ interface ProcessedEpisode {
   compliance_notes?: string;
   referred_out?: boolean;
   referral_reason?: string;
+  episode_type?: string;
 }
 
 interface FollowupData {
@@ -75,6 +77,7 @@ export default function EpisodeSummary() {
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
   const [journey, setJourney] = useState<ReturnType<typeof calculatePatientJourney> | null>(null);
+  const [neuroExam, setNeuroExam] = useState<any>(null);
 
   useEffect(() => {
     const loadEpisodeData = async () => {
@@ -146,10 +149,26 @@ export default function EpisodeSummary() {
           compliance_rating: episodeData.compliance_rating || undefined,
           compliance_notes: episodeData.compliance_notes || undefined,
           referred_out: episodeData.referred_out || undefined,
-          referral_reason: episodeData.referral_reason || undefined
+          referral_reason: episodeData.referral_reason || undefined,
+          episode_type: episodeData.episode_type || undefined
         };
 
         setEpisode(processedEpisode);
+        
+        // Fetch neuro exam if this is a Neuro episode
+        if (episodeData.episode_type === 'Neuro') {
+          const { data: neuroExamData } = await supabase
+            .from('neurologic_exams')
+            .select('*')
+            .eq('episode_id', episodeId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          
+          if (neuroExamData) {
+            setNeuroExam(neuroExamData);
+          }
+        }
 
         // Calculate patient journey
         const patientJourney = calculatePatientJourney(
@@ -726,6 +745,11 @@ export default function EpisodeSummary() {
             )}
           </CardContent>
         </Card>
+      )}
+
+      {/* Neurologic Examination - Only for Neuro Episodes */}
+      {episode.episode_type === 'Neuro' && neuroExam && (
+        <NeuroExamDisplay exam={neuroExam} />
       )}
 
       {/* Patient Portal Access */}

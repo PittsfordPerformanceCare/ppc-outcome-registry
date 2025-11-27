@@ -11,7 +11,9 @@ import { toast } from "sonner";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
+import { NeuroExamDisplay } from "@/components/NeuroExamDisplay";
 import { format } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
 
 interface OutcomeScore {
   index_type: string;
@@ -70,6 +72,7 @@ interface ProcessedEpisode {
   allergy_flag?: boolean;
   allergy_notes?: string;
   pcp_fax?: string;
+  episode_type?: string;
 }
 
 interface FollowupData {
@@ -88,6 +91,7 @@ export default function PCPSummary() {
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isTextRichFormat, setIsTextRichFormat] = useState(false);
+  const [neuroExam, setNeuroExam] = useState<any>(null);
 
   useEffect(() => {
     if (episodeId) {
@@ -174,9 +178,25 @@ export default function PCPSummary() {
         allergy_flag: episodeData.allergy_flag || false,
         allergy_notes: episodeData.allergy_notes || undefined,
         pcp_fax: episodeData.pcp_fax || undefined,
+        episode_type: episodeData.episode_type || undefined,
       };
 
       setEpisode(processedEpisode);
+      
+      // Fetch neuro exam if this is a Neuro episode
+      if (episodeData.episode_type === 'Neuro') {
+        const { data: neuroExamData } = await supabase
+          .from('neurologic_exams')
+          .select('*')
+          .eq('episode_id', episodeId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        
+        if (neuroExamData) {
+          setNeuroExam(neuroExamData);
+        }
+      }
 
       // Fetch followup data if exists
       const followupData = await getFollowup(episodeId);
@@ -1108,6 +1128,13 @@ export default function PCPSummary() {
                   <p>Treatment Period: {format(new Date(episode.start_date), 'MMM d, yyyy')} - {episode.dischargeDate ? format(new Date(episode.dischargeDate), 'MMM d, yyyy') : 'Ongoing'}</p>
                 )}
               </section>
+            </div>
+          )}
+
+          {/* Neurologic Examination - Only for Neuro Episodes */}
+          {episode.episode_type === 'Neuro' && neuroExam && (
+            <div className="mt-6 print:break-before-page">
+              <NeuroExamDisplay exam={neuroExam} />
             </div>
           )}
 
