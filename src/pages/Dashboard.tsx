@@ -47,6 +47,7 @@ interface Episode {
   discharge_date?: string;
   clinician?: string;
   created_at: string;
+  episode_type?: string;
 }
 
 export default function Dashboard() {

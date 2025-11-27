@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-import { Mail, Trash2, Eye } from "lucide-react";
+import { Mail, Trash2, Eye, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,6 +15,7 @@ interface Episode {
   date_of_service: string;
   discharge_date?: string;
   diagnosis?: string;
+  episode_type?: string;
 }
 
 interface EpisodeCardWithSwipeProps {
@@ -120,6 +121,14 @@ export function EpisodeCardWithSwipe({
             <Mail className="h-4 w-4" />
             Invite Patient
           </Button>
+          {episode.episode_type === 'Neurology' && (
+            <Link to={`/neuro-exam?episode=${episode.id}`} onClick={(e) => e.stopPropagation()}>
+              <Button size="sm" variant="outline" className="gap-1">
+                <Activity className="h-4 w-4" />
+                Neuro Exam
+              </Button>
+            </Link>
+          )}
           <Link to={`/episode-summary?id=${episode.id}`} onClick={(e) => e.stopPropagation()}>
             <Button size="sm" variant="outline">
               View Details
