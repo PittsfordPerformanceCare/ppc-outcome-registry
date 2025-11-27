@@ -27,6 +27,7 @@ import { PullToRefresh } from "@/components/PullToRefresh";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { PatientNeuroExamSummary } from "@/components/PatientNeuroExamSummary";
 
 interface EpisodeData {
   id: string;
@@ -63,6 +64,7 @@ export default function PatientEpisodeView() {
   const [loading, setLoading] = useState(true);
   const [episode, setEpisode] = useState<EpisodeData | null>(null);
   const [scores, setScores] = useState<OutcomeScore[]>([]);
+  const [neuroExams, setNeuroExams] = useState<any[]>([]);
   const [hasAccess, setHasAccess] = useState(false);
   const [feedbackGiven, setFeedbackGiven] = useState(false);
   const [patientId, setPatientId] = useState<string>("");
@@ -135,6 +137,19 @@ export default function PatientEpisodeView() {
 
       if (scoresError) throw scoresError;
       setScores(scoresData || []);
+
+      // Load neuro exams
+      const { data: examsData, error: examsError } = await supabase
+        .from("neurologic_exams")
+        .select("*")
+        .eq("episode_id", episodeId)
+        .order("exam_date", { ascending: false });
+
+      if (examsError) {
+        console.error("Error loading neuro exams:", examsError);
+      } else {
+        setNeuroExams(examsData || []);
+      }
 
       // Check if feedback has been given
       if (episodeData.discharge_date) {
@@ -488,6 +503,20 @@ export default function PatientEpisodeView() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Neurologic Examinations */}
+        {neuroExams.length > 0 && (
+          <div className="space-y-4">
+            {neuroExams.map((exam) => (
+              <PatientNeuroExamSummary
+                key={exam.id}
+                exam={exam}
+                patientName={episode.patient_name}
+                clinicianName={episode.clinician || undefined}
+              />
+            ))}
+          </div>
         )}
 
         {/* Post-Discharge Feedback */}
