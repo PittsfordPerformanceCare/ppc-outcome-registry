@@ -21,7 +21,7 @@ import { LEFSForm } from "@/components/forms/LEFSForm";
 import { RPQForm } from "@/components/forms/RPQForm";
 import { MetricCard } from "@/components/MetricCard";
 import { DiagnosisSelector } from "@/components/DiagnosisSelector";
-import { FunctionalLimitationSelector } from "@/components/FunctionalLimitationSelector";
+import { FunctionalLimitationResolutionTracker, type LimitationResolution } from "@/components/FunctionalLimitationResolutionTracker";
 import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorTreatmentSelector";
 import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoalsSelector";
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
@@ -74,6 +74,7 @@ export default function Discharge() {
   const [diagnosis, setDiagnosis] = useState("");
   const [functionalLimitation, setFunctionalLimitation] = useState("");
   const [functionalLimitationsArray, setFunctionalLimitationsArray] = useState<string[]>([]);
+  const [limitationResolutions, setLimitationResolutions] = useState<LimitationResolution[]>([]);
   const [priorTreatmentsData, setPriorTreatmentsData] = useState<PriorTreatment[]>([]);
   const [priorTreatmentsOther, setPriorTreatmentsOther] = useState("");
   const [goalsData, setGoalsData] = useState<GoalItem[]>([]);
@@ -118,6 +119,15 @@ export default function Discharge() {
             setDiagnosis(episode.diagnosis || "");
             setFunctionalLimitation(episode.functional_limitation || "");
             setFunctionalLimitationsArray(episode.functional_limitations || []);
+            
+            // Initialize limitation resolutions from intake limitations
+            const initialResolutions: LimitationResolution[] = 
+              (episode.functional_limitations || []).map(limitation => ({
+                limitation,
+                status: null
+              }));
+            setLimitationResolutions(initialResolutions);
+            
             setPriorTreatmentsData((episode.prior_treatments as PriorTreatment[]) || []);
             setPriorTreatmentsOther(episode.prior_treatments_other || "");
             setGoalsData((episode.treatment_goals as GoalItem[]) || []);
@@ -411,12 +421,12 @@ export default function Discharge() {
             }}
           />
           
-          {/* Smart Functional Limitation Selector */}
+          {/* Functional Limitation Resolution Tracker */}
           <div className="mt-6">
-            <FunctionalLimitationSelector
-              region={region}
-              initialLimitations={functionalLimitationsArray}
-              onChange={setFunctionalLimitationsArray}
+            <FunctionalLimitationResolutionTracker
+              intakeLimitations={functionalLimitationsArray}
+              resolutions={limitationResolutions}
+              onChange={setLimitationResolutions}
             />
           </div>
 
