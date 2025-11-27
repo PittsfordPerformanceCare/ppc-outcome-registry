@@ -1,0 +1,147 @@
+// Prior Treatments by Anatomical Region
+export const REGION_TREATMENTS: Record<string, string[]> = {
+  // MSK regions - common 12
+  "Cervical": [
+    "Rest / activity modification",
+    "Ice / heat",
+    "NSAIDs / OTC analgesics",
+    "Muscle relaxant",
+    "Oral steroid dose pack",
+    "Corticosteroid injection",
+    "Chiropractic care",
+    "Physical therapy",
+    "Massage therapy",
+    "Acupuncture",
+    "Home exercise program (HEP)",
+    "Bracing / taping"
+  ],
+  "Thoracic": [
+    "Rest / activity modification",
+    "Ice / heat",
+    "NSAIDs / OTC analgesics",
+    "Muscle relaxant",
+    "Oral steroid dose pack",
+    "Corticosteroid injection",
+    "Chiropractic care",
+    "Physical therapy",
+    "Massage therapy",
+    "Acupuncture",
+    "Home exercise program (HEP)",
+    "Bracing / taping"
+  ],
+  "Lumbar": [
+    "Rest / activity modification",
+    "Ice / heat",
+    "NSAIDs / OTC analgesics",
+    "Muscle relaxant",
+    "Oral steroid dose pack",
+    "Corticosteroid injection",
+    "Chiropractic care",
+    "Physical therapy",
+    "Massage therapy",
+    "Acupuncture",
+    "Home exercise program (HEP)",
+    "Bracing / taping"
+  ],
+  "Shoulder": [
+    "Rest / activity modification",
+    "Ice / heat",
+    "NSAIDs / OTC analgesics",
+    "Muscle relaxant",
+    "Oral steroid dose pack",
+    "Corticosteroid injection",
+    "Chiropractic care",
+    "Physical therapy",
+    "Massage therapy",
+    "Acupuncture",
+    "Home exercise program (HEP)",
+    "Bracing / taping"
+  ],
+  "Elbow": [
+    "Rest / activity modification",
+    "Ice / heat",
+    "NSAIDs / OTC analgesics",
+    "Muscle relaxant",
+    "Oral steroid dose pack",
+    "Corticosteroid injection",
+    "Chiropractic care",
+    "Physical therapy",
+    "Massage therapy",
+    "Acupuncture",
+    "Home exercise program (HEP)",
+    "Bracing / taping"
+  ],
+  "Wrist/Hand": [
+    "Rest / activity modification",
+    "Ice / heat",
+    "NSAIDs / OTC analgesics",
+    "Muscle relaxant",
+    "Oral steroid dose pack",
+    "Corticosteroid injection",
+    "Chiropractic care",
+    "Physical therapy",
+    "Massage therapy",
+    "Acupuncture",
+    "Home exercise program (HEP)",
+    "Bracing / taping"
+  ],
+  "Hip": [
+    "Rest / activity modification",
+    "Ice / heat",
+    "NSAIDs / OTC analgesics",
+    "Muscle relaxant",
+    "Oral steroid dose pack",
+    "Corticosteroid injection",
+    "Chiropractic care",
+    "Physical therapy",
+    "Massage therapy",
+    "Acupuncture",
+    "Home exercise program (HEP)",
+    "Bracing / taping"
+  ],
+  "Knee": [
+    "Rest / activity modification",
+    "Ice / heat",
+    "NSAIDs / OTC analgesics",
+    "Muscle relaxant",
+    "Oral steroid dose pack",
+    "Corticosteroid injection",
+    "Chiropractic care",
+    "Physical therapy",
+    "Massage therapy",
+    "Acupuncture",
+    "Home exercise program (HEP)",
+    "Bracing / taping"
+  ],
+  "Ankle/Foot": [
+    "Rest / activity modification",
+    "Ice / heat",
+    "NSAIDs / OTC analgesics",
+    "Muscle relaxant",
+    "Oral steroid dose pack",
+    "Corticosteroid injection",
+    "Chiropractic care",
+    "Physical therapy",
+    "Massage therapy",
+    "Acupuncture",
+    "Home exercise program (HEP)",
+    "Bracing / taping"
+  ],
+  // Neurologic - Brain/Head specific treatments
+  "Brain/Head": [
+    "Emergency Department Evaluation",
+    "Primary Care or Urgent Care Visit",
+    "Neurology Consultation",
+    "Vestibular Physical Therapy",
+    "Chiropractic Care",
+    "Vision or Neuro-Optometric Rehabilitation",
+    "Sports Medicine Evaluation",
+    "Cognitive or Occupational Therapy",
+    "Mental Health Counseling or Behavioral Health Support",
+    "MRI or CT Imaging",
+    "Medication Management",
+    "Home-Based Rest & Activity Modification"
+  ]
+};
+
+export type TreatmentRegionKey = keyof typeof REGION_TREATMENTS;
