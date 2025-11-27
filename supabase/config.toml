@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.track-comparison-click]
 verify_jwt = false
+
+[functions.generate-neuro-letter]
+verify_jwt = true

@@ -11,6 +11,7 @@ import { MCIDReportDialog } from "@/components/MCIDReportDialog";
 import { PatientAccessManager } from "@/components/PatientAccessManager";
 import { NeuroExamDisplay } from "@/components/NeuroExamDisplay";
 import { NeuroExamComparison } from "@/components/NeuroExamComparison";
+import { NeuroLetterGenerator } from "@/components/NeuroLetterGenerator";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -80,6 +81,7 @@ export default function EpisodeSummary() {
   const [journey, setJourney] = useState<ReturnType<typeof calculatePatientJourney> | null>(null);
   const [baselineExam, setBaselineExam] = useState<any | null>(null);
   const [finalExam, setFinalExam] = useState<any | null>(null);
+  const [showLetterDialog, setShowLetterDialog] = useState(false);
 
   useEffect(() => {
     const loadEpisodeData = async () => {
@@ -795,12 +797,24 @@ export default function EpisodeSummary() {
             <Button variant="outline" onClick={() => navigate(`/pcp-summary?episode=${episode.episodeId}`)}>
               Generate PCP Summary
             </Button>
+            {episode.episode_type === 'Neurology' && (
+              <Button variant="outline" onClick={() => setShowLetterDialog(true)}>
+                <FileText className="mr-2 h-4 w-4" />
+                Generate Letters
+              </Button>
+            )}
             <Button variant="outline" onClick={() => window.print()}>
               Print Summary
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      <NeuroLetterGenerator
+        episodeId={episode.episodeId}
+        open={showLetterDialog}
+        onOpenChange={setShowLetterDialog}
+      />
     </div>
   );
 }
