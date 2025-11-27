@@ -251,7 +251,8 @@ export default function PatientIntake() {
     { id: 1, title: "Medical History", description: "Health Background" },
     { id: 2, title: "Health Review", description: "Systems Check" },
     { id: 3, title: "Current Concerns", description: "Areas of Pain" },
-    { id: 4, title: "Consent", description: "Signatures" },
+    { id: 4, title: "Review", description: "Verify Details" },
+    { id: 5, title: "Consent", description: "Signatures" },
   ];
   
   const signatureRef = useRef<SignatureCanvas>(null);
@@ -2675,10 +2676,165 @@ export default function PatientIntake() {
             </div>
             )}
 
-            {/* Step 4: Consent & HIPAA */}
+            {/* Step 4: Review Your Information */}
             {currentStep === 4 && (
             <div 
               key="step-4"
+              className={`space-y-6 ${
+                isTransitioning 
+                  ? slideDirection === 'left' 
+                    ? 'animate-[slide-out-left_0.15s_ease-out]' 
+                    : 'animate-[slide-out-right_0.15s_ease-out]'
+                  : 'animate-fade-in'
+              }`}
+            >
+            <Card>
+              <CardHeader>
+                <CardTitle>Review Your Information</CardTitle>
+                <CardDescription>
+                  Please review all information before signing. Use the Back button if you need to make changes.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Personal Information */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-primary flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Personal Information
+                  </h4>
+                  <div className="grid gap-2 text-sm bg-muted/30 p-4 rounded-lg border">
+                    <div><span className="font-medium">Name:</span> {form.watch("patientName")}</div>
+                    <div><span className="font-medium">Date of Birth:</span> {form.watch("dateOfBirth")}</div>
+                    <div><span className="font-medium">Episode Type:</span> {form.watch("episodeType")}</div>
+                    {form.watch("email") && <div><span className="font-medium">Email:</span> {form.watch("email")}</div>}
+                    {form.watch("phone") && <div><span className="font-medium">Phone:</span> {form.watch("phone")}</div>}
+                    {form.watch("address") && <div><span className="font-medium">Address:</span> {form.watch("address")}</div>}
+                  </div>
+                </div>
+
+                {/* Emergency Contact */}
+                {(form.watch("emergencyContactName") || form.watch("emergencyContactPhone")) && (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-primary flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4" />
+                      Emergency Contact
+                    </h4>
+                    <div className="grid gap-2 text-sm bg-muted/30 p-4 rounded-lg border">
+                      {form.watch("emergencyContactName") && (
+                        <div><span className="font-medium">Name:</span> {form.watch("emergencyContactName")}</div>
+                      )}
+                      {form.watch("emergencyContactPhone") && (
+                        <div><span className="font-medium">Phone:</span> {form.watch("emergencyContactPhone")}</div>
+                      )}
+                      {form.watch("emergencyContactRelationship") && (
+                        <div><span className="font-medium">Relationship:</span> {form.watch("emergencyContactRelationship")}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Medical History */}
+                {(form.watch("primaryCarePhysician") || form.watch("currentMedications") || form.watch("allergies") || 
+                  form.watch("medicalHistory") || form.watch("surgeryHistory") || form.watch("hospitalizationHistory")) && (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-primary flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4" />
+                      Medical History
+                    </h4>
+                    <div className="grid gap-2 text-sm bg-muted/30 p-4 rounded-lg border">
+                      {form.watch("primaryCarePhysician") && (
+                        <div><span className="font-medium">Primary Care Physician:</span> {form.watch("primaryCarePhysician")}</div>
+                      )}
+                      {form.watch("currentMedications") && (
+                        <div><span className="font-medium">Current Medications:</span> {form.watch("currentMedications")}</div>
+                      )}
+                      {form.watch("allergies") && (
+                        <div><span className="font-medium">Allergies:</span> {form.watch("allergies")}</div>
+                      )}
+                      {form.watch("medicalHistory") && (
+                        <div><span className="font-medium">Medical History:</span> {form.watch("medicalHistory")}</div>
+                      )}
+                      {form.watch("surgeryHistory") && (
+                        <div><span className="font-medium">Surgery History:</span> {form.watch("surgeryHistory")}</div>
+                      )}
+                      {form.watch("hospitalizationHistory") && (
+                        <div><span className="font-medium">Hospitalization History:</span> {form.watch("hospitalizationHistory")}</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Review of Systems */}
+                {form.watch("reviewOfSystems") && form.watch("reviewOfSystems").length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-primary flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4" />
+                      Review of Systems
+                    </h4>
+                    <div className="bg-muted/30 p-4 rounded-lg border text-sm">
+                      <div className="flex flex-wrap gap-2">
+                        {form.watch("reviewOfSystems").map((symptom, index) => (
+                          <Badge key={index} variant="outline">{symptom}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Current Concerns */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-primary flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Current Concerns
+                  </h4>
+                  {form.watch("complaints")?.map((complaint, index) => (
+                    <div key={index} className="bg-muted/30 p-4 rounded-lg border space-y-2 text-sm">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="default">Priority #{complaint.priority || index + 1}</Badge>
+                        {complaint.isPrimary && <Badge variant="secondary">Primary</Badge>}
+                      </div>
+                      <div><span className="font-medium">Concern:</span> {complaint.text}</div>
+                      <div><span className="font-medium">Location:</span> {complaint.category}</div>
+                      <div><span className="font-medium">Severity:</span> {complaint.severity}</div>
+                      <div><span className="font-medium">Duration:</span> {complaint.duration}</div>
+                    </div>
+                  ))}
+                  {form.watch("injuryDate") && (
+                    <div className="text-sm bg-muted/20 p-3 rounded border">
+                      <span className="font-medium">Started:</span> {form.watch("injuryDate")}
+                    </div>
+                  )}
+                  {form.watch("injuryMechanism") && (
+                    <div className="text-sm bg-muted/20 p-3 rounded border">
+                      <span className="font-medium">How it happened:</span> {form.watch("injuryMechanism")}
+                    </div>
+                  )}
+                  {form.watch("symptoms") && (
+                    <div className="text-sm bg-muted/20 p-3 rounded border">
+                      <span className="font-medium">Symptoms:</span> {form.watch("symptoms")}
+                    </div>
+                  )}
+                  <div className="text-sm bg-muted/20 p-3 rounded border">
+                    <span className="font-medium">Current Pain Level:</span> {form.watch("painLevel")}/10
+                  </div>
+                </div>
+
+                {/* Instructions */}
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    If any information needs to be corrected, use the <strong>Back</strong> button to return to the appropriate section.
+                  </AlertDescription>
+                </Alert>
+              </CardContent>
+            </Card>
+            </div>
+            )}
+
+            {/* Step 5: Consent & HIPAA */}
+            {currentStep === 5 && (
+            <div 
+              key="step-5"
               className={`space-y-6 ${
                 isTransitioning 
                   ? slideDirection === 'left' 
