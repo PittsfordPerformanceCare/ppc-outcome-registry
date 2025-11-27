@@ -1,12 +1,15 @@
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { NeuroExamForm } from "@/components/NeuroExamForm";
+import { NeuroLetterGenerator } from "@/components/NeuroLetterGenerator";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 
 export default function NeuroExam() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const episodeId = searchParams.get('episode');
+  const [showLetterDialog, setShowLetterDialog] = useState(false);
 
   if (!episodeId) {
     return (
@@ -27,18 +30,29 @@ export default function NeuroExam() {
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
-      <Button
-        variant="ghost"
-        onClick={() => navigate(`/episode-summary?id=${episodeId}`)}
-        className="mb-6"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Episode
-      </Button>
+      <div className="flex items-center justify-between mb-6">
+        <Button
+          variant="ghost"
+          onClick={() => navigate(`/episode-summary?id=${episodeId}`)}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Episode
+        </Button>
+        <Button onClick={() => setShowLetterDialog(true)} variant="outline">
+          <FileText className="mr-2 h-4 w-4" />
+          Generate Letters
+        </Button>
+      </div>
 
       <NeuroExamForm
         episodeId={episodeId}
         onSaved={() => navigate(`/episode-summary?id=${episodeId}`)}
+      />
+
+      <NeuroLetterGenerator
+        episodeId={episodeId}
+        open={showLetterDialog}
+        onOpenChange={setShowLetterDialog}
       />
     </div>
   );

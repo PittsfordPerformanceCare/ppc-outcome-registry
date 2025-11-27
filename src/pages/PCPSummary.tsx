@@ -13,6 +13,7 @@ import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { NeuroExamDisplay } from "@/components/NeuroExamDisplay";
 import { NeuroExamComparison } from "@/components/NeuroExamComparison";
+import { NeuroLetterGenerator } from "@/components/NeuroLetterGenerator";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -94,6 +95,7 @@ export default function PCPSummary() {
   const [finalExam, setFinalExam] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [isTextRichFormat, setIsTextRichFormat] = useState(false);
+  const [showLetterDialog, setShowLetterDialog] = useState(false);
 
   useEffect(() => {
     if (episodeId) {
@@ -370,6 +372,12 @@ export default function PCPSummary() {
             <Download className="h-4 w-4" />
             Export
           </Button>
+          {episode?.episode_type === 'Neurology' && (
+            <Button variant="outline" onClick={() => setShowLetterDialog(true)} className="gap-2">
+              <FileText className="h-4 w-4" />
+              Generate Letters
+            </Button>
+          )}
           <Button onClick={handlePrint} className="gap-2">
             <Printer className="h-4 w-4" />
             Print
@@ -1157,6 +1165,14 @@ export default function PCPSummary() {
           </div>
         </CardContent>
       </Card>
+
+      {episodeId && (
+        <NeuroLetterGenerator
+          episodeId={episodeId}
+          open={showLetterDialog}
+          onOpenChange={setShowLetterDialog}
+        />
+      )}
     </div>
   );
 }
