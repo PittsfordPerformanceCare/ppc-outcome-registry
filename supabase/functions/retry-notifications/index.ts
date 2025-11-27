@@ -226,7 +226,7 @@ async function retryNotification(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'NeuroEdvance <onboarding@resend.dev>',
+          from: 'Pittsford Performance Care <onboarding@resend.dev>',
           to: [notification.patient_email],
           subject: subject,
           html: emailBody,

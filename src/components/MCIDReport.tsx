@@ -50,7 +50,7 @@ export function MCIDReport({
   summary,
   daysInCare,
   clinicName = "PPC Outcome Registry",
-  clinicTagline = "NeuroEdvance",
+  clinicTagline = "Pittsford Performance Care",
   clinicPhone = "(555) 123-4567",
   clinicEmail = "contact@clinic.com",
   clinicAddress,
