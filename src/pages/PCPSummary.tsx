@@ -582,7 +582,7 @@ export default function PCPSummary() {
               {/* Medical Necessity */}
               <section className="mt-6">
                 <h2 className="text-lg font-semibold border-b pb-1 mb-3">Medical Necessity</h2>
-                <p className="text-base">The patient demonstrated functional limitations and objective impairments requiring skilled physical therapy intervention.</p>
+                <p className="text-base">The patient demonstrated functional limitations and objective impairments requiring skilled rehabilitation intervention.</p>
               </section>
 
               {/* Outcome Improvement Summary with Progress Bar */}
@@ -693,7 +693,7 @@ export default function PCPSummary() {
               <section className="space-y-3">
                 <h2 className="text-xl font-bold border-b pb-2">Treatment Course & Interventions</h2>
                 <p className="text-base leading-relaxed">
-                  Physical therapy was administered by {episode.clinician || 'licensed clinician'} over the course of {episode.visits || 'multiple'} sessions. 
+                  Rehabilitation was administered by {episode.clinician || 'licensed clinician'} over the course of {episode.visits || 'multiple'} sessions. 
                   The treatment plan was designed to address the patient's specific functional goals{episode.treatmentGoals && episode.treatmentGoals.length > 0 ? ', which included:' : '.'}
                 </p>
                 
@@ -869,7 +869,7 @@ export default function PCPSummary() {
               <section className="space-y-3">
                 <h2 className="text-xl font-bold border-b pb-2">Medical Necessity Statement</h2>
                 <p className="text-base leading-relaxed">
-                  The patient demonstrated functional limitations and objective impairments requiring skilled physical therapy intervention. 
+                  The patient demonstrated functional limitations and objective impairments requiring skilled rehabilitation intervention. 
                   Clinical findings supported the need for professional therapeutic services to address movement dysfunction, 
                   pain management, and restoration of functional capacity for activities of daily living and occupational tasks.
                 </p>
@@ -920,7 +920,7 @@ export default function PCPSummary() {
               <section className="space-y-3">
                 <h2 className="text-xl font-bold border-b pb-2">Clinical Summary & Recommendations</h2>
                 <p className="text-base leading-relaxed">
-                  {episode.patientName} successfully completed a course of physical therapy for {episode.diagnosis || 'their condition'} with 
+                  {episode.patientName} successfully completed a course of rehabilitation for {episode.diagnosis || 'their condition'} with 
                   {results.some(r => r.dischargeStatus === "improving") ? 
                     ' clinically significant functional improvements documented through standardized outcome measures' : 
                     ' documented improvements in functional status'
@@ -943,7 +943,7 @@ export default function PCPSummary() {
                   <ul className="list-disc pl-6 space-y-1">
                     <li className="text-base">Continue home exercise program as prescribed</li>
                     <li className="text-base">Monitor for any recurrence of symptoms</li>
-                    <li className="text-base">Return to physical therapy if symptoms worsen or functional decline is noted</li>
+                    <li className="text-base">Return to rehabilitation if symptoms worsen or functional decline is noted</li>
                     <li className="text-base">Consider prophylactic measures to prevent re-injury</li>
                     {followup && followup.scores && Object.keys(followup.scores).length > 0 && (
                       <li className="text-base">90-day follow-up completed with {results.some(r => r.hasFollowup && r.followupStatus === "improving") ? 'continued' : 'maintained'} functional status</li>
