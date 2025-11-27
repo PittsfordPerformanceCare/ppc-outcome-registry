@@ -10,6 +10,7 @@ import { MCIDAchievementCard } from "@/components/MCIDAchievementCard";
 import { MCIDReportDialog } from "@/components/MCIDReportDialog";
 import { PatientAccessManager } from "@/components/PatientAccessManager";
 import { NeuroExamDisplay } from "@/components/NeuroExamDisplay";
+import { NeuroExamComparison } from "@/components/NeuroExamComparison";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -77,7 +78,8 @@ export default function EpisodeSummary() {
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
   const [journey, setJourney] = useState<ReturnType<typeof calculatePatientJourney> | null>(null);
-  const [neuroExam, setNeuroExam] = useState<any>(null);
+  const [baselineExam, setBaselineExam] = useState<any | null>(null);
+  const [finalExam, setFinalExam] = useState<any | null>(null);
 
   useEffect(() => {
     const loadEpisodeData = async () => {
@@ -155,18 +157,20 @@ export default function EpisodeSummary() {
 
         setEpisode(processedEpisode);
         
-        // Fetch neuro exam if this is a Neuro episode
+        // Fetch neuro exams if this is a Neuro episode
         if (episodeData.episode_type === 'Neuro') {
-          const { data: neuroExamData } = await supabase
+          const { data: neuroExams } = await supabase
             .from('neurologic_exams')
             .select('*')
             .eq('episode_id', episodeId)
-            .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+            .order('exam_date', { ascending: true });
           
-          if (neuroExamData) {
-            setNeuroExam(neuroExamData);
+          if (neuroExams && neuroExams.length > 0) {
+            const baseline = neuroExams.find(e => e.exam_type === 'baseline');
+            const final = neuroExams.find(e => e.exam_type === 'final');
+            
+            setBaselineExam(baseline || null);
+            setFinalExam(final || null);
           }
         }
 
@@ -748,8 +752,16 @@ export default function EpisodeSummary() {
       )}
 
       {/* Neurologic Examination - Only for Neuro Episodes */}
-      {episode.episode_type === 'Neuro' && neuroExam && (
-        <NeuroExamDisplay exam={neuroExam} />
+      {episode.episode_type === 'Neuro' && (
+        <>
+          {baselineExam && finalExam ? (
+            <NeuroExamComparison baselineExam={baselineExam} finalExam={finalExam} />
+          ) : baselineExam ? (
+            <NeuroExamDisplay exam={baselineExam} />
+          ) : finalExam ? (
+            <NeuroExamDisplay exam={finalExam} />
+          ) : null}
+        </>
       )}
 
       {/* Patient Portal Access */}

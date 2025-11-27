@@ -12,6 +12,7 @@ import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { NeuroExamDisplay } from "@/components/NeuroExamDisplay";
+import { NeuroExamComparison } from "@/components/NeuroExamComparison";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -89,9 +90,10 @@ export default function PCPSummary() {
 
   const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
   const [followup, setFollowup] = useState<FollowupData | null>(null);
+  const [baselineExam, setBaselineExam] = useState<any | null>(null);
+  const [finalExam, setFinalExam] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [isTextRichFormat, setIsTextRichFormat] = useState(false);
-  const [neuroExam, setNeuroExam] = useState<any>(null);
 
   useEffect(() => {
     if (episodeId) {
@@ -183,18 +185,20 @@ export default function PCPSummary() {
 
       setEpisode(processedEpisode);
       
-      // Fetch neuro exam if this is a Neuro episode
+      // Fetch neuro exams if this is a Neuro episode
       if (episodeData.episode_type === 'Neuro') {
-        const { data: neuroExamData } = await supabase
+        const { data: neuroExams } = await supabase
           .from('neurologic_exams')
           .select('*')
           .eq('episode_id', episodeId)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .order('exam_date', { ascending: true });
         
-        if (neuroExamData) {
-          setNeuroExam(neuroExamData);
+        if (neuroExams && neuroExams.length > 0) {
+          const baseline = neuroExams.find(e => e.exam_type === 'baseline');
+          const final = neuroExams.find(e => e.exam_type === 'final');
+          
+          setBaselineExam(baseline || null);
+          setFinalExam(final || null);
         }
       }
 
@@ -1132,9 +1136,15 @@ export default function PCPSummary() {
           )}
 
           {/* Neurologic Examination - Only for Neuro Episodes */}
-          {episode.episode_type === 'Neuro' && neuroExam && (
+          {episode.episode_type === 'Neuro' && (
             <div className="mt-6 print:break-before-page">
-              <NeuroExamDisplay exam={neuroExam} />
+              {baselineExam && finalExam ? (
+                <NeuroExamComparison baselineExam={baselineExam} finalExam={finalExam} />
+              ) : baselineExam ? (
+                <NeuroExamDisplay exam={baselineExam} />
+              ) : finalExam ? (
+                <NeuroExamDisplay exam={finalExam} />
+              ) : null}
             </div>
           )}
 

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +21,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<any>({
+    exam_type: 'baseline',
     exam_date: new Date().toISOString().split('T')[0],
     exam_time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })
   });
@@ -76,6 +78,29 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4 mb-6">
+          {/* Exam Type Selection */}
+          <div>
+            <Label>Exam Type</Label>
+            <RadioGroup
+              value={formData.exam_type}
+              onValueChange={(value) => updateField('exam_type', value)}
+              className="flex gap-4 mt-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="baseline" id="baseline" />
+                <Label htmlFor="baseline" className="cursor-pointer font-normal">
+                  Baseline (Initial/Intake)
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="final" id="final" />
+                <Label htmlFor="final" className="cursor-pointer font-normal">
+                  Final (Discharge/Re-examination)
+                </Label>
+              </div>
+            </RadioGroup>
+          </div>
+          
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="exam_date">Exam Date</Label>
