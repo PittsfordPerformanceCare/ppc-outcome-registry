@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { BarChart3, Download, TrendingUp, Clock, Target, Users } from "lucide-react";
+import { BarChart3, Download, TrendingUp, Clock, Target, Users, Activity } from "lucide-react";
 import { format, subMonths } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { PPC_CONFIG, IndexType } from "@/lib/ppcConfig";
@@ -28,6 +29,7 @@ interface EpisodeOutcome {
   clinicianId: string;
   dischargeDate: string;
   referralSource?: string;
+  episode_type?: string;
 }
 
 export default function Dashboards() {
@@ -124,6 +126,7 @@ export default function Dashboards() {
             clinicianId: episode.clinician || "Unknown",
             dischargeDate: episode.discharge_date!,
             referralSource: episode.referring_physician || undefined,
+            episode_type: episode.episode_type || undefined,
           });
         }
       }
@@ -1055,6 +1058,7 @@ export default function Dashboards() {
                       <th className="text-center p-2">MCID</th>
                       <th className="text-right p-2">Days</th>
                       <th className="text-right p-2">Visits</th>
+                      <th className="text-center p-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1076,6 +1080,16 @@ export default function Dashboards() {
                         </td>
                         <td className="p-2 text-right">{outcome.daysToDischarge}</td>
                         <td className="p-2 text-right">{outcome.visitCount}</td>
+                        <td className="p-2 text-center">
+                          {outcome.episode_type === 'Neurology' && (
+                            <Link to={`/neuro-exam?episode=${outcome.episodeId}`}>
+                              <Button size="sm" variant="outline" className="gap-1">
+                                <Activity className="h-3 w-3" />
+                                Neuro Exam
+                              </Button>
+                            </Link>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
