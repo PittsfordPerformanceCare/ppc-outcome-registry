@@ -222,9 +222,6 @@ export default function NewEpisode() {
     }
 
     try {
-      // Generate episode ID
-      const episodeId = `EP${Date.now()}`;
-
       // Calculate follow-up date (90 days from service date)
       const serviceDate = new Date(dateOfService);
       const followupDate = new Date(serviceDate);
@@ -234,9 +231,8 @@ export default function NewEpisode() {
       const cisDelta = cisPre != null && cisPost != null ? cisPost - cisPre : null;
       const painDelta = painPre != null && painPost != null ? painPre - painPost : null;
 
-      // Save episode to database
-      await createEpisode({
-        id: episodeId,
+      // Save episode to database and get the created episode with its actual ID
+      const createdEpisode = await createEpisode({
         patient_name: patientName.trim(),
         date_of_birth: dob.trim(),
         episode_type: episodeType,
@@ -269,9 +265,9 @@ export default function NewEpisode() {
         pain_delta: painDelta ?? undefined,
       });
 
-      // Save baseline scores to database
+      // Save baseline scores to database using the actual episode ID
       for (const [indexType, score] of Object.entries(scores)) {
-        await saveOutcomeScore(episodeId, indexType, "baseline", score);
+        await saveOutcomeScore(createdEpisode.id, indexType, "baseline", score);
       }
 
       toast.success("Episode created successfully!");
