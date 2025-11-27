@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, ArrowRight, FileText, CheckSquare, Layers, Loader2 } from "lucide-react";
+import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, CheckCircle2, ArrowRight, FileText, CheckSquare, Layers, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { IntakeToEpisodeConverter } from "@/components/IntakeToEpisodeConverter";
 import { BulkIntakeConverter } from "@/components/BulkIntakeConverter";
@@ -509,16 +510,24 @@ export default function IntakeReview() {
 
           <div className="flex gap-3">
             {selectedForm.converted_to_episode_id ? (
-              <Button
-                onClick={() => handleViewEpisode(selectedForm.converted_to_episode_id)}
-                className="flex-1"
-                size="lg"
-                variant="default"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                View Episode
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
+              <div className="space-y-3 flex-1">
+                <Alert className="border-green-600/20 bg-green-50/50 dark:bg-green-950/20">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-sm text-green-900 dark:text-green-100">
+                    This intake has been converted to episode <span className="font-mono font-semibold">{selectedForm.converted_to_episode_id}</span>
+                  </AlertDescription>
+                </Alert>
+                <Button
+                  onClick={() => handleViewEpisode(selectedForm.converted_to_episode_id)}
+                  className="w-full"
+                  size="lg"
+                  variant="default"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  View Episode Details
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
             ) : (
               <>
                 <Button
