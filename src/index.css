@@ -353,198 +353,162 @@ All colors MUST be HSL.
   }
 }
 
-/* Print Styles */
+/* Print Styles - Professional Quality */
 @media print {
   @page {
-    margin: 0.3cm;
+    margin: 0.75in 0.5in;
     size: letter portrait;
   }
 
-  /* Force base font size reduction */
+  /* Professional typography */
   * {
-    font-size: inherit !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   body {
-    font-size: 7px !important; /* More aggressive reduction */
-    line-height: 1.2 !important;
+    font-size: 10pt !important;
+    line-height: 1.4 !important;
     background: white !important;
-    color: black !important;
+    color: #000 !important;
+    font-family: 'Segoe UI', Arial, sans-serif !important;
   }
 
-  /* Override all Tailwind text size classes - more aggressive reduction */
-  .text-xs {
-    font-size: 0.5rem !important;
-  }
+  /* Professional typography scale */
+  .text-xs { font-size: 8pt !important; }
+  .text-sm { font-size: 9pt !important; }
+  .text-base { font-size: 10pt !important; }
+  .text-lg { font-size: 11pt !important; }
+  .text-xl { font-size: 12pt !important; }
+  .text-2xl { font-size: 14pt !important; }
+  .text-3xl { font-size: 16pt !important; }
+  .text-4xl { font-size: 18pt !important; }
+  .text-5xl { font-size: 22pt !important; }
+  .text-7xl { font-size: 28pt !important; }
 
-  .text-sm {
-    font-size: 0.6rem !important;
-  }
-
-  .text-base {
-    font-size: 0.65rem !important;
-  }
-
-  .text-lg {
-    font-size: 0.7rem !important;
-  }
-
-  .text-xl {
-    font-size: 0.75rem !important;
-  }
-
-  .text-2xl {
-    font-size: 0.85rem !important;
-  }
-
-  .text-3xl {
-    font-size: 1rem !important;
-  }
-
-  .text-4xl {
-    font-size: 1.2rem !important;
-  }
-
-  /* Headings */
+  /* Headings with clear hierarchy */
   h1, .text-3xl {
-    font-size: 1rem !important;
-    margin-bottom: 0.3rem !important;
+    font-size: 18pt !important;
+    font-weight: 700 !important;
+    margin-bottom: 8pt !important;
+    border-bottom: 2px solid #000 !important;
+    padding-bottom: 4pt !important;
   }
 
   h2, .text-2xl {
-    font-size: 0.85rem !important;
-    margin-bottom: 0.25rem !important;
+    font-size: 14pt !important;
+    font-weight: 600 !important;
+    margin-bottom: 6pt !important;
+    margin-top: 12pt !important;
   }
 
   h3, .text-xl {
-    font-size: 0.75rem !important;
-    margin-bottom: 0.2rem !important;
+    font-size: 12pt !important;
+    font-weight: 600 !important;
+    margin-bottom: 4pt !important;
+    margin-top: 8pt !important;
   }
 
-  h4, h5, h6 {
-    font-size: 0.65rem !important;
-    margin-bottom: 0.15rem !important;
-  }
-
-  /* Override all padding classes - minimal padding */
-  .p-1 { padding: 0.1rem !important; }
-  .p-2 { padding: 0.15rem !important; }
-  .p-3 { padding: 0.2rem !important; }
-  .p-4 { padding: 0.25rem !important; }
-  .p-5 { padding: 0.3rem !important; }
-  .p-6 { padding: 0.35rem !important; }
-  .p-8 { padding: 0.4rem !important; }
-  .p-10 { padding: 0.45rem !important; }
-  .p-12 { padding: 0.5rem !important; }
-
-  .py-1 { padding-top: 0.1rem !important; padding-bottom: 0.1rem !important; }
-  .py-2 { padding-top: 0.15rem !important; padding-bottom: 0.15rem !important; }
-  .py-3 { padding-top: 0.2rem !important; padding-bottom: 0.2rem !important; }
-  .py-4 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
-  .py-6 { padding-top: 0.35rem !important; padding-bottom: 0.35rem !important; }
-  .py-8 { padding-top: 0.4rem !important; padding-bottom: 0.4rem !important; }
-  .py-12 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
-
-  .px-1 { padding-left: 0.1rem !important; padding-right: 0.1rem !important; }
-  .px-2 { padding-left: 0.15rem !important; padding-right: 0.15rem !important; }
-  .px-3 { padding-left: 0.2rem !important; padding-right: 0.2rem !important; }
-  .px-4 { padding-left: 0.25rem !important; padding-right: 0.25rem !important; }
-  .px-6 { padding-left: 0.35rem !important; padding-right: 0.35rem !important; }
-  .px-8 { padding-left: 0.4rem !important; padding-right: 0.4rem !important; }
-
-  .pt-1 { padding-top: 0.1rem !important; }
-  .pt-2 { padding-top: 0.15rem !important; }
-  .pt-3 { padding-top: 0.2rem !important; }
-  .pt-4 { padding-top: 0.25rem !important; }
-  .pt-6 { padding-top: 0.35rem !important; }
-  .pt-8 { padding-top: 0.4rem !important; }
+  /* Professional spacing */
+  .p-4 { padding: 8pt !important; }
+  .p-6 { padding: 12pt !important; }
+  .p-8 { padding: 16pt !important; }
   
-  .pb-1 { padding-bottom: 0.1rem !important; }
-  .pb-2 { padding-bottom: 0.15rem !important; }
-  .pb-3 { padding-bottom: 0.2rem !important; }
-  .pb-4 { padding-bottom: 0.25rem !important; }
-  .pb-6 { padding-bottom: 0.35rem !important; }
-  .pb-8 { padding-bottom: 0.4rem !important; }
+  .py-4 { padding-top: 8pt !important; padding-bottom: 8pt !important; }
+  .py-6 { padding-top: 12pt !important; padding-bottom: 12pt !important; }
+  
+  .px-4 { padding-left: 8pt !important; padding-right: 8pt !important; }
+  .px-6 { padding-left: 12pt !important; padding-right: 12pt !important; }
+  
+  .pt-4 { padding-top: 8pt !important; }
+  .pt-6 { padding-top: 12pt !important; }
+  
+  .pb-4 { padding-bottom: 8pt !important; }
+  .pb-6 { padding-bottom: 12pt !important; }
 
-  /* Override all margin classes - minimal margins */
-  .m-1 { margin: 0.1rem !important; }
-  .m-2 { margin: 0.15rem !important; }
-  .m-3 { margin: 0.2rem !important; }
-  .m-4 { margin: 0.25rem !important; }
-  .m-6 { margin: 0.35rem !important; }
-  .m-8 { margin: 0.4rem !important; }
-
-  .my-1 { margin-top: 0.1rem !important; margin-bottom: 0.1rem !important; }
-  .my-2 { margin-top: 0.15rem !important; margin-bottom: 0.15rem !important; }
-  .my-4 { margin-top: 0.25rem !important; margin-bottom: 0.25rem !important; }
-  .my-6 { margin-top: 0.35rem !important; margin-bottom: 0.35rem !important; }
-  .my-8 { margin-top: 0.4rem !important; margin-bottom: 0.4rem !important; }
-
-  .mx-auto { margin-left: auto !important; margin-right: auto !important; }
-
-  .mt-1 { margin-top: 0.1rem !important; }
-  .mt-2 { margin-top: 0.15rem !important; }
-  .mt-4 { margin-top: 0.25rem !important; }
-  .mt-6 { margin-top: 0.35rem !important; }
-  .mt-8 { margin-top: 0.4rem !important; }
-
-  .mb-1 { margin-bottom: 0.1rem !important; }
-  .mb-2 { margin-bottom: 0.15rem !important; }
-  .mb-4 { margin-bottom: 0.25rem !important; }
-  .mb-6 { margin-bottom: 0.35rem !important; }
-  .mb-8 { margin-bottom: 0.4rem !important; }
-
-  /* Override all gap classes - minimal gaps */
-  .gap-1 { gap: 0.1rem !important; }
-  .gap-2 { gap: 0.15rem !important; }
-  .gap-3 { gap: 0.2rem !important; }
-  .gap-4 { gap: 0.25rem !important; }
-  .gap-6 { gap: 0.35rem !important; }
-  .gap-8 { gap: 0.4rem !important; }
-
-  /* Override all space-y classes - minimal spacing */
-  .space-y-1 > * + * { margin-top: 0.1rem !important; }
-  .space-y-2 > * + * { margin-top: 0.15rem !important; }
-  .space-y-3 > * + * { margin-top: 0.2rem !important; }
-  .space-y-4 > * + * { margin-top: 0.25rem !important; }
-  .space-y-6 > * + * { margin-top: 0.35rem !important; }
-  .space-y-8 > * + * { margin-top: 0.4rem !important; }
+  .space-y-4 > * + * { margin-top: 8pt !important; }
+  .space-y-6 > * + * { margin-top: 12pt !important; }
+  
+  .gap-4 { gap: 8pt !important; }
+  .gap-6 { gap: 12pt !important; }
 
   /* Hide interactive elements */
   .print\\:hidden,
   button:not(.print\\:block),
-  .hide-on-print,
   nav,
   [data-print="hide"] {
     display: none !important;
   }
 
-  /* Show only specific print-allowed elements */
-  button.print\\:hidden {
-    display: none !important;
-  }
-
-  /* Optimize cards for print */
+  /* Professional card styling */
   .bg-gradient-to-br,
   .bg-gradient-to-r {
     background: white !important;
   }
 
-  /* Ensure cards have clean borders for print */
   [class*="rounded"] {
-    border: 1px solid #ddd !important;
+    border-radius: 4pt !important;
   }
 
-  /* Optimize badges for print */
+  /* High-contrast borders for fax quality */
+  .border,
+  .border-t,
+  .border-b,
+  .border-r {
+    border-color: #333 !important;
+    border-width: 1pt !important;
+  }
+
+  /* Professional badge styling */
   [class*="badge"],
   [class*="Badge"] {
-    border: 1px solid #333 !important;
+    border: 1.5pt solid #000 !important;
     background: white !important;
-    color: black !important;
+    color: #000 !important;
+    font-weight: 600 !important;
+    padding: 2pt 6pt !important;
+    border-radius: 3pt !important;
+  }
+
+  /* Status colors with high contrast */
+  .bg-success\/5,
+  .bg-success\/10,
+  .bg-success\/15 {
+    background: #f0f8f0 !important;
+    border: 1pt solid #2d5016 !important;
+  }
+
+  .text-success {
+    color: #2d5016 !important;
     font-weight: 600 !important;
   }
 
-  /* Remove shadows and borders for cleaner print */
+  .border-success\/30 {
+    border-color: #2d5016 !important;
+  }
+
+  .bg-destructive\/5,
+  .bg-destructive\/10 {
+    background: #fff0f0 !important;
+    border: 1pt solid #8b0000 !important;
+  }
+
+  .text-destructive {
+    color: #8b0000 !important;
+    font-weight: 600 !important;
+  }
+
+  .border-destructive\/30 {
+    border-color: #8b0000 !important;
+  }
+
+  .bg-muted\/30,
+  .bg-muted\/50 {
+    background: #f5f5f5 !important;
+    border: 1pt solid #999 !important;
+  }
+
+  /* Remove shadows for clean print */
   .shadow,
   .shadow-sm,
   .shadow-md,
@@ -552,41 +516,130 @@ All colors MUST be HSL.
     box-shadow: none !important;
   }
 
-  /* Allow breaking for single page fit */
-  .card,
-  section,
-  article {
-    page-break-inside: auto !important;
-  }
-
-  /* Specific optimizations for PCP summary */
+  /* Section breaks */
   .border-t {
-    border-top: 1px solid #ccc !important;
-    padding-top: 0.2rem !important;
-    margin-top: 0.2rem !important;
+    border-top: 2pt solid #333 !important;
+    padding-top: 12pt !important;
+    margin-top: 12pt !important;
   }
 
-  .whitespace-pre-wrap {
-    white-space: normal !important;
+  /* Grid layouts optimized for print */
+  .grid {
+    display: grid !important;
   }
 
-  /* Episode summary print styles */
-  .print\\:block {
-    display: block !important;
+  .sm\\:grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 
-  .print\\:text-sm {
-    font-size: 0.7875rem !important;
+  /* Professional table styling */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
   }
 
-  /* Compact max-width for better space usage */
+  th, td {
+    border: 1pt solid #333 !important;
+    padding: 6pt !important;
+    text-align: left !important;
+  }
+
+  th {
+    background: #f5f5f5 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Page breaks */
+  .card,
+  section {
+    page-break-inside: avoid !important;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid !important;
+  }
+
+  /* Full width for content */
   .max-w-4xl {
     max-width: 100% !important;
   }
 
-  /* Remove extra spacing from containers */
   .container {
     padding-left: 0 !important;
     padding-right: 0 !important;
+  }
+
+  /* Enhanced readability */
+  .whitespace-pre-wrap {
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+  }
+
+  /* Professional header styling */
+  .bg-muted\/50 {
+    background: #f8f8f8 !important;
+    border-bottom: 2pt solid #000 !important;
+  }
+
+  /* Strong emphasis for key metrics */
+  .font-bold {
+    font-weight: 700 !important;
+  }
+
+  .font-semibold {
+    font-weight: 600 !important;
+  }
+
+  /* Consistent color for measurements */
+  .text-primary {
+    color: #000 !important;
+    font-weight: 700 !important;
+  }
+
+  /* Ensure proper contrast for all text */
+  .text-muted-foreground {
+    color: #444 !important;
+  }
+
+  /* Professional progress bars */
+  .h-3 {
+    height: 8pt !important;
+    border: 1pt solid #333 !important;
+  }
+
+  .bg-destructive,
+  .bg-warning,
+  .bg-success {
+    opacity: 0.8 !important;
+  }
+
+  /* Clear visual hierarchy for comparisons */
+  .contents {
+    display: contents !important;
+  }
+
+  /* Fax-optimized contrast */
+  * {
+    color: #000 !important;
+  }
+
+  .text-white {
+    color: #000 !important;
+  }
+
+  /* High-impact metric display */
+  .text-7xl {
+    font-size: 32pt !important;
+    font-weight: 800 !important;
+    letter-spacing: -1pt !important;
+  }
+
+  /* Professional footer styling */
+  footer {
+    margin-top: 16pt !important;
+    padding-top: 8pt !important;
+    border-top: 1pt solid #999 !important;
+    font-size: 8pt !important;
+    color: #666 !important;
   }
 }
