@@ -251,7 +251,79 @@ export function SampleDataGenerator() {
 
       if (templatesError) throw templatesError;
 
-      toast.success("Sample data generated successfully! Refresh your dashboard to see the data.");
+      // 6. Create sample neurologic exams
+      const neuroExams = [
+        {
+          episode_id: "EP-2025-001",
+          exam_date: "2025-01-15",
+          exam_time: "09:30",
+          exam_type: "baseline",
+          clinical_history: "Patient presents with history of concussion 3 weeks ago. Reports persistent headaches, dizziness, and difficulty concentrating.",
+          vestibular_rombergs: "Mild instability noted with eyes closed. Patient able to maintain position but with increased sway.",
+          vestibular_vor: "Intact bilaterally. No nystagmus observed during head impulse testing.",
+          visual_pursuits: "Smooth and accurate in all directions. No saccadic intrusions noted.",
+          visual_convergence: "Near point convergence at 8cm. Within normal limits.",
+          neuro_finger_to_nose_left: "Smooth and accurate. No dysmetria or intention tremor.",
+          neuro_finger_to_nose_right: "Smooth and accurate. No dysmetria or intention tremor.",
+          reflex_bicep_left: "2+ Normal",
+          reflex_bicep_right: "2+ Normal",
+          reflex_patellar_left: "2+ Normal",
+          reflex_patellar_right: "2+ Normal",
+          overall_notes: "Comprehensive neurologic examination reveals mild vestibular dysfunction consistent with post-concussion syndrome. Visual and coordination systems appear intact. Recommend vestibular rehabilitation therapy focusing on balance and gaze stabilization exercises. Patient should avoid activities with high risk of re-injury. Follow-up exam recommended in 4 weeks to assess progress.",
+          user_id: user.id,
+          clinic_id: clinicId,
+        },
+        {
+          episode_id: "EP-2025-002",
+          exam_date: "2025-01-20",
+          exam_time: "14:00",
+          exam_type: "baseline",
+          clinical_history: "Chronic neck pain following motor vehicle accident 2 months ago. Patient reports radiating pain into left shoulder and numbness in left hand.",
+          vestibular_rombergs: "Normal stability with eyes open and closed.",
+          vestibular_vor: "Intact bilaterally.",
+          visual_pursuits: "Normal smooth pursuits in all directions.",
+          visual_convergence: "Within normal limits at 6cm.",
+          neuro_finger_to_nose_left: "Accurate with no tremor.",
+          neuro_finger_to_nose_right: "Accurate with no tremor.",
+          reflex_bicep_left: "1+ Diminished (indicates possible C5-C6 nerve involvement)",
+          reflex_bicep_right: "2+ Normal",
+          reflex_patellar_left: "2+ Normal",
+          reflex_patellar_right: "2+ Normal",
+          neuro_2pt_localization_left: "Impaired in C6 dermatome - unable to distinguish points at 5mm",
+          neuro_2pt_localization_right: "Normal discrimination",
+          overall_notes: "Examination findings consistent with cervical radiculopathy affecting C6 nerve root on the left. Diminished reflex and sensory changes in appropriate distribution. No signs of myelopathy. Recommend cervical traction, nerve gliding exercises, and postural correction. Consider imaging if symptoms do not improve with conservative treatment.",
+          user_id: user.id,
+          clinic_id: clinicId,
+        },
+        {
+          episode_id: "EP-2025-003",
+          exam_date: "2025-03-15",
+          exam_time: "10:15",
+          exam_type: "followup",
+          clinical_history: "Follow-up examination after 8 weeks of vestibular rehabilitation therapy for post-concussion syndrome. Patient reports significant improvement in symptoms.",
+          vestibular_rombergs: "Normal stability maintained with eyes open and closed. Marked improvement from baseline.",
+          vestibular_vor: "Intact bilaterally. Head impulse test shows appropriate compensatory saccades.",
+          visual_pursuits: "Smooth and accurate. No complaints of visual symptoms during testing.",
+          visual_convergence: "Near point at 5cm. Excellent improvement.",
+          neuro_finger_to_nose_left: "Smooth and accurate.",
+          neuro_finger_to_nose_right: "Smooth and accurate.",
+          reflex_bicep_left: "2+ Normal",
+          reflex_bicep_right: "2+ Normal",
+          reflex_patellar_left: "2+ Normal",
+          reflex_patellar_right: "2+ Normal",
+          overall_notes: "Excellent progress noted on follow-up examination. Vestibular function has normalized with therapy. Patient reports return to most daily activities without symptoms. Balance and coordination testing shows full recovery. Patient cleared to gradually return to sports activities with protective equipment. Recommend continued home exercise program for maintenance.",
+          user_id: user.id,
+          clinic_id: clinicId,
+        },
+      ];
+
+      const { error: neuroExamsError } = await supabase
+        .from('neurologic_exams')
+        .insert(neuroExams);
+
+      if (neuroExamsError) throw neuroExamsError;
+
+      toast.success("Sample data generated successfully including neurologic exams! Refresh your dashboard to see the data.");
     } catch (error) {
       console.error('Error generating sample data:', error);
       toast.error("Failed to generate sample data. Please try again.");
@@ -268,7 +340,7 @@ export function SampleDataGenerator() {
           Sample Data Generator
         </CardTitle>
         <CardDescription>
-          Generate realistic sample data to explore the dashboard and test features. This will create sample episodes, webhooks, notifications, and export templates.
+          Generate realistic sample data to explore the dashboard and test features. This will create sample episodes, neurologic exams, webhooks, notifications, and export templates.
         </CardDescription>
       </CardHeader>
       <CardContent>
