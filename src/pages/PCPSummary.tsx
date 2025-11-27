@@ -61,6 +61,9 @@ interface ProcessedEpisode {
   compliance_notes?: string;
   referred_out?: boolean;
   referral_reason?: string;
+  clinical_impression?: string;
+  return_to_function_items?: string[];
+  pcp_action_items?: string[];
 }
 
 interface FollowupData {
@@ -156,6 +159,9 @@ export default function PCPSummary() {
         compliance_notes: episodeData.compliance_notes || undefined,
         referred_out: episodeData.referred_out || false,
         referral_reason: episodeData.referral_reason || undefined,
+        clinical_impression: episodeData.clinical_impression || undefined,
+        return_to_function_items: (episodeData.return_to_function_items as string[]) || undefined,
+        pcp_action_items: (episodeData.pcp_action_items as string[]) || undefined,
       };
 
       setEpisode(processedEpisode);
@@ -550,7 +556,97 @@ export default function PCPSummary() {
                 )}
               </section>
 
-              {/* Additional standard format sections can be added here as needed */}
+              {/* Clinical Impression */}
+              {episode.clinical_impression && (
+                <section className="mt-6">
+                  <h2 className="text-lg font-semibold border-b pb-1 mb-3">Clinical Impression</h2>
+                  <p className="text-base">{episode.clinical_impression}</p>
+                </section>
+              )}
+
+              {/* Episode Summary */}
+              {(episode.start_date || episode.dischargeDate || episode.visits) && (
+                <section className="mt-6">
+                  <h2 className="text-lg font-semibold border-b pb-1 mb-3">Episode Summary</h2>
+                  <ul className="list-disc pl-6 space-y-1">
+                    {episode.start_date && episode.dischargeDate && (
+                      <li>Episode Duration: {format(new Date(episode.start_date), 'MMM d, yyyy')} → {format(new Date(episode.dischargeDate), 'MMM d, yyyy')}</li>
+                    )}
+                    {episode.visits && (
+                      <li>Total Visits: {episode.visits}</li>
+                    )}
+                  </ul>
+                </section>
+              )}
+
+              {/* Medical Necessity */}
+              <section className="mt-6">
+                <h2 className="text-lg font-semibold border-b pb-1 mb-3">Medical Necessity</h2>
+                <p className="text-base">The patient demonstrated functional limitations and objective impairments requiring skilled physical therapy intervention.</p>
+              </section>
+
+              {/* Outcome Improvement Summary with Progress Bar */}
+              {results.filter(r => r.baseline > 0 || r.discharge > 0).map((result, idx) => {
+                const improvement = result.baseline > 0 ? ((result.baseline - result.discharge) / result.baseline) * 100 : 0;
+                const barLength = Math.round(Math.abs(improvement) / 10);
+                const progressBar = '▉'.repeat(Math.min(barLength, 10));
+                
+                return (
+                  <section key={idx} className="mt-6">
+                    <h2 className="text-lg font-semibold border-b pb-1 mb-3">{result.index} Improvement</h2>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Baseline → Discharge: {result.baseline.toFixed(1)} → {result.discharge.toFixed(1)}</li>
+                      <li>Improvement Bar: <span className="font-mono text-primary">{progressBar || '▉'}</span> ({improvement.toFixed(0)}% improvement)</li>
+                    </ul>
+                  </section>
+                );
+              })}
+
+              {/* MCID Interpretation */}
+              {results.filter(r => r.baseline > 0 || r.discharge > 0).map((result, idx) => {
+                const mcidResult = calculateMCID(result.index as any, result.baseline, result.discharge);
+                
+                return (
+                  <section key={idx} className="mt-6">
+                    <h2 className="text-lg font-semibold border-b pb-1 mb-3">MCID Interpretation - {result.index}</h2>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Outcome Measure: {result.index}</li>
+                      <li>Observed Change: {Math.abs(mcidResult.change).toFixed(1)} points</li>
+                      <li>MCID Threshold: {mcidResult.mcidThreshold} points</li>
+                      <li className="font-semibold">
+                        Interpretation: {mcidResult.isClinicallySignificant ? 
+                          'Change exceeds MCID threshold, indicating meaningful clinical improvement.' : 
+                          'Change does not meet MCID threshold for minimal clinically important difference.'
+                        }
+                      </li>
+                    </ul>
+                  </section>
+                );
+              })}
+
+              {/* Return-to-Function Summary */}
+              {episode.return_to_function_items && episode.return_to_function_items.length > 0 && (
+                <section className="mt-6">
+                  <h2 className="text-lg font-semibold border-b pb-1 mb-3">Return-to-Function Summary</h2>
+                  <ul className="list-disc pl-6 space-y-1">
+                    {episode.return_to_function_items.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {/* PCP Action Steps */}
+              {episode.pcp_action_items && episode.pcp_action_items.length > 0 && (
+                <section className="mt-6">
+                  <h2 className="text-lg font-semibold border-b pb-1 mb-3">PCP Action Steps</h2>
+                  <ul className="list-disc pl-6 space-y-1">
+                    {episode.pcp_action_items.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
             </>
           ) : (
             // Text-Rich Hybrid Format
@@ -744,6 +840,82 @@ export default function PCPSummary() {
                 </section>
               )}
 
+              {/* Clinical Impression (Text-Rich) */}
+              {episode.clinical_impression && (
+                <section className="space-y-3">
+                  <h2 className="text-xl font-bold border-b pb-2">Clinical Impression</h2>
+                  <p className="text-base leading-relaxed italic">
+                    {episode.clinical_impression}
+                  </p>
+                </section>
+              )}
+
+              {/* Episode Summary (Text-Rich) */}
+              {(episode.start_date || episode.dischargeDate || episode.visits) && (
+                <section className="space-y-3">
+                  <h2 className="text-xl font-bold border-b pb-2">Episode Summary</h2>
+                  <p className="text-base leading-relaxed">
+                    The episode of care spanned from{' '}
+                    {episode.start_date && format(new Date(episode.start_date), 'MMMM d, yyyy')} to{' '}
+                    {episode.dischargeDate && format(new Date(episode.dischargeDate), 'MMMM d, yyyy')}, totaling{' '}
+                    {episode.visits || 'multiple'} treatment visits{episode.start_date && episode.dischargeDate && ` over approximately ${
+                      Math.round((new Date(episode.dischargeDate).getTime() - new Date(episode.start_date).getTime()) / (1000 * 60 * 60 * 24))
+                    } days`}.
+                  </p>
+                </section>
+              )}
+
+              {/* Medical Necessity (Text-Rich) */}
+              <section className="space-y-3">
+                <h2 className="text-xl font-bold border-b pb-2">Medical Necessity Statement</h2>
+                <p className="text-base leading-relaxed">
+                  The patient demonstrated functional limitations and objective impairments requiring skilled physical therapy intervention. 
+                  Clinical findings supported the need for professional therapeutic services to address movement dysfunction, 
+                  pain management, and restoration of functional capacity for activities of daily living and occupational tasks.
+                </p>
+              </section>
+
+              {/* MCID Interpretation (Text-Rich) */}
+              {results.filter(r => r.baseline > 0 || r.discharge > 0).length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xl font-bold border-b pb-2">Clinical Significance Analysis</h2>
+                  <p className="text-base leading-relaxed">
+                    Outcome measures were evaluated against Minimal Clinically Important Difference (MCID) thresholds to determine 
+                    clinical significance of observed changes:
+                  </p>
+                  {results.filter(r => r.baseline > 0 || r.discharge > 0).map((result, idx) => {
+                    const mcidResult = calculateMCID(result.index as any, result.baseline, result.discharge);
+                    return (
+                      <div key={idx} className="mt-3 pl-4 border-l-2 border-primary/30">
+                        <p className="font-semibold">{result.index}</p>
+                        <p className="text-sm mt-1">
+                          Observed change of {Math.abs(mcidResult.change).toFixed(1)} points{' '}
+                          {mcidResult.isClinicallySignificant ? 
+                            `exceeds the MCID threshold of ${mcidResult.mcidThreshold} points, indicating meaningful clinical improvement` : 
+                            `does not meet the MCID threshold of ${mcidResult.mcidThreshold} points`
+                          }.
+                        </p>
+                      </div>
+                    );
+                  })}
+                </section>
+              )}
+
+              {/* Return-to-Function Summary (Text-Rich) */}
+              {episode.return_to_function_items && episode.return_to_function_items.length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xl font-bold border-b pb-2">Return-to-Function Status</h2>
+                  <p className="text-base leading-relaxed">
+                    At discharge, the patient demonstrated the following functional achievements:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-2 mt-3">
+                    {episode.return_to_function_items.map((item, idx) => (
+                      <li key={idx} className="text-base">{item}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
               {/* Clinical Summary & Recommendations */}
               <section className="space-y-3">
                 <h2 className="text-xl font-bold border-b pb-2">Clinical Summary & Recommendations</h2>
@@ -779,6 +951,21 @@ export default function PCPSummary() {
                   </ul>
                 </div>
               </section>
+
+              {/* PCP Action Steps (Text-Rich) */}
+              {episode.pcp_action_items && episode.pcp_action_items.length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xl font-bold border-b pb-2">Recommended PCP Actions</h2>
+                  <p className="text-base leading-relaxed">
+                    The following action items are recommended for ongoing patient management:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-2 mt-3">
+                    {episode.pcp_action_items.map((item, idx) => (
+                      <li key={idx} className="text-base font-medium">{item}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
 
               {/* Provider Information */}
               <section className="space-y-2 text-sm">
