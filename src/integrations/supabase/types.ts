@@ -1132,6 +1132,7 @@ export type Database = {
           episode_id: string
           exam_date: string
           exam_time: string | null
+          exam_type: string
           heart_rate_supine_left: string | null
           heart_rate_supine_right: string | null
           id: string
@@ -1230,6 +1231,7 @@ export type Database = {
           episode_id: string
           exam_date?: string
           exam_time?: string | null
+          exam_type?: string
           heart_rate_supine_left?: string | null
           heart_rate_supine_right?: string | null
           id?: string
@@ -1328,6 +1330,7 @@ export type Database = {
           episode_id?: string
           exam_date?: string
           exam_time?: string | null
+          exam_type?: string
           heart_rate_supine_left?: string | null
           heart_rate_supine_right?: string | null
           id?: string
