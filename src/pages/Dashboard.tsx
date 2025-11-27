@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { getAllEpisodes } from "@/lib/dbOperations";
 import { PatientInvitationDialog } from "@/components/PatientInvitationDialog";
@@ -35,6 +35,13 @@ import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 import { EpisodeCardWithSwipe } from "@/components/EpisodeCardWithSwipe";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface Episode {
   id: string;
@@ -51,6 +58,7 @@ interface Episode {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [episodesWithScores, setEpisodesWithScores] = useState<EpisodeMeta[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +67,10 @@ export default function Dashboard() {
   const { toast } = useToast();
   const { settings } = useClinicSettings();
   const { success } = useHaptics();
+  
+  // Neuro exam dialog state
+  const [neuroExamDialogOpen, setNeuroExamDialogOpen] = useState(false);
+  const [selectedEpisodeForNeuro, setSelectedEpisodeForNeuro] = useState<string>("");
   
   // Filter states
   const [searchQuery, setSearchQuery] = useState("");
@@ -464,6 +476,19 @@ export default function Dashboard() {
     });
   };
 
+  // Handle neuro exam navigation
+  const handleNeuroExamClick = () => {
+    setNeuroExamDialogOpen(true);
+  };
+
+  const handleNeuroExamConfirm = () => {
+    if (selectedEpisodeForNeuro) {
+      navigate(`/neuro-exam?episode=${selectedEpisodeForNeuro}`);
+      setNeuroExamDialogOpen(false);
+      setSelectedEpisodeForNeuro("");
+    }
+  };
+
   // TODO: Fetch followups from database
   const pendingFollowups: Episode[] = [];
 
@@ -568,7 +593,7 @@ export default function Dashboard() {
         <p className="text-lg text-muted-foreground">
           Track patient progress and clinical outcomes with evidence-based MCID calculations
         </p>
-        <div className="mt-6">
+        <div className="mt-6 flex flex-wrap gap-4">
           <Link to="/patient-intake" className="group inline-block">
             <Button 
               size="lg" 
@@ -580,6 +605,16 @@ export default function Dashboard() {
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse" />
             </Button>
           </Link>
+          
+          <Button 
+            size="lg"
+            onClick={handleNeuroExamClick}
+            variant="outline"
+            className="gap-3 relative overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in px-8 py-7 text-lg font-bold border-2 hover:bg-primary/5"
+          >
+            <Activity className="h-6 w-6 group-hover:rotate-12 transition-transform duration-300" />
+            <span className="relative">Neuro Exam</span>
+          </Button>
         </div>
       </div>
 
@@ -1045,6 +1080,57 @@ export default function Dashboard() {
           patientName={selectedEpisodeForInvitation.patient_name}
         />
       )}
+
+      {/* Neuro Exam Episode Selection Dialog */}
+      <Dialog open={neuroExamDialogOpen} onOpenChange={setNeuroExamDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Select Episode for Neuro Exam</DialogTitle>
+            <DialogDescription>
+              Choose which episode to perform the neurologic examination for.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="episode-select">Episode</Label>
+              <Select
+                value={selectedEpisodeForNeuro}
+                onValueChange={setSelectedEpisodeForNeuro}
+              >
+                <SelectTrigger id="episode-select">
+                  <SelectValue placeholder="Select an episode..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {episodes
+                    .filter(ep => !ep.discharge_date) // Only active episodes
+                    .map(ep => (
+                      <SelectItem key={ep.id} value={ep.id}>
+                        {ep.patient_name} - {ep.region} ({format(new Date(ep.date_of_service), "MMM dd, yyyy")})
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setNeuroExamDialogOpen(false);
+                  setSelectedEpisodeForNeuro("");
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleNeuroExamConfirm}
+                disabled={!selectedEpisodeForNeuro}
+              >
+                Continue to Exam
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       </div>
     </PullToRefresh>
   );
