@@ -185,8 +185,8 @@ export default function PCPSummary() {
 
       setEpisode(processedEpisode);
       
-      // Fetch neuro exams if this is a Neuro episode
-      if (episodeData.episode_type === 'Neuro') {
+      // Fetch neuro exams if this is a Neurology episode
+      if (episodeData.episode_type === 'Neurology') {
         const { data: neuroExams } = await supabase
           .from('neurologic_exams')
           .select('*')
@@ -1135,8 +1135,8 @@ export default function PCPSummary() {
             </div>
           )}
 
-          {/* Neurologic Examination - Only for Neuro Episodes */}
-          {episode.episode_type === 'Neuro' && (
+          {/* Neurologic Examination - Only for Neurology Episodes */}
+          {episode.episode_type === 'Neurology' && (
             <div className="mt-6 print:break-before-page">
               {baselineExam && finalExam ? (
                 <NeuroExamComparison baselineExam={baselineExam} finalExam={finalExam} />

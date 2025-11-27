@@ -157,8 +157,8 @@ export default function EpisodeSummary() {
 
         setEpisode(processedEpisode);
         
-        // Fetch neuro exams if this is a Neuro episode
-        if (episodeData.episode_type === 'Neuro') {
+        // Fetch neuro exams if this is a Neurology episode
+        if (episodeData.episode_type === 'Neurology') {
           const { data: neuroExams } = await supabase
             .from('neurologic_exams')
             .select('*')
@@ -751,8 +751,8 @@ export default function EpisodeSummary() {
         </Card>
       )}
 
-      {/* Neurologic Examination - Only for Neuro Episodes */}
-      {episode.episode_type === 'Neuro' && (
+      {/* Neurologic Examination - Only for Neurology Episodes */}
+      {episode.episode_type === 'Neurology' && (
         <>
           {baselineExam && finalExam ? (
             <NeuroExamComparison baselineExam={baselineExam} finalExam={finalExam} />
