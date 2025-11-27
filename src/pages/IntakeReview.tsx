@@ -102,45 +102,52 @@ export default function IntakeReview() {
   };
 
   const handleConvertToEpisode = async (form: IntakeForm) => {
-    setPreparingConversion(true);
-    
-    // Get clinician name for notification
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("clinician_name")
-      .eq("id", user?.id)
-      .single();
+    try {
+      setPreparingConversion(true);
+      
+      // Get clinician name for notification
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("clinician_name")
+        .eq("id", user?.id)
+        .single();
 
-    // Send post-review notification
-    if (form.email) {
-      try {
-        await supabase.functions.invoke("send-post-review-notification", {
+      // Send post-review notification (non-blocking)
+      if (form.email) {
+        supabase.functions.invoke("send-post-review-notification", {
           body: {
             intakeFormId: form.id,
             patientEmail: form.email,
             patientName: form.patient_name,
             clinicianName: profile?.clinician_name || "Your provider",
           },
+        }).catch(error => {
+          console.log("Notification skipped:", error.message);
         });
-      } catch (error) {
-        console.error("Failed to send notification:", error);
-        // Don't block the conversion if notification fails
       }
-    }
 
-    // Update referral if exists
-    if ((form as any).referral_code) {
-      await supabase
-        .from("patient_referrals")
-        .update({ status: "converted", converted_at: new Date().toISOString() })
-        .eq("referral_code", (form as any).referral_code);
+      // Update referral if exists (non-blocking)
+      if ((form as any).referral_code) {
+        try {
+          await supabase
+            .from("patient_referrals")
+            .update({ status: "converted", converted_at: new Date().toISOString() })
+            .eq("referral_code", (form as any).referral_code);
+        } catch (error) {
+          console.log("Referral update skipped:", error);
+        }
+      }
+      
+      // Brief delay to show loading state
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setFormToConvert(form);
+      setConvertDialogOpen(true);
+    } catch (error) {
+      console.error("Error preparing conversion:", error);
+      toast.error("Failed to prepare conversion. Please try again.");
+    } finally {
+      setPreparingConversion(false);
     }
-    
-    // Brief delay to show loading state
-    await new Promise(resolve => setTimeout(resolve, 300));
-    setFormToConvert(form);
-    setConvertDialogOpen(true);
-    setPreparingConversion(false);
   };
 
   const handleConversionSuccess = () => {
