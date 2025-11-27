@@ -513,7 +513,7 @@ export function Layout({ children }: LayoutProps) {
               </div>
             </div>
             <div className="text-sm text-muted-foreground">
-              © 2025 NeuroEdvance. All rights reserved.
+              © 2025 Pittsford Performance Care. All rights reserved.
             </div>
           </div>
         </div>
