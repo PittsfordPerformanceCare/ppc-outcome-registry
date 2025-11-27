@@ -515,6 +515,7 @@ export type Database = {
           cis_post: number | null
           cis_pre: number | null
           clinic_id: string | null
+          clinical_impression: string | null
           clinician: string | null
           complaint_priority: number | null
           compliance_notes: string | null
@@ -544,6 +545,7 @@ export type Database = {
           pain_post: number | null
           pain_pre: number | null
           patient_name: string
+          pcp_action_items: Json | null
           prior_treatments: Json | null
           prior_treatments_other: string | null
           referral_reason: string | null
@@ -552,6 +554,7 @@ export type Database = {
           region: string
           reminder_sent_at: string | null
           resolution_days: string | null
+          return_to_function_items: Json | null
           source_intake_form_id: string | null
           start_date: string | null
           treatment_goals: Json | null
@@ -564,6 +567,7 @@ export type Database = {
           cis_post?: number | null
           cis_pre?: number | null
           clinic_id?: string | null
+          clinical_impression?: string | null
           clinician?: string | null
           complaint_priority?: number | null
           compliance_notes?: string | null
@@ -593,6 +597,7 @@ export type Database = {
           pain_post?: number | null
           pain_pre?: number | null
           patient_name: string
+          pcp_action_items?: Json | null
           prior_treatments?: Json | null
           prior_treatments_other?: string | null
           referral_reason?: string | null
@@ -601,6 +606,7 @@ export type Database = {
           region: string
           reminder_sent_at?: string | null
           resolution_days?: string | null
+          return_to_function_items?: Json | null
           source_intake_form_id?: string | null
           start_date?: string | null
           treatment_goals?: Json | null
@@ -613,6 +619,7 @@ export type Database = {
           cis_post?: number | null
           cis_pre?: number | null
           clinic_id?: string | null
+          clinical_impression?: string | null
           clinician?: string | null
           complaint_priority?: number | null
           compliance_notes?: string | null
@@ -642,6 +649,7 @@ export type Database = {
           pain_post?: number | null
           pain_pre?: number | null
           patient_name?: string
+          pcp_action_items?: Json | null
           prior_treatments?: Json | null
           prior_treatments_other?: string | null
           referral_reason?: string | null
@@ -650,6 +658,7 @@ export type Database = {
           region?: string
           reminder_sent_at?: string | null
           resolution_days?: string | null
+          return_to_function_items?: Json | null
           source_intake_form_id?: string | null
           start_date?: string | null
           treatment_goals?: Json | null
