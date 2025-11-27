@@ -1112,6 +1112,325 @@ export type Database = {
           },
         ]
       }
+      neurologic_exams: {
+        Row: {
+          auscultation_abdomen: string | null
+          auscultation_heart: string | null
+          auscultation_lungs: string | null
+          auscultation_notes: string | null
+          bp_seated_left: string | null
+          bp_seated_right: string | null
+          bp_standing_3min_left: string | null
+          bp_standing_3min_right: string | null
+          bp_standing_immediate_left: string | null
+          bp_standing_immediate_right: string | null
+          bp_supine_left: string | null
+          bp_supine_right: string | null
+          clinic_id: string | null
+          clinical_history: string | null
+          created_at: string
+          episode_id: string
+          exam_date: string
+          exam_time: string | null
+          heart_rate_supine_left: string | null
+          heart_rate_supine_right: string | null
+          id: string
+          inputs_cerebellar_left: boolean | null
+          inputs_cerebellar_notes: string | null
+          inputs_cerebellar_right: boolean | null
+          inputs_isometric_left: boolean | null
+          inputs_isometric_notes: string | null
+          inputs_isometric_right: boolean | null
+          inputs_notes: string | null
+          inputs_parietal_left: boolean | null
+          inputs_parietal_notes: string | null
+          inputs_parietal_right: boolean | null
+          inputs_therapy_localization: string | null
+          motor_deltoid_left: string | null
+          motor_deltoid_right: string | null
+          motor_gluteus_max_left: string | null
+          motor_gluteus_max_right: string | null
+          motor_iliopsoas_left: string | null
+          motor_iliopsoas_right: string | null
+          motor_latissimus_left: string | null
+          motor_latissimus_right: string | null
+          motor_notes: string | null
+          neuro_2pt_localization_left: string | null
+          neuro_2pt_localization_right: string | null
+          neuro_babinski_left: string | null
+          neuro_babinski_right: string | null
+          neuro_digit_sense_left: string | null
+          neuro_digit_sense_right: string | null
+          neuro_finger_to_nose_left: string | null
+          neuro_finger_to_nose_right: string | null
+          neuro_notes: string | null
+          neuro_pupillary_fatigue_left: string | null
+          neuro_pupillary_fatigue_notes: string | null
+          neuro_pupillary_fatigue_right: string | null
+          neuro_red_desaturation_left: boolean | null
+          neuro_red_desaturation_right: boolean | null
+          neuro_ue_capillary_refill_left: string | null
+          neuro_ue_capillary_refill_right: string | null
+          neuro_ue_extensor_weakness_left: boolean | null
+          neuro_ue_extensor_weakness_right: boolean | null
+          neuro_uprds_left: string | null
+          neuro_uprds_right: string | null
+          o2_saturation_supine_left: string | null
+          o2_saturation_supine_right: string | null
+          overall_notes: string | null
+          reflex_achilles_left: string | null
+          reflex_achilles_right: string | null
+          reflex_bicep_left: string | null
+          reflex_bicep_right: string | null
+          reflex_brachioradialis_left: string | null
+          reflex_brachioradialis_right: string | null
+          reflex_patellar_left: string | null
+          reflex_patellar_right: string | null
+          reflex_tricep_left: string | null
+          reflex_tricep_right: string | null
+          reflexes_notes: string | null
+          temperature_left: string | null
+          temperature_right: string | null
+          updated_at: string
+          user_id: string
+          vestibular_canal_testing: string | null
+          vestibular_fakuda: string | null
+          vestibular_notes: string | null
+          vestibular_otr_left: boolean | null
+          vestibular_otr_notes: string | null
+          vestibular_otr_right: boolean | null
+          vestibular_rombergs: string | null
+          vestibular_shunt_stability_ec: string | null
+          vestibular_shunt_stability_eo: string | null
+          vestibular_vor: string | null
+          visual_convergence: string | null
+          visual_maddox_rod: string | null
+          visual_notes: string | null
+          visual_opk: string | null
+          visual_pursuits: string | null
+          visual_saccades: string | null
+          vitals_notes: string | null
+        }
+        Insert: {
+          auscultation_abdomen?: string | null
+          auscultation_heart?: string | null
+          auscultation_lungs?: string | null
+          auscultation_notes?: string | null
+          bp_seated_left?: string | null
+          bp_seated_right?: string | null
+          bp_standing_3min_left?: string | null
+          bp_standing_3min_right?: string | null
+          bp_standing_immediate_left?: string | null
+          bp_standing_immediate_right?: string | null
+          bp_supine_left?: string | null
+          bp_supine_right?: string | null
+          clinic_id?: string | null
+          clinical_history?: string | null
+          created_at?: string
+          episode_id: string
+          exam_date?: string
+          exam_time?: string | null
+          heart_rate_supine_left?: string | null
+          heart_rate_supine_right?: string | null
+          id?: string
+          inputs_cerebellar_left?: boolean | null
+          inputs_cerebellar_notes?: string | null
+          inputs_cerebellar_right?: boolean | null
+          inputs_isometric_left?: boolean | null
+          inputs_isometric_notes?: string | null
+          inputs_isometric_right?: boolean | null
+          inputs_notes?: string | null
+          inputs_parietal_left?: boolean | null
+          inputs_parietal_notes?: string | null
+          inputs_parietal_right?: boolean | null
+          inputs_therapy_localization?: string | null
+          motor_deltoid_left?: string | null
+          motor_deltoid_right?: string | null
+          motor_gluteus_max_left?: string | null
+          motor_gluteus_max_right?: string | null
+          motor_iliopsoas_left?: string | null
+          motor_iliopsoas_right?: string | null
+          motor_latissimus_left?: string | null
+          motor_latissimus_right?: string | null
+          motor_notes?: string | null
+          neuro_2pt_localization_left?: string | null
+          neuro_2pt_localization_right?: string | null
+          neuro_babinski_left?: string | null
+          neuro_babinski_right?: string | null
+          neuro_digit_sense_left?: string | null
+          neuro_digit_sense_right?: string | null
+          neuro_finger_to_nose_left?: string | null
+          neuro_finger_to_nose_right?: string | null
+          neuro_notes?: string | null
+          neuro_pupillary_fatigue_left?: string | null
+          neuro_pupillary_fatigue_notes?: string | null
+          neuro_pupillary_fatigue_right?: string | null
+          neuro_red_desaturation_left?: boolean | null
+          neuro_red_desaturation_right?: boolean | null
+          neuro_ue_capillary_refill_left?: string | null
+          neuro_ue_capillary_refill_right?: string | null
+          neuro_ue_extensor_weakness_left?: boolean | null
+          neuro_ue_extensor_weakness_right?: boolean | null
+          neuro_uprds_left?: string | null
+          neuro_uprds_right?: string | null
+          o2_saturation_supine_left?: string | null
+          o2_saturation_supine_right?: string | null
+          overall_notes?: string | null
+          reflex_achilles_left?: string | null
+          reflex_achilles_right?: string | null
+          reflex_bicep_left?: string | null
+          reflex_bicep_right?: string | null
+          reflex_brachioradialis_left?: string | null
+          reflex_brachioradialis_right?: string | null
+          reflex_patellar_left?: string | null
+          reflex_patellar_right?: string | null
+          reflex_tricep_left?: string | null
+          reflex_tricep_right?: string | null
+          reflexes_notes?: string | null
+          temperature_left?: string | null
+          temperature_right?: string | null
+          updated_at?: string
+          user_id: string
+          vestibular_canal_testing?: string | null
+          vestibular_fakuda?: string | null
+          vestibular_notes?: string | null
+          vestibular_otr_left?: boolean | null
+          vestibular_otr_notes?: string | null
+          vestibular_otr_right?: boolean | null
+          vestibular_rombergs?: string | null
+          vestibular_shunt_stability_ec?: string | null
+          vestibular_shunt_stability_eo?: string | null
+          vestibular_vor?: string | null
+          visual_convergence?: string | null
+          visual_maddox_rod?: string | null
+          visual_notes?: string | null
+          visual_opk?: string | null
+          visual_pursuits?: string | null
+          visual_saccades?: string | null
+          vitals_notes?: string | null
+        }
+        Update: {
+          auscultation_abdomen?: string | null
+          auscultation_heart?: string | null
+          auscultation_lungs?: string | null
+          auscultation_notes?: string | null
+          bp_seated_left?: string | null
+          bp_seated_right?: string | null
+          bp_standing_3min_left?: string | null
+          bp_standing_3min_right?: string | null
+          bp_standing_immediate_left?: string | null
+          bp_standing_immediate_right?: string | null
+          bp_supine_left?: string | null
+          bp_supine_right?: string | null
+          clinic_id?: string | null
+          clinical_history?: string | null
+          created_at?: string
+          episode_id?: string
+          exam_date?: string
+          exam_time?: string | null
+          heart_rate_supine_left?: string | null
+          heart_rate_supine_right?: string | null
+          id?: string
+          inputs_cerebellar_left?: boolean | null
+          inputs_cerebellar_notes?: string | null
+          inputs_cerebellar_right?: boolean | null
+          inputs_isometric_left?: boolean | null
+          inputs_isometric_notes?: string | null
+          inputs_isometric_right?: boolean | null
+          inputs_notes?: string | null
+          inputs_parietal_left?: boolean | null
+          inputs_parietal_notes?: string | null
+          inputs_parietal_right?: boolean | null
+          inputs_therapy_localization?: string | null
+          motor_deltoid_left?: string | null
+          motor_deltoid_right?: string | null
+          motor_gluteus_max_left?: string | null
+          motor_gluteus_max_right?: string | null
+          motor_iliopsoas_left?: string | null
+          motor_iliopsoas_right?: string | null
+          motor_latissimus_left?: string | null
+          motor_latissimus_right?: string | null
+          motor_notes?: string | null
+          neuro_2pt_localization_left?: string | null
+          neuro_2pt_localization_right?: string | null
+          neuro_babinski_left?: string | null
+          neuro_babinski_right?: string | null
+          neuro_digit_sense_left?: string | null
+          neuro_digit_sense_right?: string | null
+          neuro_finger_to_nose_left?: string | null
+          neuro_finger_to_nose_right?: string | null
+          neuro_notes?: string | null
+          neuro_pupillary_fatigue_left?: string | null
+          neuro_pupillary_fatigue_notes?: string | null
+          neuro_pupillary_fatigue_right?: string | null
+          neuro_red_desaturation_left?: boolean | null
+          neuro_red_desaturation_right?: boolean | null
+          neuro_ue_capillary_refill_left?: string | null
+          neuro_ue_capillary_refill_right?: string | null
+          neuro_ue_extensor_weakness_left?: boolean | null
+          neuro_ue_extensor_weakness_right?: boolean | null
+          neuro_uprds_left?: string | null
+          neuro_uprds_right?: string | null
+          o2_saturation_supine_left?: string | null
+          o2_saturation_supine_right?: string | null
+          overall_notes?: string | null
+          reflex_achilles_left?: string | null
+          reflex_achilles_right?: string | null
+          reflex_bicep_left?: string | null
+          reflex_bicep_right?: string | null
+          reflex_brachioradialis_left?: string | null
+          reflex_brachioradialis_right?: string | null
+          reflex_patellar_left?: string | null
+          reflex_patellar_right?: string | null
+          reflex_tricep_left?: string | null
+          reflex_tricep_right?: string | null
+          reflexes_notes?: string | null
+          temperature_left?: string | null
+          temperature_right?: string | null
+          updated_at?: string
+          user_id?: string
+          vestibular_canal_testing?: string | null
+          vestibular_fakuda?: string | null
+          vestibular_notes?: string | null
+          vestibular_otr_left?: boolean | null
+          vestibular_otr_notes?: string | null
+          vestibular_otr_right?: boolean | null
+          vestibular_rombergs?: string | null
+          vestibular_shunt_stability_ec?: string | null
+          vestibular_shunt_stability_eo?: string | null
+          vestibular_vor?: string | null
+          visual_convergence?: string | null
+          visual_maddox_rod?: string | null
+          visual_notes?: string | null
+          visual_opk?: string | null
+          visual_pursuits?: string | null
+          visual_saccades?: string | null
+          vitals_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "neurologic_exams_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "neurologic_exams_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "neurologic_exams_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_alert_config: {
         Row: {
           alert_recipients: string[]

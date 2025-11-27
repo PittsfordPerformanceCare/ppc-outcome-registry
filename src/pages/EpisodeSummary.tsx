@@ -264,6 +264,14 @@ export default function EpisodeSummary() {
             <Home className="h-4 w-4" />
             Home
           </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => navigate(`/neuro-exam?episode=${episodeId}`)} 
+            className="gap-2 print:hidden"
+          >
+            <Activity className="h-4 w-4" />
+            Neuro Exam
+          </Button>
           {isCompleted && episode.baselineScores && episode.dischargeScores && (
             <MCIDReportDialog
               patientName={episode.patientName}

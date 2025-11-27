@@ -37,6 +37,7 @@ import ExportHistory from "./pages/ExportHistory";
 import ReferralAnalytics from "./pages/ReferralAnalytics";
 import AutomationStatus from "./pages/AutomationStatus";
 import ClinicianInbox from "./pages/ClinicianInbox";
+import NeuroExam from "./pages/NeuroExam";
 import PatientWelcome from "./pages/PatientWelcome";
 import ClinicianQuickStart from "./pages/ClinicianQuickStart";
 import AdministratorQuickStart from "./pages/AdministratorQuickStart";
@@ -118,6 +119,7 @@ const App = () => (
                     />
                     <Route path="/analytics-dashboard" element={<AnalyticsDashboard />} />
                     <Route path="/data-governance" element={<DataGovernance />} />
+                    <Route path="/neuro-exam" element={<NeuroExam />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
