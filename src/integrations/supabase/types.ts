@@ -551,6 +551,7 @@ export type Database = {
           pain_pre: number | null
           patient_name: string
           pcp_action_items: Json | null
+          pcp_fax: string | null
           prior_treatments: Json | null
           prior_treatments_other: string | null
           referral_reason: string | null
@@ -608,6 +609,7 @@ export type Database = {
           pain_pre?: number | null
           patient_name: string
           pcp_action_items?: Json | null
+          pcp_fax?: string | null
           prior_treatments?: Json | null
           prior_treatments_other?: string | null
           referral_reason?: string | null
@@ -665,6 +667,7 @@ export type Database = {
           pain_pre?: number | null
           patient_name?: string
           pcp_action_items?: Json | null
+          pcp_fax?: string | null
           prior_treatments?: Json | null
           prior_treatments_other?: string | null
           referral_reason?: string | null
@@ -902,6 +905,7 @@ export type Database = {
           pain_level: number | null
           patient_name: string
           pcp_address: string | null
+          pcp_fax: string | null
           pcp_phone: string | null
           phone: string | null
           primary_care_physician: string | null
@@ -952,6 +956,7 @@ export type Database = {
           pain_level?: number | null
           patient_name: string
           pcp_address?: string | null
+          pcp_fax?: string | null
           pcp_phone?: string | null
           phone?: string | null
           primary_care_physician?: string | null
@@ -1002,6 +1007,7 @@ export type Database = {
           pain_level?: number | null
           patient_name?: string
           pcp_address?: string | null
+          pcp_fax?: string | null
           pcp_phone?: string | null
           phone?: string | null
           primary_care_physician?: string | null

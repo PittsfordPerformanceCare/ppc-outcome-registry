@@ -96,6 +96,7 @@ export function ReturningPatientLookup({ onPatientSelect, onClose }: ReturningPa
       emergencyContactRelationship: record.emergency_contact_relationship || "",
       primaryCarePhysician: record.primary_care_physician || "",
       pcpPhone: record.pcp_phone || "",
+      pcpFax: record.pcp_fax || "",
       pcpAddress: record.pcp_address || "",
       referringPhysician: record.referring_physician || "",
       currentMedications: record.current_medications || record.medications || "",
