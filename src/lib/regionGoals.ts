@@ -1,0 +1,147 @@
+// Treatment Goals by Anatomical Region
+export const REGION_GOALS: Record<string, string[]> = {
+  // MSK regions - common 12
+  "Cervical": [
+    "Reduce pain to functional level",
+    "Improve range of motion",
+    "Increase strength/endurance",
+    "Improve posture/ergonomics",
+    "Increase walking/standing tolerance",
+    "Return to work/school duties",
+    "Return to sport/recreation",
+    "Improve balance/gait stability",
+    "Reduce headache/dizziness frequency",
+    "Improve sleep quality",
+    "Perform ADLs without assistance",
+    "Independently complete HEP"
+  ],
+  "Thoracic": [
+    "Reduce pain to functional level",
+    "Improve range of motion",
+    "Increase strength/endurance",
+    "Improve posture/ergonomics",
+    "Increase walking/standing tolerance",
+    "Return to work/school duties",
+    "Return to sport/recreation",
+    "Improve balance/gait stability",
+    "Reduce headache/dizziness frequency",
+    "Improve sleep quality",
+    "Perform ADLs without assistance",
+    "Independently complete HEP"
+  ],
+  "Lumbar": [
+    "Reduce pain to functional level",
+    "Improve range of motion",
+    "Increase strength/endurance",
+    "Improve posture/ergonomics",
+    "Increase walking/standing tolerance",
+    "Return to work/school duties",
+    "Return to sport/recreation",
+    "Improve balance/gait stability",
+    "Reduce headache/dizziness frequency",
+    "Improve sleep quality",
+    "Perform ADLs without assistance",
+    "Independently complete HEP"
+  ],
+  "Shoulder": [
+    "Reduce pain to functional level",
+    "Improve range of motion",
+    "Increase strength/endurance",
+    "Improve posture/ergonomics",
+    "Increase walking/standing tolerance",
+    "Return to work/school duties",
+    "Return to sport/recreation",
+    "Improve balance/gait stability",
+    "Reduce headache/dizziness frequency",
+    "Improve sleep quality",
+    "Perform ADLs without assistance",
+    "Independently complete HEP"
+  ],
+  "Elbow": [
+    "Reduce pain to functional level",
+    "Improve range of motion",
+    "Increase strength/endurance",
+    "Improve posture/ergonomics",
+    "Increase walking/standing tolerance",
+    "Return to work/school duties",
+    "Return to sport/recreation",
+    "Improve balance/gait stability",
+    "Reduce headache/dizziness frequency",
+    "Improve sleep quality",
+    "Perform ADLs without assistance",
+    "Independently complete HEP"
+  ],
+  "Wrist/Hand": [
+    "Reduce pain to functional level",
+    "Improve range of motion",
+    "Increase strength/endurance",
+    "Improve posture/ergonomics",
+    "Increase walking/standing tolerance",
+    "Return to work/school duties",
+    "Return to sport/recreation",
+    "Improve balance/gait stability",
+    "Reduce headache/dizziness frequency",
+    "Improve sleep quality",
+    "Perform ADLs without assistance",
+    "Independently complete HEP"
+  ],
+  "Hip": [
+    "Reduce pain to functional level",
+    "Improve range of motion",
+    "Increase strength/endurance",
+    "Improve posture/ergonomics",
+    "Increase walking/standing tolerance",
+    "Return to work/school duties",
+    "Return to sport/recreation",
+    "Improve balance/gait stability",
+    "Reduce headache/dizziness frequency",
+    "Improve sleep quality",
+    "Perform ADLs without assistance",
+    "Independently complete HEP"
+  ],
+  "Knee": [
+    "Reduce pain to functional level",
+    "Improve range of motion",
+    "Increase strength/endurance",
+    "Improve posture/ergonomics",
+    "Increase walking/standing tolerance",
+    "Return to work/school duties",
+    "Return to sport/recreation",
+    "Improve balance/gait stability",
+    "Reduce headache/dizziness frequency",
+    "Improve sleep quality",
+    "Perform ADLs without assistance",
+    "Independently complete HEP"
+  ],
+  "Ankle/Foot": [
+    "Reduce pain to functional level",
+    "Improve range of motion",
+    "Increase strength/endurance",
+    "Improve posture/ergonomics",
+    "Increase walking/standing tolerance",
+    "Return to work/school duties",
+    "Return to sport/recreation",
+    "Improve balance/gait stability",
+    "Reduce headache/dizziness frequency",
+    "Improve sleep quality",
+    "Perform ADLs without assistance",
+    "Independently complete HEP"
+  ],
+  // Neurologic - Brain/Head specific treatment goals
+  "Brain/Head": [
+    "Reduce headache frequency and intensity",
+    "Improve balance and spatial orientation",
+    "Reduce dizziness with head or body movement",
+    "Improve visual comfort and screen tolerance",
+    "Increase cognitive endurance",
+    "Improve attention, focus, and processing speed",
+    "Reduce light and/or noise sensitivity",
+    "Improve sleep quality and regulation",
+    "Reduce anxiety or emotional reactivity related to symptoms",
+    "Restore activity and exercise tolerance",
+    "Improve neck mobility and reduce cervicogenic symptoms",
+    "Return to normal school, work, or athletic participation"
+  ]
+};
+
+export type GoalsRegionKey = keyof typeof REGION_GOALS;

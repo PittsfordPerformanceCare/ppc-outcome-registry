@@ -437,6 +437,7 @@ export default function Discharge() {
           <div className="mt-6">
             <TreatmentGoalsSelector
               stage="Final"
+              region={region}
               initialGoals={goalsData}
               initialOther={goalsOther}
               onChange={({ goals, goals_other }) => {

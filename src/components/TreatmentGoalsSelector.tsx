@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { REGION_GOALS } from "@/lib/regionGoals";
 
 export const TREATMENT_GOALS_12 = [
   "Reduce pain to functional level",
@@ -33,6 +34,7 @@ export type GoalItem = {
 
 interface TreatmentGoalsSelectorProps {
   stage?: "Intake" | "FollowUp" | "Final";
+  region?: string;
   initialGoals?: GoalItem[];
   initialOther?: string;
   onChange?: (data: { goals: GoalItem[]; goals_other: string }) => void;
@@ -40,6 +42,7 @@ interface TreatmentGoalsSelectorProps {
 
 export function TreatmentGoalsSelector({
   stage = "Intake",
+  region,
   initialGoals = [],
   initialOther = "",
   onChange,
@@ -49,10 +52,15 @@ export function TreatmentGoalsSelector({
   const [selected, setSelected] = useState<GoalItem[]>(initialGoals);
   const [otherText, setOtherText] = useState(initialOther);
 
+  const baseList = useMemo(() => {
+    if (!region) return TREATMENT_GOALS_12;
+    return REGION_GOALS[region] || TREATMENT_GOALS_12;
+  }, [region]);
+
   const options = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return TREATMENT_GOALS_12.filter((g) => g.toLowerCase().includes(q));
-  }, [query]);
+    return baseList.filter((g) => g.toLowerCase().includes(q));
+  }, [query, baseList]);
 
   useEffect(() => {
     if (onChange) {
@@ -87,7 +95,7 @@ export function TreatmentGoalsSelector({
           </Badge>
         </div>
         <CardDescription>
-          Select treatment goals and track progress toward achievement
+          {region ? `Select treatment goals and track progress for ${region}` : "Select a region first to see relevant treatment goals"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -98,13 +106,15 @@ export function TreatmentGoalsSelector({
             placeholder="Type to filter treatment goals..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            disabled={!region}
           />
         </div>
 
-        <div className="space-y-2">
-          <Label>Select Goals</Label>
-          <div className="flex flex-wrap gap-2">
-            {options.map((name) => {
+        {region ? (
+          <div className="space-y-2">
+            <Label>Select Goals</Label>
+            <div className="flex flex-wrap gap-2">
+              {options.map((name) => {
               const isOn = selected.some((g) => g.name === name);
               return (
                 <button
@@ -123,8 +133,13 @@ export function TreatmentGoalsSelector({
                 </button>
               );
             })}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-sm text-muted-foreground p-4 text-center border rounded-md">
+            Please select a region first to see relevant treatment goal options
+          </div>
+        )}
 
         {selected.length > 0 && (
           <div className="space-y-2">
