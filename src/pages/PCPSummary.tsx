@@ -69,6 +69,7 @@ interface ProcessedEpisode {
   med_changes_notes?: string;
   allergy_flag?: boolean;
   allergy_notes?: string;
+  pcp_fax?: string;
 }
 
 interface FollowupData {
@@ -172,6 +173,7 @@ export default function PCPSummary() {
         med_changes_notes: episodeData.med_changes_notes || undefined,
         allergy_flag: episodeData.allergy_flag || false,
         allergy_notes: episodeData.allergy_notes || undefined,
+        pcp_fax: episodeData.pcp_fax || undefined,
       };
 
       setEpisode(processedEpisode);
@@ -431,6 +433,13 @@ export default function PCPSummary() {
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">Pittsford Performance Care</p>
+                {episode.pcp_fax && (
+                  <div className="mt-2 pt-2 border-t border-primary/10">
+                    <p className="text-sm">
+                      <span className="font-medium">PCP Fax:</span> {episode.pcp_fax}
+                    </p>
+                  </div>
+                )}
               </section>
 
               {/* Medication & Allergy Summary */}
@@ -742,6 +751,13 @@ export default function PCPSummary() {
                   )}
                 </div>
                 <p className="text-base text-muted-foreground mt-1">Pittsford Performance Care</p>
+                {episode.pcp_fax && (
+                  <div className="mt-2 pt-2 border-t border-primary/10">
+                    <p className="text-base">
+                      <span className="font-medium">PCP Fax:</span> {episode.pcp_fax}
+                    </p>
+                  </div>
+                )}
               </section>
 
               {/* Medication & Allergy Summary */}

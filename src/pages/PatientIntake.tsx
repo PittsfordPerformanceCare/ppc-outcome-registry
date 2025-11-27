@@ -160,6 +160,7 @@ const intakeFormSchema = z.object({
   referralSource: z.string().max(200, "Referral source is too long").optional(),
   primaryCarePhysician: z.string().max(100, "Name is too long").optional(),
   pcpPhone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
+  pcpFax: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid fax number format").min(10, "Fax number must be at least 10 digits").min(1, "PCP fax number is required"),
   pcpAddress: z.string().max(300, "Address is too long").optional(),
   referringPhysician: z.string().max(100, "Name is too long").optional(),
   specialistSeen: z.string().max(200, "Information is too long").optional(),
@@ -293,6 +294,7 @@ export default function PatientIntake() {
       referralSource: "",
       primaryCarePhysician: "",
       pcpPhone: "",
+      pcpFax: "",
       pcpAddress: "",
       referringPhysician: "",
       specialistSeen: "",
@@ -762,6 +764,7 @@ export default function PatientIntake() {
           referral_source: data.referralSource || null,
           primary_care_physician: data.primaryCarePhysician || null,
           pcp_phone: data.pcpPhone || null,
+          pcp_fax: data.pcpFax || null,
           pcp_address: data.pcpAddress || null,
           referring_physician: data.referringPhysician || null,
           specialist_seen: data.specialistSeen || null,
@@ -2175,6 +2178,24 @@ export default function PatientIntake() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>PCP Phone</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="tel" 
+                            {...field} 
+                            inputMode="tel"
+                            enterKeyHint="next"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="pcpFax"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>PCP Fax <span className="text-destructive">*</span></FormLabel>
                         <FormControl>
                           <Input 
                             type="tel" 
