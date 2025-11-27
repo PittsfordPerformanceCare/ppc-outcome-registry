@@ -536,6 +536,7 @@ export default function NewEpisode() {
             {/* Smart Prior Treatment Selector */}
             <div className="mt-6">
               <PriorTreatmentSelector
+                region={region}
                 initialTreatments={priorTreatmentsData}
                 initialOther={priorTreatmentsOther}
                 onChange={({ prior_treatments, prior_treatments_other }) => {

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { REGION_TREATMENTS } from "@/lib/regionTreatments";
 
 export const PRIOR_TREATMENTS_12 = [
   "Rest / activity modification",
@@ -26,12 +27,14 @@ export type PriorTreatment = {
 };
 
 interface PriorTreatmentSelectorProps {
+  region?: string;
   initialTreatments?: PriorTreatment[];
   initialOther?: string;
   onChange?: (data: { prior_treatments: PriorTreatment[]; prior_treatments_other: string }) => void;
 }
 
 export function PriorTreatmentSelector({
+  region,
   initialTreatments = [],
   initialOther = "",
   onChange,
@@ -40,10 +43,15 @@ export function PriorTreatmentSelector({
   const [query, setQuery] = useState("");
   const [otherText, setOtherText] = useState(initialOther);
 
+  const baseList = useMemo(() => {
+    if (!region) return PRIOR_TREATMENTS_12;
+    return REGION_TREATMENTS[region] || PRIOR_TREATMENTS_12;
+  }, [region]);
+
   const options = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return PRIOR_TREATMENTS_12.filter((t) => t.toLowerCase().includes(q));
-  }, [query]);
+    return baseList.filter((t) => t.toLowerCase().includes(q));
+  }, [query, baseList]);
 
   useEffect(() => {
     if (onChange) {
@@ -76,7 +84,7 @@ export function PriorTreatmentSelector({
           <Badge variant="secondary">Intake & Final</Badge>
         </div>
         <CardDescription>
-          Select treatments the patient has already tried
+          {region ? `Select treatments the patient has already tried for ${region}` : "Select a region first to see relevant treatments"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -87,13 +95,15 @@ export function PriorTreatmentSelector({
             placeholder="Type to filter treatments..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            disabled={!region}
           />
         </div>
 
-        <div className="space-y-2">
-          <Label>Select Treatments</Label>
-          <div className="flex flex-wrap gap-2">
-            {options.map((name) => {
+        {region ? (
+          <div className="space-y-2">
+            <Label>Select Treatments</Label>
+            <div className="flex flex-wrap gap-2">
+              {options.map((name) => {
               const isOn = selected.some((p) => p.name === name);
               return (
                 <button
@@ -112,8 +122,13 @@ export function PriorTreatmentSelector({
                 </button>
               );
             })}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-sm text-muted-foreground p-4 text-center border rounded-md">
+            Please select a region first to see relevant prior treatment options
+          </div>
+        )}
 
         {selected.length > 0 && (
           <div className="space-y-2">
