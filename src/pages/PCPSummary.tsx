@@ -26,6 +26,7 @@ interface ProcessedEpisode {
   dateOfService: string;
   dob?: string;
   clinician?: string;
+  clinician_credentials?: string;
   diagnosis?: string;
   npi?: string;
   indices: string[];
@@ -64,6 +65,10 @@ interface ProcessedEpisode {
   clinical_impression?: string;
   return_to_function_items?: string[];
   pcp_action_items?: string[];
+  med_changes_flag?: boolean;
+  med_changes_notes?: string;
+  allergy_flag?: boolean;
+  allergy_notes?: string;
 }
 
 interface FollowupData {
@@ -130,6 +135,7 @@ export default function PCPSummary() {
         dateOfService: episodeData.date_of_service,
         dob: episodeData.date_of_birth || undefined,
         clinician: episodeData.clinician || undefined,
+        clinician_credentials: episodeData.clinician_credentials || undefined,
         diagnosis: episodeData.diagnosis || undefined,
         npi: episodeData.npi || undefined,
         indices,
@@ -162,6 +168,10 @@ export default function PCPSummary() {
         clinical_impression: episodeData.clinical_impression || undefined,
         return_to_function_items: (episodeData.return_to_function_items as string[]) || undefined,
         pcp_action_items: (episodeData.pcp_action_items as string[]) || undefined,
+        med_changes_flag: episodeData.med_changes_flag || false,
+        med_changes_notes: episodeData.med_changes_notes || undefined,
+        allergy_flag: episodeData.allergy_flag || false,
+        allergy_notes: episodeData.allergy_notes || undefined,
       };
 
       setEpisode(processedEpisode);
@@ -402,6 +412,55 @@ export default function PCPSummary() {
                   </div>
                 )}
               </div>
+
+              {/* Clinician Header with NPI */}
+              <section className="mt-6 bg-primary/5 p-4 rounded-lg border border-primary/20">
+                <h2 className="text-lg font-semibold mb-2">Treating Clinician</h2>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {episode.clinician && (
+                    <span className="font-medium text-lg">{episode.clinician}</span>
+                  )}
+                  {episode.clinician_credentials && (
+                    <span className="text-lg text-muted-foreground">, {episode.clinician_credentials}</span>
+                  )}
+                  {episode.npi && (
+                    <>
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-sm">NPI: {episode.npi}</span>
+                    </>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">Pittsford Performance Care</p>
+              </section>
+
+              {/* Medication & Allergy Summary */}
+              <section className="mt-6">
+                <h2 className="text-lg font-semibold border-b pb-1 mb-3">Medication & Allergy Summary</h2>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Medication Changes:</p>
+                    <p className="font-medium">{episode.med_changes_flag ? "Yes" : "No"}</p>
+                    {episode.med_changes_notes ? (
+                      <p className="text-sm mt-1">{episode.med_changes_notes}</p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Patient reports no medication changes during this episode of care.
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Allergies Relevant to Care:</p>
+                    <p className="font-medium">{episode.allergy_flag ? "Yes" : "No"}</p>
+                    {episode.allergy_notes ? (
+                      <p className="text-sm mt-1">{episode.allergy_notes}</p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Patient reports no allergies impacting treatment.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </section>
 
               {/* Intake Information */}
               <section className="mt-6">
@@ -663,6 +722,55 @@ export default function PCPSummary() {
                     Math.round((new Date(episode.dischargeDate).getTime() - new Date(episode.start_date).getTime()) / (1000 * 60 * 60 * 24 * 7))
                   } weeks` : ''}.
                 </p>
+              </section>
+
+              {/* Clinician Header with NPI */}
+              <section className="mt-6 bg-primary/5 p-4 rounded-lg border border-primary/20">
+                <h2 className="text-xl font-bold mb-2">Treating Clinician</h2>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {episode.clinician && (
+                    <span className="font-medium text-xl">{episode.clinician}</span>
+                  )}
+                  {episode.clinician_credentials && (
+                    <span className="text-xl text-muted-foreground">, {episode.clinician_credentials}</span>
+                  )}
+                  {episode.npi && (
+                    <>
+                      <span className="text-muted-foreground">•</span>
+                      <span className="text-base">NPI: {episode.npi}</span>
+                    </>
+                  )}
+                </div>
+                <p className="text-base text-muted-foreground mt-1">Pittsford Performance Care</p>
+              </section>
+
+              {/* Medication & Allergy Summary */}
+              <section className="space-y-3">
+                <h2 className="text-xl font-bold border-b pb-2">Medication & Allergy Summary</h2>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-base font-semibold mb-1">Medication Changes:</p>
+                    <p className="text-base font-medium">{episode.med_changes_flag ? "Yes" : "No"}</p>
+                    {episode.med_changes_notes ? (
+                      <p className="text-base leading-relaxed mt-1">{episode.med_changes_notes}</p>
+                    ) : (
+                      <p className="text-base leading-relaxed text-muted-foreground mt-1">
+                        Patient reports no medication changes during this episode of care.
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-base font-semibold mb-1">Allergies Relevant to Care:</p>
+                    <p className="text-base font-medium">{episode.allergy_flag ? "Yes" : "No"}</p>
+                    {episode.allergy_notes ? (
+                      <p className="text-base leading-relaxed mt-1">{episode.allergy_notes}</p>
+                    ) : (
+                      <p className="text-base leading-relaxed text-muted-foreground mt-1">
+                        Patient reports no allergies impacting treatment.
+                      </p>
+                    )}
+                  </div>
+                </div>
               </section>
 
               {/* Clinical Presentation */}

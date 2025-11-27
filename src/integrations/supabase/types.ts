@@ -511,12 +511,15 @@ export type Database = {
       }
       episodes: {
         Row: {
+          allergy_flag: boolean | null
+          allergy_notes: string | null
           cis_delta: number | null
           cis_post: number | null
           cis_pre: number | null
           clinic_id: string | null
           clinical_impression: string | null
           clinician: string | null
+          clinician_credentials: string | null
           complaint_priority: number | null
           compliance_notes: string | null
           compliance_rating: string | null
@@ -537,6 +540,8 @@ export type Database = {
           injury_date: string | null
           injury_mechanism: string | null
           insurance: string | null
+          med_changes_flag: boolean | null
+          med_changes_notes: string | null
           medical_history: string | null
           medications: string | null
           npi: string | null
@@ -563,12 +568,15 @@ export type Database = {
           visits: string | null
         }
         Insert: {
+          allergy_flag?: boolean | null
+          allergy_notes?: string | null
           cis_delta?: number | null
           cis_post?: number | null
           cis_pre?: number | null
           clinic_id?: string | null
           clinical_impression?: string | null
           clinician?: string | null
+          clinician_credentials?: string | null
           complaint_priority?: number | null
           compliance_notes?: string | null
           compliance_rating?: string | null
@@ -589,6 +597,8 @@ export type Database = {
           injury_date?: string | null
           injury_mechanism?: string | null
           insurance?: string | null
+          med_changes_flag?: boolean | null
+          med_changes_notes?: string | null
           medical_history?: string | null
           medications?: string | null
           npi?: string | null
@@ -615,12 +625,15 @@ export type Database = {
           visits?: string | null
         }
         Update: {
+          allergy_flag?: boolean | null
+          allergy_notes?: string | null
           cis_delta?: number | null
           cis_post?: number | null
           cis_pre?: number | null
           clinic_id?: string | null
           clinical_impression?: string | null
           clinician?: string | null
+          clinician_credentials?: string | null
           complaint_priority?: number | null
           compliance_notes?: string | null
           compliance_rating?: string | null
@@ -641,6 +654,8 @@ export type Database = {
           injury_date?: string | null
           injury_mechanism?: string | null
           insurance?: string | null
+          med_changes_flag?: boolean | null
+          med_changes_notes?: string | null
           medical_history?: string | null
           medications?: string | null
           npi?: string | null
