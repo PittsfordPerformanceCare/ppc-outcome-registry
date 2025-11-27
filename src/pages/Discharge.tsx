@@ -240,9 +240,24 @@ export default function Discharge() {
         // Don't fail the discharge if notification fails
       }
 
-      // Check for pending complaints before navigating
-      setShowPendingComplaints(true);
-      toast.success("Discharge saved. Checking for pending complaints...");
+      // Check for pending complaints
+      const { data: pendingComplaints } = await supabase
+        .from("pending_episodes")
+        .select("*")
+        .eq("patient_name", patientName)
+        .eq("previous_episode_id", episodeId)
+        .eq("status", "pending");
+
+      if (pendingComplaints && pendingComplaints.length > 0) {
+        setShowPendingComplaints(true);
+        toast.success("Discharge saved. Additional complaints need review...");
+      } else {
+        // No pending complaints, navigate to PCP summary
+        toast.success("Discharge completed successfully!");
+        setTimeout(() => {
+          navigate(`/pcp-summary?episode=${episodeId}`);
+        }, 1000);
+      }
     } catch (error: any) {
       toast.error(`Failed to save discharge: ${error.message}`);
     }
@@ -582,9 +597,9 @@ export default function Discharge() {
             </Label>
           </div>
 
-          <Button onClick={handleGeneratePCP} disabled={!canGeneratePCP()} className="w-full gap-2">
+          <Button onClick={handleGeneratePCP} disabled={!canGeneratePCP()} className="w-full gap-2" size="lg">
             <FileText className="h-4 w-4" />
-            Generate PCP Summary
+            Complete Discharge & Generate Summary
           </Button>
 
           <div className="mt-4 space-y-3 border-t pt-4">
