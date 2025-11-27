@@ -353,84 +353,99 @@ All colors MUST be HSL.
   }
 }
 
-/* Print Styles - Professional Quality */
+/* Print Styles - Black & White, 2-Page Format */
 @media print {
   @page {
-    margin: 0.75in 0.5in;
+    margin: 0.5in;
     size: letter portrait;
   }
 
-  /* Professional typography */
+  /* Black and white only */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color: #000 !important;
+    background: white !important;
   }
 
   body {
-    font-size: 10pt !important;
-    line-height: 1.4 !important;
+    font-size: 8pt !important;
+    line-height: 1.3 !important;
     background: white !important;
     color: #000 !important;
     font-family: 'Segoe UI', Arial, sans-serif !important;
   }
 
-  /* Professional typography scale */
-  .text-xs { font-size: 8pt !important; }
-  .text-sm { font-size: 9pt !important; }
-  .text-base { font-size: 10pt !important; }
-  .text-lg { font-size: 11pt !important; }
-  .text-xl { font-size: 12pt !important; }
-  .text-2xl { font-size: 14pt !important; }
-  .text-3xl { font-size: 16pt !important; }
-  .text-4xl { font-size: 18pt !important; }
-  .text-5xl { font-size: 22pt !important; }
-  .text-7xl { font-size: 28pt !important; }
+  /* Typography scale reduced by 20% */
+  .text-xs { font-size: 6.4pt !important; }
+  .text-sm { font-size: 7.2pt !important; }
+  .text-base { font-size: 8pt !important; }
+  .text-lg { font-size: 8.8pt !important; }
+  .text-xl { font-size: 9.6pt !important; }
+  .text-2xl { font-size: 11.2pt !important; }
+  .text-3xl { font-size: 12.8pt !important; }
+  .text-4xl { font-size: 14.4pt !important; }
+  .text-5xl { font-size: 17.6pt !important; }
+  .text-7xl { font-size: 22.4pt !important; }
 
-  /* Headings with clear hierarchy */
+  /* Headings with clear hierarchy - reduced by 20% */
   h1, .text-3xl {
-    font-size: 18pt !important;
+    font-size: 14.4pt !important;
     font-weight: 700 !important;
-    margin-bottom: 8pt !important;
-    border-bottom: 2px solid #000 !important;
-    padding-bottom: 4pt !important;
+    margin-bottom: 4pt !important;
+    border-bottom: 1.5px solid #000 !important;
+    padding-bottom: 2pt !important;
   }
 
   h2, .text-2xl {
-    font-size: 14pt !important;
+    font-size: 11.2pt !important;
     font-weight: 600 !important;
-    margin-bottom: 6pt !important;
-    margin-top: 12pt !important;
+    margin-bottom: 3pt !important;
+    margin-top: 6pt !important;
   }
 
   h3, .text-xl {
-    font-size: 12pt !important;
+    font-size: 9.6pt !important;
     font-weight: 600 !important;
-    margin-bottom: 4pt !important;
-    margin-top: 8pt !important;
+    margin-bottom: 2pt !important;
+    margin-top: 4pt !important;
   }
 
-  /* Professional spacing */
-  .p-4 { padding: 8pt !important; }
-  .p-6 { padding: 12pt !important; }
-  .p-8 { padding: 16pt !important; }
+  /* Spacing reduced by 20% */
+  .p-4 { padding: 4pt !important; }
+  .p-6 { padding: 6pt !important; }
+  .p-8 { padding: 8pt !important; }
   
-  .py-4 { padding-top: 8pt !important; padding-bottom: 8pt !important; }
-  .py-6 { padding-top: 12pt !important; padding-bottom: 12pt !important; }
+  .py-4 { padding-top: 4pt !important; padding-bottom: 4pt !important; }
+  .py-6 { padding-top: 6pt !important; padding-bottom: 6pt !important; }
+  .py-8 { padding-top: 8pt !important; padding-bottom: 8pt !important; }
   
-  .px-4 { padding-left: 8pt !important; padding-right: 8pt !important; }
-  .px-6 { padding-left: 12pt !important; padding-right: 12pt !important; }
+  .px-4 { padding-left: 4pt !important; padding-right: 4pt !important; }
+  .px-6 { padding-left: 6pt !important; padding-right: 6pt !important; }
   
-  .pt-4 { padding-top: 8pt !important; }
-  .pt-6 { padding-top: 12pt !important; }
+  .pt-4 { padding-top: 4pt !important; }
+  .pt-6 { padding-top: 6pt !important; }
   
-  .pb-4 { padding-bottom: 8pt !important; }
-  .pb-6 { padding-bottom: 12pt !important; }
+  .pb-4 { padding-bottom: 4pt !important; }
+  .pb-6 { padding-bottom: 6pt !important; }
 
-  .space-y-4 > * + * { margin-top: 8pt !important; }
-  .space-y-6 > * + * { margin-top: 12pt !important; }
+  .mb-2 { margin-bottom: 2pt !important; }
+  .mb-3 { margin-bottom: 3pt !important; }
+  .mb-4 { margin-bottom: 4pt !important; }
+  .mb-6 { margin-bottom: 6pt !important; }
+  .mb-8 { margin-bottom: 8pt !important; }
+
+  .mt-1 { margin-top: 1pt !important; }
+  .mt-2 { margin-top: 2pt !important; }
+  .mt-4 { margin-top: 4pt !important; }
+
+  .space-y-2 > * + * { margin-top: 2pt !important; }
+  .space-y-4 > * + * { margin-top: 4pt !important; }
+  .space-y-6 > * + * { margin-top: 6pt !important; }
   
-  .gap-4 { gap: 8pt !important; }
-  .gap-6 { gap: 12pt !important; }
+  .gap-2 { gap: 2pt !important; }
+  .gap-4 { gap: 4pt !important; }
+  .gap-6 { gap: 6pt !important; }
 
   /* Hide interactive elements */
   .print\\:hidden,
@@ -440,75 +455,58 @@ All colors MUST be HSL.
     display: none !important;
   }
 
-  /* Professional card styling */
+  /* Black and white styling */
   .bg-gradient-to-br,
-  .bg-gradient-to-r {
+  .bg-gradient-to-r,
+  .bg-success\/5,
+  .bg-success\/10,
+  .bg-success\/15,
+  .bg-destructive\/5,
+  .bg-destructive\/10,
+  .bg-muted\/30,
+  .bg-muted\/50,
+  .bg-muted\/50 {
     background: white !important;
   }
 
   [class*="rounded"] {
-    border-radius: 4pt !important;
+    border-radius: 2pt !important;
   }
 
-  /* High-contrast borders for fax quality */
+  /* Black and white borders */
   .border,
   .border-t,
   .border-b,
-  .border-r {
-    border-color: #333 !important;
-    border-width: 1pt !important;
+  .border-r,
+  .border-success\/30,
+  .border-destructive\/30,
+  .border-warning\/30 {
+    border-color: #000 !important;
+    border-width: 0.5pt !important;
   }
 
-  /* Professional badge styling */
+  /* Badge styling - black and white */
   [class*="badge"],
   [class*="Badge"] {
-    border: 1.5pt solid #000 !important;
+    border: 1pt solid #000 !important;
     background: white !important;
     color: #000 !important;
     font-weight: 600 !important;
-    padding: 2pt 6pt !important;
-    border-radius: 3pt !important;
+    padding: 1pt 4pt !important;
+    border-radius: 2pt !important;
+    font-size: 7pt !important;
   }
 
-  /* Status colors with high contrast */
-  .bg-success\/5,
-  .bg-success\/10,
-  .bg-success\/15 {
-    background: #f0f8f0 !important;
-    border: 1pt solid #2d5016 !important;
+  /* All text black */
+  .text-success,
+  .text-destructive,
+  .text-warning,
+  .text-primary,
+  .text-muted-foreground {
+    color: #000 !important;
   }
 
-  .text-success {
-    color: #2d5016 !important;
-    font-weight: 600 !important;
-  }
-
-  .border-success\/30 {
-    border-color: #2d5016 !important;
-  }
-
-  .bg-destructive\/5,
-  .bg-destructive\/10 {
-    background: #fff0f0 !important;
-    border: 1pt solid #8b0000 !important;
-  }
-
-  .text-destructive {
-    color: #8b0000 !important;
-    font-weight: 600 !important;
-  }
-
-  .border-destructive\/30 {
-    border-color: #8b0000 !important;
-  }
-
-  .bg-muted\/30,
-  .bg-muted\/50 {
-    background: #f5f5f5 !important;
-    border: 1pt solid #999 !important;
-  }
-
-  /* Remove shadows for clean print */
+  /* Remove shadows */
   .shadow,
   .shadow-sm,
   .shadow-md,
@@ -516,11 +514,11 @@ All colors MUST be HSL.
     box-shadow: none !important;
   }
 
-  /* Section breaks */
+  /* Section breaks - reduced spacing */
   .border-t {
-    border-top: 2pt solid #333 !important;
-    padding-top: 12pt !important;
-    margin-top: 12pt !important;
+    border-top: 1pt solid #000 !important;
+    padding-top: 4pt !important;
+    margin-top: 4pt !important;
   }
 
   /* Grid layouts optimized for print */
@@ -530,29 +528,30 @@ All colors MUST be HSL.
 
   .sm\\:grid-cols-2 {
     grid-template-columns: repeat(2, 1fr) !important;
+    gap: 4pt !important;
   }
 
-  /* Professional table styling */
+  /* Table styling - black and white */
   table {
     border-collapse: collapse !important;
     width: 100% !important;
   }
 
   th, td {
-    border: 1pt solid #333 !important;
-    padding: 6pt !important;
+    border: 0.5pt solid #000 !important;
+    padding: 3pt !important;
     text-align: left !important;
   }
 
   th {
-    background: #f5f5f5 !important;
+    background: white !important;
     font-weight: 700 !important;
   }
 
-  /* Page breaks */
+  /* Page breaks - allow content to flow across 2 pages */
   .card,
   section {
-    page-break-inside: avoid !important;
+    page-break-inside: auto !important;
   }
 
   h1, h2, h3 {
@@ -575,13 +574,13 @@ All colors MUST be HSL.
     word-wrap: break-word !important;
   }
 
-  /* Professional header styling */
+  /* Header styling - black and white */
   .bg-muted\/50 {
-    background: #f8f8f8 !important;
-    border-bottom: 2pt solid #000 !important;
+    background: white !important;
+    border-bottom: 1pt solid #000 !important;
   }
 
-  /* Strong emphasis for key metrics */
+  /* Strong emphasis */
   .font-bold {
     font-weight: 700 !important;
   }
@@ -590,56 +589,50 @@ All colors MUST be HSL.
     font-weight: 600 !important;
   }
 
-  /* Consistent color for measurements */
-  .text-primary {
-    color: #000 !important;
-    font-weight: 700 !important;
-  }
-
-  /* Ensure proper contrast for all text */
-  .text-muted-foreground {
-    color: #444 !important;
-  }
-
-  /* Professional progress bars */
+  /* Progress bars - black and white */
   .h-3 {
-    height: 8pt !important;
-    border: 1pt solid #333 !important;
+    height: 4pt !important;
+    border: 0.5pt solid #000 !important;
   }
 
   .bg-destructive,
   .bg-warning,
   .bg-success {
-    opacity: 0.8 !important;
+    background: #000 !important;
   }
 
-  /* Clear visual hierarchy for comparisons */
+  /* Clear visual hierarchy */
   .contents {
     display: contents !important;
   }
 
-  /* Fax-optimized contrast */
-  * {
-    color: #000 !important;
-  }
-
-  .text-white {
-    color: #000 !important;
-  }
-
-  /* High-impact metric display */
+  /* Metric display - reduced size */
   .text-7xl {
-    font-size: 32pt !important;
-    font-weight: 800 !important;
-    letter-spacing: -1pt !important;
+    font-size: 22.4pt !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.5pt !important;
   }
 
-  /* Professional footer styling */
+  /* Footer styling - compact */
   footer {
-    margin-top: 16pt !important;
-    padding-top: 8pt !important;
-    border-top: 1pt solid #999 !important;
-    font-size: 8pt !important;
-    color: #666 !important;
+    margin-top: 6pt !important;
+    padding-top: 4pt !important;
+    border-top: 0.5pt solid #000 !important;
+    font-size: 6pt !important;
+    color: #000 !important;
+  }
+
+  /* Compact card styling */
+  .rounded-lg,
+  .rounded-xl {
+    border-radius: 0 !important;
+  }
+
+  /* Icon sizing */
+  .h-4,
+  .w-4,
+  .h-16,
+  .w-16 {
+    display: none !important;
   }
 }
