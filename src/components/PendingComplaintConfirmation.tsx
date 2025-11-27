@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,9 +41,9 @@ export function PendingComplaintConfirmation({
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   // Load pending episodes when component mounts
-  useState(() => {
+  useEffect(() => {
     loadPendingEpisodes();
-  });
+  }, []);
 
   const loadPendingEpisodes = async () => {
     try {
