@@ -4,13 +4,14 @@ import { getEpisode, getOutcomeScores, getFollowup } from "@/lib/dbOperations";
 import type { Episode } from "@/lib/dbOperations";
 import { calculateMCID } from "@/lib/mcidUtils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Download, Printer, AlertCircle, ArrowRight, ArrowLeft, Home } from "lucide-react";
 import { toast } from "sonner";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
+import { format } from "date-fns";
 
 interface OutcomeScore {
   index_type: string;
@@ -77,6 +78,7 @@ export default function PCPSummary() {
   const [episode, setEpisode] = useState<ProcessedEpisode | null>(null);
   const [followup, setFollowup] = useState<FollowupData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isTextRichFormat, setIsTextRichFormat] = useState(false);
 
   useEffect(() => {
     if (episodeId) {
@@ -257,24 +259,12 @@ export default function PCPSummary() {
     );
   }
 
-  console.log("=== PCP Summary: Results Calculation Debug ===");
-  console.log("Episode data:", episode);
-  console.log("Episode indices:", episode.indices);
-  console.log("Baseline scores:", episode.baselineScores);
-  console.log("Discharge scores:", episode.dischargeScores);
-  console.log("Followup data:", followup);
-
   const results = episode.indices.map((index) => {
     const baseline = episode.baselineScores?.[index] || 0;
     const discharge = episode.dischargeScores?.[index] || 0;
     const followupScore = followup?.scores?.[index] || 0;
     
-    console.log(`Index ${index}: baseline=${baseline}, discharge=${discharge}, followup=${followupScore}`);
-    
-    // Calculate discharge vs baseline
     const dischargeVsBaseline = calculateMCID(index as any, baseline, discharge);
-    
-    // Calculate 90-day vs discharge (if available)
     const followupVsDischarge = followupScore ? calculateMCID(index as any, discharge, followupScore) : null;
 
     return {
@@ -318,6 +308,14 @@ export default function PCPSummary() {
             <Home className="h-4 w-4" />
             Home
           </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => setIsTextRichFormat(!isTextRichFormat)} 
+            className="gap-2"
+          >
+            <FileText className="h-4 w-4" />
+            {isTextRichFormat ? "Standard" : "Text-Rich"}
+          </Button>
           <Button variant="outline" onClick={handleExport} className="gap-2">
             <Download className="h-4 w-4" />
             Export
@@ -333,779 +331,472 @@ export default function PCPSummary() {
       <Card className="print:shadow-none">
         <CardHeader className="border-b bg-muted/50">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">Patient Outcome Summary</CardTitle>
-            <Badge className="clinical-badge badge-complete">90-Day Follow-up</Badge>
+            <div>
+              <CardTitle className="text-xl">
+                {isTextRichFormat ? "Comprehensive Narrative Report" : "Patient Outcome Summary"}
+              </CardTitle>
+              <CardDescription className="mt-1">
+                {isTextRichFormat ? "Detailed clinical narrative with supporting data" : "Structured clinical data summary"}
+              </CardDescription>
+            </div>
+            <Badge className="clinical-badge badge-complete">
+              {isTextRichFormat ? "Text-Rich Format" : "Standard Format"}
+            </Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-6 pt-6">
-          {/* Patient Info */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Patient Name</p>
-              <p className="text-lg font-semibold">{episode.patientName}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Episode ID</p>
-              <p className="text-lg font-semibold">{episode.episodeId}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Anatomical Region</p>
-              <Badge variant="outline" className="mt-1">
-                {episode.region}
-              </Badge>
-            </div>
-            {followup?.status && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Overall Status</p>
-                <Badge
-                  className={`clinical-badge mt-1 ${
-                    followup.status === "improving"
-                      ? "badge-improving"
-                      : followup.status === "declining"
-                      ? "badge-declining"
-                      : "badge-stable"
-                  }`}
-                >
-                  {followup.status?.charAt(0).toUpperCase() + (followup.status?.slice(1) || "")}
-                </Badge>
-              </div>
-            )}
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">Initial Evaluation</p>
-              <p className="text-lg">{episode.dateOfService}</p>
-            </div>
-            {episode.dischargeDate && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Discharge Date</p>
-                <p className="text-lg">{episode.dischargeDate}</p>
-              </div>
-            )}
-            {followup?.completedDate && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">90-Day Follow-up</p>
-                <p className="text-lg">{followup.completedDate}</p>
-              </div>
-            )}
-          </div>
-
-          {/* Intake Information */}
-          <div className="space-y-4 border-t pt-6">
-            <h3 className="text-lg font-semibold">Intake Information</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {episode.dob && (
+          {!isTextRichFormat ? (
+            <>
+              {/* Patient Info */}
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Date of Birth</p>
-                  <p className="text-base">{episode.dob}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Patient Name</p>
+                  <p className="text-lg font-semibold">{episode.patientName}</p>
                 </div>
-              )}
-              {episode.diagnosis && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Diagnosis</p>
-                  <p className="text-base">{episode.diagnosis}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Episode ID</p>
+                  <p className="text-lg font-semibold">{episode.episodeId}</p>
                 </div>
-              )}
-              {episode.clinician && (
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Treating Clinician</p>
-                  <p className="text-base">{episode.clinician}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Anatomical Region</p>
+                  <Badge variant="outline" className="mt-1">
+                    {episode.region}
+                  </Badge>
                 </div>
-              )}
-              {episode.npi && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">NPI</p>
-                  <p className="text-base">{episode.npi}</p>
-                </div>
-              )}
-              {episode.injuryDate && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Injury Date</p>
-                  <p className="text-base">{episode.injuryDate}</p>
-                </div>
-              )}
-              {episode.painLevel && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Initial Pain Level</p>
-                  <p className="text-base">{episode.painLevel}/10</p>
-                </div>
-              )}
-              {episode.referringPhysician && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Referring Physician</p>
-                  <p className="text-base">{episode.referringPhysician}</p>
-                </div>
-              )}
-              {episode.insurance && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Insurance</p>
-                  <p className="text-base">{episode.insurance}</p>
-                </div>
-              )}
-            </div>
-            
-            {episode.injuryMechanism && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Injury Mechanism</p>
-                <p className="text-base">{episode.injuryMechanism}</p>
-              </div>
-            )}
-            
-            {episode.medications && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Medications</p>
-                <p className="text-base whitespace-pre-wrap">{episode.medications}</p>
-              </div>
-            )}
-            
-            {episode.medicalHistory && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Medical History</p>
-                <p className="text-base whitespace-pre-wrap">{episode.medicalHistory}</p>
-              </div>
-            )}
-            
-            {episode.priorTreatments && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Prior Treatments</p>
-                <p className="text-base whitespace-pre-wrap">{episode.priorTreatments}</p>
-              </div>
-            )}
-            
-            {episode.functionalLimitations && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Functional Limitations</p>
-                <p className="text-base whitespace-pre-wrap">{episode.functionalLimitations}</p>
-              </div>
-            )}
-          </div>
-
-          {/* Side-by-Side Comparison: Intake vs Discharge */}
-          <div className="space-y-4 border-t pt-6">
-            <h3 className="text-lg font-semibold">Intake vs Discharge Comparison</h3>
-            <div className="rounded-lg border bg-card overflow-hidden">
-              <div className="grid grid-cols-2">
-                {/* Header Row */}
-                <div className="bg-muted/50 p-4 border-r border-b font-semibold text-center">
-                  Initial Assessment (Intake)
-                </div>
-                <div className="bg-muted/50 p-4 border-b font-semibold text-center">
-                  Final Assessment (Discharge)
-                </div>
-                
-                {/* Pain Level */}
-                {episode.painPre !== undefined && episode.painPost !== undefined && (
-                  <>
-                    <div className="p-6 border-r border-b">
-                      <p className="text-sm font-medium text-muted-foreground mb-3">Pain Level</p>
-                      <div className="flex items-center justify-center mb-3">
-                        <span className="text-5xl font-bold text-destructive">{episode.painPre}</span>
-                        <span className="text-2xl text-muted-foreground ml-2">/10</span>
-                      </div>
-                      <div className="h-3 w-full bg-muted rounded-full overflow-hidden mb-2">
-                        <div 
-                          className="h-full bg-destructive"
-                          style={{ width: `${(episode.painPre / 10) * 100}%` }}
-                        />
-                      </div>
-                      <Badge variant="outline" className="w-full justify-center border-destructive/30 text-destructive">
-                        {episode.painPre >= 8 ? "Severe" : episode.painPre >= 5 ? "Moderate" : episode.painPre >= 3 ? "Mild" : "Minimal"}
-                      </Badge>
-                    </div>
-                    <div className="p-6 border-b bg-success/5">
-                      <p className="text-sm font-medium text-muted-foreground mb-3">Pain Level</p>
-                      <div className="flex items-center justify-center mb-3">
-                        <span className={`text-5xl font-bold ${episode.painPost === 0 ? "text-success" : episode.painPost <= 3 ? "text-warning" : "text-destructive"}`}>
-                          {episode.painPost}
-                        </span>
-                        <span className="text-2xl text-muted-foreground ml-2">/10</span>
-                      </div>
-                      <div className="h-3 w-full bg-muted rounded-full overflow-hidden mb-2">
-                        <div 
-                          className={episode.painPost === 0 ? "h-full bg-success" : episode.painPost <= 3 ? "h-full bg-warning" : "h-full bg-destructive"}
-                          style={{ width: `${(episode.painPost / 10) * 100}%` }}
-                        />
-                      </div>
-                      <Badge variant="outline" className={`w-full justify-center ${
-                        episode.painPost === 0 ? "border-success/30 text-success" :
-                        episode.painPost <= 3 ? "border-warning/30 text-warning" :
-                        "border-destructive/30 text-destructive"
-                      }`}>
-                        {episode.painPost === 0 ? "No Pain" : episode.painPost >= 8 ? "Severe" : episode.painPost >= 5 ? "Moderate" : episode.painPost >= 3 ? "Mild" : "Minimal"}
-                      </Badge>
-                      {episode.painPre > 0 && (
-                        <div className="mt-4 pt-4 border-t text-center">
-                          <Badge className="bg-success/15 text-success border-success/30 text-lg px-4 py-2">
-                            {((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0)}% Improvement
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-
-                {/* Outcome Measures */}
-                {results.length > 0 && results.map((result, idx) => (
-                  result.baseline > 0 || result.discharge > 0 ? (
-                    <div key={result.index} className="contents">
-                      <div className="p-6 border-r border-b">
-                        <p className="text-sm font-medium text-muted-foreground mb-3">{result.index} Score</p>
-                        <div className="flex items-center justify-center mb-3">
-                          <span className="text-4xl font-bold text-primary">{result.baseline.toFixed(1)}</span>
-                        </div>
-                        <div className="text-center">
-                          <Badge variant="outline">Baseline</Badge>
-                        </div>
-                      </div>
-                      <div className="p-6 border-b bg-success/5">
-                        <p className="text-sm font-medium text-muted-foreground mb-3">{result.index} Score</p>
-                        <div className="flex items-center justify-center mb-3">
-                          <span className="text-4xl font-bold text-success">{result.discharge.toFixed(1)}</span>
-                        </div>
-                        <div className="text-center mb-3">
-                          <Badge className={`${
-                            result.dischargeStatus === "improving" ? "bg-success/15 text-success border-success/30" :
-                            result.dischargeStatus === "declining" ? "bg-destructive/15 text-destructive border-destructive/30" :
-                            "bg-muted text-muted-foreground"
-                          }`}>
-                            {result.dischargeStatus === "improving" ? "Improved" : 
-                             result.dischargeStatus === "declining" ? "Declined" : "Stable"}
-                          </Badge>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-sm font-semibold text-success">
-                            {result.dischargeChange > 0 ? "+" : ""}{result.dischargeChange.toFixed(1)} points
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {Math.abs(result.dischargePercentage).toFixed(0)}% change
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null
-                ))}
-
-                {/* Functional Status */}
-                {episode.functionalLimitations && (
-                  <>
-                    <div className="p-6 border-r">
-                      <p className="text-sm font-medium text-muted-foreground mb-3">Functional Status</p>
-                      <p className="text-base whitespace-pre-wrap">{episode.functionalLimitations}</p>
-                    </div>
-                    <div className="p-6 bg-success/5">
-                      <p className="text-sm font-medium text-muted-foreground mb-3">Functional Status</p>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge className="bg-success/15 text-success border-success/30">
-                          Improved Function
-                        </Badge>
-                      </div>
-                      <p className="text-base text-muted-foreground">
-                        Patient demonstrated functional gains across measured domains. See outcome measures above for specific improvements.
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Pain Level Changes */}
-          {(episode.painPre !== undefined || episode.painPost !== undefined) && (
-            <div className="space-y-4 border-t pt-6">
-              <h3 className="text-lg font-semibold">Pain Level Changes</h3>
-              <div className="rounded-lg border bg-card p-6">
-                {/* Hero Before/After Pain Display */}
-                {episode.painPre !== undefined && episode.painPost !== undefined && (
-                  <div className="text-center mb-8 p-8 rounded-xl bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30">
-                    <p className="text-sm font-bold text-success mb-6 tracking-wide uppercase">Patient-Reported Pain Level</p>
-                    
-                    {/* Large Before/After Display */}
-                    <div className="flex items-center justify-center gap-6 mb-6">
-                      <div className="text-center p-4 rounded-lg bg-destructive/10">
-                        <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">At Intake</p>
-                        <div className="flex items-baseline justify-center gap-1">
-                          <p className="text-7xl font-black text-destructive">{episode.painPre}</p>
-                          <p className="text-3xl font-bold text-muted-foreground">/10</p>
-                        </div>
-                      </div>
-                      
-                      <ArrowRight className="h-16 w-16 text-success" strokeWidth={3} />
-                      
-                      <div className="text-center p-4 rounded-lg bg-success/10">
-                        <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">At Discharge</p>
-                        <div className="flex items-baseline justify-center gap-1">
-                          <p className="text-7xl font-black text-success">{episode.painPost}</p>
-                          <p className="text-3xl font-bold text-muted-foreground">/10</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <p className="text-2xl font-bold text-success">
-                        {episode.painPost === 0 ? "COMPLETE PAIN RESOLUTION" :
-                         (episode.painPre - episode.painPost) >= 5 ? "EXCELLENT IMPROVEMENT" :
-                         (episode.painPre - episode.painPost) >= 3 ? "SIGNIFICANT IMPROVEMENT" :
-                         (episode.painPre - episode.painPost) >= 2 ? "MODERATE IMPROVEMENT" :
-                         (episode.painPre - episode.painPost) > 0 ? "MILD IMPROVEMENT" :
-                         "NO IMPROVEMENT"}
-                      </p>
-                      <p className="text-lg font-semibold text-muted-foreground">
-                        {episode.painPre - episode.painPost} point reduction • {((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0)}% improvement
-                      </p>
-                    </div>
+                {followup?.status && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Overall Status</p>
+                    <Badge
+                      className={`clinical-badge mt-1 ${
+                        followup.status === "improving"
+                          ? "badge-improving"
+                          : followup.status === "declining"
+                          ? "badge-declining"
+                          : "badge-stable"
+                      }`}
+                    >
+                      {followup.status?.charAt(0).toUpperCase() + (followup.status?.slice(1) || "")}
+                    </Badge>
                   </div>
                 )}
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Initial Evaluation</p>
+                  <p className="text-lg">{episode.dateOfService}</p>
+                </div>
+                {episode.dischargeDate && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Discharge Date</p>
+                    <p className="text-lg">{episode.dischargeDate}</p>
+                  </div>
+                )}
+                {followup?.completedDate && (
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">90-Day Follow-up</p>
+                    <p className="text-lg">{followup.completedDate}</p>
+                  </div>
+                )}
+              </div>
 
-                <div className="grid gap-6 sm:grid-cols-2 mb-6">
-                  {episode.painPre !== undefined && (
-                    <div className="text-center p-4 rounded-lg bg-muted/30">
-                      <p className="text-sm font-medium text-muted-foreground mb-3">Initial Pain Level (Intake)</p>
-                      <div className="relative">
-                        <p className="text-5xl font-bold text-destructive mb-2">{episode.painPre}/10</p>
-                        <div className="h-3 w-full bg-muted rounded-full overflow-hidden mb-2">
-                          <div 
-                            className="h-full bg-destructive transition-all"
-                            style={{ width: `${(episode.painPre / 10) * 100}%` }}
-                          />
-                        </div>
-                        <Badge variant="outline" className="border-destructive/30 text-destructive">
-                          {episode.painPre >= 8 ? "Severe Pain" :
-                           episode.painPre >= 5 ? "Moderate Pain" :
-                           episode.painPre >= 3 ? "Mild Pain" :
-                           "Minimal Pain"}
-                        </Badge>
-                      </div>
+              {/* Intake Information */}
+              <section className="mt-6">
+                <h2 className="text-lg font-semibold border-b pb-1 mb-3">Intake Information</h2>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {episode.dob && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Date of Birth</p>
+                      <p>{episode.dob}</p>
                     </div>
                   )}
-                  {episode.painPost !== undefined && (
-                    <div className="text-center p-4 rounded-lg bg-muted/30">
-                      <p className="text-sm font-medium text-muted-foreground mb-3">Final Pain Level (Discharge)</p>
-                      <div className="relative">
-                        <p className={`text-5xl font-bold mb-2 ${
-                          episode.painPost === 0 ? "text-success" :
-                          episode.painPost <= 3 ? "text-warning" :
-                          "text-destructive"
-                        }`}>
-                          {episode.painPost}/10
-                        </p>
-                        <div className="h-3 w-full bg-muted rounded-full overflow-hidden mb-2">
-                          <div 
-                            className={`h-full transition-all ${
-                              episode.painPost === 0 ? "bg-success" :
-                              episode.painPost <= 3 ? "bg-warning" :
-                              "bg-destructive"
-                            }`}
-                            style={{ width: `${(episode.painPost / 10) * 100}%` }}
-                          />
-                        </div>
-                        <Badge variant="outline" className={
-                          episode.painPost === 0 ? "border-success/30 text-success" :
-                          episode.painPost <= 3 ? "border-warning/30 text-warning" :
-                          "border-destructive/30 text-destructive"
-                        }>
-                          {episode.painPost >= 8 ? "Severe Pain" :
-                           episode.painPost >= 5 ? "Moderate Pain" :
-                           episode.painPost >= 3 ? "Mild Pain" :
-                           episode.painPost === 0 ? "No Pain" :
-                           "Minimal Pain"}
-                        </Badge>
-                      </div>
+                  {episode.clinician && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Clinician</p>
+                      <p>{episode.clinician}</p>
+                    </div>
+                  )}
+                  {episode.diagnosis && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Diagnosis</p>
+                      <p>{episode.diagnosis}</p>
+                    </div>
+                  )}
+                  {episode.npi && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">NPI</p>
+                      <p>{episode.npi}</p>
+                    </div>
+                  )}
+                  {episode.injuryDate && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Injury Date</p>
+                      <p>{episode.injuryDate}</p>
+                    </div>
+                  )}
+                  {episode.injuryMechanism && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Injury Mechanism</p>
+                      <p>{episode.injuryMechanism}</p>
+                    </div>
+                  )}
+                  {episode.referringPhysician && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Referring Physician</p>
+                      <p>{episode.referringPhysician}</p>
+                    </div>
+                  )}
+                  {episode.insurance && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Insurance</p>
+                      <p>{episode.insurance}</p>
+                    </div>
+                  )}
+                  {episode.emergencyContact && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Emergency Contact</p>
+                      <p>{episode.emergencyContact}</p>
+                    </div>
+                  )}
+                  {episode.emergencyPhone && (
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Emergency Phone</p>
+                      <p>{episode.emergencyPhone}</p>
+                    </div>
+                  )}
+                  {episode.medications && (
+                    <div className="sm:col-span-2">
+                      <p className="text-sm font-medium text-muted-foreground">Medications</p>
+                      <p>{episode.medications}</p>
+                    </div>
+                  )}
+                  {episode.medicalHistory && (
+                    <div className="sm:col-span-2">
+                      <p className="text-sm font-medium text-muted-foreground">Medical History</p>
+                      <p>{episode.medicalHistory}</p>
+                    </div>
+                  )}
+                  {episode.priorTreatments && (
+                    <div className="sm:col-span-2">
+                      <p className="text-sm font-medium text-muted-foreground">Prior Treatments</p>
+                      <p>{episode.priorTreatments}</p>
                     </div>
                   )}
                 </div>
-                
-                {episode.painPre !== undefined && episode.painPost !== undefined && (
-                  <>
-                    {/* Visual Pain Scale Comparison */}
-                    <div className="mb-6 p-4 bg-muted/50 rounded-lg">
-                      <p className="text-sm font-medium mb-3">Pain Scale Progression</p>
-                      <div className="relative h-16">
-                        {/* Background scale */}
-                        <div className="absolute inset-0 flex">
-                          {[...Array(10)].map((_, i) => (
-                            <div
-                              key={i}
-                              className="flex-1 border-r border-border last:border-r-0 flex flex-col items-center justify-between py-1"
-                              style={{
-                                backgroundColor: i < 3 ? 'hsl(var(--success) / 0.1)' :
-                                               i < 5 ? 'hsl(var(--warning) / 0.1)' :
-                                               i < 7 ? 'hsl(var(--destructive) / 0.2)' :
-                                               'hsl(var(--destructive) / 0.3)'
-                              }}
-                            >
-                              <span className="text-xs text-muted-foreground font-medium">
-                                {i + 1}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                        {/* Initial marker */}
-                        <div
-                          className="absolute top-0 h-8 w-0.5 bg-destructive z-10"
-                          style={{ left: `${((episode.painPre - 0.5) / 10) * 100}%` }}
-                        >
-                          <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-destructive whitespace-nowrap bg-background px-2 py-1 rounded border border-destructive/30">
-                            Intake
-                          </div>
-                        </div>
-                        {/* Discharge marker */}
-                        <div
-                          className={`absolute bottom-0 h-8 w-0.5 z-10 ${
-                            episode.painPost === 0 ? "bg-success" :
-                            episode.painPost <= 3 ? "bg-warning" :
-                            "bg-destructive"
-                          }`}
-                          style={{ left: `${((episode.painPost - 0.5) / 10) * 100}%` }}
-                        >
-                          <div className={`absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold whitespace-nowrap px-2 py-1 rounded border ${
-                            episode.painPost === 0 ? "text-success bg-background border-success/30" :
-                            episode.painPost <= 3 ? "text-warning bg-background border-warning/30" :
-                            "text-destructive bg-background border-destructive/30"
-                          }`}>
-                            Discharge
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+              </section>
 
-                    {/* Clinical Interpretation */}
-                    <div className="pt-4 border-t">
-                      <p className="text-sm font-medium text-muted-foreground mb-2">Clinical Interpretation</p>
-                      <p className="text-base leading-relaxed">
-                        {(() => {
-                          const reduction = episode.painPre - episode.painPost;
-                          const percentReduction = (reduction / episode.painPre * 100).toFixed(0);
-                          
-                          if (episode.painPost === 0) {
-                            return `Patient achieved complete pain resolution with a ${percentReduction}% improvement, demonstrating a ${reduction}-point reduction from the initial pain rating of ${episode.painPre}/10 to 0/10 at discharge. This excellent outcome indicates optimal treatment response with full symptom resolution.`;
-                          } else if (reduction >= 5) {
-                            return `Patient experienced substantial pain reduction with ${percentReduction}% improvement (${reduction} points), decreasing from ${episode.painPre}/10 at intake to ${episode.painPost}/10 at discharge. This clinically significant improvement indicates highly effective pain management and strong treatment response.`;
-                          } else if (reduction >= 3) {
-                            return `Patient demonstrated significant pain improvement with ${percentReduction}% reduction (${reduction} points), progressing from ${episode.painPre}/10 to ${episode.painPost}/10. This represents a meaningful clinical improvement that typically correlates with enhanced function and quality of life.`;
-                          } else if (reduction >= 2) {
-                            return `Patient showed moderate pain reduction of ${percentReduction}% (${reduction} points). Pain decreased from ${episode.painPre}/10 at intake to ${episode.painPost}/10 at discharge. While this represents positive progress, the patient may benefit from continued pain management strategies.`;
-                          } else if (reduction >= 1) {
-                            return `Patient reported mild pain reduction of ${percentReduction}% (${reduction} point(s)), with pain levels decreasing from ${episode.painPre}/10 to ${episode.painPost}/10. This modest improvement suggests partial treatment response; additional interventions may be warranted.`;
-                          } else if (reduction === 0) {
-                            return `Pain levels remained stable at ${episode.painPre}/10 throughout treatment (0% change). The absence of improvement may indicate a need for treatment plan modification or consideration of alternative therapeutic approaches.`;
-                          } else {
-                            return `Pain levels increased by ${Math.abs(reduction)} point(s) from ${episode.painPre}/10 to ${episode.painPost}/10 during treatment (${Math.abs(parseInt(percentReduction))}% increase). This finding warrants clinical attention and may require further diagnostic evaluation or treatment plan reassessment.`;
-                          }
-                        })()}
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Functional Improvement Summary */}
-          <div className="space-y-4 border-t pt-6">
-            <h3 className="text-lg font-semibold">Functional Improvement Summary</h3>
-            {results.length > 0 && (episode.baselineScores && Object.keys(episode.baselineScores).length > 0) && (episode.dischargeScores && Object.keys(episode.dischargeScores).length > 0) ? (
-              <div className="rounded-lg border bg-card p-4 space-y-3">
-                {results.map((result) => {
-                  if (result.baseline === 0 && result.discharge === 0) return null;
-                  
-                  const improvement = result.baseline - result.discharge;
-                  const percentChange = Math.abs(result.dischargePercentage);
-                  
-                  return (
-                    <div key={result.index} className="pb-3 border-b last:border-b-0 last:pb-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="font-medium">{result.index}</p>
-                        <Badge
-                          className={`clinical-badge text-xs ${
-                            result.dischargeStatus === "improving"
-                              ? "badge-improving"
-                              : result.dischargeStatus === "declining"
-                              ? "badge-declining"
-                              : "badge-stable"
-                          }`}
-                        >
-                          {result.dischargeStatus === "improving" ? "Improved" : 
-                           result.dischargeStatus === "declining" ? "Declined" : "Stable"}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {improvement > 0 ? (
-                          <>Patient demonstrated a {improvement.toFixed(1)}-point improvement ({percentChange.toFixed(0)}% change), 
-                          indicating {percentChange >= 50 ? "substantial" : percentChange >= 30 ? "significant" : "moderate"} functional gains 
-                          in this domain.</>
-                        ) : improvement < 0 ? (
-                          <>Scores indicate a {Math.abs(improvement).toFixed(1)}-point decline, suggesting potential areas for continued monitoring.</>
-                        ) : (
-                          <>Scores remained stable with no significant change from baseline.</>
-                        )}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
-                Complete baseline and discharge assessments to view functional improvement analysis.
-              </div>
-            )}
-          </div>
-
-          {/* Treatment Goals Assessment */}
-          {episode.treatmentGoals && episode.treatmentGoals.length > 0 && (
-            <div className="space-y-4 border-t pt-6">
-              <h3 className="text-lg font-semibold">Treatment Goals Assessment</h3>
-              <div className="space-y-3">
-                {episode.treatmentGoals.map((goal, idx) => (
-                  <div key={idx} className="rounded-lg border bg-card p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <p className="font-medium">{goal.name}</p>
-                        {goal.notes && (
-                          <p className="text-sm text-muted-foreground mt-1">{goal.notes}</p>
-                        )}
-                      </div>
-                      <Badge
-                        className={`ml-2 ${
-                          goal.result === "achieved"
-                            ? "bg-success/15 text-success border-success/30"
-                            : goal.result === "partial"
-                            ? "bg-warning/15 text-warning border-warning/30"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {goal.result === "achieved" ? "✓ Achieved" :
-                         goal.result === "partial" ? "◐ Partially Achieved" :
-                         "○ In Progress"}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {goal.result === "achieved" ? (
-                        <>Patient successfully met this treatment objective within the established timeframe.</>
-                      ) : goal.result === "partial" ? (
-                        <>Patient made progress toward this goal but did not fully achieve the target outcome. Continued therapeutic intervention may be beneficial.</>
-                      ) : (
-                        <>This goal remains an active treatment target.</>
+              {/* Side-by-Side Comparison */}
+              <section className="mt-6">
+                <h2 className="text-lg font-semibold border-b pb-1 mb-3">Outcome Measures Comparison</h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-border">
+                    <thead className="bg-muted">
+                      <tr>
+                        <th className="border border-border p-3 text-left">Measure</th>
+                        <th className="border border-border p-3 text-center">Baseline</th>
+                        <th className="border border-border p-3 text-center">Discharge</th>
+                        <th className="border border-border p-3 text-center">Change</th>
+                        <th className="border border-border p-3 text-center">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {episode.painPre !== undefined && episode.painPost !== undefined && (
+                        <tr>
+                          <td className="border border-border p-3 font-medium">Pain Level (0-10 scale)</td>
+                          <td className="border border-border p-3 text-center">{episode.painPre}</td>
+                          <td className="border border-border p-3 text-center">{episode.painPost}</td>
+                          <td className="border border-border p-3 text-center">
+                            {episode.painPre - episode.painPost} point{Math.abs(episode.painPre - episode.painPost) !== 1 ? 's' : ''} reduction
+                          </td>
+                          <td className="border border-border p-3 text-center">
+                            {(episode.painPre - episode.painPost) >= 2 ? 
+                              <Badge className="bg-success/15 text-success border-success/30">Clinically Significant</Badge> : 
+                              <Badge variant="secondary">Stable</Badge>
+                            }
+                          </td>
+                        </tr>
                       )}
-                    </p>
-                  </div>
-                ))}
-                <div className="rounded-lg bg-muted/50 p-4">
-                  <p className="text-sm font-medium mb-2">Overall Goal Achievement</p>
-                  <p className="text-sm text-muted-foreground">
-                    {(() => {
-                      const achieved = episode.treatmentGoals.filter(g => g.result === "achieved").length;
-                      const partial = episode.treatmentGoals.filter(g => g.result === "partial").length;
-                      const total = episode.treatmentGoals.length;
-                      const percentage = ((achieved + partial * 0.5) / total * 100).toFixed(0);
                       
-                      return (
-                        <>Patient achieved {achieved} of {total} treatment goals ({percentage}% success rate).
-                        {partial > 0 && ` ${partial} goal(s) were partially met.`}
-                        {achieved === total ? " Excellent treatment outcomes with all goals successfully achieved." :
-                         parseInt(percentage) >= 70 ? " Good overall progress with majority of goals met." :
-                         parseInt(percentage) >= 50 ? " Moderate progress toward treatment objectives." :
-                         " Patient may benefit from continued care or alternative treatment approaches."}
-                        </>
-                      );
-                    })()}
+                      {results.filter(r => r.baseline > 0 || r.discharge > 0).map((result, idx) => (
+                        <tr key={idx}>
+                          <td className="border border-border p-3 font-medium">{result.index}</td>
+                          <td className="border border-border p-3 text-center">{result.baseline.toFixed(1)}</td>
+                          <td className="border border-border p-3 text-center">{result.discharge.toFixed(1)}</td>
+                          <td className="border border-border p-3 text-center">
+                            {result.dischargeChange.toFixed(1)} point{Math.abs(result.dischargeChange) !== 1 ? 's' : ''}
+                          </td>
+                          <td className="border border-border p-3 text-center">
+                            {result.dischargeStatus === "improving" ? 
+                              <Badge className="bg-success/15 text-success border-success/30">Improved</Badge> : 
+                              result.dischargeStatus === "declining" ?
+                              <Badge className="bg-destructive/15 text-destructive border-destructive/30">Declined</Badge> :
+                              <Badge variant="secondary">Stable</Badge>
+                            }
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              {/* Pain Level Changes */}
+              <section className="mt-6">
+                <h2 className="text-lg font-semibold border-b pb-1 mb-3">Pain Level Changes</h2>
+                {episode.painPre !== undefined && episode.painPost !== undefined ? (
+                  <p>
+                    The patient reported a pain level reduction from {episode.painPre}/10 at baseline to {episode.painPost}/10 at discharge, 
+                    representing a {((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0)}% improvement.
                   </p>
+                ) : (
+                  <p>No pain level data available.</p>
+                )}
+              </section>
+
+              {/* Additional standard format sections can be added here as needed */}
+            </>
+          ) : (
+            // Text-Rich Hybrid Format
+            <div className="space-y-6">
+              {/* Executive Summary */}
+              <section className="space-y-3">
+                <h2 className="text-xl font-bold border-b pb-2">Executive Summary</h2>
+                <p className="text-base leading-relaxed">
+                  {episode.patientName} was evaluated and treated for {episode.diagnosis || 'musculoskeletal condition'} affecting the {episode.region.toLowerCase()} region. 
+                  The patient presented with {episode.functionalLimitations?.split('\n')[0] || 'pain and functional limitations'} beginning {episode.injuryDate ? `on ${format(new Date(episode.injuryDate), 'MMMM d, yyyy')}` : 'at an unspecified time'}.
+                  Treatment commenced on {episode.start_date ? format(new Date(episode.start_date), 'MMMM d, yyyy') : episode.dateOfService} and 
+                  {episode.dischargeDate ? ` was completed on ${format(new Date(episode.dischargeDate), 'MMMM d, yyyy')}` : ' is ongoing'}, 
+                  totaling {episode.visits || 'multiple'} visits{episode.start_date && episode.dischargeDate ? ` over approximately ${
+                    Math.round((new Date(episode.dischargeDate).getTime() - new Date(episode.start_date).getTime()) / (1000 * 60 * 60 * 24 * 7))
+                  } weeks` : ''}.
+                </p>
+              </section>
+
+              {/* Clinical Presentation */}
+              <section className="space-y-3">
+                <h2 className="text-xl font-bold border-b pb-2">Clinical Presentation & History</h2>
+                <p className="text-base leading-relaxed">
+                  Initial assessment revealed a chief complaint of {episode.functionalLimitations?.split('\n')[0] || 'pain and dysfunction'}.
+                  The mechanism of injury was reported as {episode.injuryMechanism || 'gradual onset or traumatic event'}. 
+                  Patient reported an initial pain level of {episode.painPre || 'N/A'}/10 on a numeric rating scale. 
+                  {episode.priorTreatments && 
+                    ` Prior to presentation, the patient had received treatment including ${episode.priorTreatments}.`
+                  }
+                </p>
+                
+                {episode.functionalLimitations && (
+                  <div className="mt-4">
+                    <h3 className="font-semibold mb-2">Primary Functional Limitations:</h3>
+                    <ul className="list-disc pl-6 space-y-1">
+                      {episode.functionalLimitations.split('\n').map((limitation, idx) => (
+                        <li key={idx} className="text-base">{limitation}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </section>
+
+              {/* Treatment Course */}
+              <section className="space-y-3">
+                <h2 className="text-xl font-bold border-b pb-2">Treatment Course & Interventions</h2>
+                <p className="text-base leading-relaxed">
+                  Physical therapy was administered by {episode.clinician || 'licensed clinician'} over the course of {episode.visits || 'multiple'} sessions. 
+                  The treatment plan was designed to address the patient's specific functional goals{episode.treatmentGoals && episode.treatmentGoals.length > 0 ? ', which included:' : '.'}
+                </p>
+                
+                {episode.treatmentGoals && episode.treatmentGoals.length > 0 && (
+                  <div className="mt-3">
+                    <ul className="list-disc pl-6 space-y-1">
+                      {episode.treatmentGoals.map((goal, idx) => (
+                        <li key={idx} className="text-base">{goal.name}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <p className="text-base leading-relaxed mt-3">
+                  Patient compliance was rated as {episode.compliance_rating || 'good'}.
+                  {episode.compliance_notes && ` Clinical notes indicate: ${episode.compliance_notes}`}
+                </p>
+              </section>
+
+              {/* Outcome Measures Summary */}
+              <section className="space-y-3">
+                <h2 className="text-xl font-bold border-b pb-2">Functional Outcomes Assessment</h2>
+                <p className="text-base leading-relaxed">
+                  Standardized outcome measures were utilized to objectively track progress throughout the episode of care. 
+                  The following results demonstrate the patient's functional improvement:
+                </p>
+
+                {/* Intake vs Discharge Table */}
+                <div className="mt-4">
+                  <h3 className="font-semibold mb-3">Baseline to Discharge Comparison</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse border border-border">
+                      <thead className="bg-muted">
+                        <tr>
+                          <th className="border border-border p-3 text-left">Measure</th>
+                          <th className="border border-border p-3 text-center">Baseline</th>
+                          <th className="border border-border p-3 text-center">Discharge</th>
+                          <th className="border border-border p-3 text-center">Change</th>
+                          <th className="border border-border p-3 text-center">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {episode.painPre !== undefined && episode.painPost !== undefined && (
+                          <tr>
+                            <td className="border border-border p-3 font-medium">Pain Level (0-10 scale)</td>
+                            <td className="border border-border p-3 text-center">{episode.painPre}</td>
+                            <td className="border border-border p-3 text-center">{episode.painPost}</td>
+                            <td className="border border-border p-3 text-center">
+                              {episode.painPre - episode.painPost} point{Math.abs(episode.painPre - episode.painPost) !== 1 ? 's' : ''} reduction
+                            </td>
+                            <td className="border border-border p-3 text-center">
+                              {(episode.painPre - episode.painPost) >= 2 ? 
+                                <Badge className="bg-success/15 text-success border-success/30">Clinically Significant</Badge> : 
+                                <Badge variant="secondary">Stable</Badge>
+                              }
+                            </td>
+                          </tr>
+                        )}
+                        
+                        {results.filter(r => r.baseline > 0 || r.discharge > 0).map((result, idx) => (
+                          <tr key={idx}>
+                            <td className="border border-border p-3 font-medium">{result.index}</td>
+                            <td className="border border-border p-3 text-center">{result.baseline.toFixed(1)}</td>
+                            <td className="border border-border p-3 text-center">{result.discharge.toFixed(1)}</td>
+                            <td className="border border-border p-3 text-center">
+                              {result.dischargeChange.toFixed(1)} point{Math.abs(result.dischargeChange) !== 1 ? 's' : ''}
+                            </td>
+                            <td className="border border-border p-3 text-center">
+                              {result.dischargeStatus === "improving" ? 
+                                <Badge className="bg-success/15 text-success border-success/30">Improved</Badge> : 
+                                result.dischargeStatus === "declining" ?
+                                <Badge className="bg-destructive/15 text-destructive border-destructive/30">Declined</Badge> :
+                                <Badge variant="secondary">Stable</Badge>
+                              }
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
+
+                <p className="text-base leading-relaxed mt-4">
+                  {results.some(r => r.dischargeStatus === "improving") ? (
+                    <>
+                      The patient achieved clinically significant improvements in functional status as measured by standardized outcome tools. 
+                      These improvements indicate meaningful functional gains that are both statistically and clinically relevant.
+                    </>
+                  ) : (
+                    <>
+                      While objective measurements were obtained, changes did not reach clinically significant thresholds at discharge. 
+                      Continued monitoring and potential follow-up may be beneficial.
+                    </>
+                  )}
+                </p>
+              </section>
+
+              {/* Follow-up Data if Available */}
+              {followup && followup.scores && Object.keys(followup.scores).length > 0 && (
+                <section className="space-y-3">
+                  <h2 className="text-xl font-bold border-b pb-2">90-Day Follow-Up Assessment</h2>
+                  <p className="text-base leading-relaxed">
+                    Post-discharge follow-up was conducted approximately 90 days after treatment completion to assess long-term functional maintenance. 
+                    Results demonstrate {results.some(r => r.hasFollowup && r.followupStatus === "improving") ? 
+                      'sustained or continued improvement in functional status' : 
+                      'stable functional status'
+                    }.
+                  </p>
+
+                  <div className="mt-4">
+                    <h3 className="font-semibold mb-3">Discharge to Follow-Up Comparison</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse border border-border">
+                        <thead className="bg-muted">
+                          <tr>
+                            <th className="border border-border p-3 text-left">Measure</th>
+                            <th className="border border-border p-3 text-center">Discharge</th>
+                            <th className="border border-border p-3 text-center">90-Day Follow-Up</th>
+                            <th className="border border-border p-3 text-center">Change</th>
+                            <th className="border border-border p-3 text-center">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {results.filter(r => r.hasFollowup).map((result, idx) => (
+                            <tr key={idx}>
+                              <td className="border border-border p-3 font-medium">{result.index}</td>
+                              <td className="border border-border p-3 text-center">{result.discharge.toFixed(1)}</td>
+                              <td className="border border-border p-3 text-center">{result.followup.toFixed(1)}</td>
+                              <td className="border border-border p-3 text-center">
+                                {result.followupChange.toFixed(1)} point{Math.abs(result.followupChange) !== 1 ? 's' : ''}
+                              </td>
+                              <td className="border border-border p-3 text-center">
+                                {result.followupStatus === "improving" ? 
+                                  <Badge className="bg-success/15 text-success border-success/30">Continued Improvement</Badge> : 
+                                  <Badge variant="outline">Maintained</Badge>
+                                }
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {/* Clinical Summary & Recommendations */}
+              <section className="space-y-3">
+                <h2 className="text-xl font-bold border-b pb-2">Clinical Summary & Recommendations</h2>
+                <p className="text-base leading-relaxed">
+                  {episode.patientName} successfully completed a course of physical therapy for {episode.diagnosis || 'their condition'} with 
+                  {results.some(r => r.dischargeStatus === "improving") ? 
+                    ' clinically significant functional improvements documented through standardized outcome measures' : 
+                    ' documented improvements in functional status'
+                  }. 
+                  The patient demonstrated {episode.compliance_rating || 'good'} compliance with the prescribed treatment plan and home exercise program.
+                </p>
+                
+                <p className="text-base leading-relaxed">
+                  At discharge, the patient reported a pain level of {episode.painPost || 'N/A'}/10{episode.painPre && episode.painPost ? 
+                    `, representing a ${((episode.painPre - episode.painPost) / episode.painPre * 100).toFixed(0)}% reduction from baseline` : 
+                    ''
+                  }. 
+                  {results.some(r => r.dischargeStatus === "improving") && 
+                    ' Achievement of functional improvements confirms that changes are clinically meaningful to the patient.'
+                  }
+                </p>
+
+                <div className="mt-4 p-4 bg-muted rounded-lg">
+                  <h3 className="font-semibold mb-2">Recommendations:</h3>
+                  <ul className="list-disc pl-6 space-y-1">
+                    <li className="text-base">Continue home exercise program as prescribed</li>
+                    <li className="text-base">Monitor for any recurrence of symptoms</li>
+                    <li className="text-base">Return to physical therapy if symptoms worsen or functional decline is noted</li>
+                    <li className="text-base">Consider prophylactic measures to prevent re-injury</li>
+                    {followup && followup.scores && Object.keys(followup.scores).length > 0 && (
+                      <li className="text-base">90-day follow-up completed with {results.some(r => r.hasFollowup && r.followupStatus === "improving") ? 'continued' : 'maintained'} functional status</li>
+                    )}
+                  </ul>
+                </div>
+              </section>
+
+              {/* Provider Information */}
+              <section className="space-y-2 text-sm">
+                <p className="font-semibold">Treating Clinician:</p>
+                <p>{episode.clinician || 'Not specified'}</p>
+                {episode.npi && <p>NPI: {episode.npi}</p>}
+                {episode.start_date && (
+                  <p>Treatment Period: {format(new Date(episode.start_date), 'MMM d, yyyy')} - {episode.dischargeDate ? format(new Date(episode.dischargeDate), 'MMM d, yyyy') : 'Ongoing'}</p>
+                )}
+              </section>
             </div>
           )}
-
-          {/* Treatment Summary */}
-          <div className="space-y-4 border-t pt-6">
-            <h3 className="text-lg font-semibold">Treatment Summary</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {episode.start_date && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Treatment Start Date</p>
-                  <p className="text-base">{episode.start_date}</p>
-                </div>
-              )}
-              {episode.dischargeDate && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Discharge Date</p>
-                  <p className="text-base">{episode.dischargeDate}</p>
-                </div>
-              )}
-              {episode.visits && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Visits</p>
-                  <p className="text-base">{episode.visits}</p>
-                </div>
-              )}
-              {episode.resolution_days && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Days to Resolution</p>
-                  <p className="text-base">{episode.resolution_days} days</p>
-                </div>
-              )}
-              {episode.compliance_rating && (
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Compliance Rating</p>
-                  <p className="text-base">{episode.compliance_rating}</p>
-                </div>
-              )}
-            </div>
-            
-            {episode.compliance_notes && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Compliance Notes</p>
-                <p className="text-base whitespace-pre-wrap">{episode.compliance_notes}</p>
-              </div>
-            )}
-            
-            {episode.referred_out && (
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Referral Status</p>
-                <Badge variant="outline" className="mt-1">Referred Out</Badge>
-                {episode.referral_reason && (
-                  <p className="text-base mt-2">{episode.referral_reason}</p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Clinical Findings */}
-          <div className="space-y-4 border-t pt-6">
-            <h3 className="text-lg font-semibold">Outcome Measures</h3>
-            
-            {(!episode.baselineScores || Object.keys(episode.baselineScores).length === 0) && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-amber-900 dark:text-amber-100">Missing Baseline Scores</p>
-                    <p className="mt-1 text-sm text-amber-700 dark:text-amber-300">
-                      No baseline scores were recorded for this episode. Baseline scores must be entered when creating a new episode.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {(!episode.dischargeScores || Object.keys(episode.dischargeScores).length === 0) && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-amber-900 dark:text-amber-100">Missing Discharge Scores</p>
-                    <p className="mt-1 text-sm text-amber-700 dark:text-amber-300">
-                      No discharge scores were recorded for this episode. Complete the discharge assessment with outcome measures.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            {results.map((result) => (
-              <div key={result.index} className="rounded-lg border bg-card p-4">
-                <h4 className="mb-4 font-medium">{result.index}</h4>
-
-                {/* Baseline to Discharge */}
-                {result.baseline > 0 || result.discharge > 0 ? (
-                  <div className="mb-4 rounded-md bg-muted/50 p-3">
-                    <div className="mb-2 flex items-center justify-between">
-                      <p className="text-sm font-medium">Baseline → Discharge</p>
-                      <Badge
-                        className={`clinical-badge text-xs ${
-                          result.dischargeStatus === "improving"
-                            ? "badge-improving"
-                            : result.dischargeStatus === "declining"
-                            ? "badge-declining"
-                            : "badge-stable"
-                        }`}
-                      >
-                        {result.dischargeStatus.charAt(0).toUpperCase() + result.dischargeStatus.slice(1)}
-                      </Badge>
-                    </div>
-                    <div className="grid grid-cols-4 gap-3 text-center">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Baseline</p>
-                        <p className="text-base font-semibold">{result.baseline.toFixed(1)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Discharge</p>
-                        <p className="text-base font-semibold">{result.discharge.toFixed(1)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Change</p>
-                        <p className="text-base font-semibold">
-                          {result.dischargeChange > 0 ? "+" : ""}
-                          {result.dischargeChange.toFixed(1)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">% Change</p>
-                        <p className="text-base font-semibold">
-                          {result.dischargePercentage > 0 ? "+" : ""}
-                          {result.dischargePercentage.toFixed(1)}%
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="mb-4 rounded-md border border-dashed p-3 text-center text-sm text-muted-foreground">
-                    No baseline or discharge scores available for this index
-                  </div>
-                )}
-
-                {/* 90-Day Follow-up (if available) */}
-                {result.hasFollowup && (
-                  <div className="rounded-md bg-muted/30 p-3">
-                    <div className="mb-2 flex items-center justify-between">
-                      <p className="text-sm font-medium">Discharge → 90-Day Follow-up</p>
-                      <Badge
-                        className={`clinical-badge text-xs ${
-                          result.followupStatus === "improving"
-                            ? "badge-improving"
-                            : result.followupStatus === "declining"
-                            ? "badge-declining"
-                            : "badge-stable"
-                        }`}
-                      >
-                        {result.followupStatus.charAt(0).toUpperCase() + result.followupStatus.slice(1)}
-                      </Badge>
-                    </div>
-                    <div className="grid grid-cols-4 gap-3 text-center">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Discharge</p>
-                        <p className="text-base font-semibold">{result.discharge.toFixed(1)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">90-Day</p>
-                        <p className="text-base font-semibold">{result.followup.toFixed(1)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Change</p>
-                        <p className="text-base font-semibold">
-                          {result.followupChange > 0 ? "+" : ""}
-                          {result.followupChange.toFixed(1)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">% Change</p>
-                        <p className="text-base font-semibold">
-                          {result.followupPercentage > 0 ? "+" : ""}
-                          {result.followupPercentage.toFixed(1)}%
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
 
           {/* Footer */}
-          <div className="border-t pt-4 text-xs text-muted-foreground">
-            <p>
-              Generated by PPC Outcome Registry v1.0 | Report Date:{" "}
-              {new Date().toLocaleDateString()}
-            </p>
-            <p className="mt-1">
-              MCID = Minimal Clinically Important Difference. Changes exceeding MCID thresholds are
-              considered clinically significant.
+          <div className="pt-8 border-t text-center text-sm text-muted-foreground space-y-2">
+            <p>Report generated on {format(new Date(), 'MMMM d, yyyy \'at\' h:mm a')}</p>
+            <p className="text-xs">
+              This summary documents functional outcomes and clinical progress for primary care provider reference.
             </p>
           </div>
         </CardContent>
