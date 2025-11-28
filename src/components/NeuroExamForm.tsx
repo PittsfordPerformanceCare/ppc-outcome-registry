@@ -10,14 +10,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, CheckCircle2, Circle } from "lucide-react";
+import { Loader2, Save, CheckCircle2, Circle, AlertCircle } from "lucide-react";
 
 interface NeuroExamFormProps {
   episodeId: string;
   onSaved?: () => void;
 }
+
+// Validation rules for vitals
+const VITALS_RANGES = {
+  bloodPressure: { min: 60, max: 200, label: "Blood Pressure" },
+  heartRate: { min: 40, max: 180, label: "Heart Rate" },
+  o2Saturation: { min: 70, max: 100, label: "O2 Saturation" },
+  temperature: { min: 90, max: 105, label: "Temperature" }
+};
 
 // Field definitions for each tab section
 const SECTION_FIELDS = {
@@ -70,6 +79,8 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   const [draftLoading, setDraftLoading] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [showValidationSummary, setShowValidationSummary] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const [formData, setFormData] = useState<any>({
     exam_type: 'baseline',
@@ -77,8 +88,68 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     exam_time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })
   });
 
+  // Validate blood pressure format and range
+  const validateBloodPressure = (value: string): string | null => {
+    if (!value) return null;
+    const match = value.match(/^(\d+)\/(\d+)$/);
+    if (!match) return "Format should be XXX/YY (e.g., 120/80)";
+    
+    const systolic = parseInt(match[1]);
+    const diastolic = parseInt(match[2]);
+    
+    if (systolic < VITALS_RANGES.bloodPressure.min || systolic > VITALS_RANGES.bloodPressure.max) {
+      return `Systolic should be ${VITALS_RANGES.bloodPressure.min}-${VITALS_RANGES.bloodPressure.max}`;
+    }
+    if (diastolic < 40 || diastolic > 130) {
+      return "Diastolic should be 40-130";
+    }
+    if (systolic <= diastolic) {
+      return "Systolic should be higher than diastolic";
+    }
+    return null;
+  };
+
+  // Validate numeric range
+  const validateNumericRange = (value: string, range: { min: number; max: number; label: string }): string | null => {
+    if (!value) return null;
+    const num = parseFloat(value);
+    if (isNaN(num)) return `${range.label} must be a number`;
+    if (num < range.min || num > range.max) {
+      return `${range.label} should be ${range.min}-${range.max}`;
+    }
+    return null;
+  };
+
+  // Update field with validation
   const updateField = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
+    
+    // Clear validation error when field is updated
+    if (validationErrors[field]) {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+
+    // Validate on change for specific fields
+    if (field.includes('bp_')) {
+      const error = validateBloodPressure(value);
+      if (error) {
+        setValidationErrors((prev) => ({ ...prev, [field]: error }));
+      }
+    } else if (field.includes('heart_rate_')) {
+      const error = validateNumericRange(value, VITALS_RANGES.heartRate);
+      if (error) {
+        setValidationErrors((prev) => ({ ...prev, [field]: error }));
+      }
+    } else if (field.includes('o2_saturation_')) {
+      const error = validateNumericRange(value, VITALS_RANGES.o2Saturation);
+      if (error) {
+        setValidationErrors((prev) => ({ ...prev, [field]: error }));
+      }
+    }
   };
 
   // Load existing draft on mount
@@ -200,6 +271,34 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   }, [formData]);
 
   const handleSave = async () => {
+    // Validate all fields before saving
+    const errors: Record<string, string> = {};
+    
+    // Validate blood pressure fields
+    Object.keys(formData).forEach((field) => {
+      if (field.includes('bp_') && formData[field]) {
+        const error = validateBloodPressure(formData[field]);
+        if (error) errors[field] = error;
+      } else if (field.includes('heart_rate_') && formData[field]) {
+        const error = validateNumericRange(formData[field], VITALS_RANGES.heartRate);
+        if (error) errors[field] = error;
+      } else if (field.includes('o2_saturation_') && formData[field]) {
+        const error = validateNumericRange(formData[field], VITALS_RANGES.o2Saturation);
+        if (error) errors[field] = error;
+      }
+    });
+
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      setShowValidationSummary(true);
+      toast({
+        title: "Validation Errors",
+        description: `Please correct ${Object.keys(errors).length} field(s) before saving`,
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -209,7 +308,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
         .from('profiles')
         .select('clinic_id')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       const { error } = await supabase
         .from('neurologic_exams')
@@ -257,6 +356,29 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     const hours = Math.floor(minutes / 60);
     if (hours === 1) return '1 hour ago';
     return `${hours} hours ago`;
+  };
+
+  // Helper component for validated input
+  const ValidatedInput = ({ field, label, ...props }: any) => {
+    const hasError = !!validationErrors[field];
+    return (
+      <div className="space-y-1">
+        {label && <Label htmlFor={field}>{label}</Label>}
+        <Input
+          id={field}
+          className={hasError ? "border-destructive focus-visible:ring-destructive" : ""}
+          value={formData[field] || ''}
+          onChange={(e) => updateField(field, e.target.value)}
+          {...props}
+        />
+        {hasError && (
+          <p className="text-xs text-destructive flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            {validationErrors[field]}
+          </p>
+        )}
+      </div>
+    );
   };
 
   if (draftLoading) {
@@ -314,6 +436,22 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
         </div>
       </CardHeader>
       <CardContent>
+        {/* Validation Summary */}
+        {showValidationSummary && Object.keys(validationErrors).length > 0 && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <div className="font-medium mb-2">Please correct the following errors:</div>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                {Object.entries(validationErrors).map(([field, error]) => (
+                  <li key={field}>
+                    {field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}: {error}
+                  </li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
         <div className="space-y-4 mb-6">
           {/* Exam Type Selection */}
           <div>
@@ -458,20 +596,20 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 <div className="font-medium">Left</div>
                 
                 <div>Supine</div>
-                <Input placeholder="e.g., 118/84" value={formData.bp_supine_right || ''} onChange={(e) => updateField('bp_supine_right', e.target.value)} />
-                <Input placeholder="e.g., 114/82" value={formData.bp_supine_left || ''} onChange={(e) => updateField('bp_supine_left', e.target.value)} />
+                <ValidatedInput field="bp_supine_right" placeholder="e.g., 118/84" />
+                <ValidatedInput field="bp_supine_left" placeholder="e.g., 114/82" />
                 
                 <div>Seated</div>
-                <Input placeholder="e.g., 127/89" value={formData.bp_seated_right || ''} onChange={(e) => updateField('bp_seated_right', e.target.value)} />
-                <Input placeholder="e.g., 117/88" value={formData.bp_seated_left || ''} onChange={(e) => updateField('bp_seated_left', e.target.value)} />
+                <ValidatedInput field="bp_seated_right" placeholder="e.g., 127/89" />
+                <ValidatedInput field="bp_seated_left" placeholder="e.g., 117/88" />
                 
                 <div>Standing (immediate)</div>
-                <Input placeholder="e.g., 121/90" value={formData.bp_standing_immediate_right || ''} onChange={(e) => updateField('bp_standing_immediate_right', e.target.value)} />
-                <Input value={formData.bp_standing_immediate_left || ''} onChange={(e) => updateField('bp_standing_immediate_left', e.target.value)} />
+                <ValidatedInput field="bp_standing_immediate_right" placeholder="e.g., 121/90" />
+                <ValidatedInput field="bp_standing_immediate_left" />
                 
                 <div>Standing (3 min)</div>
-                <Input placeholder="e.g., 114/89" value={formData.bp_standing_3min_right || ''} onChange={(e) => updateField('bp_standing_3min_right', e.target.value)} />
-                <Input value={formData.bp_standing_3min_left || ''} onChange={(e) => updateField('bp_standing_3min_left', e.target.value)} />
+                <ValidatedInput field="bp_standing_3min_right" placeholder="e.g., 114/89" />
+                <ValidatedInput field="bp_standing_3min_left" />
               </div>
             </div>
 
@@ -485,12 +623,12 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 <div className="font-medium">Left</div>
                 
                 <div>O2 Saturation (supine)</div>
-                <Input placeholder="e.g., 100" value={formData.o2_saturation_supine_right || ''} onChange={(e) => updateField('o2_saturation_supine_right', e.target.value)} />
-                <Input placeholder="e.g., 100" value={formData.o2_saturation_supine_left || ''} onChange={(e) => updateField('o2_saturation_supine_left', e.target.value)} />
+                <ValidatedInput field="o2_saturation_supine_right" placeholder="e.g., 100" />
+                <ValidatedInput field="o2_saturation_supine_left" placeholder="e.g., 100" />
                 
                 <div>Heart Rate (supine)</div>
-                <Input placeholder="e.g., 65" value={formData.heart_rate_supine_right || ''} onChange={(e) => updateField('heart_rate_supine_right', e.target.value)} />
-                <Input placeholder="e.g., 70" value={formData.heart_rate_supine_left || ''} onChange={(e) => updateField('heart_rate_supine_left', e.target.value)} />
+                <ValidatedInput field="heart_rate_supine_right" placeholder="e.g., 65" />
+                <ValidatedInput field="heart_rate_supine_left" placeholder="e.g., 70" />
                 
                 <div>Temperature</div>
                 <Input placeholder="e.g., 93.6° UE 94.4° LE" value={formData.temperature_right || ''} onChange={(e) => updateField('temperature_right', e.target.value)} />
