@@ -1395,6 +1395,151 @@ export const getRedDesaturationInterpretations = (selectedFindings: string[]): A
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for Pupillary Fatigue with interpretations
+const PUPILLARY_FATIGUE_FINDINGS = [
+  {
+    category: "Normal Response",
+    findings: [
+      {
+        label: "Pupil maintains constriction without fading for duration of exam",
+        interpretation: "Stable parasympathetic output from Edinger-Westphal nucleus and good autonomic endurance."
+      }
+    ]
+  },
+  {
+    category: "Pupillary Escape (Classic Fatigue)",
+    findings: [
+      {
+        label: "Left pupil: escape (dilation) < 10 seconds",
+        interpretation: "Significant autonomic fatigue. Parasympathetic fatigue (CN III/Edinger-Westphal under-endurance), increased sympathetic override. Common midbrain endurance marker."
+      },
+      {
+        label: "Right pupil: escape (dilation) < 10 seconds",
+        interpretation: "Significant autonomic fatigue. Parasympathetic fatigue (CN III/Edinger-Westphal under-endurance), increased sympathetic override. Common midbrain endurance marker."
+      },
+      {
+        label: "Left pupil: escape 10-20 seconds",
+        interpretation: "Moderate parasympathetic endurance deficit. Indicates midbrain fatigue pattern in concussion, migraine, dysautonomia."
+      },
+      {
+        label: "Right pupil: escape 10-20 seconds",
+        interpretation: "Moderate parasympathetic endurance deficit. Indicates midbrain fatigue pattern in concussion, migraine, dysautonomia."
+      },
+      {
+        label: "Left pupil: escape > 20 seconds",
+        interpretation: "Mild to normal variation in parasympathetic endurance."
+      },
+      {
+        label: "Right pupil: escape > 20 seconds",
+        interpretation: "Mild to normal variation in parasympathetic endurance."
+      }
+    ]
+  },
+  {
+    category: "Asymmetric Fatigue",
+    findings: [
+      {
+        label: "Left pupil demonstrates earlier escape relative to right",
+        interpretation: "Unilateral parasympathetic conduction fatigue. Possible midbrain (pretectal/E-W nucleus) asymmetry, retinal-afferent asymmetry, hemispheric autonomic imbalance."
+      },
+      {
+        label: "Right pupil demonstrates earlier escape relative to left",
+        interpretation: "Unilateral parasympathetic conduction fatigue. Possible midbrain (pretectal/E-W nucleus) asymmetry, retinal-afferent asymmetry, hemispheric autonomic imbalance."
+      }
+    ]
+  },
+  {
+    category: "Fluctuating/Oscillatory Response",
+    findings: [
+      {
+        label: "Left pupil: oscillatory constriction/dilation during sustained light",
+        interpretation: "Instability in parasympathetic drive, cerebellar-brainstem dyscoordination, autonomic rhythm instability (common in dysautonomia)."
+      },
+      {
+        label: "Right pupil: oscillatory constriction/dilation during sustained light",
+        interpretation: "Instability in parasympathetic drive, cerebellar-brainstem dyscoordination, autonomic rhythm instability (common in dysautonomia)."
+      }
+    ]
+  },
+  {
+    category: "Repetition Fatigue",
+    findings: [
+      {
+        label: "Pupillary endurance worsens on repeated trials",
+        interpretation: "Autonomic metabolic fragility, diminishing parasympathetic reserve. Clear physiologic fatigue marker in PCS and post-viral neuro fatigue."
+      },
+      {
+        label: "Slowed pupillary constriction followed by early escape",
+        interpretation: "Dual impairment: reduced afferent drive + weak parasympathetic efferent firing. Can reflect deeper midbrain involvement."
+      }
+    ]
+  },
+  {
+    category: "Postural/Respiratory Influence",
+    findings: [
+      {
+        label: "Pupillary fatigue increases in upright posture",
+        interpretation: "Orthostatic autonomic intolerance, reduced perfusion to midbrain autonomic nuclei. Highly relevant in dysautonomia cases."
+      },
+      {
+        label: "Pupil stabilizes with diaphragmatic breathing",
+        interpretation: "Strong vagal restorative effect. Indicates brainstem-autonomic responsiveness to parasympathetic input."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation",
+    findings: [
+      {
+        label: "Sustained light exposure provokes dizziness",
+        interpretation: "Midbrain/vestibular integration issue, autonomic stress response during sustained parasympathetic demand."
+      },
+      {
+        label: "Sustained light exposure provokes head pressure",
+        interpretation: "Intracranial sensitivity, autonomic stress, possible increased intracranial pressure sensitivity."
+      },
+      {
+        label: "Sustained light exposure provokes nausea",
+        interpretation: "Brainstem autonomic nuclei activation, vagal irritation pattern."
+      },
+      {
+        label: "Sustained light exposure provokes eye strain/burning",
+        interpretation: "Oculomotor fatigue pattern, increased metabolic demand exceeding parasympathetic support."
+      }
+    ]
+  },
+  {
+    category: "Autonomic Dominance Patterns",
+    findings: [
+      {
+        label: "Pattern suggests parasympathetic weakness (early escape, asymmetry, fatigue)",
+        interpretation: "Reduced Edinger-Westphal nucleus output, common in concussion, chronic stress, autonomic fatigue states."
+      },
+      {
+        label: "Pupil constriction resists sustained exposure; sympathetic override noted",
+        interpretation: "Excessive sympathetic tone overriding normal parasympathetic constriction response. Seen in high stress states, dysautonomia."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for a pupillary fatigue finding
+export const getPupillaryFatigueInterpretation = (findingLabel: string): string => {
+  for (const category of PUPILLARY_FATIGUE_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected pupillary fatigue findings
+export const getPupillaryFatigueInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getPupillaryFatigueInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -3649,37 +3794,173 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
             <Separator />
 
             <div>
-              <h3 className="text-lg font-semibold mb-4">Pupillary Fatigue</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="pupil_fatigue_right">Right (seconds)</Label>
-                  <Input
-                    id="pupil_fatigue_right"
-                    placeholder="e.g., 1 second"
-                    value={formData.neuro_pupillary_fatigue_right || ''}
-                    onChange={(e) => updateField('neuro_pupillary_fatigue_right', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="pupil_fatigue_left">Left (seconds)</Label>
-                  <Input
-                    id="pupil_fatigue_left"
-                    placeholder="e.g., 1 second"
-                    value={formData.neuro_pupillary_fatigue_left || ''}
-                    onChange={(e) => updateField('neuro_pupillary_fatigue_left', e.target.value)}
-                  />
-                </div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Pupillary Fatigue</h3>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        Clinical Findings
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Select all observed findings. Interpretations are automatically stored for summary generation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
-              <div className="mt-2">
-                <Label htmlFor="pupil_fatigue_notes">Notes</Label>
-                <Textarea
-                  id="pupil_fatigue_notes"
-                  placeholder="e.g., sluggish constriction bilaterally"
-                  value={formData.neuro_pupillary_fatigue_notes || ''}
-                  onChange={(e) => updateField('neuro_pupillary_fatigue_notes', e.target.value)}
-                  rows={2}
-                />
-              </div>
+              
+              {/* Parse current pupillary fatigue values - handle both old text format and new structured format */}
+              {(() => {
+                let selectedFindings: string[] = [];
+                let customNotes = "";
+                
+                // Check if we have structured data stored anywhere
+                const structuredDataField = 'neuro_pupillary_fatigue_structured';
+                try {
+                  const structuredData = (formData as any)[structuredDataField];
+                  if (structuredData) {
+                    const parsed = JSON.parse(structuredData);
+                    selectedFindings = parsed.findings || [];
+                    customNotes = parsed.notes || "";
+                  } else {
+                    // Migrate from old text format if present
+                    if (formData.neuro_pupillary_fatigue_notes) {
+                      customNotes = formData.neuro_pupillary_fatigue_notes;
+                    }
+                  }
+                } catch {
+                  // Default to empty
+                }
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  // Update structured field
+                  updateField(structuredDataField, JSON.stringify({
+                    findings: newFindings,
+                    notes: customNotes
+                  }));
+                  
+                  // Also update legacy text fields for backward compatibility
+                  const hasLeftFindings = newFindings.some(f => f.toLowerCase().includes('left pupil'));
+                  const hasRightFindings = newFindings.some(f => f.toLowerCase().includes('right pupil'));
+                  
+                  // Update old text fields with time if escape findings are present
+                  const leftEscapeFindings = newFindings.filter(f => f.startsWith('Left pupil: escape'));
+                  const rightEscapeFindings = newFindings.filter(f => f.startsWith('Right pupil: escape'));
+                  
+                  if (leftEscapeFindings.length > 0) {
+                    const leftTime = leftEscapeFindings[0].includes('< 10') ? '< 10s' : 
+                                    leftEscapeFindings[0].includes('10-20') ? '10-20s' : '> 20s';
+                    updateField('neuro_pupillary_fatigue_left', leftTime);
+                  } else if (!hasLeftFindings) {
+                    updateField('neuro_pupillary_fatigue_left', '');
+                  }
+                  
+                  if (rightEscapeFindings.length > 0) {
+                    const rightTime = rightEscapeFindings[0].includes('< 10') ? '< 10s' : 
+                                     rightEscapeFindings[0].includes('10-20') ? '10-20s' : '> 20s';
+                    updateField('neuro_pupillary_fatigue_right', rightTime);
+                  } else if (!hasRightFindings) {
+                    updateField('neuro_pupillary_fatigue_right', '');
+                  }
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  updateField(structuredDataField, JSON.stringify({
+                    findings: selectedFindings,
+                    notes
+                  }));
+                  // Also update legacy notes field
+                  updateField('neuro_pupillary_fatigue_notes', notes);
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {PUPILLARY_FATIGUE_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`pupil-fatigue-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`pupil-fatigue-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="pupil_fatigue_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="pupil_fatigue_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional pupillary fatigue observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             <Separator />
