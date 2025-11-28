@@ -4873,34 +4873,57 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
           {/* Motor & Inputs Tab */}
           <TabsContent value="motor" className="space-y-6">
+            <Alert className="mb-4">
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                Streamlined motor assessment focusing on key upper and lower extremity indicators
+              </AlertDescription>
+            </Alert>
+
             <div>
-              <h3 className="text-lg font-semibold mb-4">Motor Testing (Supine)</h3>
+              <h3 className="text-lg font-semibold mb-4">Key Motor Indicators (Supine)</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div className="font-medium">Muscle</div>
                 <div className="font-medium">Right</div>
                 <div className="font-medium">Left</div>
                 
-                <div>Deltoid</div>
-                <Input placeholder="e.g., 1/5" value={formData.motor_deltoid_right || ''} onChange={(e) => updateField('motor_deltoid_right', e.target.value)} />
-                <Input value={formData.motor_deltoid_left || ''} onChange={(e) => updateField('motor_deltoid_left', e.target.value)} />
+                <div className="flex items-center">
+                  <span>Deltoid</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3 w-3 ml-1 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Upper extremity motor indicator</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <Input placeholder="e.g., 1/5 or 5/5" value={formData.motor_deltoid_right || ''} onChange={(e) => updateField('motor_deltoid_right', e.target.value)} />
+                <Input placeholder="e.g., 1/5 or 5/5" value={formData.motor_deltoid_left || ''} onChange={(e) => updateField('motor_deltoid_left', e.target.value)} />
                 
-                <div>Latissimus Dorsi</div>
-                <Input value={formData.motor_latissimus_right || ''} onChange={(e) => updateField('motor_latissimus_right', e.target.value)} />
-                <Input value={formData.motor_latissimus_left || ''} onChange={(e) => updateField('motor_latissimus_left', e.target.value)} />
-                
-                <div>Iliopsoas</div>
-                <Input placeholder="e.g., 1/5" value={formData.motor_iliopsoas_right || ''} onChange={(e) => updateField('motor_iliopsoas_right', e.target.value)} />
-                <Input value={formData.motor_iliopsoas_left || ''} onChange={(e) => updateField('motor_iliopsoas_left', e.target.value)} />
-                
-                <div>Gluteus Maximus</div>
-                <Input value={formData.motor_gluteus_max_right || ''} onChange={(e) => updateField('motor_gluteus_max_right', e.target.value)} />
-                <Input value={formData.motor_gluteus_max_left || ''} onChange={(e) => updateField('motor_gluteus_max_left', e.target.value)} />
+                <div className="flex items-center">
+                  <span>Iliopsoas</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3 w-3 ml-1 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Lower extremity motor indicator</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <Input placeholder="e.g., 1/5 or 5/5" value={formData.motor_iliopsoas_right || ''} onChange={(e) => updateField('motor_iliopsoas_right', e.target.value)} />
+                <Input placeholder="e.g., 1/5 or 5/5" value={formData.motor_iliopsoas_left || ''} onChange={(e) => updateField('motor_iliopsoas_left', e.target.value)} />
               </div>
               <div className="mt-4">
-                <Label htmlFor="motor_notes">Motor Notes</Label>
+                <Label htmlFor="motor_notes">Motor Testing Notes</Label>
                 <Textarea
                   id="motor_notes"
-                  placeholder="Motor testing observations..."
+                  placeholder="Additional motor observations, asymmetries, or other muscle groups tested..."
                   value={formData.motor_notes || ''}
                   onChange={(e) => updateField('motor_notes', e.target.value)}
                   rows={2}
@@ -4911,7 +4934,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
             <Separator />
 
             <div>
-              <h3 className="text-lg font-semibold mb-4">Inputs (Integration Testing)</h3>
+              <h3 className="text-lg font-semibold mb-4">Cerebellar Integration</h3>
               
               <div className="space-y-4">
                 <div>
@@ -4934,77 +4957,17 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                     </div>
                   </div>
                   <Input
-                    placeholder="e.g., tests 3/5"
+                    placeholder="e.g., tests 3/5, quality of response..."
                     value={formData.inputs_cerebellar_notes || ''}
                     onChange={(e) => updateField('inputs_cerebellar_notes', e.target.value)}
                   />
                 </div>
 
                 <div>
-                  <div className="grid grid-cols-2 gap-4 mb-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="inputs_isometric_right"
-                        checked={formData.inputs_isometric_right || false}
-                        onCheckedChange={(checked) => updateField('inputs_isometric_right', checked)}
-                      />
-                      <Label htmlFor="inputs_isometric_right">Isometric Right</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="inputs_isometric_left"
-                        checked={formData.inputs_isometric_left || false}
-                        onCheckedChange={(checked) => updateField('inputs_isometric_left', checked)}
-                      />
-                      <Label htmlFor="inputs_isometric_left">Isometric Left</Label>
-                    </div>
-                  </div>
-                  <Input
-                    placeholder="e.g., tests 5/5"
-                    value={formData.inputs_isometric_notes || ''}
-                    onChange={(e) => updateField('inputs_isometric_notes', e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <div className="grid grid-cols-2 gap-4 mb-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="inputs_parietal_right"
-                        checked={formData.inputs_parietal_right || false}
-                        onCheckedChange={(checked) => updateField('inputs_parietal_right', checked)}
-                      />
-                      <Label htmlFor="inputs_parietal_right">Parietal Right</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="inputs_parietal_left"
-                        checked={formData.inputs_parietal_left || false}
-                        onCheckedChange={(checked) => updateField('inputs_parietal_left', checked)}
-                      />
-                      <Label htmlFor="inputs_parietal_left">Parietal Left</Label>
-                    </div>
-                  </div>
-                  <Input
-                    value={formData.inputs_parietal_notes || ''}
-                    onChange={(e) => updateField('inputs_parietal_notes', e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="inputs_therapy_localization">Therapy Localization</Label>
-                  <Input
-                    id="inputs_therapy_localization"
-                    value={formData.inputs_therapy_localization || ''}
-                    onChange={(e) => updateField('inputs_therapy_localization', e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="inputs_notes">Inputs Notes</Label>
+                  <Label htmlFor="inputs_notes">Integration Testing Notes</Label>
                   <Textarea
                     id="inputs_notes"
-                    placeholder="Additional integration testing observations..."
+                    placeholder="Additional integration observations, therapy localization, other input testing..."
                     value={formData.inputs_notes || ''}
                     onChange={(e) => updateField('inputs_notes', e.target.value)}
                     rows={2}
