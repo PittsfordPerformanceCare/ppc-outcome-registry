@@ -1112,6 +1112,173 @@ export const getLungAuscultationInterpretations = (selectedFindings: string[]): 
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for Abdominal Exam with interpretations
+const ABDOMINAL_EXAM_FINDINGS = [
+  {
+    category: "Inspection",
+    findings: [
+      {
+        label: "Abdomen flat/symmetric without visible tension or guarding",
+        interpretation: "Normal abdominal appearance."
+      },
+      {
+        label: "Abdominal wall appears hypertonic with upper-abdominal dominance",
+        interpretation: "Sympathetic overdrive, reduced vagal tone."
+      },
+      {
+        label: "Lower abdominal under-activation noted",
+        interpretation: "Weakness in abdominal–pelvic integration; often cerebellar or vestibular asymmetry pattern."
+      },
+      {
+        label: "Paradoxical abdominal movement with respiration",
+        interpretation: "Brainstem respiratory patterning dysfunction."
+      },
+      {
+        label: "Visible abdominal distention",
+        interpretation: "Could indicate visceral motility issues linked to reduced vagal drive."
+      },
+      {
+        label: "Asymmetric abdominal wall expansion",
+        interpretation: "Suggests thoraco-lumbar segmental asymmetry or postural dominance."
+      }
+    ]
+  },
+  {
+    category: "Auscultation - Bowel Sounds",
+    findings: [
+      {
+        label: "Normoactive bowel sounds in all quadrants",
+        interpretation: "Normal bowel sounds."
+      },
+      {
+        label: "Hypoactive bowel sounds",
+        interpretation: "Strong vagal underdrive; reduced parasympathetic tone; common after concussion or chronic stress."
+      },
+      {
+        label: "Hyperactive bowel sounds",
+        interpretation: "Sympathetic irritation/instability; increased motility during autonomic rebound."
+      },
+      {
+        label: "Absent bowel sounds",
+        interpretation: "Red flag for obstruction or severe autonomic suppression."
+      },
+      {
+        label: "High-pitched bowel sounds",
+        interpretation: "Possible obstruction pattern; neurologically can reflect dysregulated peristaltic pacing."
+      }
+    ]
+  },
+  {
+    category: "Light Palpation",
+    findings: [
+      {
+        label: "Abdomen soft, non-tender, no guarding",
+        interpretation: "Normal abdominal palpation."
+      },
+      {
+        label: "Voluntary guarding",
+        interpretation: "Pain expectation / limbic–autonomic activation."
+      },
+      {
+        label: "Involuntary guarding",
+        interpretation: "More concerning; reflexive brainstem protection pattern."
+      },
+      {
+        label: "Increased fascial tension over lower quadrants",
+        interpretation: "Sympathetic dominance inhibiting normal abdominal tone."
+      },
+      {
+        label: "Tenderness over psoas or pelvic floor referral",
+        interpretation: "Segmental involvement L1–L3; functional postural asymmetry."
+      }
+    ]
+  },
+  {
+    category: "Deep Palpation",
+    findings: [
+      {
+        label: "Epigastric tenderness with autonomic symptoms (nausea, sweating)",
+        interpretation: "Vagal irritation; brainstem–autonomic coupling dysfunction."
+      },
+      {
+        label: "Right lower quadrant guarding without rebound",
+        interpretation: "Could indicate mechanical or autonomic irritation; needs differentiation."
+      },
+      {
+        label: "Generalized tenderness with soft abdomen",
+        interpretation: "Often visceral hypersensitivity linked to sympathetically driven limbic activation."
+      },
+      {
+        label: "Rebound tenderness positive",
+        interpretation: "Peritoneal irritation—true red flag."
+      },
+      {
+        label: "Palpable abdominal wall trigger points",
+        interpretation: "Thoraco-lumbar segment sensitization; commonly linked with chronic neuromuscular patterns."
+      }
+    ]
+  },
+  {
+    category: "Percussion",
+    findings: [
+      {
+        label: "Tympanic over gas-filled areas; normal liver dullness",
+        interpretation: "Normal percussion findings."
+      },
+      {
+        label: "Excessive tympany",
+        interpretation: "Motility pattern disruption; possible vagal suppression."
+      },
+      {
+        label: "Dullness where tympany expected",
+        interpretation: "Mass/fluid concern; also seen in chronic diaphragmatic restriction."
+      },
+      {
+        label: "Percussion provokes guarding or flinch",
+        interpretation: "Hyper-responsive segmental reflex—cerebellar vs. spinal processing issue."
+      }
+    ]
+  },
+  {
+    category: "Visceromotor Reflex",
+    findings: [
+      {
+        label: "Palpation triggers sympathetic surge (HR increase, sweating)",
+        interpretation: "Abnormal viscerosomatic reflex activation."
+      },
+      {
+        label: "Abdominal exam induces vagal symptoms (nausea, warmth, brady response)",
+        interpretation: "Heightened vagal sensitivity; brainstem under-buffering."
+      },
+      {
+        label: "Dermatomal sensitivity (T7–L3)",
+        interpretation: "Segmental sensitization; often corresponds with asymmetrical cortical drive."
+      },
+      {
+        label: "Abdominal wall contraction asymmetrically stronger on one side",
+        interpretation: "Cortical–spinal dominance pattern; clinically meaningful in gait/posture mapping."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for an abdominal exam finding
+export const getAbdominalExamInterpretation = (findingLabel: string): string => {
+  for (const category of ABDOMINAL_EXAM_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected abdominal exam findings
+export const getAbdominalExamInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getAbdominalExamInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -2508,15 +2675,138 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 );
               })()}
             </div>
-            <div>
-              <Label htmlFor="auscultation_abdomen">Abdomen</Label>
-              <Textarea
-                id="auscultation_abdomen"
-                placeholder="Abdominal auscultation findings..."
-                value={formData.auscultation_abdomen || ''}
-                onChange={(e) => updateField('auscultation_abdomen', e.target.value)}
-                rows={2}
-              />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Abdominal Examination</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        Clinical Findings
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Select all observed findings. Interpretations are automatically stored for summary generation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              {/* Parse current auscultation_abdomen value */}
+              {(() => {
+                let selectedFindings: string[] = [];
+                let customNotes = "";
+                
+                try {
+                  const parsed = JSON.parse(formData.auscultation_abdomen || '{}');
+                  selectedFindings = parsed.findings || [];
+                  customNotes = parsed.notes || "";
+                } catch {
+                  // Legacy text format - keep as custom notes
+                  customNotes = formData.auscultation_abdomen || "";
+                }
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  updateField('auscultation_abdomen', JSON.stringify({
+                    findings: newFindings,
+                    notes: customNotes
+                  }));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  updateField('auscultation_abdomen', JSON.stringify({
+                    findings: selectedFindings,
+                    notes
+                  }));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {ABDOMINAL_EXAM_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`abdomen-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`abdomen-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="abdomen_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="abdomen_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional abdominal exam observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div>
               <Label htmlFor="auscultation_notes">Notes</Label>
