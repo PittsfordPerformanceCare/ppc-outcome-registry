@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
+import { Activity } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -121,7 +122,7 @@ const Auth = () => {
           <div className="relative z-10">
             <div className="mb-6">
               <div className="w-12 h-12 bg-primary-foreground/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
-                <div className="w-8 h-8 border-2 border-primary-foreground rounded" />
+                <Activity className="h-6 w-6 text-primary-foreground" />
               </div>
               <h1 className="text-3xl font-bold mb-2 text-primary-foreground">PPC Clinical Outcome Registry</h1>
               <p className="text-primary-foreground/80 text-sm">Advancing Patient Care Through Data-Driven Insights</p>
