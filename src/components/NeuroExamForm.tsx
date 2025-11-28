@@ -48,6 +48,153 @@ const REFLEX_SCALE = {
   tooltip: "0 = Absent, 1+ = Diminished, 2+ = Normal, 3+ = Increased, 4+ = Hyperactive with clonus"
 };
 
+// Clinical findings for visual saccades with interpretations
+const SACCADE_FINDINGS = [
+  {
+    category: "Accuracy",
+    findings: [
+      {
+        label: "Hypometric saccades noted bilaterally",
+        interpretation: "Suggests cerebellar under-shooting, impaired cerebellar calibration."
+      },
+      {
+        label: "Hypermetric saccades on rightward gaze",
+        interpretation: "Suggests ipsilateral cerebellar overshoot or poor braking capacity."
+      },
+      {
+        label: "Consistent overshoot/undershoot requiring corrective saccades",
+        interpretation: "Indicates impaired cerebellar error-correction loop."
+      }
+    ]
+  },
+  {
+    category: "Speed / Velocity",
+    findings: [
+      {
+        label: "Saccades are slow to initiate and slow to complete",
+        interpretation: "Possible frontal lobe involvement or fatigue of brainstem burst neurons."
+      },
+      {
+        label: "Saccades show normal onset but decreased peak velocity",
+        interpretation: "Suggests potential brainstem involvement (PPRF/riMLF) or diffuse metabolic impairment."
+      }
+    ]
+  },
+  {
+    category: "Latency",
+    findings: [
+      {
+        label: "Increased latency to initiate saccade, especially leftward",
+        interpretation: "Frontal eye fields involvement; can indicate slowed executive/attentional drive."
+      },
+      {
+        label: "Latency improves with verbal cueing",
+        interpretation: "More frontal/executive performance deficit than structural issue."
+      }
+    ]
+  },
+  {
+    category: "Fatigability",
+    findings: [
+      {
+        label: "Saccades deteriorate with repetition (increased drift, slowing, more corrective movements)",
+        interpretation: "Classic brainstem/cerebellar integrator fatigue; highly neurologically meaningful."
+      }
+    ]
+  },
+  {
+    category: "Intrusions",
+    findings: [
+      {
+        label: "Frequent square-wave jerks interrupting fixation",
+        interpretation: "Cerebellar or brainstem dyscontrol."
+      },
+      {
+        label: "Burst-like oscillations around the target (macrosaccadic oscillations)",
+        interpretation: "More significant cerebellar pathology."
+      },
+      {
+        label: "Catch-up saccades during smooth pursuit",
+        interpretation: "Pursuit–saccade mismatch, cerebellar–parietal involvement."
+      }
+    ]
+  },
+  {
+    category: "Conjugacy",
+    findings: [
+      {
+        label: "Disconjugate saccades observed",
+        interpretation: "Possibly internuclear ophthalmoplegia (INO) vs. vestibular mismatch."
+      },
+      {
+        label: "Eyes reach target at different speeds",
+        interpretation: "Can indicate asymmetric cerebellar or vestibular involvement."
+      }
+    ]
+  },
+  {
+    category: "End-Point Nystagmus",
+    findings: [
+      {
+        label: "End-gaze nystagmus after the saccade hold",
+        interpretation: "Cerebellar flocculus/paraflocculus integrity issue."
+      },
+      {
+        label: "Asymmetric end-point nystagmus (right > left)",
+        interpretation: "Indicates sidedness of dysfunction."
+      }
+    ]
+  },
+  {
+    category: "Following Error / Overshoot Drift",
+    findings: [
+      {
+        label: "Eyes cannot maintain target after landing; drift back to midline before corrective saccade",
+        interpretation: "Neural integrator weakness; cerebellar and brainstem involvement."
+      }
+    ]
+  },
+  {
+    category: "Pre-Saccadic Posture",
+    findings: [
+      {
+        label: "Patient stabilizes head prior to each saccade; suggests vestibular–ocular compensation",
+        interpretation: "Vestibular contribution; often ipsilateral canal/otolith impairment."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation",
+    findings: [
+      {
+        label: "Saccades provoke dizziness/lightheadedness",
+        interpretation: "Vestibular integration issue; often linked with otolith/velocity storage dysfunction."
+      },
+      {
+        label: "Saccades provoke headache/fatigue",
+        interpretation: "Often frontal load intolerance or autonomic dysregulation."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for a finding
+export const getSaccadeInterpretation = (findingLabel: string): string => {
+  for (const category of SACCADE_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected findings
+export const getSaccadeInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getSaccadeInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -1230,13 +1377,138 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 onChange={(e) => updateField('visual_opk', e.target.value)}
               />
             </div>
-            <div>
-              <Label htmlFor="visual_saccades">Saccades/Antisaccades</Label>
-              <Input
-                id="visual_saccades"
-                value={formData.visual_saccades || ''}
-                onChange={(e) => updateField('visual_saccades', e.target.value)}
-              />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Saccades/Antisaccades</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        Clinical Findings
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Select all observed findings. Interpretations are automatically stored for summary generation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              {/* Parse current visual_saccades value */}
+              {(() => {
+                let selectedFindings: string[] = [];
+                let customNotes = "";
+                
+                try {
+                  const parsed = JSON.parse(formData.visual_saccades || '{}');
+                  selectedFindings = parsed.findings || [];
+                  customNotes = parsed.notes || "";
+                } catch {
+                  // Legacy text format - keep as custom notes
+                  customNotes = formData.visual_saccades || "";
+                }
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  updateField('visual_saccades', JSON.stringify({
+                    findings: newFindings,
+                    notes: customNotes
+                  }));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  updateField('visual_saccades', JSON.stringify({
+                    findings: selectedFindings,
+                    notes
+                  }));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {SACCADE_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`saccade-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`saccade-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="saccades_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="saccades_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional saccade observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div>
               <Label htmlFor="visual_pursuits">Pursuits</Label>
