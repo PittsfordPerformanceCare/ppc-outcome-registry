@@ -2256,159 +2256,195 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
           {/* Vitals Tab */}
           <TabsContent value="vitals" className="space-y-6">
-            <Alert>
-              <Info className="h-4 w-4" />
+            <Alert className="border-primary/20 bg-primary/5">
+              <Info className="h-4 w-4 text-primary" />
               <AlertDescription>
                 <strong>Normal Ranges:</strong> BP 90-120/60-80 mmHg • HR 60-100 bpm • O2 Sat 95-100% • Temp 97.8-99.1°F
               </AlertDescription>
             </Alert>
 
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Blood Pressure</h3>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="cursor-help">
-                        <Info className="h-3 w-3 mr-1" />
-                        IAD Warning ≥5 mmHg
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-sm max-w-xs">
-                        Inter-Arm Difference (IAD) of 5 mmHg or greater may indicate peripheral vascular disease or other cardiovascular issues
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <div className="grid grid-cols-4 gap-4">
-                <div className="font-medium">Position</div>
-                <div className="font-medium text-orange-600 flex items-center gap-1">
-                  <ArrowRight className="h-4 w-4" /> Right
-                </div>
-                <div className="font-medium text-blue-600 flex items-center gap-1">
-                  <ArrowLeft className="h-4 w-4" /> Left
-                </div>
-                <div className="font-medium text-center">IAD</div>
-                
-                {/* Supine */}
-                <div>Supine</div>
-                <ValidatedInput field="bp_supine_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
-                <ValidatedInput field="bp_supine_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
-                <div className="flex items-center justify-center">
-                  {(() => {
-                    const iad = calculateIAD(formData.bp_supine_right, formData.bp_supine_left);
-                    if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
-                    return (
-                      <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs">
-                        {iad.systolic}/{iad.diastolic}
-                      </Badge>
-                    );
-                  })()}
-                </div>
-                
-                {/* Seated */}
-                <div>Seated</div>
-                <ValidatedInput field="bp_seated_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
-                <ValidatedInput field="bp_seated_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
-                <div className="flex items-center justify-center">
-                  {(() => {
-                    const iad = calculateIAD(formData.bp_seated_right, formData.bp_seated_left);
-                    if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
-                    return (
-                      <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs">
-                        {iad.systolic}/{iad.diastolic}
-                      </Badge>
-                    );
-                  })()}
-                </div>
-                
-                {/* Standing Immediate */}
-                <div>Standing (immediate)</div>
-                <ValidatedInput field="bp_standing_immediate_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
-                <ValidatedInput field="bp_standing_immediate_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
-                <div className="flex items-center justify-center">
-                  {(() => {
-                    const iad = calculateIAD(formData.bp_standing_immediate_right, formData.bp_standing_immediate_left);
-                    if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
-                    return (
-                      <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs">
-                        {iad.systolic}/{iad.diastolic}
-                      </Badge>
-                    );
-                  })()}
-                </div>
-                
-                {/* Standing 3 min */}
-                <div>Standing (3 min)</div>
-                <ValidatedInput field="bp_standing_3min_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
-                <ValidatedInput field="bp_standing_3min_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
-                <div className="flex items-center justify-center">
-                  {(() => {
-                    const iad = calculateIAD(formData.bp_standing_3min_right, formData.bp_standing_3min_left);
-                    if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
-                    return (
-                      <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs">
-                        {iad.systolic}/{iad.diastolic}
-                      </Badge>
-                    );
-                  })()}
-                </div>
-              </div>
-            </div>
+            <Collapsible defaultOpen className="space-y-4">
+              <Card className="transition-all duration-200 hover:shadow-md hover:border-primary/20">
+                <CardHeader className="pb-3">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <Heart className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">Blood Pressure Assessment</h3>
+                        <p className="text-sm text-muted-foreground">Orthostatic testing & inter-arm differences</p>
+                      </div>
+                    </div>
+                    <ChevronDown className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-all group-data-[state=open]:rotate-180" />
+                  </CollapsibleTrigger>
+                </CardHeader>
+                <CollapsibleContent>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-end mb-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="outline" className="cursor-help">
+                              <Info className="h-3 w-3 mr-1" />
+                              IAD Warning ≥5 mmHg
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-sm max-w-xs">
+                              Inter-Arm Difference (IAD) of 5 mmHg or greater may indicate peripheral vascular disease or other cardiovascular issues
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <div className="grid grid-cols-4 gap-4 p-4 rounded-lg bg-muted/30">
+                      <div className="font-medium text-sm">Position</div>
+                      <div className="font-medium text-orange-600 flex items-center gap-1 text-sm">
+                        <ArrowRight className="h-4 w-4" /> Right
+                      </div>
+                      <div className="font-medium text-blue-600 flex items-center gap-1 text-sm">
+                        <ArrowLeft className="h-4 w-4" /> Left
+                      </div>
+                      <div className="font-medium text-center text-sm">IAD</div>
+                      
+                      {/* Supine */}
+                      <div className="text-sm font-medium">Supine</div>
+                      <ValidatedInput field="bp_supine_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                      <ValidatedInput field="bp_supine_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                      <div className="flex items-center justify-center">
+                        {(() => {
+                          const iad = calculateIAD(formData.bp_supine_right, formData.bp_supine_left);
+                          if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
+                          return (
+                            <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs animate-fade-in">
+                              {iad.systolic}/{iad.diastolic}
+                            </Badge>
+                          );
+                        })()}
+                      </div>
+                      
+                      {/* Seated */}
+                      <div className="text-sm font-medium">Seated</div>
+                      <ValidatedInput field="bp_seated_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                      <ValidatedInput field="bp_seated_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                      <div className="flex items-center justify-center">
+                        {(() => {
+                          const iad = calculateIAD(formData.bp_seated_right, formData.bp_seated_left);
+                          if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
+                          return (
+                            <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs animate-fade-in">
+                              {iad.systolic}/{iad.diastolic}
+                            </Badge>
+                          );
+                        })()}
+                      </div>
+                      
+                      {/* Standing Immediate */}
+                      <div className="text-sm font-medium">Standing (immediate)</div>
+                      <ValidatedInput field="bp_standing_immediate_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                      <ValidatedInput field="bp_standing_immediate_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                      <div className="flex items-center justify-center">
+                        {(() => {
+                          const iad = calculateIAD(formData.bp_standing_immediate_right, formData.bp_standing_immediate_left);
+                          if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
+                          return (
+                            <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs animate-fade-in">
+                              {iad.systolic}/{iad.diastolic}
+                            </Badge>
+                          );
+                        })()}
+                      </div>
+                      
+                      {/* Standing 3 min */}
+                      <div className="text-sm font-medium">Standing (3 min)</div>
+                      <ValidatedInput field="bp_standing_3min_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                      <ValidatedInput field="bp_standing_3min_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                      <div className="flex items-center justify-center">
+                        {(() => {
+                          const iad = calculateIAD(formData.bp_standing_3min_right, formData.bp_standing_3min_left);
+                          if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
+                          return (
+                            <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs animate-fade-in">
+                              {iad.systolic}/{iad.diastolic}
+                            </Badge>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
 
             <Separator />
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Other Vitals</h3>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="font-medium">Measurement</div>
-                <div className="font-medium text-orange-600 flex items-center gap-1">
-                  <ArrowRight className="h-4 w-4" /> Right
-                </div>
-                <div className="font-medium text-blue-600 flex items-center gap-1">
-                  <ArrowLeft className="h-4 w-4" /> Left
-                </div>
+            <Collapsible defaultOpen className="space-y-4">
+              <Card className="transition-all duration-200 hover:shadow-md hover:border-primary/20">
+                <CardHeader className="pb-3">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <Activity className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">Other Vitals</h3>
+                        <p className="text-sm text-muted-foreground">Temperature and additional measurements</p>
+                      </div>
+                    </div>
+                    <ChevronDown className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-all group-data-[state=open]:rotate-180" />
+                  </CollapsibleTrigger>
+                </CardHeader>
+                <CollapsibleContent>
+                  <CardContent>
+                    <div className="grid grid-cols-3 gap-4 p-4 rounded-lg bg-muted/30">
+                      <div className="font-medium text-sm">Measurement</div>
+                      <div className="font-medium text-orange-600 flex items-center gap-1 text-sm">
+                        <ArrowRight className="h-4 w-4" /> Right
+                      </div>
+                      <div className="font-medium text-blue-600 flex items-center gap-1 text-sm">
+                        <ArrowLeft className="h-4 w-4" /> Left
+                      </div>
                 
-                <div>O2 Saturation (supine)</div>
-                <ValidatedInput field="o2_saturation_supine_right" side="right" tooltip={VITALS_RANGES.o2Saturation.tooltip} placeholder="98" />
-                <ValidatedInput field="o2_saturation_supine_left" side="left" tooltip={VITALS_RANGES.o2Saturation.tooltip} placeholder="98" />
-                
-                <div>Heart Rate (supine)</div>
-                <ValidatedInput field="heart_rate_supine_right" side="right" tooltip={VITALS_RANGES.heartRate.tooltip} placeholder="72" />
-                <ValidatedInput field="heart_rate_supine_left" side="left" tooltip={VITALS_RANGES.heartRate.tooltip} placeholder="72" />
-                
-                <div>Temperature</div>
-                <ValidatedInput field="temperature_right" side="right" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
-                <ValidatedInput field="temperature_left" side="left" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
-              </div>
-            </div>
+                      <div className="text-sm font-medium">O2 Saturation (supine)</div>
+                      <ValidatedInput field="o2_saturation_supine_right" side="right" tooltip={VITALS_RANGES.o2Saturation.tooltip} placeholder="98" />
+                      <ValidatedInput field="o2_saturation_supine_left" side="left" tooltip={VITALS_RANGES.o2Saturation.tooltip} placeholder="98" />
+                      
+                      <div className="text-sm font-medium">Heart Rate (supine)</div>
+                      <ValidatedInput field="heart_rate_supine_right" side="right" tooltip={VITALS_RANGES.heartRate.tooltip} placeholder="72" />
+                      <ValidatedInput field="heart_rate_supine_left" side="left" tooltip={VITALS_RANGES.heartRate.tooltip} placeholder="72" />
+                      
+                      <div className="text-sm font-medium">Temperature</div>
+                      <ValidatedInput field="temperature_right" side="right" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
+                      <ValidatedInput field="temperature_left" side="left" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
 
             <Separator />
 
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">Walking Oxygen Saturation Test</h3>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="outline" className="cursor-help">
-                        <Info className="h-3 w-3 mr-1" />
-                        60-Second Test
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-sm max-w-xs">
-                        Place oximeter on finger with lowest supine O2 reading. Patient walks for 60 seconds. 
-                        O2 should remain stable or increase. A drop may indicate exercise-induced desaturation.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
+            <Collapsible defaultOpen className="space-y-4">
+              <Card className="transition-all duration-200 hover:shadow-md hover:border-primary/20">
+                <CardHeader className="pb-3">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <Activity className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">Walking Oxygen Saturation Test</h3>
+                        <p className="text-sm text-muted-foreground">60-second walking test for exercise-induced desaturation</p>
+                      </div>
+                    </div>
+                    <ChevronDown className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-all group-data-[state=open]:rotate-180" />
+                  </CollapsibleTrigger>
 
-              <div className="space-y-4">
+                </CardHeader>
+                <CollapsibleContent>
+                  <CardContent>
+                    <div className="space-y-4">
                 {(() => {
                   const lowestO2 = getLowestSupineO2();
                   const walkingCheck = checkWalkingO2Drop();
@@ -2474,11 +2510,14 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                           />
                         </div>
                       </div>
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
+                     </>
+                   );
+                 })()}
+                    </div>
+                  </CardContent>
+                </CollapsibleContent>
+              </Card>
+            </Collapsible>
 
             <div>
               <Label htmlFor="vitals_notes">
