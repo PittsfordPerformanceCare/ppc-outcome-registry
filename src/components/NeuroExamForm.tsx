@@ -4417,14 +4417,122 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
             </div>
 
             <div>
-              <Label htmlFor="vestibular_canal">Canal Testing</Label>
-              <Input
-                id="vestibular_canal"
-                placeholder="e.g., RHC best 9/10"
-                value={formData.vestibular_canal_testing || ''}
-                onChange={(e) => updateField('vestibular_canal_testing', e.target.value)}
-              />
+              <div className="flex items-center justify-between mb-3">
+                <Label className="text-base font-semibold">Canal Testing</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="left" className="max-w-sm">
+                      <p className="text-sm">Select which canals improve shunt stability with eyes closed</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              {(() => {
+                // Parse canal selections from vestibular_canal_testing field
+                let selectedCanals: string[] = [];
+                let additionalNotes = '';
+                
+                try {
+                  if (formData.vestibular_canal_testing && formData.vestibular_canal_testing.startsWith('{')) {
+                    const parsed = JSON.parse(formData.vestibular_canal_testing);
+                    selectedCanals = parsed.canals || [];
+                    additionalNotes = parsed.notes || '';
+                  } else if (formData.vestibular_canal_testing) {
+                    // Legacy text value - treat as notes
+                    additionalNotes = formData.vestibular_canal_testing;
+                  }
+                } catch (e) {
+                  additionalNotes = formData.vestibular_canal_testing || '';
+                }
+
+                const canals = [
+                  { id: 'RA', label: 'Right Anterior (RA)' },
+                  { id: 'LA', label: 'Left Anterior (LA)' },
+                  { id: 'RH', label: 'Right Horizontal (RH)' },
+                  { id: 'LH', label: 'Left Horizontal (LH)' },
+                  { id: 'RP', label: 'Right Posterior (RP)' },
+                  { id: 'LP', label: 'Left Posterior (LP)' }
+                ];
+
+                const handleCanalToggle = (canalId: string) => {
+                  const newCanals = selectedCanals.includes(canalId)
+                    ? selectedCanals.filter(c => c !== canalId)
+                    : [...selectedCanals, canalId];
+                  
+                  const newData = {
+                    canals: newCanals,
+                    notes: additionalNotes
+                  };
+                  
+                  updateField('vestibular_canal_testing', JSON.stringify(newData));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  const newData = {
+                    canals: selectedCanals,
+                    notes: notes
+                  };
+                  updateField('vestibular_canal_testing', JSON.stringify(newData));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <Card className="border-muted">
+                      <CardContent className="pt-4">
+                        <p className="text-sm text-muted-foreground mb-3">
+                          Select canals that improve shunt stability with eyes closed:
+                        </p>
+                        <div className="grid grid-cols-2 gap-3">
+                          {canals.map((canal) => (
+                            <div key={canal.id} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`canal-${canal.id}`}
+                                checked={selectedCanals.includes(canal.id)}
+                                onCheckedChange={() => handleCanalToggle(canal.id)}
+                              />
+                              <Label
+                                htmlFor={`canal-${canal.id}`}
+                                className="text-sm font-normal cursor-pointer"
+                              >
+                                {canal.label}
+                              </Label>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {selectedCanals.length > 0 && (
+                          <div className="mt-3 pt-3 border-t">
+                            <p className="text-xs text-muted-foreground">
+                              <strong>Selected:</strong> {selectedCanals.join(', ')}
+                            </p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    <div>
+                      <Label htmlFor="canal_notes">
+                        Additional Canal Testing Notes
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="canal_notes"
+                        value={additionalNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="e.g., RHC best 9/10, quality of improvement noted..."
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
+
+            <Separator />
 
             <div>
               <Label htmlFor="vestibular_vor">VOR</Label>
