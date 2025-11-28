@@ -333,7 +333,7 @@ export function NeuroExamDisplay({ exam }: NeuroExamDisplayProps) {
                 <BooleanField label="Red Desaturation" leftValue={exam.neuro_red_desaturation_left} rightValue={exam.neuro_red_desaturation_right} />
                 <BilateralField label="UPRDS" leftValue={exam.neuro_uprds_left} rightValue={exam.neuro_uprds_right} />
                 <BilateralField label="UE Capillary Refill" leftValue={exam.neuro_ue_capillary_refill_left} rightValue={exam.neuro_ue_capillary_refill_right} />
-                <BooleanField label="UE Extensor Weakness" leftValue={exam.neuro_ue_extensor_weakness_left} rightValue={exam.neuro_ue_extensor_weakness_right} />
+                <BooleanField label="Distal Extensor Weakness" leftValue={exam.neuro_ue_extensor_weakness_left} rightValue={exam.neuro_ue_extensor_weakness_right} />
                 <BilateralField label="Finger to Nose" leftValue={exam.neuro_finger_to_nose_left} rightValue={exam.neuro_finger_to_nose_right} />
                 <BilateralField label="2-Point Localization" leftValue={exam.neuro_2pt_localization_left} rightValue={exam.neuro_2pt_localization_right} />
                 <BilateralField label="Digit Sense" leftValue={exam.neuro_digit_sense_left} rightValue={exam.neuro_digit_sense_right} />
