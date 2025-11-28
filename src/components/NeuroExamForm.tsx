@@ -21,19 +21,31 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, CheckCircle2, Circle, AlertCircle, ChevronRight, List } from "lucide-react";
+import { Loader2, Save, CheckCircle2, Circle, AlertCircle, ChevronRight, List, Info, ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface NeuroExamFormProps {
   episodeId: string;
   onSaved?: () => void;
 }
 
-// Validation rules for vitals
+// Validation rules for vitals with reference ranges
 const VITALS_RANGES = {
-  bloodPressure: { min: 60, max: 200, label: "Blood Pressure" },
-  heartRate: { min: 40, max: 180, label: "Heart Rate" },
-  o2Saturation: { min: 70, max: 100, label: "O2 Saturation" },
-  temperature: { min: 90, max: 105, label: "Temperature" }
+  bloodPressure: { min: 60, max: 200, label: "Blood Pressure", normal: "90-120/60-80 mmHg", tooltip: "Normal BP: 90-120 systolic / 60-80 diastolic" },
+  heartRate: { min: 40, max: 180, label: "Heart Rate", normal: "60-100 bpm", tooltip: "Normal resting HR: 60-100 beats per minute" },
+  o2Saturation: { min: 70, max: 100, label: "O2 Saturation", normal: "95-100%", tooltip: "Normal O2 saturation: 95-100%" },
+  temperature: { min: 90, max: 105, label: "Temperature", normal: "97.8-99.1°F", tooltip: "Normal body temperature: 97.8-99.1°F (36.5-37.3°C)" }
+};
+
+// Reference ranges for reflexes
+const REFLEX_SCALE = {
+  label: "Reflex Scale",
+  tooltip: "0 = Absent, 1+ = Diminished, 2+ = Normal, 3+ = Increased, 4+ = Hyperactive with clonus"
 };
 
 // Tab sections in order
@@ -94,6 +106,8 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [showValidationSummary, setShowValidationSummary] = useState(false);
   const [currentTab, setCurrentTab] = useState<TabSection>('vitals');
+  const [previousExams, setPreviousExams] = useState<any[]>([]);
+  const [showPreviousValues, setShowPreviousValues] = useState(true);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const tabsListRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<any>({
@@ -166,13 +180,26 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     }
   };
 
-  // Load existing draft on mount
+  // Load previous exams and draft on mount
   useEffect(() => {
-    const loadDraft = async () => {
+    const loadData = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
+        // Load previous exams for reference
+        const { data: exams } = await supabase
+          .from('neurologic_exams')
+          .select('*')
+          .eq('episode_id', episodeId)
+          .order('exam_date', { ascending: false })
+          .limit(3);
+
+        if (exams && exams.length > 0) {
+          setPreviousExams(exams);
+        }
+
+        // Load existing draft
         const { data: draft } = await supabase
           .from('neurologic_exam_drafts')
           .select('*')
@@ -195,7 +222,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
       }
     };
 
-    loadDraft();
+    loadData();
   }, [episodeId, toast]);
 
   // Auto-save functionality
@@ -436,19 +463,73 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     return `${hours} hours ago`;
   };
 
-  // Helper component for validated input
-  const ValidatedInput = ({ field, label, ...props }: any) => {
+  // Helper to get previous value for a field
+  const getPreviousValue = (fieldName: string) => {
+    if (previousExams.length === 0 || !showPreviousValues) return null;
+    const latestExam = previousExams[0];
+    return latestExam[fieldName];
+  };
+
+  // Enhanced validated input with tooltips, side indicators, and previous values
+  const ValidatedInput = ({ 
+    field, 
+    label, 
+    side = null,
+    tooltip = null,
+    optional = false,
+    ...props 
+  }: {
+    field: string;
+    label?: string;
+    side?: 'left' | 'right' | null;
+    tooltip?: string | null;
+    optional?: boolean;
+    [key: string]: any;
+  }) => {
     const hasError = !!validationErrors[field];
+    const previousValue = getPreviousValue(field);
+    const sideColor = side === 'left' ? 'text-blue-600' : side === 'right' ? 'text-orange-600' : '';
+    const sideBg = side === 'left' ? 'bg-blue-50 dark:bg-blue-950' : side === 'right' ? 'bg-orange-50 dark:bg-orange-950' : '';
+
     return (
       <div className="space-y-1">
-        {label && <Label htmlFor={field}>{label}</Label>}
+        {label && (
+          <div className="flex items-center gap-2">
+            {side && (
+              <div className={`p-1 rounded ${sideBg}`}>
+                {side === 'left' ? <ArrowLeft className={`h-3 w-3 ${sideColor}`} /> : <ArrowRight className={`h-3 w-3 ${sideColor}`} />}
+              </div>
+            )}
+            <Label htmlFor={field} className={side ? sideColor : ''}>
+              {label}
+              {optional && <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>}
+            </Label>
+            {tooltip && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-sm max-w-xs">{tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+        )}
         <Input
           id={field}
-          className={hasError ? "border-destructive focus-visible:ring-destructive" : ""}
+          className={`${hasError ? "border-destructive focus-visible:ring-destructive" : ""} ${side ? sideBg : ""}`}
           value={formData[field] || ''}
           onChange={(e) => updateField(field, e.target.value)}
           {...props}
         />
+        {previousValue && (
+          <p className="text-xs text-muted-foreground flex items-center gap-1">
+            <span className="font-medium">Previous:</span> {previousValue}
+          </p>
+        )}
         {hasError && (
           <p className="text-xs text-destructive flex items-center gap-1">
             <AlertCircle className="h-3 w-3" />
@@ -494,19 +575,30 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
             <CardTitle>Comprehensive Neurologic & Physical Examination</CardTitle>
             <CardDescription>Complete the examination sections below</CardDescription>
           </div>
-          {/* Auto-save indicator */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            {isSaving ? (
-              <>
-                <Loader2 className="h-3 w-3 animate-spin" />
-                <span>Saving draft...</span>
-              </>
-            ) : lastSaved ? (
-              <>
-                <CheckCircle2 className="h-3 w-3 text-primary" />
-                <span>Draft saved {getLastSavedText()}</span>
-              </>
-            ) : null}
+          <div className="flex items-center gap-3">
+            {previousExams.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPreviousValues(!showPreviousValues)}
+              >
+                {showPreviousValues ? 'Hide' : 'Show'} Previous Values
+              </Button>
+            )}
+            {/* Auto-save indicator */}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>Saving draft...</span>
+                </>
+              ) : lastSaved ? (
+                <>
+                  <CheckCircle2 className="h-3 w-3 text-primary" />
+                  <span>Draft saved {getLastSavedText()}</span>
+                </>
+              ) : null}
+            </div>
           </div>
         </div>
         
@@ -733,28 +825,39 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
           {/* Vitals Tab */}
           <TabsContent value="vitals" className="space-y-6">
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Normal Ranges:</strong> BP 90-120/60-80 mmHg • HR 60-100 bpm • O2 Sat 95-100% • Temp 97.8-99.1°F
+              </AlertDescription>
+            </Alert>
+
             <div>
               <h3 className="text-lg font-semibold mb-4">Blood Pressure</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div className="font-medium">Position</div>
-                <div className="font-medium">Right</div>
-                <div className="font-medium">Left</div>
+                <div className="font-medium text-orange-600 flex items-center gap-1">
+                  <ArrowRight className="h-4 w-4" /> Right
+                </div>
+                <div className="font-medium text-blue-600 flex items-center gap-1">
+                  <ArrowLeft className="h-4 w-4" /> Left
+                </div>
                 
                 <div>Supine</div>
-                <ValidatedInput field="bp_supine_right" placeholder="e.g., 118/84" />
-                <ValidatedInput field="bp_supine_left" placeholder="e.g., 114/82" />
+                <ValidatedInput field="bp_supine_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                <ValidatedInput field="bp_supine_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
                 
                 <div>Seated</div>
-                <ValidatedInput field="bp_seated_right" placeholder="e.g., 127/89" />
-                <ValidatedInput field="bp_seated_left" placeholder="e.g., 117/88" />
+                <ValidatedInput field="bp_seated_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                <ValidatedInput field="bp_seated_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
                 
                 <div>Standing (immediate)</div>
-                <ValidatedInput field="bp_standing_immediate_right" placeholder="e.g., 121/90" />
-                <ValidatedInput field="bp_standing_immediate_left" />
+                <ValidatedInput field="bp_standing_immediate_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                <ValidatedInput field="bp_standing_immediate_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
                 
                 <div>Standing (3 min)</div>
-                <ValidatedInput field="bp_standing_3min_right" placeholder="e.g., 114/89" />
-                <ValidatedInput field="bp_standing_3min_left" />
+                <ValidatedInput field="bp_standing_3min_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                <ValidatedInput field="bp_standing_3min_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
               </div>
             </div>
 
@@ -764,25 +867,32 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
               <h3 className="text-lg font-semibold mb-4">Other Vitals</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div className="font-medium">Measurement</div>
-                <div className="font-medium">Right</div>
-                <div className="font-medium">Left</div>
+                <div className="font-medium text-orange-600 flex items-center gap-1">
+                  <ArrowRight className="h-4 w-4" /> Right
+                </div>
+                <div className="font-medium text-blue-600 flex items-center gap-1">
+                  <ArrowLeft className="h-4 w-4" /> Left
+                </div>
                 
                 <div>O2 Saturation (supine)</div>
-                <ValidatedInput field="o2_saturation_supine_right" placeholder="e.g., 100" />
-                <ValidatedInput field="o2_saturation_supine_left" placeholder="e.g., 100" />
+                <ValidatedInput field="o2_saturation_supine_right" side="right" tooltip={VITALS_RANGES.o2Saturation.tooltip} placeholder="98" />
+                <ValidatedInput field="o2_saturation_supine_left" side="left" tooltip={VITALS_RANGES.o2Saturation.tooltip} placeholder="98" />
                 
                 <div>Heart Rate (supine)</div>
-                <ValidatedInput field="heart_rate_supine_right" placeholder="e.g., 65" />
-                <ValidatedInput field="heart_rate_supine_left" placeholder="e.g., 70" />
+                <ValidatedInput field="heart_rate_supine_right" side="right" tooltip={VITALS_RANGES.heartRate.tooltip} placeholder="72" />
+                <ValidatedInput field="heart_rate_supine_left" side="left" tooltip={VITALS_RANGES.heartRate.tooltip} placeholder="72" />
                 
                 <div>Temperature</div>
-                <Input placeholder="e.g., 93.6° UE 94.4° LE" value={formData.temperature_right || ''} onChange={(e) => updateField('temperature_right', e.target.value)} />
-                <Input placeholder="e.g., 93.6° UE 96.4° LE" value={formData.temperature_left || ''} onChange={(e) => updateField('temperature_left', e.target.value)} />
+                <ValidatedInput field="temperature_right" side="right" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
+                <ValidatedInput field="temperature_left" side="left" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="vitals_notes">Notes</Label>
+              <Label htmlFor="vitals_notes">
+                Notes
+                <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+              </Label>
               <Textarea
                 id="vitals_notes"
                 placeholder="Additional vitals observations..."
@@ -795,34 +905,48 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
           {/* Reflexes Tab */}
           <TabsContent value="reflexes" className="space-y-4">
+            <Alert>
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Reflex Scale:</strong> 0 = Absent • 1+ = Diminished • 2+ = Normal • 3+ = Increased • 4+ = Hyperactive with clonus
+              </AlertDescription>
+            </Alert>
+
             <div className="grid grid-cols-3 gap-4">
               <div className="font-medium">Reflex</div>
-              <div className="font-medium">Right</div>
-              <div className="font-medium">Left</div>
+              <div className="font-medium text-orange-600 flex items-center gap-1">
+                <ArrowRight className="h-4 w-4" /> Right
+              </div>
+              <div className="font-medium text-blue-600 flex items-center gap-1">
+                <ArrowLeft className="h-4 w-4" /> Left
+              </div>
               
               <div>Tricep</div>
-              <Input value={formData.reflex_tricep_right || ''} onChange={(e) => updateField('reflex_tricep_right', e.target.value)} />
-              <Input value={formData.reflex_tricep_left || ''} onChange={(e) => updateField('reflex_tricep_left', e.target.value)} />
+              <ValidatedInput field="reflex_tricep_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              <ValidatedInput field="reflex_tricep_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
               
               <div>Bicep</div>
-              <Input value={formData.reflex_bicep_right || ''} onChange={(e) => updateField('reflex_bicep_right', e.target.value)} />
-              <Input value={formData.reflex_bicep_left || ''} onChange={(e) => updateField('reflex_bicep_left', e.target.value)} />
+              <ValidatedInput field="reflex_bicep_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              <ValidatedInput field="reflex_bicep_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
               
               <div>Brachioradialis</div>
-              <Input value={formData.reflex_brachioradialis_right || ''} onChange={(e) => updateField('reflex_brachioradialis_right', e.target.value)} />
-              <Input value={formData.reflex_brachioradialis_left || ''} onChange={(e) => updateField('reflex_brachioradialis_left', e.target.value)} />
+              <ValidatedInput field="reflex_brachioradialis_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              <ValidatedInput field="reflex_brachioradialis_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
               
               <div>Patellar</div>
-              <Input value={formData.reflex_patellar_right || ''} onChange={(e) => updateField('reflex_patellar_right', e.target.value)} />
-              <Input value={formData.reflex_patellar_left || ''} onChange={(e) => updateField('reflex_patellar_left', e.target.value)} />
+              <ValidatedInput field="reflex_patellar_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              <ValidatedInput field="reflex_patellar_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
               
               <div>Achilles</div>
-              <Input value={formData.reflex_achilles_right || ''} onChange={(e) => updateField('reflex_achilles_right', e.target.value)} />
-              <Input value={formData.reflex_achilles_left || ''} onChange={(e) => updateField('reflex_achilles_left', e.target.value)} />
+              <ValidatedInput field="reflex_achilles_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              <ValidatedInput field="reflex_achilles_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
             </div>
 
             <div>
-              <Label htmlFor="reflexes_notes">Notes</Label>
+              <Label htmlFor="reflexes_notes">
+                Notes
+                <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+              </Label>
               <Textarea
                 id="reflexes_notes"
                 placeholder="Reflex observations..."
