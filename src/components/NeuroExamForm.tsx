@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, CheckCircle2, Circle, AlertCircle, ChevronRight, List, Info, ArrowLeft, ArrowRight, Heart, Activity, Stethoscope, Eye, Brain, Navigation, Dumbbell, ChevronDown } from "lucide-react";
+import { Loader2, Save, CheckCircle2, Circle, AlertCircle, ChevronRight, List, Info, ArrowLeft, ArrowRight, Heart, Activity, Stethoscope, Eye, Brain, Navigation, Dumbbell, ChevronDown, CheckCheck, Clock, AlertTriangle, XCircle } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -1423,11 +1423,15 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   const [draftLoading, setDraftLoading] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [showValidationSummary, setShowValidationSummary] = useState(false);
   const [currentTab, setCurrentTab] = useState<TabSection>('vitals');
   const [previousExams, setPreviousExams] = useState<any[]>([]);
   const [showPreviousValues, setShowPreviousValues] = useState(true);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const tabsListRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<any>({
@@ -1527,6 +1531,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   // Update field with validation
   const updateField = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
+    setHasUnsavedChanges(true);
     
     // Clear validation error when field is updated
     if (validationErrors[field]) {
@@ -1614,6 +1619,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     // Set new timeout for auto-save
     saveTimeoutRef.current = setTimeout(async () => {
       setIsSaving(true);
+      setSaveStatus('saving');
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
@@ -1637,9 +1643,17 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
         if (!error) {
           setLastSaved(new Date());
+          setSaveStatus('saved');
+          setSaveError(null);
+          setTimeout(() => setSaveStatus('idle'), 2000);
+        } else {
+          setSaveStatus('error');
+          setSaveError('Auto-save failed');
         }
       } catch (error) {
         console.error('Auto-save error:', error);
+        setSaveStatus('error');
+        setSaveError('Auto-save failed');
       } finally {
         setIsSaving(false);
       }
@@ -1772,15 +1786,22 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
       setShowValidationSummary(true);
+      setSaveStatus('error');
+      setSaveError(`${Object.keys(errors).length} validation error(s)`);
       toast({
         title: "Validation Errors",
         description: `Please correct ${Object.keys(errors).length} field(s) before saving`,
         variant: "destructive"
       });
+      setTimeout(() => {
+        setSaveStatus('idle');
+        setSaveError(null);
+      }, 3000);
       return;
     }
 
     setLoading(true);
+    setSaveStatus('saving');
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -1809,6 +1830,11 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
         .eq('episode_id', episodeId)
         .eq('user_id', user.id);
 
+      setSaveStatus('saved');
+      setHasUnsavedChanges(false);
+      setShowSuccessAnimation(true);
+      setTimeout(() => setShowSuccessAnimation(false), 3000);
+      
       toast({
         title: "Exam Saved",
         description: "Neurologic examination saved successfully"
@@ -1816,11 +1842,17 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
       if (onSaved) onSaved();
     } catch (error: any) {
+      setSaveStatus('error');
+      setSaveError(error.message);
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive"
       });
+      setTimeout(() => {
+        setSaveStatus('idle');
+        setSaveError(null);
+      }, 3000);
     } finally {
       setLoading(false);
     }
@@ -1948,7 +1980,15 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle>Comprehensive Neurologic & Physical Examination</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              Comprehensive Neurologic & Physical Examination
+              {hasUnsavedChanges && (
+                <Badge variant="outline" className="text-xs animate-fade-in">
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  Unsaved changes
+                </Badge>
+              )}
+            </CardTitle>
             <CardDescription>Complete the examination sections below</CardDescription>
           </div>
           <div className="flex items-center gap-3">
@@ -1957,24 +1997,11 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowPreviousValues(!showPreviousValues)}
+                className="transition-all hover:scale-105"
               >
                 {showPreviousValues ? 'Hide' : 'Show'} Previous Values
               </Button>
             )}
-            {/* Auto-save indicator */}
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              {isSaving ? (
-                <>
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  <span>Saving draft...</span>
-                </>
-              ) : lastSaved ? (
-                <>
-                  <CheckCircle2 className="h-3 w-3 text-primary" />
-                  <span>Draft saved {getLastSavedText()}</span>
-                </>
-              ) : null}
-            </div>
           </div>
         </div>
         
@@ -1991,7 +2018,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
               {/* Jump to section dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="transition-all hover:scale-105">
                     <List className="h-4 w-4 mr-2" />
                     Jump to Section
                   </Button>
@@ -2003,11 +2030,11 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                     <DropdownMenuItem
                       key={section}
                       onClick={() => setCurrentTab(section)}
-                      className="flex items-center justify-between"
+                      className="flex items-center justify-between transition-colors"
                     >
                       <span className="flex items-center gap-2">
                         {sectionProgress[section]?.percentage === 100 ? (
-                          <CheckCircle2 className="h-4 w-4 text-primary" />
+                          <CheckCircle2 className="h-4 w-4 text-primary animate-fade-in" />
                         ) : sectionProgress[section]?.percentage > 0 ? (
                           <Circle className="h-4 w-4 fill-primary/20 text-primary" />
                         ) : (
@@ -2032,6 +2059,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                     const nextSection = getNextIncompleteSection();
                     if (nextSection) setCurrentTab(nextSection);
                   }}
+                  className="transition-all hover:scale-105"
                 >
                   Next Incomplete
                   <ChevronRight className="h-4 w-4 ml-1" />
@@ -2039,7 +2067,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
               )}
             </div>
           </div>
-          <Progress value={overallProgress.percentage} className="h-2" />
+          <Progress value={overallProgress.percentage} className="h-2 transition-all duration-500" />
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>{overallProgress.percentage}% complete • {overallProgress.total - overallProgress.filled} fields remaining</span>
             <span className="text-muted-foreground/70">💡 Use Ctrl+← → to navigate sections</span>
@@ -4379,16 +4407,27 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
           </div>
         </div>
 
-        <div className="flex justify-end mt-6">
-          <Button onClick={handleSave} disabled={loading}>
+        <div className="flex justify-end gap-3 mt-6">
+          {hasUnsavedChanges && (
+            <div className="flex items-center text-sm text-muted-foreground animate-fade-in">
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              You have unsaved changes
+            </div>
+          )}
+          <Button 
+            onClick={handleSave} 
+            disabled={loading}
+            className="transition-all hover:scale-105 hover:shadow-lg"
+            size="lg"
+          >
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Saving...
               </>
             ) : (
               <>
-                <Save className="mr-2 h-4 w-4" />
+                <Save className="mr-2 h-5 w-5" />
                 Save Examination
               </>
             )}
