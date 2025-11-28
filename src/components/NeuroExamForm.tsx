@@ -362,6 +362,184 @@ export const getPursuitInterpretations = (selectedFindings: string[]): Array<{fi
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for OPK (Optokinetic) with interpretations
+const OPTOKINETIC_FINDINGS = [
+  {
+    category: "OPK Gain",
+    findings: [
+      {
+        label: "OPK gain is symmetric and appropriate across all directions",
+        interpretation: "Normal optokinetic response."
+      },
+      {
+        label: "Reduced OPK gain bilaterally",
+        interpretation: "Central processing deficit; reduced parietal–cerebellar modulation."
+      },
+      {
+        label: "Reduced OPK gain on leftward stimulation",
+        interpretation: "Suggests ipsilateral cerebellar flocculus/paraflocculus dysfunction."
+      },
+      {
+        label: "OPK response appears hypermetric or excessively strong",
+        interpretation: "Often reflects loss of inhibitory control (frontal or cerebellar inhibition deficit)."
+      }
+    ]
+  },
+  {
+    category: "Asymmetry",
+    findings: [
+      {
+        label: "Rightward OPK stronger than leftward",
+        interpretation: "Suggests left cerebellar underdrive."
+      },
+      {
+        label: "Vertical OPK responses asymmetric (upward > downward or vice versa)",
+        interpretation: "Vertical asymmetry is especially central and highly clinically meaningful."
+      },
+      {
+        label: "Marked asymmetry with inconsistent slow-phase generation",
+        interpretation: "Indicates disrupted velocity storage or central vestibular processing."
+      }
+    ]
+  },
+  {
+    category: "Slow-Phase Velocity",
+    findings: [
+      {
+        label: "Slow-phase segments are smooth and continuous",
+        interpretation: "Normal slow-phase tracking."
+      },
+      {
+        label: "Slow phases are irregular, fragmented, or drop out",
+        interpretation: "Poor cerebellar modulation or parietal tracking dysfunction."
+      },
+      {
+        label: "Slow-phase velocity decreases over time (fatigability)",
+        interpretation: "Brainstem or cerebellar endurance deficit."
+      }
+    ]
+  },
+  {
+    category: "Fast-Phase Quality",
+    findings: [
+      {
+        label: "Fast-phases present and symmetric",
+        interpretation: "Normal fast-phase reset."
+      },
+      {
+        label: "Fast-phase generation inconsistent or absent",
+        interpretation: "Concern for more significant central involvement."
+      },
+      {
+        label: "Fast-phase beats overshoot target repeatedly",
+        interpretation: "Poor cerebellar control/overshoot tendency."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation",
+    findings: [
+      {
+        label: "OPK provokes dizziness/lightheadedness",
+        interpretation: "Brainstem–cerebellar mismatch or velocity storage irritation."
+      },
+      {
+        label: "OPK provokes nausea",
+        interpretation: "Classic vestibular-ocular mismatch."
+      },
+      {
+        label: "OPK causes visual overload or cognitive fatigue",
+        interpretation: "Frontal-parietal intolerance; common in PCS."
+      },
+      {
+        label: "OPK exposure induces autonomic response (heat, sweating, pressure)",
+        interpretation: "Autonomic dysregulation / limbic–brainstem involvement."
+      }
+    ]
+  },
+  {
+    category: "After-Nystagmus",
+    findings: [
+      {
+        label: "Normal brief after-nystagmus following cessation",
+        interpretation: "Normal velocity storage response."
+      },
+      {
+        label: "Prolonged after-nystagmus",
+        interpretation: "Velocity storage dysfunction (central vestibular integrator)."
+      },
+      {
+        label: "Asymmetric after-nystagmus (R > L or U > D)",
+        interpretation: "Indicates sidedness of dysfunction."
+      }
+    ]
+  },
+  {
+    category: "Vertical OPK-Specific",
+    findings: [
+      {
+        label: "Downward OPK is diminished relative to upward",
+        interpretation: "Parietal-occipital integration issue or midbrain involvement."
+      },
+      {
+        label: "Upward OPK produces consistent symptoms",
+        interpretation: "Suggests dorsal midbrain or central vestibular involvement."
+      },
+      {
+        label: "Vertical OPK response is fragmented with inconsistent slow-phase generation",
+        interpretation: "High clinical significance—often central injury pattern (PCS, migraine, dysautonomia)."
+      }
+    ]
+  },
+  {
+    category: "Visual-Motor Control",
+    findings: [
+      {
+        label: "Patient attempts to fixate on a single point rather than engage OPK stimulus",
+        interpretation: "Frontal inhibition or compensatory mechanism to eliminate visual motion."
+      },
+      {
+        label: "Patient blinks excessively during OPK",
+        interpretation: "Visual–autonomic stress response."
+      },
+      {
+        label: "Head movement used to compensate during OPK",
+        interpretation: "Vestibular avoidance or central intolerance."
+      }
+    ]
+  },
+  {
+    category: "Fatigability & Endurance",
+    findings: [
+      {
+        label: "OPK response consistent throughout exposure",
+        interpretation: "Normal endurance and sustained response."
+      },
+      {
+        label: "Slow-phase velocity declines with continued stimulation",
+        interpretation: "Cerebellar/brainstem fatigue; highly relevant in concussion or dysautonomia."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for an OPK finding
+export const getOPKInterpretation = (findingLabel: string): string => {
+  for (const category of OPTOKINETIC_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected OPK findings
+export const getOPKInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getOPKInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -1536,13 +1714,138 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
           {/* Visual System Tab */}
           <TabsContent value="visual" className="space-y-4">
-            <div>
-              <Label htmlFor="visual_opk">OPK</Label>
-              <Input
-                id="visual_opk"
-                value={formData.visual_opk || ''}
-                onChange={(e) => updateField('visual_opk', e.target.value)}
-              />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>OPK (Optokinetic - Horizontal & Vertical)</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        Clinical Findings
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Select all observed findings. Interpretations are automatically stored for summary generation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              {/* Parse current visual_opk value */}
+              {(() => {
+                let selectedFindings: string[] = [];
+                let customNotes = "";
+                
+                try {
+                  const parsed = JSON.parse(formData.visual_opk || '{}');
+                  selectedFindings = parsed.findings || [];
+                  customNotes = parsed.notes || "";
+                } catch {
+                  // Legacy text format - keep as custom notes
+                  customNotes = formData.visual_opk || "";
+                }
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  updateField('visual_opk', JSON.stringify({
+                    findings: newFindings,
+                    notes: customNotes
+                  }));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  updateField('visual_opk', JSON.stringify({
+                    findings: selectedFindings,
+                    notes
+                  }));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {OPTOKINETIC_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`opk-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`opk-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="opk_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="opk_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional OPK observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
