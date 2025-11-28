@@ -1399,9 +1399,7 @@ const SECTION_FIELDS = {
   neuro: [
     'neuro_red_desaturation_right', 'neuro_red_desaturation_left',
     'neuro_pupillary_fatigue_right', 'neuro_pupillary_fatigue_left', 'neuro_pupillary_fatigue_notes',
-    'neuro_ue_extensor_weakness_right', 'neuro_ue_extensor_weakness_left',
-    'neuro_finger_to_nose_right', 'neuro_finger_to_nose_left',
-    'neuro_uprds_right', 'neuro_uprds_left', 'neuro_notes'
+    'neuro_notes'
   ],
   vestibular: [
     'vestibular_rombergs', 'vestibular_fakuda', 'vestibular_shunt_stability_eo',
@@ -3679,49 +3677,6 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                   </div>
                 );
               })()}
-            </div>
-
-            <Separator />
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Distal Extensor Weakness</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="ue_weakness_right"
-                    checked={formData.neuro_ue_extensor_weakness_right || false}
-                    onCheckedChange={(checked) => updateField('neuro_ue_extensor_weakness_right', checked)}
-                  />
-                  <Label htmlFor="ue_weakness_right">Right</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="ue_weakness_left"
-                    checked={formData.neuro_ue_extensor_weakness_left || false}
-                    onCheckedChange={(checked) => updateField('neuro_ue_extensor_weakness_left', checked)}
-                  />
-                  <Label htmlFor="ue_weakness_left">Left</Label>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Other Tests</h3>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="font-medium">Test</div>
-                <div className="font-medium">Right</div>
-                <div className="font-medium">Left</div>
-                
-                <div>Finger to Nose</div>
-                <Input placeholder="e.g., 9/10" value={formData.neuro_finger_to_nose_right || ''} onChange={(e) => updateField('neuro_finger_to_nose_right', e.target.value)} />
-                <Input placeholder="e.g., 9/10" value={formData.neuro_finger_to_nose_left || ''} onChange={(e) => updateField('neuro_finger_to_nose_left', e.target.value)} />
-                
-                <div>UPRDS</div>
-                <Input placeholder="e.g., 0" value={formData.neuro_uprds_right || ''} onChange={(e) => updateField('neuro_uprds_right', e.target.value)} />
-                <Input placeholder="e.g., 0" value={formData.neuro_uprds_left || ''} onChange={(e) => updateField('neuro_uprds_left', e.target.value)} />
-              </div>
             </div>
 
             <div>
