@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,14 +8,61 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, CheckCircle2, Circle } from "lucide-react";
 
 interface NeuroExamFormProps {
   episodeId: string;
   onSaved?: () => void;
 }
+
+// Field definitions for each tab section
+const SECTION_FIELDS = {
+  vitals: [
+    'bp_supine_right', 'bp_supine_left', 'bp_seated_right', 'bp_seated_left',
+    'bp_standing_immediate_right', 'bp_standing_immediate_left',
+    'bp_standing_3min_right', 'bp_standing_3min_left',
+    'o2_saturation_supine_right', 'o2_saturation_supine_left',
+    'heart_rate_supine_right', 'heart_rate_supine_left',
+    'temperature_right', 'temperature_left', 'vitals_notes'
+  ],
+  reflexes: [
+    'reflex_tricep_right', 'reflex_tricep_left', 'reflex_bicep_right', 'reflex_bicep_left',
+    'reflex_brachioradialis_right', 'reflex_brachioradialis_left',
+    'reflex_patellar_right', 'reflex_patellar_left',
+    'reflex_achilles_right', 'reflex_achilles_left', 'reflexes_notes'
+  ],
+  auscultation: [
+    'auscultation_heart', 'auscultation_lungs', 'auscultation_abdomen', 'auscultation_notes'
+  ],
+  visual: [
+    'visual_opk', 'visual_saccades', 'visual_pursuits', 'visual_convergence',
+    'visual_maddox_rod', 'visual_notes'
+  ],
+  neuro: [
+    'neuro_red_desaturation_right', 'neuro_red_desaturation_left',
+    'neuro_pupillary_fatigue_right', 'neuro_pupillary_fatigue_left', 'neuro_pupillary_fatigue_notes',
+    'neuro_ue_extensor_weakness_right', 'neuro_ue_extensor_weakness_left',
+    'neuro_finger_to_nose_right', 'neuro_finger_to_nose_left',
+    'neuro_uprds_right', 'neuro_uprds_left', 'neuro_notes'
+  ],
+  vestibular: [
+    'vestibular_rombergs', 'vestibular_fakuda', 'vestibular_shunt_stability_eo',
+    'vestibular_shunt_stability_ec', 'vestibular_otr_right', 'vestibular_otr_left',
+    'vestibular_otr_notes', 'vestibular_canal_testing', 'vestibular_vor', 'vestibular_notes'
+  ],
+  motor: [
+    'motor_deltoid_right', 'motor_deltoid_left', 'motor_latissimus_right', 'motor_latissimus_left',
+    'motor_iliopsoas_right', 'motor_iliopsoas_left', 'motor_gluteus_max_right', 'motor_gluteus_max_left',
+    'motor_notes', 'inputs_cerebellar_right', 'inputs_cerebellar_left', 'inputs_cerebellar_notes',
+    'inputs_isometric_right', 'inputs_isometric_left', 'inputs_isometric_notes',
+    'inputs_parietal_right', 'inputs_parietal_left', 'inputs_parietal_notes',
+    'inputs_therapy_localization', 'inputs_notes'
+  ]
+};
 
 export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   const { toast } = useToast();
@@ -29,6 +76,40 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   const updateField = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
+
+  // Calculate completion for each section
+  const sectionProgress = useMemo(() => {
+    const progress: Record<string, { filled: number; total: number; percentage: number }> = {};
+    
+    Object.entries(SECTION_FIELDS).forEach(([section, fields]) => {
+      const filled = fields.filter(field => {
+        const value = formData[field];
+        return value !== undefined && value !== null && value !== '' && value !== false;
+      }).length;
+      const total = fields.length;
+      const percentage = total > 0 ? Math.round((filled / total) * 100) : 0;
+      
+      progress[section] = { filled, total, percentage };
+    });
+    
+    return progress;
+  }, [formData]);
+
+  // Calculate overall completion
+  const overallProgress = useMemo(() => {
+    const allFields = Object.values(SECTION_FIELDS).flat();
+    const totalFields = allFields.length;
+    const filledFields = allFields.filter(field => {
+      const value = formData[field];
+      return value !== undefined && value !== null && value !== '' && value !== false;
+    }).length;
+    
+    return {
+      filled: filledFields,
+      total: totalFields,
+      percentage: Math.round((filledFields / totalFields) * 100)
+    };
+  }, [formData]);
 
   const handleSave = async () => {
     setLoading(true);
@@ -75,6 +156,23 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
       <CardHeader>
         <CardTitle>Comprehensive Neurologic & Physical Examination</CardTitle>
         <CardDescription>Complete the examination sections below</CardDescription>
+        
+        {/* Overall Progress Indicator */}
+        <div className="mt-4 space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium">Overall Completion</span>
+            <span className="text-muted-foreground">
+              {overallProgress.filled} of {overallProgress.total} fields completed
+            </span>
+          </div>
+          <Progress value={overallProgress.percentage} className="h-2" />
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>{overallProgress.percentage}% complete</span>
+            {overallProgress.percentage < 100 && (
+              <span>• {overallProgress.total - overallProgress.filled} fields remaining</span>
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4 mb-6">
@@ -125,13 +223,90 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
         <Tabs defaultValue="vitals" className="w-full">
           <TabsList className="grid grid-cols-7 w-full">
-            <TabsTrigger value="vitals">Vitals</TabsTrigger>
-            <TabsTrigger value="reflexes">Reflexes</TabsTrigger>
-            <TabsTrigger value="auscultation">Auscultation</TabsTrigger>
-            <TabsTrigger value="visual">Visual</TabsTrigger>
-            <TabsTrigger value="neuro">Neuro</TabsTrigger>
-            <TabsTrigger value="vestibular">Vestibular</TabsTrigger>
-            <TabsTrigger value="motor">Motor/Inputs</TabsTrigger>
+            <TabsTrigger value="vitals" className="flex items-center gap-1.5">
+              {sectionProgress.vitals.percentage === 100 ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+              ) : sectionProgress.vitals.percentage > 0 ? (
+                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {sectionProgress.vitals.percentage}
+                </Badge>
+              ) : (
+                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+              <span>Vitals</span>
+            </TabsTrigger>
+            <TabsTrigger value="reflexes" className="flex items-center gap-1.5">
+              {sectionProgress.reflexes.percentage === 100 ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+              ) : sectionProgress.reflexes.percentage > 0 ? (
+                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {sectionProgress.reflexes.percentage}
+                </Badge>
+              ) : (
+                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+              <span>Reflexes</span>
+            </TabsTrigger>
+            <TabsTrigger value="auscultation" className="flex items-center gap-1.5">
+              {sectionProgress.auscultation.percentage === 100 ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+              ) : sectionProgress.auscultation.percentage > 0 ? (
+                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {sectionProgress.auscultation.percentage}
+                </Badge>
+              ) : (
+                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+              <span>Auscultation</span>
+            </TabsTrigger>
+            <TabsTrigger value="visual" className="flex items-center gap-1.5">
+              {sectionProgress.visual.percentage === 100 ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+              ) : sectionProgress.visual.percentage > 0 ? (
+                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {sectionProgress.visual.percentage}
+                </Badge>
+              ) : (
+                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+              <span>Visual</span>
+            </TabsTrigger>
+            <TabsTrigger value="neuro" className="flex items-center gap-1.5">
+              {sectionProgress.neuro.percentage === 100 ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+              ) : sectionProgress.neuro.percentage > 0 ? (
+                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {sectionProgress.neuro.percentage}
+                </Badge>
+              ) : (
+                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+              <span>Neuro</span>
+            </TabsTrigger>
+            <TabsTrigger value="vestibular" className="flex items-center gap-1.5">
+              {sectionProgress.vestibular.percentage === 100 ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+              ) : sectionProgress.vestibular.percentage > 0 ? (
+                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {sectionProgress.vestibular.percentage}
+                </Badge>
+              ) : (
+                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+              <span>Vestibular</span>
+            </TabsTrigger>
+            <TabsTrigger value="motor" className="flex items-center gap-1.5">
+              {sectionProgress.motor.percentage === 100 ? (
+                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+              ) : sectionProgress.motor.percentage > 0 ? (
+                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {sectionProgress.motor.percentage}
+                </Badge>
+              ) : (
+                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+              <span>Motor/Inputs</span>
+            </TabsTrigger>
           </TabsList>
 
           {/* Vitals Tab */}
