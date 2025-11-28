@@ -67,6 +67,7 @@ export default function AnalyticsDashboard() {
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
   const [dateRange, setDateRange] = useState("30");
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
+  const [selectedEpisodeType, setSelectedEpisodeType] = useState<string>("all");
   const [regions, setRegions] = useState<string[]>([]);
   
   // Drill-down dialog state
@@ -107,6 +108,10 @@ export default function AnalyticsDashboard() {
 
       if (selectedRegion !== "all") {
         episodesQuery = episodesQuery.eq("region", selectedRegion);
+      }
+
+      if (selectedEpisodeType !== "all") {
+        episodesQuery = episodesQuery.eq("episode_type", selectedEpisodeType);
       }
 
       const { data: episodes } = await episodesQuery;
@@ -158,7 +163,7 @@ export default function AnalyticsDashboard() {
             totalImprovement += improvement;
             improvementCount++;
 
-            const mcidThreshold = indexType === 'NDI' ? 7.5 : indexType === 'ODI' ? 6 : indexType === 'QuickDASH' ? 10 : indexType === 'LEFS' ? 9 : 0;
+            const mcidThreshold = indexType === 'NDI' ? 7.5 : indexType === 'ODI' ? 6 : indexType === 'QuickDASH' ? 10 : indexType === 'LEFS' ? 9 : indexType === 'RPQ' ? 12 : 0;
             if (improvement >= mcidThreshold) {
               mcidCount++;
             }
@@ -195,7 +200,7 @@ export default function AnalyticsDashboard() {
             regionData.improvementSum += improvement;
             regionData.improvementCount++;
 
-            const mcidThreshold = indexType === 'NDI' ? 7.5 : indexType === 'ODI' ? 6 : indexType === 'QuickDASH' ? 10 : indexType === 'LEFS' ? 9 : 0;
+            const mcidThreshold = indexType === 'NDI' ? 7.5 : indexType === 'ODI' ? 6 : indexType === 'QuickDASH' ? 10 : indexType === 'LEFS' ? 9 : indexType === 'RPQ' ? 12 : 0;
             if (improvement >= mcidThreshold) {
               regionData.mcidCount++;
             }
@@ -304,7 +309,7 @@ export default function AnalyticsDashboard() {
             improvementSum += improvement;
             totalCount++;
             
-            const mcidThreshold = indexType === 'NDI' ? 7.5 : indexType === 'ODI' ? 6 : indexType === 'QuickDASH' ? 10 : indexType === 'LEFS' ? 9 : 0;
+            const mcidThreshold = indexType === 'NDI' ? 7.5 : indexType === 'ODI' ? 6 : indexType === 'QuickDASH' ? 10 : indexType === 'LEFS' ? 9 : indexType === 'RPQ' ? 12 : 0;
             if (improvement >= mcidThreshold) {
               mcidCount++;
             }
@@ -347,6 +352,7 @@ export default function AnalyticsDashboard() {
           : primaryIndexType === 'ODI' ? 6 
           : primaryIndexType === 'QuickDASH' ? 10 
           : primaryIndexType === 'LEFS' ? 9 
+          : primaryIndexType === 'RPQ' ? 12
           : 0;
         mcidAchieved = improvement >= mcidThreshold;
       }
@@ -437,7 +443,7 @@ export default function AnalyticsDashboard() {
 
   useEffect(() => {
     loadMetrics();
-  }, [user, dateRange, selectedRegion]);
+  }, [user, dateRange, selectedRegion, selectedEpisodeType]);
 
   if (loading) {
     return <AnalyticsSkeleton />;
@@ -470,7 +476,7 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4">
+      <div className="flex gap-4 flex-wrap">
         <Select value={dateRange} onValueChange={setDateRange}>
           <SelectTrigger className="w-[180px]">
             <Calendar className="h-4 w-4 mr-2" />
@@ -480,6 +486,19 @@ export default function AnalyticsDashboard() {
             <SelectItem value="7">Last 7 days</SelectItem>
             <SelectItem value="30">Last 30 days</SelectItem>
             <SelectItem value="90">Last 3 months</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={selectedEpisodeType} onValueChange={setSelectedEpisodeType}>
+          <SelectTrigger className="w-[180px]">
+            <Activity className="h-4 w-4 mr-2" />
+            <SelectValue placeholder="All Episode Types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Episode Types</SelectItem>
+            <SelectItem value="MSK">MSK</SelectItem>
+            <SelectItem value="Neurology">Neurology</SelectItem>
+            <SelectItem value="Performance">Performance</SelectItem>
           </SelectContent>
         </Select>
 
