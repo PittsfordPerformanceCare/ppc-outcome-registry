@@ -735,6 +735,184 @@ export const getConvergenceInterpretations = (selectedFindings: string[]): Array
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for Heart Auscultation with interpretations
+const HEART_AUSCULTATION_FINDINGS = [
+  {
+    category: "Rate & Rhythm",
+    findings: [
+      {
+        label: "Regular rate and rhythm without irregularities",
+        interpretation: "Normal cardiac rate and rhythm."
+      },
+      {
+        label: "Sinus tachycardia noted at rest",
+        interpretation: "Sympathetic dominance; possible frontal-autonomic dysregulation or physiologic stress."
+      },
+      {
+        label: "Sinus bradycardia with appropriate perfusion",
+        interpretation: "Possible high vagal tone vs. medication influence; relevant to autonomic balance."
+      },
+      {
+        label: "Irregular rhythm with skipped beats",
+        interpretation: "Autonomic instability or ectopy; consider further cardiology evaluation."
+      },
+      {
+        label: "Respiratory sinus arrhythmia present",
+        interpretation: "Good vagal flexibility—positive autonomic indicator."
+      }
+    ]
+  },
+  {
+    category: "Heart Sounds (S1, S2)",
+    findings: [
+      {
+        label: "Normal S1 and S2 with physiologic splitting",
+        interpretation: "Normal heart sounds."
+      },
+      {
+        label: "Diminished S1/S2 intensity",
+        interpretation: "Reduced stroke volume, poor physiologic drive, dehydration, or autonomic under-activation."
+      },
+      {
+        label: "Accentuated S2",
+        interpretation: "Possible elevated sympathetic output or increased systemic vascular resistance (SVR)."
+      },
+      {
+        label: "Fixed or wide splitting of S2",
+        interpretation: "Red flag; structural or conduction-related → requires cardiology input."
+      }
+    ]
+  },
+  {
+    category: "Extra Heart Sounds (S3, S4)",
+    findings: [
+      {
+        label: "S3 present",
+        interpretation: "Potential volume overload; commonly autonomic-related dysregulation of venous return or early dysfunction."
+      },
+      {
+        label: "S4 present",
+        interpretation: "Increased ventricular stiffness; often elevated sympathetic tone or vascular resistance."
+      }
+    ]
+  },
+  {
+    category: "Murmurs",
+    findings: [
+      {
+        label: "Soft flow murmur without radiation",
+        interpretation: "Often benign; can reflect increased sympathetic tone or elevated cardiac output."
+      },
+      {
+        label: "Systolic murmur grade 2/6 at LSB without radiation",
+        interpretation: "May represent physiologic flow or early structural concerns."
+      },
+      {
+        label: "Holosystolic murmur with radiation",
+        interpretation: "Requires cardiology referral."
+      },
+      {
+        label: "Diastolic murmurs present",
+        interpretation: "Always pathologic → cardiology evaluation."
+      }
+    ]
+  },
+  {
+    category: "Rhythm Variability",
+    findings: [
+      {
+        label: "Good beat-to-beat variability noted",
+        interpretation: "Strong vagal activity and healthy autonomic adaptability."
+      },
+      {
+        label: "Low beat-to-beat variability",
+        interpretation: "Sympathetic dominance or reduced parasympathetic tone; relevant in PCS, dysautonomia, chronic stress patterns."
+      },
+      {
+        label: "Abrupt rate changes with respiration",
+        interpretation: "Dysregulated baroreceptor response; cerebellar/brainstem autonomic involvement."
+      }
+    ]
+  },
+  {
+    category: "Perfusion Clues",
+    findings: [
+      {
+        label: "Peripheral perfusion appears reduced (cool hands, delayed refill)",
+        interpretation: "Elevated sympathetic tone or shunting; common in dysautonomia."
+      },
+      {
+        label: "Warm extremities with stable perfusion",
+        interpretation: "Balanced autonomic function."
+      },
+      {
+        label: "Jugular venous pulsation appears elevated",
+        interpretation: "Consider cardiovascular contribution to autonomic symptoms."
+      }
+    ]
+  },
+  {
+    category: "Postural Changes (Supine → Seated)",
+    findings: [
+      {
+        label: "Heart rate increases >20 bpm when seated",
+        interpretation: "Orthostatic intolerance or POTS-like physiology."
+      },
+      {
+        label: "Murmur intensity changes with posture",
+        interpretation: "Hemodynamic load variation; sometimes autonomic-driven."
+      }
+    ]
+  },
+  {
+    category: "Postural Changes (Seated → Standing)",
+    findings: [
+      {
+        label: "Significant tachycardic response (>30 bpm increase)",
+        interpretation: "Autonomic dysregulation consistent with POTS physiology."
+      },
+      {
+        label: "No significant postural change",
+        interpretation: "Good autonomic buffering and baroreceptor responsiveness."
+      }
+    ]
+  },
+  {
+    category: "Respiratory Influence",
+    findings: [
+      {
+        label: "Rate slows on exhalation (normal vagal modulation)",
+        interpretation: "Normal vagal modulation with respiration."
+      },
+      {
+        label: "Minimal variation with breathing (reduced vagal tone)",
+        interpretation: "Reduced parasympathetic activity."
+      },
+      {
+        label: "Pronounced tachycardia with inhalation",
+        interpretation: "Sympathetic sensitivity."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for a heart auscultation finding
+export const getHeartAuscultationInterpretation = (findingLabel: string): string => {
+  for (const category of HEART_AUSCULTATION_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected heart auscultation findings
+export const getHeartAuscultationInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getHeartAuscultationInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -1865,15 +2043,138 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
           {/* Auscultation Tab */}
           <TabsContent value="auscultation" className="space-y-4">
-            <div>
-              <Label htmlFor="auscultation_heart">Heart</Label>
-              <Textarea
-                id="auscultation_heart"
-                placeholder="Heart auscultation findings..."
-                value={formData.auscultation_heart || ''}
-                onChange={(e) => updateField('auscultation_heart', e.target.value)}
-                rows={2}
-              />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Heart Auscultation</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        Clinical Findings
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Select all observed findings. Interpretations are automatically stored for summary generation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              {/* Parse current auscultation_heart value */}
+              {(() => {
+                let selectedFindings: string[] = [];
+                let customNotes = "";
+                
+                try {
+                  const parsed = JSON.parse(formData.auscultation_heart || '{}');
+                  selectedFindings = parsed.findings || [];
+                  customNotes = parsed.notes || "";
+                } catch {
+                  // Legacy text format - keep as custom notes
+                  customNotes = formData.auscultation_heart || "";
+                }
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  updateField('auscultation_heart', JSON.stringify({
+                    findings: newFindings,
+                    notes: customNotes
+                  }));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  updateField('auscultation_heart', JSON.stringify({
+                    findings: selectedFindings,
+                    notes
+                  }));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {HEART_AUSCULTATION_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`heart-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`heart-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="heart_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="heart_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional heart auscultation observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div>
               <Label htmlFor="auscultation_lungs">Lungs</Label>
