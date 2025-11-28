@@ -148,6 +148,30 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     return null;
   };
 
+  // Calculate Inter-Arm Difference (IAD)
+  const calculateIAD = (rightBP: string, leftBP: string): { systolic: number | null; diastolic: number | null; hasWarning: boolean } => {
+    if (!rightBP || !leftBP) return { systolic: null, diastolic: null, hasWarning: false };
+    
+    const rightMatch = rightBP.match(/^(\d+)\/(\d+)$/);
+    const leftMatch = leftBP.match(/^(\d+)\/(\d+)$/);
+    
+    if (!rightMatch || !leftMatch) return { systolic: null, diastolic: null, hasWarning: false };
+    
+    const rightSystolic = parseInt(rightMatch[1]);
+    const rightDiastolic = parseInt(rightMatch[2]);
+    const leftSystolic = parseInt(leftMatch[1]);
+    const leftDiastolic = parseInt(leftMatch[2]);
+    
+    const systolicDiff = Math.abs(rightSystolic - leftSystolic);
+    const diastolicDiff = Math.abs(rightDiastolic - leftDiastolic);
+    
+    return {
+      systolic: systolicDiff,
+      diastolic: diastolicDiff,
+      hasWarning: systolicDiff >= 5 || diastolicDiff >= 5
+    };
+  };
+
   // Update field with validation
   const updateField = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
@@ -833,8 +857,25 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
             </Alert>
 
             <div>
-              <h3 className="text-lg font-semibold mb-4">Blood Pressure</h3>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Blood Pressure</h3>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        IAD Warning ≥5 mmHg
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Inter-Arm Difference (IAD) of 5 mmHg or greater may indicate peripheral vascular disease or other cardiovascular issues
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="grid grid-cols-4 gap-4">
                 <div className="font-medium">Position</div>
                 <div className="font-medium text-orange-600 flex items-center gap-1">
                   <ArrowRight className="h-4 w-4" /> Right
@@ -842,22 +883,71 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 <div className="font-medium text-blue-600 flex items-center gap-1">
                   <ArrowLeft className="h-4 w-4" /> Left
                 </div>
+                <div className="font-medium text-center">IAD</div>
                 
+                {/* Supine */}
                 <div>Supine</div>
                 <ValidatedInput field="bp_supine_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
                 <ValidatedInput field="bp_supine_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                <div className="flex items-center justify-center">
+                  {(() => {
+                    const iad = calculateIAD(formData.bp_supine_right, formData.bp_supine_left);
+                    if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
+                    return (
+                      <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs">
+                        {iad.systolic}/{iad.diastolic}
+                      </Badge>
+                    );
+                  })()}
+                </div>
                 
+                {/* Seated */}
                 <div>Seated</div>
                 <ValidatedInput field="bp_seated_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
                 <ValidatedInput field="bp_seated_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                <div className="flex items-center justify-center">
+                  {(() => {
+                    const iad = calculateIAD(formData.bp_seated_right, formData.bp_seated_left);
+                    if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
+                    return (
+                      <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs">
+                        {iad.systolic}/{iad.diastolic}
+                      </Badge>
+                    );
+                  })()}
+                </div>
                 
+                {/* Standing Immediate */}
                 <div>Standing (immediate)</div>
                 <ValidatedInput field="bp_standing_immediate_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
                 <ValidatedInput field="bp_standing_immediate_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                <div className="flex items-center justify-center">
+                  {(() => {
+                    const iad = calculateIAD(formData.bp_standing_immediate_right, formData.bp_standing_immediate_left);
+                    if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
+                    return (
+                      <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs">
+                        {iad.systolic}/{iad.diastolic}
+                      </Badge>
+                    );
+                  })()}
+                </div>
                 
+                {/* Standing 3 min */}
                 <div>Standing (3 min)</div>
                 <ValidatedInput field="bp_standing_3min_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
                 <ValidatedInput field="bp_standing_3min_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                <div className="flex items-center justify-center">
+                  {(() => {
+                    const iad = calculateIAD(formData.bp_standing_3min_right, formData.bp_standing_3min_left);
+                    if (iad.systolic === null) return <span className="text-xs text-muted-foreground">-</span>;
+                    return (
+                      <Badge variant={iad.hasWarning ? "destructive" : "secondary"} className="text-xs">
+                        {iad.systolic}/{iad.diastolic}
+                      </Badge>
+                    );
+                  })()}
+                </div>
               </div>
             </div>
 
