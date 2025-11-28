@@ -1540,6 +1540,168 @@ export const getPupillaryFatigueInterpretations = (selectedFindings: string[]): 
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for Romberg Sway Test with interpretations
+const ROMBERG_FINDINGS = [
+  {
+    category: "Normal Response",
+    findings: [
+      {
+        label: "Minimal sway; stable with eyes open and eyes closed",
+        interpretation: "Intact proprioceptive input, symmetric cerebellar modulation, adequate vestibular integration, balanced autonomic/brainstem control."
+      }
+    ]
+  },
+  {
+    category: "Positive Romberg (Increased Sway Eyes Closed)",
+    findings: [
+      {
+        label: "Mild: Increased sway but maintains stance",
+        interpretation: "Reliance on visual system due to proprioceptive or vestibular underperformance."
+      },
+      {
+        label: "Moderate: Large-amplitude sway requiring correction",
+        interpretation: "Cervical proprioceptive deficit, posterior column sensory dysfunction, cerebellar under-activation (common in concussion/whiplash)."
+      },
+      {
+        label: "Severe: Step-out or near-loss of balance",
+        interpretation: "Significant vestibular dysfunction, poor cerebellar feed-forward control, autonomic dysregulation."
+      }
+    ]
+  },
+  {
+    category: "Directional Sway Patterns",
+    findings: [
+      {
+        label: "Left-lateral sway predominates",
+        interpretation: "Left cerebellar underactivity, left vestibular hypofunction, proprioceptive asymmetry on left side, or possible right frontal drive deficiency."
+      },
+      {
+        label: "Right-lateral sway predominates",
+        interpretation: "Right cerebellar or right vestibular underperformance."
+      },
+      {
+        label: "Anterior sway predominates",
+        interpretation: "Visual dependency, vestibular underdrive, poor ankle strategy proprioception."
+      },
+      {
+        label: "Posterior sway predominates",
+        interpretation: "Cerebellar midline involvement, autonomic/vestibular compensation failure (posterior pull pattern)."
+      }
+    ]
+  },
+  {
+    category: "Sway Amplitude & Frequency",
+    findings: [
+      {
+        label: "Small-amplitude sway within normal limits",
+        interpretation: "Normal postural control."
+      },
+      {
+        label: "Moderate, high-frequency sway",
+        interpretation: "Vestibulocerebellar imbalance."
+      },
+      {
+        label: "Large-amplitude, low-frequency sway requiring correction",
+        interpretation: "Proprioceptive reliance with vestibular underactivation."
+      },
+      {
+        label: "High-frequency micro-corrections observed",
+        interpretation: "Cerebellar compensatory overdrive, proprioceptive fatigue, thalamic-cortical noise increasing motor corrections."
+      }
+    ]
+  },
+  {
+    category: "Step-Out / Balance Loss",
+    findings: [
+      {
+        label: "Step-out required to maintain balance (eyes closed)",
+        interpretation: "Significant vestibular dysfunction, poor cerebellar feed-forward control, autonomic dysregulation causing instability."
+      },
+      {
+        label: "Loss of balance immediately upon eye closure",
+        interpretation: "Severe reliance on visual system; severe vestibular/proprioceptive weakness."
+      }
+    ]
+  },
+  {
+    category: "Onset Timing",
+    findings: [
+      {
+        label: "Sway begins immediately upon eye closure",
+        interpretation: "Severe vestibular/proprioceptive weakness, common in concussion or cervicogenic dysfunction."
+      },
+      {
+        label: "Sway increases after 5-10 seconds",
+        interpretation: "Endurance deficit; cerebellar or brainstem fatigue signature."
+      }
+    ]
+  },
+  {
+    category: "Compensatory Behaviors",
+    findings: [
+      {
+        label: "Breath-holding during balance test",
+        interpretation: "Autonomic threat response, weak vestibular-autonomic coupling."
+      },
+      {
+        label: "Increased muscular co-contraction noted",
+        interpretation: "Protective strategy; poor cerebellar modulation."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation",
+    findings: [
+      {
+        label: "Dizziness provoked",
+        interpretation: "Vestibular-autonomic dysregulation."
+      },
+      {
+        label: "Lightheadedness provoked",
+        interpretation: "Autonomic instability during vestibular challenge."
+      },
+      {
+        label: "Nausea provoked",
+        interpretation: "Vestibular-autonomic dysregulation; brainstem nuclei activation."
+      },
+      {
+        label: "Head pressure provoked",
+        interpretation: "Intracranial sensitivity, autonomic stress response."
+      },
+      {
+        label: "Visual blur provoked",
+        interpretation: "Vestibulo-ocular integration deficit."
+      }
+    ]
+  },
+  {
+    category: "Fatigability",
+    findings: [
+      {
+        label: "Sway amplifies with repeated trials",
+        interpretation: "Vestibular/cerebellar endurance deficit; concussion or autonomic fatigue marker."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for a Romberg finding
+export const getRombergInterpretation = (findingLabel: string): string => {
+  for (const category of ROMBERG_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected Romberg findings
+export const getRombergInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getRombergInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -4052,14 +4214,144 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
           {/* Vestibular Tab */}
           <TabsContent value="vestibular" className="space-y-4">
+            {/* Structured Romberg Assessment */}
             <div>
-              <Label htmlFor="vestibular_rombergs">Rombergs/Sway Test</Label>
-              <Input
-                id="vestibular_rombergs"
-                value={formData.vestibular_rombergs || ''}
-                onChange={(e) => updateField('vestibular_rombergs', e.target.value)}
-              />
+              <div className="flex items-center justify-between mb-4">
+                <Label className="text-lg font-semibold">Romberg Sway Test</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="left" className="max-w-sm">
+                      <p className="text-sm">Structured assessment with clinical interpretations from functional neurology</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+
+              {(() => {
+                // Parse structured data from vestibular_rombergs field
+                let structuredData: { findings: string[], customNotes: string } = { findings: [], customNotes: '' };
+                try {
+                  if (formData.vestibular_rombergs && formData.vestibular_rombergs.startsWith('{')) {
+                    structuredData = JSON.parse(formData.vestibular_rombergs);
+                  } else if (formData.vestibular_rombergs) {
+                    // Legacy text value - treat as custom notes
+                    structuredData.customNotes = formData.vestibular_rombergs;
+                  }
+                } catch (e) {
+                  // If parse fails, treat as custom notes
+                  structuredData.customNotes = formData.vestibular_rombergs || '';
+                }
+
+                const selectedFindings = structuredData.findings || [];
+                const customNotes = structuredData.customNotes || '';
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  const newStructuredData = {
+                    findings: newFindings,
+                    customNotes: customNotes
+                  };
+                  
+                  updateField('vestibular_rombergs', JSON.stringify(newStructuredData));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  const newStructuredData = {
+                    findings: selectedFindings,
+                    customNotes: notes
+                  };
+                  updateField('vestibular_rombergs', JSON.stringify(newStructuredData));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {ROMBERG_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`romberg-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`romberg-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="romberg_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="romberg_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional Romberg observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 4).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
+
+            <Separator />
             <div>
               <Label htmlFor="vestibular_fakuda">Fakuda</Label>
               <Input
