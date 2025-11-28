@@ -3072,57 +3072,93 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                   <div className="space-y-4">
                     <Collapsible defaultOpen className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <CollapsibleTrigger className="flex items-center gap-2 hover:text-primary transition-colors">
+                        <CollapsibleTrigger className="flex items-center gap-2 hover:text-primary transition-colors group">
                           <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
                           <span className="font-medium">Clinical Findings</span>
+                          {selectedFindings.length > 0 && (
+                            <Badge variant="default" className="ml-2 animate-fade-in">
+                              {selectedFindings.length} selected
+                            </Badge>
+                          )}
                         </CollapsibleTrigger>
                       </div>
                       <CollapsibleContent className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {SACCADE_FINDINGS.map((category) => (
-                            <Card 
-                              key={category.category} 
-                              className="border-muted transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5"
-                            >
-                              <CardHeader className="pb-3 bg-muted/30">
-                                <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
-                              </CardHeader>
-                              <CardContent className="space-y-2">
-                                {category.findings.map((finding) => (
-                                  <div key={finding.label} className="flex items-start space-x-2">
-                                    <Checkbox
-                                      id={`saccade-${finding.label}`}
-                                      checked={selectedFindings.includes(finding.label)}
-                                      onCheckedChange={() => handleFindingToggle(finding.label)}
-                                    />
-                                    <div className="flex-1 min-w-0">
-                                      <Label
-                                        htmlFor={`saccade-${finding.label}`}
-                                        className="text-sm font-normal leading-tight cursor-pointer hover:text-primary transition-colors"
-                                      >
-                                        {finding.label}
-                                      </Label>
-                                      {selectedFindings.includes(finding.label) && (
-                                        <TooltipProvider>
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1 animate-fade-in">
-                                                <Info className="h-3 w-3" />
-                                                {finding.interpretation.substring(0, 50)}...
-                                              </p>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="bottom" className="max-w-sm">
-                                              <p className="text-sm">{finding.interpretation}</p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        </TooltipProvider>
-                                      )}
-                                    </div>
+                          {SACCADE_FINDINGS.map((category) => {
+                            const categoryFindings = category.findings.filter(f => 
+                              selectedFindings.includes(f.label)
+                            );
+                            return (
+                              <Card 
+                                key={category.category} 
+                                className={`border transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
+                                  categoryFindings.length > 0 
+                                    ? 'border-primary bg-primary/5' 
+                                    : 'border-muted hover:border-primary/30'
+                                }`}
+                              >
+                                <CardHeader className="pb-3 bg-gradient-to-r from-muted/50 to-transparent">
+                                  <div className="flex items-center justify-between">
+                                    <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                                    {categoryFindings.length > 0 && (
+                                      <Badge variant="secondary" className="animate-scale-in">
+                                        {categoryFindings.length}
+                                      </Badge>
+                                    )}
                                   </div>
-                                ))}
-                              </CardContent>
-                            </Card>
-                          ))}
+                                </CardHeader>
+                                <CardContent className="space-y-3 pt-4">
+                                  {category.findings.map((finding) => {
+                                    const isSelected = selectedFindings.includes(finding.label);
+                                    return (
+                                      <div 
+                                        key={finding.label} 
+                                        className={`flex items-start space-x-3 p-2 -mx-2 rounded-lg transition-all duration-200 ${
+                                          isSelected 
+                                            ? 'bg-primary/10 border border-primary/20' 
+                                            : 'hover:bg-muted/50'
+                                        }`}
+                                      >
+                                        <Checkbox
+                                          id={`saccade-${finding.label}`}
+                                          checked={isSelected}
+                                          onCheckedChange={() => handleFindingToggle(finding.label)}
+                                          className="mt-0.5"
+                                        />
+                                        <div className="flex-1 min-w-0">
+                                          <Label
+                                            htmlFor={`saccade-${finding.label}`}
+                                            className={`text-sm font-normal leading-tight cursor-pointer transition-colors ${
+                                              isSelected ? 'text-primary font-medium' : 'hover:text-primary'
+                                            }`}
+                                          >
+                                            {finding.label}
+                                          </Label>
+                                          {isSelected && (
+                                            <div className="mt-2 animate-fade-in">
+                                              <TooltipProvider>
+                                                <Tooltip>
+                                                  <TooltipTrigger asChild>
+                                                    <div className="text-xs text-muted-foreground cursor-help flex items-center gap-1.5 p-2 bg-muted/50 rounded border border-muted">
+                                                      <Info className="h-3.5 w-3.5 flex-shrink-0 text-primary" />
+                                                      <span className="line-clamp-2">{finding.interpretation}</span>
+                                                    </div>
+                                                  </TooltipTrigger>
+                                                  <TooltipContent side="bottom" className="max-w-md">
+                                                    <p className="text-sm leading-relaxed">{finding.interpretation}</p>
+                                                  </TooltipContent>
+                                                </Tooltip>
+                                              </TooltipProvider>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </CardContent>
+                              </Card>
+                            );
+                          })}
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
@@ -3144,14 +3180,17 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
                     {/* Summary of selected findings */}
                     {selectedFindings.length > 0 && (
-                      <Alert>
-                        <Info className="h-4 w-4" />
+                      <Alert className="border-primary/30 bg-primary/5 animate-fade-in">
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
                         <AlertDescription>
-                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
-                          <div className="mt-2 flex flex-wrap gap-1">
+                          <div className="flex items-center justify-between">
+                            <strong className="text-primary">{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} documented</strong>
+                            <Badge variant="outline">{getSaccadeInterpretations(selectedFindings).length} interpretation{getSaccadeInterpretations(selectedFindings).length !== 1 ? 's' : ''}</Badge>
+                          </div>
+                          <div className="mt-3 flex flex-wrap gap-2">
                             {selectedFindings.map(finding => (
-                              <Badge key={finding} variant="secondary" className="text-xs">
-                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              <Badge key={finding} variant="secondary" className="text-xs hover:bg-primary hover:text-primary-foreground transition-colors cursor-default">
+                                ✓ {finding.split(' ').slice(0, 4).join(' ')}...
                               </Badge>
                             ))}
                           </div>
@@ -3216,49 +3255,98 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
                 return (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {PURSUIT_FINDINGS.map((category) => (
-                        <Card key={category.category} className="border-muted">
-                          <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            {category.findings.map((finding) => (
-                              <div key={finding.label} className="flex items-start space-x-2">
-                                <Checkbox
-                                  id={`pursuit-${finding.label}`}
-                                  checked={selectedFindings.includes(finding.label)}
-                                  onCheckedChange={() => handleFindingToggle(finding.label)}
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <Label
-                                    htmlFor={`pursuit-${finding.label}`}
-                                    className="text-sm font-normal leading-tight cursor-pointer"
-                                  >
-                                    {finding.label}
-                                  </Label>
-                                  {selectedFindings.includes(finding.label) && (
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
-                                            <Info className="h-3 w-3" />
-                                            {finding.interpretation.substring(0, 50)}...
-                                          </p>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom" className="max-w-sm">
-                                          <p className="text-sm">{finding.interpretation}</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                    <Collapsible defaultOpen className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <CollapsibleTrigger className="flex items-center gap-2 hover:text-primary transition-colors group">
+                          <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
+                          <span className="font-medium">Clinical Findings</span>
+                          {selectedFindings.length > 0 && (
+                            <Badge variant="default" className="ml-2 animate-fade-in">
+                              {selectedFindings.length} selected
+                            </Badge>
+                          )}
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {PURSUIT_FINDINGS.map((category) => {
+                            const categoryFindings = category.findings.filter(f => 
+                              selectedFindings.includes(f.label)
+                            );
+                            return (
+                              <Card 
+                                key={category.category} 
+                                className={`border transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
+                                  categoryFindings.length > 0 
+                                    ? 'border-primary bg-primary/5' 
+                                    : 'border-muted hover:border-primary/30'
+                                }`}
+                              >
+                                <CardHeader className="pb-3 bg-gradient-to-r from-muted/50 to-transparent">
+                                  <div className="flex items-center justify-between">
+                                    <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                                    {categoryFindings.length > 0 && (
+                                      <Badge variant="secondary" className="animate-scale-in">
+                                        {categoryFindings.length}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </CardHeader>
+                                <CardContent className="space-y-3 pt-4">
+                                  {category.findings.map((finding) => {
+                                    const isSelected = selectedFindings.includes(finding.label);
+                                    return (
+                                      <div 
+                                        key={finding.label} 
+                                        className={`flex items-start space-x-3 p-2 -mx-2 rounded-lg transition-all duration-200 ${
+                                          isSelected 
+                                            ? 'bg-primary/10 border border-primary/20' 
+                                            : 'hover:bg-muted/50'
+                                        }`}
+                                      >
+                                        <Checkbox
+                                          id={`pursuit-${finding.label}`}
+                                          checked={isSelected}
+                                          onCheckedChange={() => handleFindingToggle(finding.label)}
+                                          className="mt-0.5"
+                                        />
+                                        <div className="flex-1 min-w-0">
+                                          <Label
+                                            htmlFor={`pursuit-${finding.label}`}
+                                            className={`text-sm font-normal leading-tight cursor-pointer transition-colors ${
+                                              isSelected ? 'text-primary font-medium' : 'hover:text-primary'
+                                            }`}
+                                          >
+                                            {finding.label}
+                                          </Label>
+                                          {isSelected && (
+                                            <div className="mt-2 animate-fade-in">
+                                              <TooltipProvider>
+                                                <Tooltip>
+                                                  <TooltipTrigger asChild>
+                                                    <div className="text-xs text-muted-foreground cursor-help flex items-center gap-1.5 p-2 bg-muted/50 rounded border border-muted">
+                                                      <Info className="h-3.5 w-3.5 flex-shrink-0 text-primary" />
+                                                      <span className="line-clamp-2">{finding.interpretation}</span>
+                                                    </div>
+                                                  </TooltipTrigger>
+                                                  <TooltipContent side="bottom" className="max-w-md">
+                                                    <p className="text-sm leading-relaxed">{finding.interpretation}</p>
+                                                  </TooltipContent>
+                                                </Tooltip>
+                                              </TooltipProvider>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </CardContent>
+                              </Card>
+                            );
+                          })}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
 
                     {/* Custom notes field */}
                     <div>
@@ -3277,14 +3365,17 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
                     {/* Summary of selected findings */}
                     {selectedFindings.length > 0 && (
-                      <Alert>
-                        <Info className="h-4 w-4" />
+                      <Alert className="border-primary/30 bg-primary/5 animate-fade-in">
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
                         <AlertDescription>
-                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
-                          <div className="mt-2 flex flex-wrap gap-1">
+                          <div className="flex items-center justify-between">
+                            <strong className="text-primary">{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} documented</strong>
+                            <Badge variant="outline">{getPursuitInterpretations(selectedFindings).length} interpretation{getPursuitInterpretations(selectedFindings).length !== 1 ? 's' : ''}</Badge>
+                          </div>
+                          <div className="mt-3 flex flex-wrap gap-2">
                             {selectedFindings.map(finding => (
-                              <Badge key={finding} variant="secondary" className="text-xs">
-                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              <Badge key={finding} variant="secondary" className="text-xs hover:bg-primary hover:text-primary-foreground transition-colors cursor-default">
+                                ✓ {finding.split(' ').slice(0, 4).join(' ')}...
                               </Badge>
                             ))}
                           </div>
