@@ -1702,6 +1702,190 @@ export const getRombergInterpretations = (selectedFindings: string[]): Array<{fi
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for Vestibulo-Ocular Reflex (VOR) with interpretations
+const VOR_FINDINGS = [
+  {
+    category: "Normal VOR",
+    findings: [
+      {
+        label: "VOR intact with stable visual fixation and no corrective saccades",
+        interpretation: "Healthy vestibular afferents, cerebellar flocculus/paraflocculus modulation, intact brainstem ocular motor integrators."
+      }
+    ]
+  },
+  {
+    category: "Refixation Saccades (Key Diagnostic Finding)",
+    findings: [
+      {
+        label: "Refixation saccades present on rightward head impulse",
+        interpretation: "Right vestibular hypofunction, poor right canal output (most often horizontal canals), cerebellar-vestibular integration deficit. Common post-concussion."
+      },
+      {
+        label: "Refixation saccades present on leftward head impulse",
+        interpretation: "Left vestibular hypofunction, poor left canal output (most often horizontal canals), cerebellar-vestibular integration deficit. Common post-concussion."
+      },
+      {
+        label: "Corrective saccades noted bilaterally",
+        interpretation: "Bilateral vestibular hypofunction or diffuse cerebellar-vestibular integration deficit."
+      },
+      {
+        label: "Corrective saccades more pronounced on the left",
+        interpretation: "Left peripheral vestibular weakness or left flocculus underdrive predominates."
+      },
+      {
+        label: "Corrective saccades more pronounced on the right",
+        interpretation: "Right peripheral vestibular weakness or right flocculus underdrive predominates."
+      }
+    ]
+  },
+  {
+    category: "Asymmetric VOR",
+    findings: [
+      {
+        label: "Leftward VOR response weaker than right",
+        interpretation: "Left vestibular hypoactivity or left cerebellar underperformance."
+      },
+      {
+        label: "Rightward VOR response weaker than left",
+        interpretation: "Right vestibular hypoactivity or right cerebellar underperformance."
+      },
+      {
+        label: "Rightward impulses consistently trigger corrective saccades",
+        interpretation: "Right peripheral vestibular weakness or right flocculus underdrive."
+      },
+      {
+        label: "Leftward impulses consistently trigger corrective saccades",
+        interpretation: "Left peripheral vestibular weakness or left flocculus underdrive."
+      }
+    ]
+  },
+  {
+    category: "Reduced VOR Gain",
+    findings: [
+      {
+        label: "Reduced gain with diminished eye counter-rotation",
+        interpretation: "Weak vestibular signal from semicircular canals, brainstem integrator inefficiency. Often associated with dizziness and visual 'bounce'."
+      }
+    ]
+  },
+  {
+    category: "Overshoot / Hypermetric Response",
+    findings: [
+      {
+        label: "Eye moves past target during VOR with corrective back-up",
+        interpretation: "Cerebellar inhibition deficit, increased noise in vestibular system. Less common than low gain but highly meaningful."
+      }
+    ]
+  },
+  {
+    category: "Delay in VOR Activation",
+    findings: [
+      {
+        label: "Delayed eye stabilization after head movement",
+        interpretation: "Brainstem vestibular nuclei lag, cerebellar timing dysfunction, fatigue within vestibular-cortical pathways."
+      }
+    ]
+  },
+  {
+    category: "VOR Cancellation (VORc)",
+    findings: [
+      {
+        label: "Patient unable to suppress VOR during cancellation task",
+        interpretation: "Cerebellar flocculus/paraflocculus dysfunction, frontal executive involvement."
+      },
+      {
+        label: "Head movement induces reflexive catch-up during cancellation",
+        interpretation: "Difficulty shifting from reflexive to volitional control; frontal-cerebellar integration deficit."
+      },
+      {
+        label: "VOR cancellation fatigues rapidly",
+        interpretation: "Frontal-cerebellar endurance deficit."
+      }
+    ]
+  },
+  {
+    category: "Vertical VOR Abnormalities",
+    findings: [
+      {
+        label: "Vertical VOR less stable than horizontal",
+        interpretation: "Central involvement, often midbrain or cerebellar nodulus pathways. Carries higher neurologic significance."
+      },
+      {
+        label: "Upward VOR provokes dizziness",
+        interpretation: "Vertical canal and cerebellar vertical integration deficit."
+      },
+      {
+        label: "Downward VOR provokes symptoms",
+        interpretation: "Vertical canal involvement, midbrain integration weakness."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation",
+    findings: [
+      {
+        label: "VOR provokes dizziness/lightheadedness",
+        interpretation: "Vestibular-autonomic mismatch; severity marker rather than localization."
+      },
+      {
+        label: "VOR provokes nausea",
+        interpretation: "Vestibular-autonomic dysregulation; brainstem nuclei activation."
+      },
+      {
+        label: "VOR provokes visual blur",
+        interpretation: "Vestibulo-ocular integration deficit; inadequate gain compensation."
+      },
+      {
+        label: "VOR provokes head pressure",
+        interpretation: "Autonomic stress response, intracranial pressure sensitivity."
+      },
+      {
+        label: "VOR provokes autonomic activation (heat, sweating)",
+        interpretation: "Vestibular-autonomic coupling dysfunction."
+      }
+    ]
+  },
+  {
+    category: "Fatigability",
+    findings: [
+      {
+        label: "VOR performance declines over repeated trials",
+        interpretation: "Vestibular endurance deficit, cerebellar processing fatigue, autonomic instability. Critical in concussion and dysautonomia."
+      }
+    ]
+  },
+  {
+    category: "Head Movement Quality",
+    findings: [
+      {
+        label: "Patient restricts head movement due to fear or discomfort",
+        interpretation: "Protective response, vestibular threat physiology."
+      },
+      {
+        label: "Excessive co-contraction of cervical muscles",
+        interpretation: "Cervical proprioceptive dominance or guarding pattern."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for a VOR finding
+export const getVORInterpretation = (findingLabel: string): string => {
+  for (const category of VOR_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected VOR findings
+export const getVORInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getVORInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -4534,14 +4718,146 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
             <Separator />
 
+            <Separator />
+
+            {/* Structured VOR Assessment */}
             <div>
-              <Label htmlFor="vestibular_vor">VOR</Label>
-              <Input
-                id="vestibular_vor"
-                value={formData.vestibular_vor || ''}
-                onChange={(e) => updateField('vestibular_vor', e.target.value)}
-              />
+              <div className="flex items-center justify-between mb-4">
+                <Label className="text-lg font-semibold">VOR (Vestibulo-Ocular Reflex)</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="left" className="max-w-sm">
+                      <p className="text-sm">Comprehensive VOR assessment including horizontal, vertical, and cancellation findings</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+
+              {(() => {
+                // Parse structured data from vestibular_vor field
+                let structuredData: { findings: string[], customNotes: string } = { findings: [], customNotes: '' };
+                try {
+                  if (formData.vestibular_vor && formData.vestibular_vor.startsWith('{')) {
+                    structuredData = JSON.parse(formData.vestibular_vor);
+                  } else if (formData.vestibular_vor) {
+                    // Legacy text value - treat as custom notes
+                    structuredData.customNotes = formData.vestibular_vor;
+                  }
+                } catch (e) {
+                  // If parse fails, treat as custom notes
+                  structuredData.customNotes = formData.vestibular_vor || '';
+                }
+
+                const selectedFindings = structuredData.findings || [];
+                const customNotes = structuredData.customNotes || '';
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  const newStructuredData = {
+                    findings: newFindings,
+                    customNotes: customNotes
+                  };
+                  
+                  updateField('vestibular_vor', JSON.stringify(newStructuredData));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  const newStructuredData = {
+                    findings: selectedFindings,
+                    customNotes: notes
+                  };
+                  updateField('vestibular_vor', JSON.stringify(newStructuredData));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {VOR_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`vor-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`vor-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="vor_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="vor_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional VOR observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 4).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
+
+            <Separator />
 
             <div>
               <Label htmlFor="vestibular_notes">Notes</Label>
