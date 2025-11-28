@@ -112,42 +112,42 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-background to-blue-50/30 dark:from-background dark:via-background dark:to-blue-950/20 p-4">
       <div className="w-full max-w-5xl grid md:grid-cols-2 gap-0 shadow-2xl rounded-2xl overflow-hidden bg-background">
         {/* Left Panel - Branding */}
-        <div className="hidden md:flex flex-col justify-between p-12 bg-gradient-to-br from-[#A51C30] to-[#8B1626] text-white relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+        <div className="hidden md:flex flex-col justify-between p-12 bg-gradient-to-br from-primary/90 to-primary relative overflow-hidden">
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-background rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-background rounded-full translate-y-1/2 -translate-x-1/2" />
           </div>
           
           <div className="relative z-10">
             <div className="mb-6">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
-                <div className="w-8 h-8 border-2 border-white rounded" />
+              <div className="w-12 h-12 bg-primary-foreground/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
+                <div className="w-8 h-8 border-2 border-primary-foreground rounded" />
               </div>
-              <h1 className="text-3xl font-bold mb-2">PPC Clinical Outcome Registry</h1>
-              <p className="text-blue-100 text-sm">Advancing Patient Care Through Data-Driven Insights</p>
+              <h1 className="text-3xl font-bold mb-2 text-primary-foreground">PPC Clinical Outcome Registry</h1>
+              <p className="text-primary-foreground/80 text-sm">Advancing Patient Care Through Data-Driven Insights</p>
             </div>
           </div>
 
           <div className="relative z-10 space-y-4">
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0" />
+              <div className="w-2 h-2 bg-primary-foreground rounded-full mt-2 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold mb-1">HIPAA Compliant</h3>
-                <p className="text-sm text-blue-100">Enterprise-grade security for patient data</p>
+                <h3 className="font-semibold mb-1 text-primary-foreground">HIPAA Compliant</h3>
+                <p className="text-sm text-primary-foreground/80">Enterprise-grade security for patient data</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0" />
+              <div className="w-2 h-2 bg-primary-foreground rounded-full mt-2 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold mb-1">Clinical Excellence</h3>
-                <p className="text-sm text-blue-100">Evidence-based outcome tracking</p>
+                <h3 className="font-semibold mb-1 text-primary-foreground">Clinical Excellence</h3>
+                <p className="text-sm text-primary-foreground/80">Evidence-based outcome tracking</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0" />
+              <div className="w-2 h-2 bg-primary-foreground rounded-full mt-2 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold mb-1">Integrated Workflow</h3>
-                <p className="text-sm text-blue-100">Seamless MSK & neurology management</p>
+                <h3 className="font-semibold mb-1 text-primary-foreground">Integrated Workflow</h3>
+                <p className="text-sm text-primary-foreground/80">Seamless MSK & neurology management</p>
               </div>
             </div>
           </div>
