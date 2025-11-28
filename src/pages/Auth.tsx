@@ -109,52 +109,98 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">PPC Tracker</CardTitle>
-          <CardDescription>Secure HIPAA-compliant patient care tracking</CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-background to-blue-50/30 dark:from-background dark:via-background dark:to-blue-950/20 p-4">
+      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-0 shadow-2xl rounded-2xl overflow-hidden bg-background">
+        {/* Left Panel - Branding */}
+        <div className="hidden md:flex flex-col justify-between p-12 bg-gradient-to-br from-[#A51C30] to-[#8B1626] text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+          </div>
+          
+          <div className="relative z-10">
+            <div className="mb-6">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
+                <div className="w-8 h-8 border-2 border-white rounded" />
+              </div>
+              <h1 className="text-3xl font-bold mb-2">PPC Clinical Outcome Registry</h1>
+              <p className="text-blue-100 text-sm">Advancing Patient Care Through Data-Driven Insights</p>
+            </div>
+          </div>
+
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold mb-1">HIPAA Compliant</h3>
+                <p className="text-sm text-blue-100">Enterprise-grade security for patient data</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold mb-1">Clinical Excellence</h3>
+                <p className="text-sm text-blue-100">Evidence-based outcome tracking</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-2 h-2 bg-white rounded-full mt-2 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold mb-1">Integrated Workflow</h3>
+                <p className="text-sm text-blue-100">Seamless MSK & neurology management</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Auth Forms */}
+        <div className="p-8 md:p-12">
+          <div className="mb-8 md:hidden">
+            <h1 className="text-2xl font-bold text-foreground mb-1">PPC Clinical Outcome Registry</h1>
+            <p className="text-sm text-muted-foreground">Secure clinical platform</p>
+          </div>
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="login">Sign In</TabsTrigger>
+              <TabsTrigger value="signup">Create Account</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
+                  <Label htmlFor="login-email" className="text-sm font-medium">Email Address</Label>
                   <Input
                     id="login-email"
                     type="email"
-                    placeholder="clinician@example.com"
+                    placeholder="your.email@clinic.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
+                  <Label htmlFor="login-password" className="text-sm font-medium">Password</Label>
                   <Input
                     id="login-password"
                     type="password"
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="h-11"
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Logging in..." : "Login"}
+                <Button type="submit" className="w-full h-11 text-base font-medium" disabled={loading}>
+                  {loading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
             </TabsContent>
             
             <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
+              <form onSubmit={handleSignup} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name">Full Name</Label>
+                  <Label htmlFor="signup-name" className="text-sm font-medium">Full Name</Label>
                   <Input
                     id="signup-name"
                     type="text"
@@ -162,41 +208,45 @@ const Auth = () => {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
+                    className="h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                  <Label htmlFor="signup-email" className="text-sm font-medium">Professional Email</Label>
                   <Input
                     id="signup-email"
                     type="email"
-                    placeholder="clinician@example.com"
+                    placeholder="your.email@clinic.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
+                  <Label htmlFor="signup-password" className="text-sm font-medium">Password</Label>
                   <Input
                     id="signup-password"
                     type="password"
+                    placeholder="Minimum 6 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
+                    className="h-11"
                   />
                   <p className="text-xs text-muted-foreground">
-                    At least 6 characters required
+                    Must be at least 6 characters
                   </p>
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Creating account..." : "Sign Up"}
+                <Button type="submit" className="w-full h-11 text-base font-medium" disabled={loading}>
+                  {loading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };

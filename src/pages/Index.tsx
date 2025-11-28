@@ -58,10 +58,10 @@ const Index = () => {
         <div className="text-center space-y-8 max-w-4xl mx-auto">
           <div className="space-y-4">
             <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-              Transform Patient Outcomes
+              PPC Clinical Outcome Registry
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
-              Comprehensive outcome tracking and analytics for rehabilitative medicine clinics and their patients
+              Evidence-based outcome tracking for MSK and neurology practices
             </p>
           </div>
 
