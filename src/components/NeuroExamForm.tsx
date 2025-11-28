@@ -735,7 +735,7 @@ export const getConvergenceInterpretations = (selectedFindings: string[]): Array
   })).filter(item => item.interpretation !== "");
 };
 
-// Clinical findings for Heart Auscultation with interpretations
+// Clinical findings for Heart Auscultation with interpretations (Streamlined)
 const HEART_AUSCULTATION_FINDINGS = [
   {
     category: "Rate & Rhythm",
@@ -763,62 +763,7 @@ const HEART_AUSCULTATION_FINDINGS = [
     ]
   },
   {
-    category: "Heart Sounds (S1, S2)",
-    findings: [
-      {
-        label: "Normal S1 and S2 with physiologic splitting",
-        interpretation: "Normal heart sounds."
-      },
-      {
-        label: "Diminished S1/S2 intensity",
-        interpretation: "Reduced stroke volume, poor physiologic drive, dehydration, or autonomic under-activation."
-      },
-      {
-        label: "Accentuated S2",
-        interpretation: "Possible elevated sympathetic output or increased systemic vascular resistance (SVR)."
-      },
-      {
-        label: "Fixed or wide splitting of S2",
-        interpretation: "Red flag; structural or conduction-related → requires cardiology input."
-      }
-    ]
-  },
-  {
-    category: "Extra Heart Sounds (S3, S4)",
-    findings: [
-      {
-        label: "S3 present",
-        interpretation: "Potential volume overload; commonly autonomic-related dysregulation of venous return or early dysfunction."
-      },
-      {
-        label: "S4 present",
-        interpretation: "Increased ventricular stiffness; often elevated sympathetic tone or vascular resistance."
-      }
-    ]
-  },
-  {
-    category: "Murmurs",
-    findings: [
-      {
-        label: "Soft flow murmur without radiation",
-        interpretation: "Often benign; can reflect increased sympathetic tone or elevated cardiac output."
-      },
-      {
-        label: "Systolic murmur grade 2/6 at LSB without radiation",
-        interpretation: "May represent physiologic flow or early structural concerns."
-      },
-      {
-        label: "Holosystolic murmur with radiation",
-        interpretation: "Requires cardiology referral."
-      },
-      {
-        label: "Diastolic murmurs present",
-        interpretation: "Always pathologic → cardiology evaluation."
-      }
-    ]
-  },
-  {
-    category: "Rhythm Variability",
+    category: "Rhythm Variability (Key Autonomic Indicator)",
     findings: [
       {
         label: "Good beat-to-beat variability noted",
@@ -835,62 +780,19 @@ const HEART_AUSCULTATION_FINDINGS = [
     ]
   },
   {
-    category: "Perfusion Clues",
+    category: "Postural Changes (Orthostatic Testing)",
     findings: [
       {
-        label: "Peripheral perfusion appears reduced (cool hands, delayed refill)",
-        interpretation: "Elevated sympathetic tone or shunting; common in dysautonomia."
-      },
-      {
-        label: "Warm extremities with stable perfusion",
-        interpretation: "Balanced autonomic function."
-      },
-      {
-        label: "Jugular venous pulsation appears elevated",
-        interpretation: "Consider cardiovascular contribution to autonomic symptoms."
-      }
-    ]
-  },
-  {
-    category: "Postural Changes (Supine → Seated)",
-    findings: [
-      {
-        label: "Heart rate increases >20 bpm when seated",
+        label: "Heart rate increases >20 bpm when seated from supine",
         interpretation: "Orthostatic intolerance or POTS-like physiology."
       },
       {
-        label: "Murmur intensity changes with posture",
-        interpretation: "Hemodynamic load variation; sometimes autonomic-driven."
-      }
-    ]
-  },
-  {
-    category: "Postural Changes (Seated → Standing)",
-    findings: [
-      {
-        label: "Significant tachycardic response (>30 bpm increase)",
+        label: "Significant tachycardic response >30 bpm standing from seated",
         interpretation: "Autonomic dysregulation consistent with POTS physiology."
       },
       {
         label: "No significant postural change",
         interpretation: "Good autonomic buffering and baroreceptor responsiveness."
-      }
-    ]
-  },
-  {
-    category: "Respiratory Influence",
-    findings: [
-      {
-        label: "Rate slows on exhalation (normal vagal modulation)",
-        interpretation: "Normal vagal modulation with respiration."
-      },
-      {
-        label: "Minimal variation with breathing (reduced vagal tone)",
-        interpretation: "Reduced parasympathetic activity."
-      },
-      {
-        label: "Pronounced tachycardia with inhalation",
-        interpretation: "Sympathetic sensitivity."
       }
     ]
   }
@@ -913,10 +815,10 @@ export const getHeartAuscultationInterpretations = (selectedFindings: string[]):
   })).filter(item => item.interpretation !== "");
 };
 
-// Clinical findings for Lung Auscultation with interpretations
+// Clinical findings for Lung Auscultation with interpretations (Streamlined)
 const LUNG_AUSCULTATION_FINDINGS = [
   {
-    category: "Respiratory Pattern",
+    category: "Respiratory Pattern (Key Autonomic Indicator)",
     findings: [
       {
         label: "Respirations even, controlled, and diaphragmatic",
@@ -933,83 +835,6 @@ const LUNG_AUSCULTATION_FINDINGS = [
       {
         label: "Irregular rhythm or inconsistent depth of respiration",
         interpretation: "Brainstem respiratory pattern generator instability (pre-Bötzinger involvement)."
-      },
-      {
-        label: "Visible paradoxical breathing pattern",
-        interpretation: "Abnormal intercostal–diaphragm timing → central dysregulation."
-      }
-    ]
-  },
-  {
-    category: "Breath Sounds",
-    findings: [
-      {
-        label: "Clear vesicular breath sounds bilaterally without added sounds",
-        interpretation: "Normal breath sounds."
-      },
-      {
-        label: "Diminished breath sounds at bases",
-        interpretation: "Poor thoracic expansion → decreased autonomic flexibility or posture-related restriction."
-      },
-      {
-        label: "Diminished breath sounds on one side",
-        interpretation: "Possible unilateral motor drive deficit (thoracic spinal segment involvement)."
-      },
-      {
-        label: "Prolonged expiratory phase",
-        interpretation: "Increased sympathetic tone or bronchoconstriction tendency."
-      }
-    ]
-  },
-  {
-    category: "Adventitious Sounds - Wheezes",
-    findings: [
-      {
-        label: "Intermittent expiratory wheeze noted",
-        interpretation: "Bronchoconstriction; may correlate with sympathetic overactivity or high vagal threat physiology."
-      }
-    ]
-  },
-  {
-    category: "Adventitious Sounds - Crackles",
-    findings: [
-      {
-        label: "Fine crackles at lower lobes",
-        interpretation: "Fluid shift / restrictive physiology; may reflect poor autonomic control of thoracic perfusion."
-      }
-    ]
-  },
-  {
-    category: "Adventitious Sounds - Other",
-    findings: [
-      {
-        label: "Low-pitched rhonchi clearing with cough",
-        interpretation: "Upper airway clearance issue—not central."
-      },
-      {
-        label: "Inspiratory stridor detected",
-        interpretation: "Immediate airway concern; possible laryngeal dysfunction or vagal recurrent laryngeal nerve fatigue."
-      }
-    ]
-  },
-  {
-    category: "Lung Field Symmetry",
-    findings: [
-      {
-        label: "Symmetric chest expansion",
-        interpretation: "Normal chest wall expansion."
-      },
-      {
-        label: "Asymmetric chest expansion (L < R)",
-        interpretation: "Unilateral motor output weakness; possible thoracic spinal segment dysfunction or cerebellar-cortical asymmetry."
-      },
-      {
-        label: "Reduced lower rib expansion",
-        interpretation: "Diaphragmatic underdrive → vagal withdrawal."
-      },
-      {
-        label: "Upper chest recruitment > lower chest activation",
-        interpretation: "Sympathetic 'fight/flight' respiratory pattern."
       }
     ]
   },
@@ -1025,71 +850,8 @@ const LUNG_AUSCULTATION_FINDINGS = [
         interpretation: "Sympathetic overactivation; decreased diaphragmatic efficiency."
       },
       {
-        label: "Breathing effort increases with minimal exertion",
-        interpretation: "CNS fatigue signature; autonomic dysregulation."
-      },
-      {
         label: "Audible sighing or breath-holding pattern",
         interpretation: "Frontal–limbic dysregulation; common in concussion, stress physiology."
-      }
-    ]
-  },
-  {
-    category: "Vocal Resonance",
-    findings: [
-      {
-        label: "Normal symmetrical vocal resonance",
-        interpretation: "Normal vocal transmission through lung tissue."
-      },
-      {
-        label: "Diminished vocal resonance on the right",
-        interpretation: "Reduced lung inflation or mechanical restriction → could indicate postural asymmetry tied to cerebellar/vestibular imbalance."
-      },
-      {
-        label: "Increased vocal resonance over upper lobes",
-        interpretation: "Consolidation vs. poor ventilation pattern."
-      }
-    ]
-  },
-  {
-    category: "Positional Influence",
-    findings: [
-      {
-        label: "Breath sounds improve significantly when supine",
-        interpretation: "Orthostatic physiology; sympathetic overactivation while upright."
-      },
-      {
-        label: "Breath sounds diminish in seated posture",
-        interpretation: "Postural collapse, decreased thoracic drive → brainstem/vestibular contribution."
-      },
-      {
-        label: "Increased audible breathing with light exertion",
-        interpretation: "Autonomic mismatch; poor aerobic ramp-up."
-      },
-      {
-        label: "Delayed respiratory recovery post-exertion",
-        interpretation: "Low vagal reactivation; autonomic stress."
-      }
-    ]
-  },
-  {
-    category: "Symptom Provocation",
-    findings: [
-      {
-        label: "Dizziness with deep breathing",
-        interpretation: "Cerebellar-vestibular mismatch or CO₂ instability."
-      },
-      {
-        label: "Head pressure with slow inhalation",
-        interpretation: "Autonomic dysregulation / intracranial pressure sensitivity."
-      },
-      {
-        label: "Chest tightness with normal breath sounds",
-        interpretation: "Sympathetic overdrive; not pulmonary."
-      },
-      {
-        label: "Fatigue when performing diaphragm-driven breathing",
-        interpretation: "Brainstem–vagal fatigue signature."
       }
     ]
   }
@@ -1112,39 +874,10 @@ export const getLungAuscultationInterpretations = (selectedFindings: string[]): 
   })).filter(item => item.interpretation !== "");
 };
 
-// Clinical findings for Abdominal Exam with interpretations
+// Clinical findings for Abdominal Exam with interpretations (Streamlined)
 const ABDOMINAL_EXAM_FINDINGS = [
   {
-    category: "Inspection",
-    findings: [
-      {
-        label: "Abdomen flat/symmetric without visible tension or guarding",
-        interpretation: "Normal abdominal appearance."
-      },
-      {
-        label: "Abdominal wall appears hypertonic with upper-abdominal dominance",
-        interpretation: "Sympathetic overdrive, reduced vagal tone."
-      },
-      {
-        label: "Lower abdominal under-activation noted",
-        interpretation: "Weakness in abdominal–pelvic integration; often cerebellar or vestibular asymmetry pattern."
-      },
-      {
-        label: "Paradoxical abdominal movement with respiration",
-        interpretation: "Brainstem respiratory patterning dysfunction."
-      },
-      {
-        label: "Visible abdominal distention",
-        interpretation: "Could indicate visceral motility issues linked to reduced vagal drive."
-      },
-      {
-        label: "Asymmetric abdominal wall expansion",
-        interpretation: "Suggests thoraco-lumbar segmental asymmetry or postural dominance."
-      }
-    ]
-  },
-  {
-    category: "Auscultation - Bowel Sounds",
+    category: "Bowel Sounds (Vagal Tone Indicator)",
     findings: [
       {
         label: "Normoactive bowel sounds in all quadrants",
@@ -1161,15 +894,11 @@ const ABDOMINAL_EXAM_FINDINGS = [
       {
         label: "Absent bowel sounds",
         interpretation: "Red flag for obstruction or severe autonomic suppression."
-      },
-      {
-        label: "High-pitched bowel sounds",
-        interpretation: "Possible obstruction pattern; neurologically can reflect dysregulated peristaltic pacing."
       }
     ]
   },
   {
-    category: "Light Palpation",
+    category: "Palpation Findings",
     findings: [
       {
         label: "Abdomen soft, non-tender, no guarding",
@@ -1186,77 +915,6 @@ const ABDOMINAL_EXAM_FINDINGS = [
       {
         label: "Increased fascial tension over lower quadrants",
         interpretation: "Sympathetic dominance inhibiting normal abdominal tone."
-      },
-      {
-        label: "Tenderness over psoas or pelvic floor referral",
-        interpretation: "Segmental involvement L1–L3; functional postural asymmetry."
-      }
-    ]
-  },
-  {
-    category: "Deep Palpation",
-    findings: [
-      {
-        label: "Epigastric tenderness with autonomic symptoms (nausea, sweating)",
-        interpretation: "Vagal irritation; brainstem–autonomic coupling dysfunction."
-      },
-      {
-        label: "Right lower quadrant guarding without rebound",
-        interpretation: "Could indicate mechanical or autonomic irritation; needs differentiation."
-      },
-      {
-        label: "Generalized tenderness with soft abdomen",
-        interpretation: "Often visceral hypersensitivity linked to sympathetically driven limbic activation."
-      },
-      {
-        label: "Rebound tenderness positive",
-        interpretation: "Peritoneal irritation—true red flag."
-      },
-      {
-        label: "Palpable abdominal wall trigger points",
-        interpretation: "Thoraco-lumbar segment sensitization; commonly linked with chronic neuromuscular patterns."
-      }
-    ]
-  },
-  {
-    category: "Percussion",
-    findings: [
-      {
-        label: "Tympanic over gas-filled areas; normal liver dullness",
-        interpretation: "Normal percussion findings."
-      },
-      {
-        label: "Excessive tympany",
-        interpretation: "Motility pattern disruption; possible vagal suppression."
-      },
-      {
-        label: "Dullness where tympany expected",
-        interpretation: "Mass/fluid concern; also seen in chronic diaphragmatic restriction."
-      },
-      {
-        label: "Percussion provokes guarding or flinch",
-        interpretation: "Hyper-responsive segmental reflex—cerebellar vs. spinal processing issue."
-      }
-    ]
-  },
-  {
-    category: "Visceromotor Reflex",
-    findings: [
-      {
-        label: "Palpation triggers sympathetic surge (HR increase, sweating)",
-        interpretation: "Abnormal viscerosomatic reflex activation."
-      },
-      {
-        label: "Abdominal exam induces vagal symptoms (nausea, warmth, brady response)",
-        interpretation: "Heightened vagal sensitivity; brainstem under-buffering."
-      },
-      {
-        label: "Dermatomal sensitivity (T7–L3)",
-        interpretation: "Segmental sensitization; often corresponds with asymmetrical cortical drive."
-      },
-      {
-        label: "Abdominal wall contraction asymmetrically stronger on one side",
-        interpretation: "Cortical–spinal dominance pattern; clinically meaningful in gait/posture mapping."
       }
     ]
   }
