@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,6 +67,10 @@ const SECTION_FIELDS = {
 export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [draftLoading, setDraftLoading] = useState(true);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
   const [formData, setFormData] = useState<any>({
     exam_type: 'baseline',
     exam_date: new Date().toISOString().split('T')[0],
@@ -76,6 +80,90 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   const updateField = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
+
+  // Load existing draft on mount
+  useEffect(() => {
+    const loadDraft = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: draft } = await supabase
+          .from('neurologic_exam_drafts')
+          .select('*')
+          .eq('episode_id', episodeId)
+          .eq('user_id', user.id)
+          .single();
+
+        if (draft && draft.draft_data && typeof draft.draft_data === 'object') {
+          setFormData((prev: any) => ({ ...prev, ...draft.draft_data as Record<string, any> }));
+          setLastSaved(new Date(draft.last_saved_at));
+          toast({
+            title: "Draft Restored",
+            description: "Your previous work has been restored",
+          });
+        }
+      } catch (error) {
+        // No draft found, which is fine
+      } finally {
+        setDraftLoading(false);
+      }
+    };
+
+    loadDraft();
+  }, [episodeId, toast]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    // Don't auto-save if still loading draft or if no changes made
+    if (draftLoading || Object.keys(formData).length <= 3) return;
+
+    // Clear existing timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Set new timeout for auto-save
+    saveTimeoutRef.current = setTimeout(async () => {
+      setIsSaving(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('clinic_id')
+          .eq('id', user.id)
+          .single();
+
+        const { error } = await supabase
+          .from('neurologic_exam_drafts')
+          .upsert({
+            episode_id: episodeId,
+            user_id: user.id,
+            clinic_id: profile?.clinic_id,
+            draft_data: formData,
+          }, {
+            onConflict: 'episode_id,user_id'
+          });
+
+        if (!error) {
+          setLastSaved(new Date());
+        }
+      } catch (error) {
+        console.error('Auto-save error:', error);
+      } finally {
+        setIsSaving(false);
+      }
+    }, 30000); // 30 seconds
+
+    // Cleanup on unmount
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [formData, draftLoading, episodeId]);
 
   // Calculate completion for each section
   const sectionProgress = useMemo(() => {
@@ -134,6 +222,13 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
       if (error) throw error;
 
+      // Delete the draft after successful save
+      await supabase
+        .from('neurologic_exam_drafts')
+        .delete()
+        .eq('episode_id', episodeId)
+        .eq('user_id', user.id);
+
       toast({
         title: "Exam Saved",
         description: "Neurologic examination saved successfully"
@@ -151,11 +246,55 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     }
   };
 
+  // Format last saved time
+  const getLastSavedText = () => {
+    if (!lastSaved) return null;
+    const seconds = Math.floor((Date.now() - lastSaved.getTime()) / 1000);
+    if (seconds < 60) return 'Just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes === 1) return '1 minute ago';
+    if (minutes < 60) return `${minutes} minutes ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours === 1) return '1 hour ago';
+    return `${hours} hours ago`;
+  };
+
+  if (draftLoading) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">Loading examination form...</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Comprehensive Neurologic & Physical Examination</CardTitle>
-        <CardDescription>Complete the examination sections below</CardDescription>
+        <div className="flex items-start justify-between">
+          <div>
+            <CardTitle>Comprehensive Neurologic & Physical Examination</CardTitle>
+            <CardDescription>Complete the examination sections below</CardDescription>
+          </div>
+          {/* Auto-save indicator */}
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            {isSaving ? (
+              <>
+                <Loader2 className="h-3 w-3 animate-spin" />
+                <span>Saving draft...</span>
+              </>
+            ) : lastSaved ? (
+              <>
+                <CheckCircle2 className="h-3 w-3 text-primary" />
+                <span>Draft saved {getLastSavedText()}</span>
+              </>
+            ) : null}
+          </div>
+        </div>
         
         {/* Overall Progress Indicator */}
         <div className="mt-4 space-y-2">
