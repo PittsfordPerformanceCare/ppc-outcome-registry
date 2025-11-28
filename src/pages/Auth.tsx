@@ -155,21 +155,34 @@ const Auth = () => {
         </div>
 
         {/* Right Panel - Auth Forms */}
-        <div className="p-8 md:p-12">
+        <div className="p-8 md:p-12 bg-gradient-to-br from-background via-background to-muted/30">
           <div className="mb-8 md:hidden">
-            <h1 className="text-2xl font-bold text-foreground mb-1">PPC Clinical Outcome Registry</h1>
-            <p className="text-sm text-muted-foreground">Secure clinical platform</p>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Activity className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-foreground">PPC Clinical Outcome Registry</h1>
+                <p className="text-xs text-muted-foreground">Secure clinical platform</p>
+              </div>
+            </div>
           </div>
+
+          <div className="mb-6 hidden md:block">
+            <h2 className="text-2xl font-bold text-foreground mb-2">Welcome</h2>
+            <p className="text-sm text-muted-foreground">Sign in to access your clinical dashboard</p>
+          </div>
+
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Create Account</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 mb-8 h-12 p-1 bg-muted/50">
+              <TabsTrigger value="login" className="text-sm font-medium data-[state=active]:shadow-sm">Sign In</TabsTrigger>
+              <TabsTrigger value="signup" className="text-sm font-medium data-[state=active]:shadow-sm">Create Account</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-5">
+            <TabsContent value="login" className="mt-6">
+              <form onSubmit={handleLogin} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-sm font-medium">Email Address</Label>
+                  <Label htmlFor="login-email" className="text-sm font-semibold text-foreground">Email Address</Label>
                   <Input
                     id="login-email"
                     type="email"
@@ -177,11 +190,11 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-11"
+                    className="h-12 bg-background border-border/60 focus:border-primary/60 transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="login-password" className="text-sm font-medium">Password</Label>
+                  <Label htmlFor="login-password" className="text-sm font-semibold text-foreground">Password</Label>
                   <Input
                     id="login-password"
                     type="password"
@@ -189,19 +202,19 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-11"
+                    className="h-12 bg-background border-border/60 focus:border-primary/60 transition-colors"
                   />
                 </div>
-                <Button type="submit" className="w-full h-11 text-base font-medium" disabled={loading}>
+                <Button type="submit" className="w-full h-12 text-base font-semibold shadow-md hover:shadow-lg transition-all" disabled={loading}>
                   {loading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
             </TabsContent>
             
-            <TabsContent value="signup">
+            <TabsContent value="signup" className="mt-6">
               <form onSubmit={handleSignup} className="space-y-5">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name" className="text-sm font-medium">Full Name</Label>
+                  <Label htmlFor="signup-name" className="text-sm font-semibold text-foreground">Full Name</Label>
                   <Input
                     id="signup-name"
                     type="text"
@@ -209,11 +222,11 @@ const Auth = () => {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required
-                    className="h-11"
+                    className="h-12 bg-background border-border/60 focus:border-primary/60 transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="text-sm font-medium">Professional Email</Label>
+                  <Label htmlFor="signup-email" className="text-sm font-semibold text-foreground">Professional Email</Label>
                   <Input
                     id="signup-email"
                     type="email"
@@ -221,11 +234,11 @@ const Auth = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-11"
+                    className="h-12 bg-background border-border/60 focus:border-primary/60 transition-colors"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password" className="text-sm font-medium">Password</Label>
+                  <Label htmlFor="signup-password" className="text-sm font-semibold text-foreground">Password</Label>
                   <Input
                     id="signup-password"
                     type="password"
@@ -234,13 +247,14 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="h-11"
+                    className="h-12 bg-background border-border/60 focus:border-primary/60 transition-colors"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground/80 flex items-center gap-1.5">
+                    <span className="w-1 h-1 rounded-full bg-muted-foreground/60"></span>
                     Must be at least 6 characters
                   </p>
                 </div>
-                <Button type="submit" className="w-full h-11 text-base font-medium" disabled={loading}>
+                <Button type="submit" className="w-full h-12 text-base font-semibold shadow-md hover:shadow-lg transition-all" disabled={loading}>
                   {loading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
