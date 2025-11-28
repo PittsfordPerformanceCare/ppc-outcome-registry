@@ -1279,6 +1279,122 @@ export const getAbdominalExamInterpretations = (selectedFindings: string[]): Arr
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for Red Desaturation with interpretations
+const RED_DESATURATION_FINDINGS = [
+  {
+    category: "Normal Finding",
+    findings: [
+      {
+        label: "Color saturation equal bilaterally with no perceived difference",
+        interpretation: "Symmetric optic nerve conduction, balanced thalamic–occipital processing, no overt monocular conduction deficit."
+      }
+    ]
+  },
+  {
+    category: "Reduced Saturation",
+    findings: [
+      {
+        label: "Patient reports reduced red saturation in the left eye compared to right",
+        interpretation: "Suggests relative afferent conduction reduction. Common in optic nerve fatigue after concussion, subclinical optic neuritis history, retinal processing asymmetry, cerebellar–visual integration imbalance."
+      },
+      {
+        label: "Right eye perceives red as duller/faded relative to left",
+        interpretation: "Suggests relative afferent conduction reduction. Early thalamic/occipital underperformance, autonomic load reducing ocular perfusion."
+      }
+    ]
+  },
+  {
+    category: "Quality of Desaturation",
+    findings: [
+      {
+        label: "Red appears washed-out/pinkish in left eye compared to right",
+        interpretation: "Reduced neural firing density, mild optic nerve metabolic load, early demyelination pattern (if chronic), cerebral hypoperfusion on that side (functional)."
+      },
+      {
+        label: "Red appears washed-out/pinkish in right eye compared to left",
+        interpretation: "Reduced neural firing density, mild optic nerve metabolic load, early demyelination pattern (if chronic), cerebral hypoperfusion on that side (functional)."
+      }
+    ]
+  },
+  {
+    category: "Severity",
+    findings: [
+      {
+        label: "Marked red desaturation in the left eye (patient estimates ~30% reduction)",
+        interpretation: "Strong indicator of optic nerve pathway stress. Often seen in post-concussion visual fatigue, autonomic dysregulation reducing retinal perfusion, thalamic relay asymmetry, optic tract irritation."
+      },
+      {
+        label: "Marked red desaturation in the right eye (patient estimates ~30% reduction)",
+        interpretation: "Strong indicator of optic nerve pathway stress. Often seen in post-concussion visual fatigue, autonomic dysregulation reducing retinal perfusion, thalamic relay asymmetry, optic tract irritation."
+      }
+    ]
+  },
+  {
+    category: "Temporal Pattern",
+    findings: [
+      {
+        label: "Red desaturation increases with repeated comparison trials",
+        interpretation: "Neuronal fatigue—metabolic fragility of the visual system. Often linked with PCS, dysautonomia, migraine system activation, poor cortical endurance. Major functional neurology biomarker for reduced endurance of the visual–cortical network."
+      },
+      {
+        label: "Desaturation resolves after brief rest or improved fixation",
+        interpretation: "Eye movement system instability → intermittent cortical hypoactivation. Poor vergence–accommodation coupling. Fatigue rather than structure."
+      },
+      {
+        label: "Red saturation fluctuates from trial to trial",
+        interpretation: "Autonomic state influencing retinal/cortical function. Brainstem perfusion variability, thalamic relay instability. Highly common in dysautonomia and PCS."
+      }
+    ]
+  },
+  {
+    category: "Associated Findings",
+    findings: [
+      {
+        label: "Desaturation noted more in eye demonstrating convergence weakness",
+        interpretation: "Oculomotor fatigue spilling into optic nerve performance. Asymmetric cortical energy utilization. Inferior parietal–frontal circuit fragility. Extremely common in concussion patients."
+      },
+      {
+        label: "Left eye perceives red as darker/deeper",
+        interpretation: "Rare but notable: possible excessive contrast gain, thalamic gating irregularity, cortical hyperactivation instead of hypoactivation."
+      },
+      {
+        label: "Right eye perceives red as darker/deeper",
+        interpretation: "Rare but notable: possible excessive contrast gain, thalamic gating irregularity, cortical hyperactivation instead of hypoactivation."
+      }
+    ]
+  },
+  {
+    category: "Postural Influence",
+    findings: [
+      {
+        label: "Left eye red saturation worsens in upright posture",
+        interpretation: "Orthostatic autonomic dysregulation. Reduced perfusion to optic nerve. Sympathetic override of visual processing. Highly relevant in dysautonomia/POTS-spectrum patients."
+      },
+      {
+        label: "Right eye red saturation worsens in upright posture",
+        interpretation: "Orthostatic autonomic dysregulation. Reduced perfusion to optic nerve. Sympathetic override of visual processing. Highly relevant in dysautonomia/POTS-spectrum patients."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for a red desaturation finding
+export const getRedDesaturationInterpretation = (findingLabel: string): string => {
+  for (const category of RED_DESATURATION_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected red desaturation findings
+export const getRedDesaturationInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getRedDesaturationInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -3376,26 +3492,158 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
           {/* Neuro Exam Tab */}
           <TabsContent value="neuro" className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Red Desaturation</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="red_desat_right"
-                    checked={formData.neuro_red_desaturation_right || false}
-                    onCheckedChange={(checked) => updateField('neuro_red_desaturation_right', checked)}
-                  />
-                  <Label htmlFor="red_desat_right">Right</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="red_desat_left"
-                    checked={formData.neuro_red_desaturation_left || false}
-                    onCheckedChange={(checked) => updateField('neuro_red_desaturation_left', checked)}
-                  />
-                  <Label htmlFor="red_desat_left">Left</Label>
-                </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Red Desaturation</h3>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        Clinical Findings
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Select all observed findings. Interpretations are automatically stored for summary generation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
+              
+              {/* Parse current red desaturation values - handle both old boolean format and new structured format */}
+              {(() => {
+                let selectedFindings: string[] = [];
+                let customNotes = "";
+                
+                // Check if we have structured data stored anywhere
+                const structuredDataField = 'neuro_red_desaturation_structured';
+                try {
+                  const structuredData = (formData as any)[structuredDataField];
+                  if (structuredData) {
+                    const parsed = JSON.parse(structuredData);
+                    selectedFindings = parsed.findings || [];
+                    customNotes = parsed.notes || "";
+                  } else {
+                    // Migrate from old boolean format if present
+                    if (formData.neuro_red_desaturation_right && formData.neuro_red_desaturation_left) {
+                      selectedFindings = [];
+                    } else if (formData.neuro_red_desaturation_right) {
+                      selectedFindings = ["Right eye perceives red as duller/faded relative to left"];
+                    } else if (formData.neuro_red_desaturation_left) {
+                      selectedFindings = ["Patient reports reduced red saturation in the left eye compared to right"];
+                    }
+                  }
+                } catch {
+                  // Default to empty
+                }
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  // Update structured field
+                  updateField(structuredDataField, JSON.stringify({
+                    findings: newFindings,
+                    notes: customNotes
+                  }));
+                  
+                  // Also update boolean fields for backward compatibility
+                  const hasLeft = newFindings.some(f => f.toLowerCase().includes('left eye'));
+                  const hasRight = newFindings.some(f => f.toLowerCase().includes('right eye'));
+                  updateField('neuro_red_desaturation_left', hasLeft);
+                  updateField('neuro_red_desaturation_right', hasRight);
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  updateField(structuredDataField, JSON.stringify({
+                    findings: selectedFindings,
+                    notes
+                  }));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {RED_DESATURATION_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`red-desat-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`red-desat-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="red_desat_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="red_desat_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional red desaturation observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             <Separator />
