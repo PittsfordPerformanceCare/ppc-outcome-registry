@@ -11,9 +11,17 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, CheckCircle2, Circle, AlertCircle } from "lucide-react";
+import { Loader2, Save, CheckCircle2, Circle, AlertCircle, ChevronRight, List } from "lucide-react";
 
 interface NeuroExamFormProps {
   episodeId: string;
@@ -27,6 +35,10 @@ const VITALS_RANGES = {
   o2Saturation: { min: 70, max: 100, label: "O2 Saturation" },
   temperature: { min: 90, max: 105, label: "Temperature" }
 };
+
+// Tab sections in order
+const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
+type TabSection = typeof TAB_SECTIONS[number];
 
 // Field definitions for each tab section
 const SECTION_FIELDS = {
@@ -81,7 +93,9 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [showValidationSummary, setShowValidationSummary] = useState(false);
+  const [currentTab, setCurrentTab] = useState<TabSection>('vitals');
   const saveTimeoutRef = useRef<NodeJS.Timeout>();
+  const tabsListRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<any>({
     exam_type: 'baseline',
     exam_date: new Date().toISOString().split('T')[0],
@@ -254,6 +268,70 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     return progress;
   }, [formData]);
 
+  // Find next incomplete section
+  const getNextIncompleteSection = (): TabSection | null => {
+    const currentIndex = TAB_SECTIONS.indexOf(currentTab);
+    
+    // Check sections after current
+    for (let i = currentIndex + 1; i < TAB_SECTIONS.length; i++) {
+      if (sectionProgress[TAB_SECTIONS[i]]?.percentage < 100) {
+        return TAB_SECTIONS[i];
+      }
+    }
+    
+    // Check sections before current
+    for (let i = 0; i < currentIndex; i++) {
+      if (sectionProgress[TAB_SECTIONS[i]]?.percentage < 100) {
+        return TAB_SECTIONS[i];
+      }
+    }
+    
+    return null;
+  };
+
+  // Navigate to next/previous tab
+  const navigateTab = (direction: 'next' | 'prev') => {
+    const currentIndex = TAB_SECTIONS.indexOf(currentTab);
+    let newIndex: number;
+    
+    if (direction === 'next') {
+      newIndex = currentIndex === TAB_SECTIONS.length - 1 ? 0 : currentIndex + 1;
+    } else {
+      newIndex = currentIndex === 0 ? TAB_SECTIONS.length - 1 : currentIndex - 1;
+    }
+    
+    setCurrentTab(TAB_SECTIONS[newIndex]);
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + Arrow keys for tab navigation
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          navigateTab('next');
+          toast({
+            title: "Next Section",
+            description: "Use Ctrl+→ to navigate forward",
+            duration: 1500,
+          });
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          navigateTab('prev');
+          toast({
+            title: "Previous Section", 
+            description: "Use Ctrl+← to navigate back",
+            duration: 1500,
+          });
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentTab, toast]);
+
   // Calculate overall completion
   const overallProgress = useMemo(() => {
     const allFields = Object.values(SECTION_FIELDS).flat();
@@ -381,6 +459,20 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
     );
   };
 
+  // Format section name for display
+  const formatSectionName = (section: TabSection): string => {
+    const names: Record<TabSection, string> = {
+      vitals: 'Vitals',
+      reflexes: 'Reflexes',
+      auscultation: 'Auscultation',
+      visual: 'Visual',
+      neuro: 'Neuro',
+      vestibular: 'Vestibular',
+      motor: 'Motor/Inputs'
+    };
+    return names[section];
+  };
+
   if (draftLoading) {
     return (
       <Card>
@@ -420,18 +512,69 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
         
         {/* Overall Progress Indicator */}
         <div className="mt-4 space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-medium">Overall Completion</span>
-            <span className="text-muted-foreground">
-              {overallProgress.filled} of {overallProgress.total} fields completed
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-medium">Overall Completion</span>
+              <span className="text-muted-foreground">
+                {overallProgress.filled} of {overallProgress.total} fields completed
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              {/* Jump to section dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <List className="h-4 w-4 mr-2" />
+                    Jump to Section
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Navigate to Section</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {TAB_SECTIONS.map((section) => (
+                    <DropdownMenuItem
+                      key={section}
+                      onClick={() => setCurrentTab(section)}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        {sectionProgress[section]?.percentage === 100 ? (
+                          <CheckCircle2 className="h-4 w-4 text-primary" />
+                        ) : sectionProgress[section]?.percentage > 0 ? (
+                          <Circle className="h-4 w-4 fill-primary/20 text-primary" />
+                        ) : (
+                          <Circle className="h-4 w-4 text-muted-foreground" />
+                        )}
+                        {formatSectionName(section)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {sectionProgress[section]?.percentage}%
+                      </span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Next incomplete button */}
+              {getNextIncompleteSection() && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => {
+                    const nextSection = getNextIncompleteSection();
+                    if (nextSection) setCurrentTab(nextSection);
+                  }}
+                >
+                  Next Incomplete
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              )}
+            </div>
           </div>
           <Progress value={overallProgress.percentage} className="h-2" />
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>{overallProgress.percentage}% complete</span>
-            {overallProgress.percentage < 100 && (
-              <span>• {overallProgress.total - overallProgress.filled} fields remaining</span>
-            )}
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <span>{overallProgress.percentage}% complete • {overallProgress.total - overallProgress.filled} fields remaining</span>
+            <span className="text-muted-foreground/70">💡 Use Ctrl+← → to navigate sections</span>
           </div>
         </div>
       </CardHeader>
@@ -498,9 +641,10 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
           </div>
         </div>
 
-        <Tabs defaultValue="vitals" className="w-full">
-          <TabsList className="grid grid-cols-7 w-full">
-            <TabsTrigger value="vitals" className="flex items-center gap-1.5">
+        <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as TabSection)} className="w-full">
+          <div ref={tabsListRef} className="sticky top-0 z-10 bg-background pb-4 border-b">
+            <TabsList className="grid grid-cols-7 w-full">
+              <TabsTrigger value="vitals" className="flex items-center gap-1.5">
               {sectionProgress.vitals.percentage === 100 ? (
                 <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
               ) : sectionProgress.vitals.percentage > 0 ? (
@@ -585,6 +729,7 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
               <span>Motor/Inputs</span>
             </TabsTrigger>
           </TabsList>
+          </div>
 
           {/* Vitals Tab */}
           <TabsContent value="vitals" className="space-y-6">
