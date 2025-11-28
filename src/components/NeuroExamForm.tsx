@@ -11,6 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, CheckCircle2, Circle, AlertCircle, ChevronRight, List, Info, ArrowLeft, ArrowRight, Heart, Activity, Stethoscope, Eye, Brain, Navigation, Dumbbell } from "lucide-react";
+import { Loader2, Save, CheckCircle2, Circle, AlertCircle, ChevronRight, List, Info, ArrowLeft, ArrowRight, Heart, Activity, Stethoscope, Eye, Brain, Navigation, Dumbbell, ChevronDown } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -2576,49 +2577,62 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
                 return (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {HEART_AUSCULTATION_FINDINGS.map((category) => (
-                        <Card key={category.category} className="border-muted">
-                          <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            {category.findings.map((finding) => (
-                              <div key={finding.label} className="flex items-start space-x-2">
-                                <Checkbox
-                                  id={`heart-${finding.label}`}
-                                  checked={selectedFindings.includes(finding.label)}
-                                  onCheckedChange={() => handleFindingToggle(finding.label)}
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <Label
-                                    htmlFor={`heart-${finding.label}`}
-                                    className="text-sm font-normal leading-tight cursor-pointer"
-                                  >
-                                    {finding.label}
-                                  </Label>
-                                  {selectedFindings.includes(finding.label) && (
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
-                                            <Info className="h-3 w-3" />
-                                            {finding.interpretation.substring(0, 50)}...
-                                          </p>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom" className="max-w-sm">
-                                          <p className="text-sm">{finding.interpretation}</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                    <Collapsible defaultOpen className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <CollapsibleTrigger className="flex items-center gap-2 hover:text-primary transition-colors">
+                          <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
+                          <span className="font-medium">Clinical Findings</span>
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {HEART_AUSCULTATION_FINDINGS.map((category) => (
+                            <Card 
+                              key={category.category} 
+                              className="border-muted transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5"
+                            >
+                              <CardHeader className="pb-3 bg-muted/30">
+                                <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-2">
+                                {category.findings.map((finding) => (
+                                  <div key={finding.label} className="flex items-start space-x-2">
+                                    <Checkbox
+                                      id={`heart-${finding.label}`}
+                                      checked={selectedFindings.includes(finding.label)}
+                                      onCheckedChange={() => handleFindingToggle(finding.label)}
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                      <Label
+                                        htmlFor={`heart-${finding.label}`}
+                                        className="text-sm font-normal leading-tight cursor-pointer hover:text-primary transition-colors"
+                                      >
+                                        {finding.label}
+                                      </Label>
+                                      {selectedFindings.includes(finding.label) && (
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1 animate-fade-in">
+                                                <Info className="h-3 w-3" />
+                                                {finding.interpretation.substring(0, 50)}...
+                                              </p>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="bottom" className="max-w-sm">
+                                              <p className="text-sm">{finding.interpretation}</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
 
                     {/* Custom notes field */}
                     <div>
@@ -2989,49 +3003,62 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
                 return (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {SACCADE_FINDINGS.map((category) => (
-                        <Card key={category.category} className="border-muted">
-                          <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            {category.findings.map((finding) => (
-                              <div key={finding.label} className="flex items-start space-x-2">
-                                <Checkbox
-                                  id={`saccade-${finding.label}`}
-                                  checked={selectedFindings.includes(finding.label)}
-                                  onCheckedChange={() => handleFindingToggle(finding.label)}
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <Label
-                                    htmlFor={`saccade-${finding.label}`}
-                                    className="text-sm font-normal leading-tight cursor-pointer"
-                                  >
-                                    {finding.label}
-                                  </Label>
-                                  {selectedFindings.includes(finding.label) && (
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
-                                            <Info className="h-3 w-3" />
-                                            {finding.interpretation.substring(0, 50)}...
-                                          </p>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom" className="max-w-sm">
-                                          <p className="text-sm">{finding.interpretation}</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                    <Collapsible defaultOpen className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <CollapsibleTrigger className="flex items-center gap-2 hover:text-primary transition-colors">
+                          <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
+                          <span className="font-medium">Clinical Findings</span>
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {SACCADE_FINDINGS.map((category) => (
+                            <Card 
+                              key={category.category} 
+                              className="border-muted transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5"
+                            >
+                              <CardHeader className="pb-3 bg-muted/30">
+                                <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-2">
+                                {category.findings.map((finding) => (
+                                  <div key={finding.label} className="flex items-start space-x-2">
+                                    <Checkbox
+                                      id={`saccade-${finding.label}`}
+                                      checked={selectedFindings.includes(finding.label)}
+                                      onCheckedChange={() => handleFindingToggle(finding.label)}
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                      <Label
+                                        htmlFor={`saccade-${finding.label}`}
+                                        className="text-sm font-normal leading-tight cursor-pointer hover:text-primary transition-colors"
+                                      >
+                                        {finding.label}
+                                      </Label>
+                                      {selectedFindings.includes(finding.label) && (
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1 animate-fade-in">
+                                                <Info className="h-3 w-3" />
+                                                {finding.interpretation.substring(0, 50)}...
+                                              </p>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="bottom" className="max-w-sm">
+                                              <p className="text-sm">{finding.interpretation}</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
 
                     {/* Custom notes field */}
                     <div>
@@ -3422,49 +3449,62 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
                 return (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {RED_DESATURATION_FINDINGS.map((category) => (
-                        <Card key={category.category} className="border-muted">
-                          <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            {category.findings.map((finding) => (
-                              <div key={finding.label} className="flex items-start space-x-2">
-                                <Checkbox
-                                  id={`red-desat-${finding.label}`}
-                                  checked={selectedFindings.includes(finding.label)}
-                                  onCheckedChange={() => handleFindingToggle(finding.label)}
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <Label
-                                    htmlFor={`red-desat-${finding.label}`}
-                                    className="text-sm font-normal leading-tight cursor-pointer"
-                                  >
-                                    {finding.label}
-                                  </Label>
-                                  {selectedFindings.includes(finding.label) && (
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
-                                            <Info className="h-3 w-3" />
-                                            {finding.interpretation.substring(0, 50)}...
-                                          </p>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom" className="max-w-sm">
-                                          <p className="text-sm">{finding.interpretation}</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                    <Collapsible defaultOpen className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <CollapsibleTrigger className="flex items-center gap-2 hover:text-primary transition-colors">
+                          <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
+                          <span className="font-medium">Clinical Findings</span>
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {RED_DESATURATION_FINDINGS.map((category) => (
+                            <Card 
+                              key={category.category} 
+                              className="border-muted transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5"
+                            >
+                              <CardHeader className="pb-3 bg-muted/30">
+                                <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-2">
+                                {category.findings.map((finding) => (
+                                  <div key={finding.label} className="flex items-start space-x-2">
+                                    <Checkbox
+                                      id={`red-desat-${finding.label}`}
+                                      checked={selectedFindings.includes(finding.label)}
+                                      onCheckedChange={() => handleFindingToggle(finding.label)}
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                      <Label
+                                        htmlFor={`red-desat-${finding.label}`}
+                                        className="text-sm font-normal leading-tight cursor-pointer hover:text-primary transition-colors"
+                                      >
+                                        {finding.label}
+                                      </Label>
+                                      {selectedFindings.includes(finding.label) && (
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1 animate-fade-in">
+                                                <Info className="h-3 w-3" />
+                                                {finding.interpretation.substring(0, 50)}...
+                                              </p>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="bottom" className="max-w-sm">
+                                              <p className="text-sm">{finding.interpretation}</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
 
                     {/* Custom notes field */}
                     <div>
@@ -3777,49 +3817,62 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
 
                 return (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {ROMBERG_FINDINGS.map((category) => (
-                        <Card key={category.category} className="border-muted">
-                          <CardHeader className="pb-3">
-                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            {category.findings.map((finding) => (
-                              <div key={finding.label} className="flex items-start space-x-2">
-                                <Checkbox
-                                  id={`romberg-${finding.label}`}
-                                  checked={selectedFindings.includes(finding.label)}
-                                  onCheckedChange={() => handleFindingToggle(finding.label)}
-                                />
-                                <div className="flex-1 min-w-0">
-                                  <Label
-                                    htmlFor={`romberg-${finding.label}`}
-                                    className="text-sm font-normal leading-tight cursor-pointer"
-                                  >
-                                    {finding.label}
-                                  </Label>
-                                  {selectedFindings.includes(finding.label) && (
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
-                                            <Info className="h-3 w-3" />
-                                            {finding.interpretation.substring(0, 50)}...
-                                          </p>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom" className="max-w-sm">
-                                          <p className="text-sm">{finding.interpretation}</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                    <Collapsible defaultOpen className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <CollapsibleTrigger className="flex items-center gap-2 hover:text-primary transition-colors">
+                          <ChevronDown className="h-4 w-4 transition-transform duration-200 data-[state=open]:rotate-0 data-[state=closed]:-rotate-90" />
+                          <span className="font-medium">Clinical Findings</span>
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {ROMBERG_FINDINGS.map((category) => (
+                            <Card 
+                              key={category.category} 
+                              className="border-muted transition-all duration-200 hover:shadow-md hover:border-primary/20 hover:-translate-y-0.5"
+                            >
+                              <CardHeader className="pb-3 bg-muted/30">
+                                <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                              </CardHeader>
+                              <CardContent className="space-y-2">
+                                {category.findings.map((finding) => (
+                                  <div key={finding.label} className="flex items-start space-x-2">
+                                    <Checkbox
+                                      id={`romberg-${finding.label}`}
+                                      checked={selectedFindings.includes(finding.label)}
+                                      onCheckedChange={() => handleFindingToggle(finding.label)}
+                                    />
+                                    <div className="flex-1 min-w-0">
+                                      <Label
+                                        htmlFor={`romberg-${finding.label}`}
+                                        className="text-sm font-normal leading-tight cursor-pointer hover:text-primary transition-colors"
+                                      >
+                                        {finding.label}
+                                      </Label>
+                                      {selectedFindings.includes(finding.label) && (
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1 animate-fade-in">
+                                                <Info className="h-3 w-3" />
+                                                {finding.interpretation.substring(0, 50)}...
+                                              </p>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="bottom" className="max-w-sm">
+                                              <p className="text-sm">{finding.interpretation}</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
 
                     {/* Custom notes field */}
                     <div>
