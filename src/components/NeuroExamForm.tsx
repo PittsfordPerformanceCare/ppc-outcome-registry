@@ -195,6 +195,173 @@ export const getSaccadeInterpretations = (selectedFindings: string[]): Array<{fi
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for smooth pursuits with interpretations
+const PURSUIT_FINDINGS = [
+  {
+    category: "Smoothness / Quality",
+    findings: [
+      {
+        label: "Pursuits are smooth and continuous without interruptions",
+        interpretation: "Normal pursuit tracking."
+      },
+      {
+        label: "Tracking is saccadic with frequent catch-up saccades",
+        interpretation: "Cerebellar flocculus/paraflocculus involvement; potential parietal tracking deficit."
+      },
+      {
+        label: "Pursuits are fragmented with small corrective saccades",
+        interpretation: "Impaired neural integration."
+      }
+    ]
+  },
+  {
+    category: "Direction-Specific",
+    findings: [
+      {
+        label: "Leftward pursuits more saccadic than rightward",
+        interpretation: "Suggests cerebellar asymmetry (ipsilateral)."
+      },
+      {
+        label: "Vertical pursuits impaired > horizontal pursuits",
+        interpretation: "More concerning: vertical pursuit deficits often implicate midbrain pretectum or diffuse metabolic/central processing issues."
+      }
+    ]
+  },
+  {
+    category: "Conjugacy",
+    findings: [
+      {
+        label: "Eyes maintain conjugacy throughout pursuit",
+        interpretation: "Normal conjugate tracking."
+      },
+      {
+        label: "Disconjugate tracking noted during vertical pursuits",
+        interpretation: "Possible internuclear ophthalmoplegia (INO) or vestibular mismatch."
+      }
+    ]
+  },
+  {
+    category: "Range & End-Range Stability",
+    findings: [
+      {
+        label: "Pursuits degrade at end range with drift and corrective saccades",
+        interpretation: "Neural integrator fatigue (cerebellar or brainstem involvement)."
+      },
+      {
+        label: "Patient unable to maintain end-range hold without oscillation",
+        interpretation: "Flocculus/paraflocculus insufficiency."
+      }
+    ]
+  },
+  {
+    category: "Velocity Matching (Gain)",
+    findings: [
+      {
+        label: "Pursuit gain appears normal",
+        interpretation: "Normal velocity matching to target."
+      },
+      {
+        label: "Reduced pursuit gain with delayed matching to target speed",
+        interpretation: "Parietal or cerebellar processing weakness."
+      }
+    ]
+  },
+  {
+    category: "Attention / Fatigue",
+    findings: [
+      {
+        label: "Performance consistent throughout exam",
+        interpretation: "Normal sustained attention."
+      },
+      {
+        label: "Pursuit quality deteriorates with repetition (fatigability)",
+        interpretation: "Frontal-cerebellar endurance limitation; clinical significance for concussion/PCS."
+      }
+    ]
+  },
+  {
+    category: "Intrusions",
+    findings: [
+      {
+        label: "Frequent rightward catch-up saccades interrupt pursuit",
+        interpretation: "Pursuit–saccade system mismatch; cerebellar/parietal involvement."
+      },
+      {
+        label: "Occasional back-up saccades during downward tracking",
+        interpretation: "Impaired target prediction and inhibitory control."
+      },
+      {
+        label: "SWJs occurring during fixation between pursuit sweeps",
+        interpretation: "Cerebellar or upper brainstem dyscontrol."
+      }
+    ]
+  },
+  {
+    category: "Vertical-Specific Clues",
+    findings: [
+      {
+        label: "Upward pursuits saccadic > downward pursuits",
+        interpretation: "Possible dorsal midbrain dysfunction."
+      },
+      {
+        label: "Downward pursuits provoke dizziness or nausea",
+        interpretation: "Brainstem integration issue; vestibular–ocular mismatch."
+      },
+      {
+        label: "Vertical pursuits slow with delayed initiation",
+        interpretation: "Consider central involvement over peripheral."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation",
+    findings: [
+      {
+        label: "Pursuits provoke dizziness/lightheadedness",
+        interpretation: "Vestibular contribution or cerebellar load intolerance."
+      },
+      {
+        label: "Pursuits provoke headache or cognitive fatigue",
+        interpretation: "Frontal load intolerance; common in PCS, migraine, autonomic dysfunction."
+      },
+      {
+        label: "Pursuits cause visual strain or blurred vision",
+        interpretation: "Accommodative involvement or poor binocular integration."
+      }
+    ]
+  },
+  {
+    category: "Behavioral/Compensatory",
+    findings: [
+      {
+        label: "Patient stabilizes head or moves head with target",
+        interpretation: "Suggests VOR/pursuit mismatch or vestibular avoidance."
+      },
+      {
+        label: "Patient blinks excessively during pursuits",
+        interpretation: "Sympathetic/autonomic component; visually-evoked stress."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for a pursuit finding
+export const getPursuitInterpretation = (findingLabel: string): string => {
+  for (const category of PURSUIT_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected pursuit findings
+export const getPursuitInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getPursuitInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -1510,13 +1677,138 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 );
               })()}
             </div>
-            <div>
-              <Label htmlFor="visual_pursuits">Pursuits</Label>
-              <Input
-                id="visual_pursuits"
-                value={formData.visual_pursuits || ''}
-                onChange={(e) => updateField('visual_pursuits', e.target.value)}
-              />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Smooth Pursuits (Horizontal & Vertical)</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        Clinical Findings
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Select all observed findings. Interpretations are automatically stored for summary generation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              {/* Parse current visual_pursuits value */}
+              {(() => {
+                let selectedFindings: string[] = [];
+                let customNotes = "";
+                
+                try {
+                  const parsed = JSON.parse(formData.visual_pursuits || '{}');
+                  selectedFindings = parsed.findings || [];
+                  customNotes = parsed.notes || "";
+                } catch {
+                  // Legacy text format - keep as custom notes
+                  customNotes = formData.visual_pursuits || "";
+                }
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  updateField('visual_pursuits', JSON.stringify({
+                    findings: newFindings,
+                    notes: customNotes
+                  }));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  updateField('visual_pursuits', JSON.stringify({
+                    findings: selectedFindings,
+                    notes
+                  }));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {PURSUIT_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`pursuit-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`pursuit-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="pursuits_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="pursuits_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional pursuit observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div>
               <Label htmlFor="visual_convergence">Convergence</Label>
