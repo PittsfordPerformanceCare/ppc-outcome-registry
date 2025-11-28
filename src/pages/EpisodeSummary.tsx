@@ -12,6 +12,7 @@ import { PatientAccessManager } from "@/components/PatientAccessManager";
 import { NeuroExamDisplay } from "@/components/NeuroExamDisplay";
 import { NeuroExamComparison } from "@/components/NeuroExamComparison";
 import { NeuroLetterGenerator } from "@/components/NeuroLetterGenerator";
+import { NeuroExamScheduler } from "@/components/NeuroExamScheduler";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,6 +63,7 @@ interface ProcessedEpisode {
   referred_out?: boolean;
   referral_reason?: string;
   episode_type?: string;
+  patientEmail?: string;
 }
 
 interface FollowupData {
@@ -154,7 +156,8 @@ export default function EpisodeSummary() {
           compliance_notes: episodeData.compliance_notes || undefined,
           referred_out: episodeData.referred_out || undefined,
           referral_reason: episodeData.referral_reason || undefined,
-          episode_type: episodeData.episode_type || undefined
+          episode_type: episodeData.episode_type || undefined,
+          patientEmail: intakeForm?.email || undefined
         };
 
         setEpisode(processedEpisode);
@@ -758,6 +761,22 @@ export default function EpisodeSummary() {
       {/* Neurologic Examination - Only for Neurology Episodes */}
       {episode.episode_type === 'Neurology' && (
         <>
+          {/* Neuro Exam Scheduler */}
+          {!isCompleted && (
+            <div className="print:hidden">
+              <NeuroExamScheduler
+                episodeId={episode.episodeId}
+                patientName={episode.patientName}
+                patientEmail={episode.patientEmail}
+                clinicianName={episode.clinician}
+                onScheduled={() => {
+                  toast.success("Neurologic examination scheduled");
+                }}
+              />
+            </div>
+          )}
+
+          {/* Display Existing Exams */}
           {baselineExam && finalExam ? (
             <NeuroExamComparison baselineExam={baselineExam} finalExam={finalExam} />
           ) : baselineExam ? (
