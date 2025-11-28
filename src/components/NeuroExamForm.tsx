@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, CheckCircle2, Circle, AlertCircle, ChevronRight, List, Info, ArrowLeft, ArrowRight } from "lucide-react";
+import { Loader2, Save, CheckCircle2, Circle, AlertCircle, ChevronRight, List, Info, ArrowLeft, ArrowRight, Heart, Activity, Stethoscope, Eye, Brain, Navigation, Dumbbell } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -2109,93 +2109,120 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
         </div>
 
         <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as TabSection)} className="w-full">
-          <div ref={tabsListRef} className="sticky top-0 z-10 bg-background pb-4 border-b">
-            <TabsList className="grid grid-cols-7 w-full">
-              <TabsTrigger value="vitals" className="flex items-center gap-1.5">
-              {sectionProgress.vitals.percentage === 100 ? (
-                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              ) : sectionProgress.vitals.percentage > 0 ? (
-                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {sectionProgress.vitals.percentage}
-                </Badge>
-              ) : (
-                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-              <span>Vitals</span>
-            </TabsTrigger>
-            <TabsTrigger value="reflexes" className="flex items-center gap-1.5">
-              {sectionProgress.reflexes.percentage === 100 ? (
-                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              ) : sectionProgress.reflexes.percentage > 0 ? (
-                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {sectionProgress.reflexes.percentage}
-                </Badge>
-              ) : (
-                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-              <span>Reflexes</span>
-            </TabsTrigger>
-            <TabsTrigger value="auscultation" className="flex items-center gap-1.5">
-              {sectionProgress.auscultation.percentage === 100 ? (
-                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              ) : sectionProgress.auscultation.percentage > 0 ? (
-                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {sectionProgress.auscultation.percentage}
-                </Badge>
-              ) : (
-                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-              <span>Auscultation</span>
-            </TabsTrigger>
-            <TabsTrigger value="visual" className="flex items-center gap-1.5">
-              {sectionProgress.visual.percentage === 100 ? (
-                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              ) : sectionProgress.visual.percentage > 0 ? (
-                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {sectionProgress.visual.percentage}
-                </Badge>
-              ) : (
-                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-              <span>Visual</span>
-            </TabsTrigger>
-            <TabsTrigger value="neuro" className="flex items-center gap-1.5">
-              {sectionProgress.neuro.percentage === 100 ? (
-                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              ) : sectionProgress.neuro.percentage > 0 ? (
-                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {sectionProgress.neuro.percentage}
-                </Badge>
-              ) : (
-                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-              <span>Neuro</span>
-            </TabsTrigger>
-            <TabsTrigger value="vestibular" className="flex items-center gap-1.5">
-              {sectionProgress.vestibular.percentage === 100 ? (
-                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              ) : sectionProgress.vestibular.percentage > 0 ? (
-                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {sectionProgress.vestibular.percentage}
-                </Badge>
-              ) : (
-                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-              <span>Vestibular</span>
-            </TabsTrigger>
-            <TabsTrigger value="motor" className="flex items-center gap-1.5">
-              {sectionProgress.motor.percentage === 100 ? (
-                <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-              ) : sectionProgress.motor.percentage > 0 ? (
-                <Badge variant="secondary" className="h-5 w-5 p-0 flex items-center justify-center text-xs">
-                  {sectionProgress.motor.percentage}
-                </Badge>
-              ) : (
-                <Circle className="h-3.5 w-3.5 text-muted-foreground" />
-              )}
-              <span>Motor/Inputs</span>
-            </TabsTrigger>
-          </TabsList>
+          <div ref={tabsListRef} className="sticky top-0 z-10 bg-background pb-2 border-b shadow-sm">
+            <TabsList className="grid grid-cols-7 w-full h-auto p-1">
+              <TabsTrigger value="vitals" className="flex flex-col items-center gap-1 py-3 px-2 relative data-[state=active]:bg-primary/10 transition-all">
+                <div className="flex items-center gap-1.5">
+                  <Heart className="h-4 w-4" />
+                  {sectionProgress.vitals.percentage === 100 && (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary animate-scale-in" />
+                  )}
+                </div>
+                <span className="text-xs font-medium">Vitals</span>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ width: `${sectionProgress.vitals.percentage}%` }}
+                  />
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger value="reflexes" className="flex flex-col items-center gap-1 py-3 px-2 relative data-[state=active]:bg-primary/10 transition-all">
+                <div className="flex items-center gap-1.5">
+                  <Activity className="h-4 w-4" />
+                  {sectionProgress.reflexes.percentage === 100 && (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary animate-scale-in" />
+                  )}
+                </div>
+                <span className="text-xs font-medium">Reflexes</span>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ width: `${sectionProgress.reflexes.percentage}%` }}
+                  />
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger value="auscultation" className="flex flex-col items-center gap-1 py-3 px-2 relative data-[state=active]:bg-primary/10 transition-all">
+                <div className="flex items-center gap-1.5">
+                  <Stethoscope className="h-4 w-4" />
+                  {sectionProgress.auscultation.percentage === 100 && (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary animate-scale-in" />
+                  )}
+                </div>
+                <span className="text-xs font-medium">Auscultation</span>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ width: `${sectionProgress.auscultation.percentage}%` }}
+                  />
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger value="visual" className="flex flex-col items-center gap-1 py-3 px-2 relative data-[state=active]:bg-primary/10 transition-all">
+                <div className="flex items-center gap-1.5">
+                  <Eye className="h-4 w-4" />
+                  {sectionProgress.visual.percentage === 100 && (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary animate-scale-in" />
+                  )}
+                </div>
+                <span className="text-xs font-medium">Visual</span>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ width: `${sectionProgress.visual.percentage}%` }}
+                  />
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger value="neuro" className="flex flex-col items-center gap-1 py-3 px-2 relative data-[state=active]:bg-primary/10 transition-all">
+                <div className="flex items-center gap-1.5">
+                  <Brain className="h-4 w-4" />
+                  {sectionProgress.neuro.percentage === 100 && (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary animate-scale-in" />
+                  )}
+                </div>
+                <span className="text-xs font-medium">Neuro</span>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ width: `${sectionProgress.neuro.percentage}%` }}
+                  />
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger value="vestibular" className="flex flex-col items-center gap-1 py-3 px-2 relative data-[state=active]:bg-primary/10 transition-all">
+                <div className="flex items-center gap-1.5">
+                  <Navigation className="h-4 w-4" />
+                  {sectionProgress.vestibular.percentage === 100 && (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary animate-scale-in" />
+                  )}
+                </div>
+                <span className="text-xs font-medium">Vestibular</span>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ width: `${sectionProgress.vestibular.percentage}%` }}
+                  />
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger value="motor" className="flex flex-col items-center gap-1 py-3 px-2 relative data-[state=active]:bg-primary/10 transition-all">
+                <div className="flex items-center gap-1.5">
+                  <Dumbbell className="h-4 w-4" />
+                  {sectionProgress.motor.percentage === 100 && (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary animate-scale-in" />
+                  )}
+                </div>
+                <span className="text-xs font-medium">Motor/Inputs</span>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-300 ease-out"
+                    style={{ width: `${sectionProgress.motor.percentage}%` }}
+                  />
+                </div>
+              </TabsTrigger>
+            </TabsList>
           </div>
 
           {/* Vitals Tab */}
