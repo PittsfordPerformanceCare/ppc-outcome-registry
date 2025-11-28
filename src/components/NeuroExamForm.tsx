@@ -3927,6 +3927,38 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                       ))}
                     </div>
 
+                    {/* Escape time input fields */}
+                    <div>
+                      <Label className="text-sm font-medium mb-3 block">
+                        Record Exact Escape Time (seconds)
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="pupil_escape_left" className="text-sm text-muted-foreground">
+                            Left Pupil Escape Time
+                          </Label>
+                          <Input
+                            id="pupil_escape_left"
+                            placeholder="e.g., 8 seconds"
+                            value={formData.neuro_pupillary_fatigue_left || ''}
+                            onChange={(e) => updateField('neuro_pupillary_fatigue_left', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="pupil_escape_right" className="text-sm text-muted-foreground">
+                            Right Pupil Escape Time
+                          </Label>
+                          <Input
+                            id="pupil_escape_right"
+                            placeholder="e.g., 12 seconds"
+                            value={formData.neuro_pupillary_fatigue_right || ''}
+                            onChange={(e) => updateField('neuro_pupillary_fatigue_right', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Custom notes field */}
                     <div>
                       <Label htmlFor="pupil_fatigue_custom_notes">
