@@ -60,7 +60,9 @@ const SECTION_FIELDS = {
     'bp_standing_3min_right', 'bp_standing_3min_left',
     'o2_saturation_supine_right', 'o2_saturation_supine_left',
     'heart_rate_supine_right', 'heart_rate_supine_left',
-    'temperature_right', 'temperature_left', 'vitals_notes'
+    'temperature_right', 'temperature_left', 
+    'o2_saturation_walking', 'walking_o2_notes',
+    'vitals_notes'
   ],
   reflexes: [
     'reflex_tricep_right', 'reflex_tricep_left', 'reflex_bicep_right', 'reflex_bicep_left',
@@ -169,6 +171,38 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
       systolic: systolicDiff,
       diastolic: diastolicDiff,
       hasWarning: systolicDiff >= 5 || diastolicDiff >= 5
+    };
+  };
+
+  // Get lowest supine O2 reading and side
+  const getLowestSupineO2 = (): { value: number | null; side: 'right' | 'left' | null } => {
+    const rightO2 = formData.o2_saturation_supine_right ? parseFloat(formData.o2_saturation_supine_right) : null;
+    const leftO2 = formData.o2_saturation_supine_left ? parseFloat(formData.o2_saturation_supine_left) : null;
+    
+    if (rightO2 === null && leftO2 === null) return { value: null, side: null };
+    if (rightO2 === null) return { value: leftO2, side: 'left' };
+    if (leftO2 === null) return { value: rightO2, side: 'right' };
+    
+    return rightO2 <= leftO2 
+      ? { value: rightO2, side: 'right' }
+      : { value: leftO2, side: 'left' };
+  };
+
+  // Check if walking O2 dropped
+  const checkWalkingO2Drop = (): { hasWarning: boolean; baseline: number | null; walking: number | null; drop: number | null } => {
+    const baseline = getLowestSupineO2();
+    const walking = formData.o2_saturation_walking ? parseFloat(formData.o2_saturation_walking) : null;
+    
+    if (baseline.value === null || walking === null) {
+      return { hasWarning: false, baseline: baseline.value, walking, drop: null };
+    }
+    
+    const drop = baseline.value - walking;
+    return {
+      hasWarning: drop > 0,
+      baseline: baseline.value,
+      walking,
+      drop: drop > 0 ? drop : null
     };
   };
 
@@ -975,6 +1009,101 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 <div>Temperature</div>
                 <ValidatedInput field="temperature_right" side="right" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
                 <ValidatedInput field="temperature_left" side="left" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
+              </div>
+            </div>
+
+            <Separator />
+
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Walking Oxygen Saturation Test</h3>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        60-Second Test
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Place oximeter on finger with lowest supine O2 reading. Patient walks for 60 seconds. 
+                        O2 should remain stable or increase. A drop may indicate exercise-induced desaturation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+
+              <div className="space-y-4">
+                {(() => {
+                  const lowestO2 = getLowestSupineO2();
+                  const walkingCheck = checkWalkingO2Drop();
+                  
+                  return (
+                    <>
+                      {lowestO2.value !== null && (
+                        <Alert className={lowestO2.side === 'right' ? 'bg-orange-50 dark:bg-orange-950' : 'bg-blue-50 dark:bg-blue-950'}>
+                          <Info className="h-4 w-4" />
+                          <AlertDescription>
+                            <strong>Baseline Reading:</strong> {lowestO2.side === 'right' ? 'Right' : 'Left'} finger - {lowestO2.value}% O2
+                            {lowestO2.value < 95 && ' (Below normal range)'}
+                          </AlertDescription>
+                        </Alert>
+                      )}
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="o2_saturation_walking">
+                            O2 Saturation After 60s Walk
+                            <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                          </Label>
+                          <div className="flex gap-2 items-start">
+                            <div className="flex-1">
+                              <Input
+                                id="o2_saturation_walking"
+                                value={formData.o2_saturation_walking || ''}
+                                onChange={(e) => updateField('o2_saturation_walking', e.target.value)}
+                                placeholder="98"
+                                className={walkingCheck.hasWarning ? 'border-destructive' : ''}
+                              />
+                              {walkingCheck.hasWarning && walkingCheck.drop !== null && (
+                                <p className="text-xs text-destructive flex items-center gap-1 mt-1">
+                                  <AlertCircle className="h-3 w-3" />
+                                  O2 dropped {walkingCheck.drop.toFixed(1)}% during walking test
+                                </p>
+                              )}
+                            </div>
+                            {walkingCheck.hasWarning && (
+                              <Badge variant="destructive" className="mt-2">
+                                ⚠️ Drop Detected
+                              </Badge>
+                            )}
+                            {!walkingCheck.hasWarning && walkingCheck.walking !== null && walkingCheck.baseline !== null && (
+                              <Badge variant="secondary" className="mt-2">
+                                ✓ Stable
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="walking_o2_notes">
+                            Test Notes
+                            <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                          </Label>
+                          <Textarea
+                            id="walking_o2_notes"
+                            value={formData.walking_o2_notes || ''}
+                            onChange={(e) => updateField('walking_o2_notes', e.target.value)}
+                            placeholder="Patient tolerance, symptoms during test, recovery time..."
+                            rows={3}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
