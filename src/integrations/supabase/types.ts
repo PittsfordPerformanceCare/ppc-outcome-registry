@@ -1112,6 +1112,39 @@ export type Database = {
           },
         ]
       }
+      neurologic_exam_drafts: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          draft_data: Json
+          episode_id: string
+          id: string
+          last_saved_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          draft_data?: Json
+          episode_id: string
+          id?: string
+          last_saved_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          draft_data?: Json
+          episode_id?: string
+          id?: string
+          last_saved_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       neurologic_exams: {
         Row: {
           auscultation_abdomen: string | null
