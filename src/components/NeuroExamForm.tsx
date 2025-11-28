@@ -913,6 +913,205 @@ export const getHeartAuscultationInterpretations = (selectedFindings: string[]):
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for Lung Auscultation with interpretations
+const LUNG_AUSCULTATION_FINDINGS = [
+  {
+    category: "Respiratory Pattern",
+    findings: [
+      {
+        label: "Respirations even, controlled, and diaphragmatic",
+        interpretation: "Normal respiratory pattern."
+      },
+      {
+        label: "Apical breathing dominant",
+        interpretation: "Sympathetic dominance / reduced vagal diaphragm drive (common in PCS, anxiety, dysautonomia)."
+      },
+      {
+        label: "Shallow respirations with poor diaphragm expansion",
+        interpretation: "Ventral vagal underactivation; cerebellar–brainstem dyscoordination."
+      },
+      {
+        label: "Irregular rhythm or inconsistent depth of respiration",
+        interpretation: "Brainstem respiratory pattern generator instability (pre-Bötzinger involvement)."
+      },
+      {
+        label: "Visible paradoxical breathing pattern",
+        interpretation: "Abnormal intercostal–diaphragm timing → central dysregulation."
+      }
+    ]
+  },
+  {
+    category: "Breath Sounds",
+    findings: [
+      {
+        label: "Clear vesicular breath sounds bilaterally without added sounds",
+        interpretation: "Normal breath sounds."
+      },
+      {
+        label: "Diminished breath sounds at bases",
+        interpretation: "Poor thoracic expansion → decreased autonomic flexibility or posture-related restriction."
+      },
+      {
+        label: "Diminished breath sounds on one side",
+        interpretation: "Possible unilateral motor drive deficit (thoracic spinal segment involvement)."
+      },
+      {
+        label: "Prolonged expiratory phase",
+        interpretation: "Increased sympathetic tone or bronchoconstriction tendency."
+      }
+    ]
+  },
+  {
+    category: "Adventitious Sounds - Wheezes",
+    findings: [
+      {
+        label: "Intermittent expiratory wheeze noted",
+        interpretation: "Bronchoconstriction; may correlate with sympathetic overactivity or high vagal threat physiology."
+      }
+    ]
+  },
+  {
+    category: "Adventitious Sounds - Crackles",
+    findings: [
+      {
+        label: "Fine crackles at lower lobes",
+        interpretation: "Fluid shift / restrictive physiology; may reflect poor autonomic control of thoracic perfusion."
+      }
+    ]
+  },
+  {
+    category: "Adventitious Sounds - Other",
+    findings: [
+      {
+        label: "Low-pitched rhonchi clearing with cough",
+        interpretation: "Upper airway clearance issue—not central."
+      },
+      {
+        label: "Inspiratory stridor detected",
+        interpretation: "Immediate airway concern; possible laryngeal dysfunction or vagal recurrent laryngeal nerve fatigue."
+      }
+    ]
+  },
+  {
+    category: "Lung Field Symmetry",
+    findings: [
+      {
+        label: "Symmetric chest expansion",
+        interpretation: "Normal chest wall expansion."
+      },
+      {
+        label: "Asymmetric chest expansion (L < R)",
+        interpretation: "Unilateral motor output weakness; possible thoracic spinal segment dysfunction or cerebellar-cortical asymmetry."
+      },
+      {
+        label: "Reduced lower rib expansion",
+        interpretation: "Diaphragmatic underdrive → vagal withdrawal."
+      },
+      {
+        label: "Upper chest recruitment > lower chest activation",
+        interpretation: "Sympathetic 'fight/flight' respiratory pattern."
+      }
+    ]
+  },
+  {
+    category: "Work of Breathing",
+    findings: [
+      {
+        label: "No accessory muscle recruitment",
+        interpretation: "Normal breathing effort."
+      },
+      {
+        label: "Accessory muscle recruitment (SCM/scalenes)",
+        interpretation: "Sympathetic overactivation; decreased diaphragmatic efficiency."
+      },
+      {
+        label: "Breathing effort increases with minimal exertion",
+        interpretation: "CNS fatigue signature; autonomic dysregulation."
+      },
+      {
+        label: "Audible sighing or breath-holding pattern",
+        interpretation: "Frontal–limbic dysregulation; common in concussion, stress physiology."
+      }
+    ]
+  },
+  {
+    category: "Vocal Resonance",
+    findings: [
+      {
+        label: "Normal symmetrical vocal resonance",
+        interpretation: "Normal vocal transmission through lung tissue."
+      },
+      {
+        label: "Diminished vocal resonance on the right",
+        interpretation: "Reduced lung inflation or mechanical restriction → could indicate postural asymmetry tied to cerebellar/vestibular imbalance."
+      },
+      {
+        label: "Increased vocal resonance over upper lobes",
+        interpretation: "Consolidation vs. poor ventilation pattern."
+      }
+    ]
+  },
+  {
+    category: "Positional Influence",
+    findings: [
+      {
+        label: "Breath sounds improve significantly when supine",
+        interpretation: "Orthostatic physiology; sympathetic overactivation while upright."
+      },
+      {
+        label: "Breath sounds diminish in seated posture",
+        interpretation: "Postural collapse, decreased thoracic drive → brainstem/vestibular contribution."
+      },
+      {
+        label: "Increased audible breathing with light exertion",
+        interpretation: "Autonomic mismatch; poor aerobic ramp-up."
+      },
+      {
+        label: "Delayed respiratory recovery post-exertion",
+        interpretation: "Low vagal reactivation; autonomic stress."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation",
+    findings: [
+      {
+        label: "Dizziness with deep breathing",
+        interpretation: "Cerebellar-vestibular mismatch or CO₂ instability."
+      },
+      {
+        label: "Head pressure with slow inhalation",
+        interpretation: "Autonomic dysregulation / intracranial pressure sensitivity."
+      },
+      {
+        label: "Chest tightness with normal breath sounds",
+        interpretation: "Sympathetic overdrive; not pulmonary."
+      },
+      {
+        label: "Fatigue when performing diaphragm-driven breathing",
+        interpretation: "Brainstem–vagal fatigue signature."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for a lung auscultation finding
+export const getLungAuscultationInterpretation = (findingLabel: string): string => {
+  for (const category of LUNG_AUSCULTATION_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected lung auscultation findings
+export const getLungAuscultationInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getLungAuscultationInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -2176,15 +2375,138 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 );
               })()}
             </div>
-            <div>
-              <Label htmlFor="auscultation_lungs">Lungs</Label>
-              <Textarea
-                id="auscultation_lungs"
-                placeholder="Lung auscultation findings..."
-                value={formData.auscultation_lungs || ''}
-                onChange={(e) => updateField('auscultation_lungs', e.target.value)}
-                rows={2}
-              />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Lung Auscultation</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        Clinical Findings
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Select all observed findings. Interpretations are automatically stored for summary generation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              {/* Parse current auscultation_lungs value */}
+              {(() => {
+                let selectedFindings: string[] = [];
+                let customNotes = "";
+                
+                try {
+                  const parsed = JSON.parse(formData.auscultation_lungs || '{}');
+                  selectedFindings = parsed.findings || [];
+                  customNotes = parsed.notes || "";
+                } catch {
+                  // Legacy text format - keep as custom notes
+                  customNotes = formData.auscultation_lungs || "";
+                }
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  updateField('auscultation_lungs', JSON.stringify({
+                    findings: newFindings,
+                    notes: customNotes
+                  }));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  updateField('auscultation_lungs', JSON.stringify({
+                    findings: selectedFindings,
+                    notes
+                  }));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {LUNG_AUSCULTATION_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`lungs-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`lungs-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="lungs_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="lungs_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional lung auscultation observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div>
               <Label htmlFor="auscultation_abdomen">Abdomen</Label>
