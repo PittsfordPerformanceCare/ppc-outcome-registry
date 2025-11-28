@@ -540,6 +540,201 @@ export const getOPKInterpretations = (selectedFindings: string[]): Array<{findin
   })).filter(item => item.interpretation !== "");
 };
 
+// Clinical findings for Visual Convergence with interpretations
+const CONVERGENCE_FINDINGS = [
+  {
+    category: "Near Point of Convergence (NPC)",
+    findings: [
+      {
+        label: "NPC break at 3–6 cm, within normal limits",
+        interpretation: "Normal near point of convergence."
+      },
+      {
+        label: "NPC break at 12–20 cm, indicating convergence insufficiency",
+        interpretation: "Common in PCS, migraine, autonomic dysfunction."
+      },
+      {
+        label: "NPC break inconsistent across trials",
+        interpretation: "Cerebellar–frontal fatigue pattern; reduced endurance or attentional drive."
+      },
+      {
+        label: "Asymmetric NPC break (R > L accommodative convergence)",
+        interpretation: "Suggests asymmetric oculomotor activation or dominance pattern."
+      }
+    ]
+  },
+  {
+    category: "Recovery Point",
+    findings: [
+      {
+        label: "Recovery smooth and within normal range",
+        interpretation: "Normal convergence recovery."
+      },
+      {
+        label: "Delayed recovery following break",
+        interpretation: "Brainstem–oculomotor integrator fatigue or frontal endurance deficit."
+      },
+      {
+        label: "Recovery incomplete without blinking/resetting",
+        interpretation: "Binocular instability or autonomic-driven disintegration."
+      }
+    ]
+  },
+  {
+    category: "Quality of Convergence",
+    findings: [
+      {
+        label: "Convergence is smooth and symmetrical",
+        interpretation: "Normal convergence quality."
+      },
+      {
+        label: "Convergence tremulous approaching end-range",
+        interpretation: "Cranial nerve III vergence fatigue; brainstem involvement."
+      },
+      {
+        label: "Eyes drift outward during maintenance (exophoria tendency)",
+        interpretation: "Poor fusional vergence capacity; common post-concussion."
+      },
+      {
+        label: "Convergence maintained only briefly before decompensation",
+        interpretation: "Oculomotor endurance insufficiency."
+      }
+    ]
+  },
+  {
+    category: "Binocular Integration",
+    findings: [
+      {
+        label: "Binocular alignment maintained throughout",
+        interpretation: "Normal binocular integration."
+      },
+      {
+        label: "Intermittent diplopia near the break point",
+        interpretation: "Suggests breakdown in fusional reserves."
+      },
+      {
+        label: "Patient suppresses one eye to maintain clarity",
+        interpretation: "Decompensation strategy; often frontal–brainstem fatigue signature."
+      },
+      {
+        label: "Marked exodeviation during convergence",
+        interpretation: "Significant convergence insufficiency; CN III vergence system overload."
+      }
+    ]
+  },
+  {
+    category: "Compensatory Behaviors",
+    findings: [
+      {
+        label: "Patient moves the head toward the target to compensate",
+        interpretation: "Suggests difficulty generating near-point convergence neurologically."
+      },
+      {
+        label: "Patient blinks repeatedly as the target approaches",
+        interpretation: "Visual-autonomic trigger; attempt to reset vergence."
+      },
+      {
+        label: "Patient demonstrates increased body tension during convergence",
+        interpretation: "Autonomic co-activation—important in dysautonomia or PCS."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation - Neurologic",
+    findings: [
+      {
+        label: "Convergence provokes dizziness/lightheadedness",
+        interpretation: "Vestibular–ocular interaction breakdown."
+      },
+      {
+        label: "Convergence provokes head pressure or headache",
+        interpretation: "Frontal load intolerance; common in PCS and migraine."
+      },
+      {
+        label: "Convergence causes eye strain or burning sensation",
+        interpretation: "Overutilization of vergence–accommodation system."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation - Autonomic",
+    findings: [
+      {
+        label: "Convergence provokes heat, sweating, or nausea",
+        interpretation: "Autonomic dysregulation; clinically meaningful."
+      }
+    ]
+  },
+  {
+    category: "Symptom Provocation - Visual",
+    findings: [
+      {
+        label: "Convergence causes diplopia",
+        interpretation: "Fusional breakdown; often aligns with severity in concussion."
+      },
+      {
+        label: "Convergence causes blurred vision",
+        interpretation: "Accommodation-vergence coupling dysfunction."
+      },
+      {
+        label: "Difficulty maintaining focus during convergence",
+        interpretation: "Sustained vergence instability; common in dysautonomia."
+      }
+    ]
+  },
+  {
+    category: "Fatigability & Endurance",
+    findings: [
+      {
+        label: "Convergence remains stable over repeated trials",
+        interpretation: "Normal convergence endurance."
+      },
+      {
+        label: "Performance declines across trials, requiring more corrections",
+        interpretation: "Oculomotor endurance deficit; frontal or brainstem fatigue."
+      },
+      {
+        label: "NPC worsens significantly after 2–3 repetitions",
+        interpretation: "Classic in post-concussion syndrome—highly clinically relevant."
+      }
+    ]
+  },
+  {
+    category: "Accommodation Relationship",
+    findings: [
+      {
+        label: "Convergence accompanied by appropriate accommodative response",
+        interpretation: "Normal vergence–accommodation coupling."
+      },
+      {
+        label: "Convergence achieved but accommodation lags",
+        interpretation: "Impaired coupling; can show parietal or autonomic involvement."
+      },
+      {
+        label: "Accommodation present without adequate convergence",
+        interpretation: "Faulty vergence drive → CN III vergence pathway issue."
+      }
+    ]
+  }
+];
+
+// Helper to get interpretation for a convergence finding
+export const getConvergenceInterpretation = (findingLabel: string): string => {
+  for (const category of CONVERGENCE_FINDINGS) {
+    const finding = category.findings.find(f => f.label === findingLabel);
+    if (finding) return finding.interpretation;
+  }
+  return "";
+};
+
+// Helper to get all interpretations for selected convergence findings
+export const getConvergenceInterpretations = (selectedFindings: string[]): Array<{finding: string, interpretation: string}> => {
+  return selectedFindings.map(finding => ({
+    finding,
+    interpretation: getConvergenceInterpretation(finding)
+  })).filter(item => item.interpretation !== "");
+};
+
 // Tab sections in order
 const TAB_SECTIONS = ['vitals', 'reflexes', 'auscultation', 'visual', 'neuro', 'vestibular', 'motor'] as const;
 type TabSection = typeof TAB_SECTIONS[number];
@@ -2113,13 +2308,138 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                 );
               })()}
             </div>
-            <div>
-              <Label htmlFor="visual_convergence">Convergence</Label>
-              <Input
-                id="visual_convergence"
-                value={formData.visual_convergence || ''}
-                onChange={(e) => updateField('visual_convergence', e.target.value)}
-              />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>Visual Convergence</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help">
+                        <Info className="h-3 w-3 mr-1" />
+                        Clinical Findings
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="text-sm max-w-xs">
+                        Select all observed findings. Interpretations are automatically stored for summary generation.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              
+              {/* Parse current visual_convergence value */}
+              {(() => {
+                let selectedFindings: string[] = [];
+                let customNotes = "";
+                
+                try {
+                  const parsed = JSON.parse(formData.visual_convergence || '{}');
+                  selectedFindings = parsed.findings || [];
+                  customNotes = parsed.notes || "";
+                } catch {
+                  // Legacy text format - keep as custom notes
+                  customNotes = formData.visual_convergence || "";
+                }
+
+                const handleFindingToggle = (findingLabel: string) => {
+                  const newFindings = selectedFindings.includes(findingLabel)
+                    ? selectedFindings.filter(f => f !== findingLabel)
+                    : [...selectedFindings, findingLabel];
+                  
+                  updateField('visual_convergence', JSON.stringify({
+                    findings: newFindings,
+                    notes: customNotes
+                  }));
+                };
+
+                const handleNotesChange = (notes: string) => {
+                  updateField('visual_convergence', JSON.stringify({
+                    findings: selectedFindings,
+                    notes
+                  }));
+                };
+
+                return (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {CONVERGENCE_FINDINGS.map((category) => (
+                        <Card key={category.category} className="border-muted">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-sm font-medium">{category.category}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-2">
+                            {category.findings.map((finding) => (
+                              <div key={finding.label} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`convergence-${finding.label}`}
+                                  checked={selectedFindings.includes(finding.label)}
+                                  onCheckedChange={() => handleFindingToggle(finding.label)}
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <Label
+                                    htmlFor={`convergence-${finding.label}`}
+                                    className="text-sm font-normal leading-tight cursor-pointer"
+                                  >
+                                    {finding.label}
+                                  </Label>
+                                  {selectedFindings.includes(finding.label) && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <p className="text-xs text-muted-foreground mt-1 cursor-help flex items-center gap-1">
+                                            <Info className="h-3 w-3" />
+                                            {finding.interpretation.substring(0, 50)}...
+                                          </p>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="max-w-sm">
+                                          <p className="text-sm">{finding.interpretation}</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {/* Custom notes field */}
+                    <div>
+                      <Label htmlFor="convergence_custom_notes">
+                        Additional Observations
+                        <Badge variant="secondary" className="ml-2 text-xs">Optional</Badge>
+                      </Label>
+                      <Textarea
+                        id="convergence_custom_notes"
+                        value={customNotes}
+                        onChange={(e) => handleNotesChange(e.target.value)}
+                        placeholder="Additional convergence observations not covered above..."
+                        rows={3}
+                      />
+                    </div>
+
+                    {/* Summary of selected findings */}
+                    {selectedFindings.length > 0 && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>{selectedFindings.length} finding{selectedFindings.length !== 1 ? 's' : ''} selected</strong>
+                          <div className="mt-2 flex flex-wrap gap-1">
+                            {selectedFindings.map(finding => (
+                              <Badge key={finding} variant="secondary" className="text-xs">
+                                {finding.split(' ').slice(0, 3).join(' ')}...
+                              </Badge>
+                            ))}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
             <div>
               <Label htmlFor="visual_maddox_rod">Maddox Rod</Label>
