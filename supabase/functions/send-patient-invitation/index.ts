@@ -94,7 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send invitation email
     const appUrl = Deno.env.get("APP_URL") || "https://your-app-url.com";
-    const invitationLink = `${appUrl}/patient-access?code=${invitationCode}`;
+    const invitationLink = `${appUrl}/patient-auth?code=${invitationCode}`;
 
     const emailHtml = `
       <!DOCTYPE html>
