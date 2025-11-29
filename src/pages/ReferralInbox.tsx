@@ -322,22 +322,22 @@ export default function ReferralInbox() {
         {/* Detail Dialog */}
         {selectedInquiry && (
           <Dialog open={!!selectedInquiry} onOpenChange={() => setSelectedInquiry(null)}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader className="sticky top-0 bg-background z-10 pb-4 border-b">
+                <DialogTitle className="flex items-center gap-2 text-xl">
                   {selectedInquiry.care_for === 'self' ? (
-                    <UserCircle className="h-5 w-5" />
+                    <UserCircle className="h-6 w-6" />
                   ) : (
-                    <Baby className="h-5 w-5" />
+                    <Baby className="h-6 w-6" />
                   )}
                   {selectedInquiry.name}
                 </DialogTitle>
-                <DialogDescription>
+                <DialogDescription className="text-base">
                   Submitted {formatDistanceToNow(new Date(selectedInquiry.created_at), { addSuffix: true })}
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-4">
+              <div className="space-y-4 pt-4">
                 <div>
                   <Label>Contact Information</Label>
                   <div className="mt-2 space-y-1 text-sm">
