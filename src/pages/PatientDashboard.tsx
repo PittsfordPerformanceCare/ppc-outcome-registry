@@ -349,6 +349,13 @@ export default function PatientDashboard() {
         throw new Error(`This code was issued for ${patientEmail}`);
       }
 
+      // Get the episode to extract the patient name
+      const { data: episodeData } = await supabase
+        .from("episodes")
+        .select("patient_name")
+        .eq("id", accessRecord.episode_id)
+        .single();
+
       const { error: updateError } = await supabase
         .from("patient_episode_access")
         .update({ 
@@ -358,6 +365,16 @@ export default function PatientDashboard() {
         .eq("id", accessRecord.id);
 
       if (updateError) throw updateError;
+
+      // Update patient account with correct name from episode
+      if (episodeData?.patient_name) {
+        await supabase
+          .from("patient_accounts")
+          .update({ 
+            full_name: episodeData.patient_name
+          })
+          .eq("id", user!.id);
+      }
 
       toast({
         title: "Success!",
