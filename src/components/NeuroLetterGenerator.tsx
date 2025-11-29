@@ -23,6 +23,12 @@ export const NeuroLetterGenerator = ({ episodeId, open, onOpenChange }: NeuroLet
   const generateLetter = async (type: "employee" | "school") => {
     setLoading(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
       const { data, error } = await supabase.functions.invoke("generate-neuro-letter", {
         body: { episodeId, letterType: type }
       });
@@ -38,15 +44,34 @@ export const NeuroLetterGenerator = ({ episodeId, open, onOpenChange }: NeuroLet
         return;
       }
 
+      const letterContent = data.letter;
+      
+      // Save the letter to the database
+      const { error: saveError } = await supabase
+        .from("patient_letters")
+        .insert({
+          episode_id: episodeId,
+          user_id: user.id,
+          letter_type: type,
+          title: type === "employee" ? "Employer Return-to-Work Letter" : "School Return Letter",
+          content: letterContent,
+          generated_by: user.id,
+        });
+
+      if (saveError) {
+        console.error("Error saving letter:", saveError);
+        // Don't throw - still show the letter even if save fails
+      }
+
       if (type === "employee") {
-        setEmployeeLetter(data.letter);
+        setEmployeeLetter(letterContent);
       } else {
-        setSchoolLetter(data.letter);
+        setSchoolLetter(letterContent);
       }
 
       toast({
         title: "Letter Generated",
-        description: `${type === "employee" ? "Employee" : "School"} letter has been generated successfully.`
+        description: `${type === "employee" ? "Employee" : "School"} letter has been generated and saved.`
       });
     } catch (error: any) {
       console.error("Error generating letter:", error);
