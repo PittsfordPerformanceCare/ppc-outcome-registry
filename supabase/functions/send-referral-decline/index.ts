@@ -5,7 +5,17 @@ const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
     const { inquiryId, name, email, declineReason } = await req.json();
 
@@ -56,7 +66,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ success: true, message: "Decline email sent" }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       }
     );
@@ -65,7 +75,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,
       }
     );
