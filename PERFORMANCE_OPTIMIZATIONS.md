@@ -73,11 +73,29 @@ Added loading states for lazy-loaded components:
 
 ## Future Optimization Opportunities
 
+### Planned Optimizations:
+
 1. **Code splitting by wizard step**: Each step could be its own lazy-loaded component
 2. **Defer drag-and-drop**: The DnD Kit libraries could be loaded only on the concerns step
 3. **Image optimization**: If clinic logos are used, implement next-gen formats (WebP/AVIF)
 4. **Service Worker caching**: Implement offline-first strategy for the intake form
 5. **Prefetching**: Prefetch signature component when user reaches step 4 (review)
+
+### Completed Optimizations:
+
+#### ✅ Optimized Form Validation (Step 2)
+- **What**: Changed validation strategy from `onChange` to `onBlur` with step-based validation
+- **Why**: Reduces validation overhead during typing - validations only run when user leaves a field
+- **Impact**: 
+  - Fewer Zod schema validations during form interaction
+  - Faster typing experience (no lag)
+  - More efficient CPU usage
+  - Better battery life on mobile devices
+- **Implementation**:
+  - Set `mode: "onBlur"` on form initialization
+  - Added `reValidateMode: "onChange"` for better UX after first validation
+  - Modified `validateStep()` to use `form.trigger()` with only the fields required for current step
+  - Prevents validation of entire form schema when only one step is active
 
 ## Testing Recommendations
 
