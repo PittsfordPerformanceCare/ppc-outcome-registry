@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, X, Smartphone } from "lucide-react";
+import { Smartphone, Share } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -85,49 +85,43 @@ export const PatientPWAInstallPrompt = () => {
   if (isStandalone || !showPrompt) return null;
 
   return (
-    <Card className="mb-6 border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
-      <CardContent className="pt-6 pb-6">
-        <div className="flex items-start gap-4">
-          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <Smartphone className="h-6 w-6 text-primary" />
-          </div>
+    <Card className="shadow-sm border-primary/20">
+      <CardContent className="p-3">
+        <div className="flex items-center gap-3">
+          <Smartphone className="h-5 w-5 text-primary flex-shrink-0" />
           
-          <div className="flex-1 space-y-3">
-            <div>
-              <h3 className="font-semibold text-lg mb-1">
-                Install PPC Companion App
-              </h3>
-              
-              {isIOS ? (
-                <div className="text-sm space-y-2">
-                  <p className="text-muted-foreground">Get quick access from your home screen:</p>
-                  <ol className="list-decimal list-inside space-y-1 text-muted-foreground ml-2">
-                    <li>Tap the <strong>Share button</strong> (⬆️) at the bottom</li>
-                    <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
-                    <li>Tap <strong>"Add"</strong> - Done! 🎉</li>
-                  </ol>
-                </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {deferredPrompt 
-                    ? "Install this app on your device for offline access and a better experience."
-                    : "Tap the menu (⋮) in your browser and select 'Install app' or 'Add to Home screen'."}
-                </p>
-              )}
-            </div>
+          <div className="flex-1 min-w-0">
+            {isIOS ? (
+              <p className="text-xs text-muted-foreground">
+                Tap <Share className="inline h-3 w-3" /> then "Add to Home Screen" for easy access
+              </p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                {deferredPrompt 
+                  ? "Install for quick access"
+                  : "Use your browser menu to install"}
+              </p>
+            )}
+          </div>
 
-            <div className="flex gap-2">
-              {!isIOS && deferredPrompt && (
-                <Button onClick={handleInstallClick} size="sm">
-                  <Download className="mr-2 h-4 w-4" />
-                  Install Now
-                </Button>
-              )}
-              <Button onClick={handleDismiss} variant="ghost" size="sm">
-                <X className="mr-2 h-4 w-4" />
-                Maybe Later
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {!isIOS && deferredPrompt && (
+              <Button
+                size="sm"
+                onClick={handleInstallClick}
+                className="h-7 px-3 text-xs"
+              >
+                Install
               </Button>
-            </div>
+            )}
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleDismiss}
+              className="h-7 px-2 text-xs"
+            >
+              Dismiss
+            </Button>
           </div>
         </div>
       </CardContent>
