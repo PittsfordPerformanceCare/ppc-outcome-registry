@@ -161,6 +161,9 @@ const handler = async (req: Request): Promise<Response> => {
             .code-box { background: white; border: 2px dashed #0EA5E9; padding: 20px; margin: 20px 0; text-align: center; border-radius: 8px; }
             .code { font-size: 32px; font-weight: bold; color: #0EA5E9; letter-spacing: 4px; }
             .button { display: inline-block; background: #0EA5E9; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            .install-section { background: #E0F2FE; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #0EA5E9; }
+            .install-steps { margin: 15px 0; padding-left: 20px; }
+            .install-steps li { margin: 8px 0; }
             .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
           </style>
         </head>
@@ -188,6 +191,29 @@ const handler = async (req: Request): Promise<Response> => {
               <p style="text-align: center;">
                 <a href="${invitationLink}" class="button">Access Your Records</a>
               </p>
+
+              <div class="install-section">
+                <h3 style="margin-top: 0; color: #0369A1;">📱 Install as an App for Easy Access</h3>
+                <p style="margin-bottom: 10px;">For the best experience, install our patient app on your phone. It works like a real app with offline access!</p>
+                
+                <p style="margin-bottom: 5px; font-weight: bold; color: #0369A1;">On iPhone/iPad:</p>
+                <ol class="install-steps">
+                  <li>Tap the link above to open your portal</li>
+                  <li>Tap the <strong>Share</strong> button (square with arrow)</li>
+                  <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                  <li>Tap <strong>"Add"</strong> - Done! 🎉</li>
+                </ol>
+
+                <p style="margin-bottom: 5px; margin-top: 15px; font-weight: bold; color: #0369A1;">On Android:</p>
+                <ol class="install-steps">
+                  <li>Tap the link above to open your portal</li>
+                  <li>Tap the browser menu (three dots)</li>
+                  <li>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></li>
+                  <li>Tap <strong>"Install"</strong> - Done! 🎉</li>
+                </ol>
+                
+                <p style="font-size: 13px; color: #0369A1; margin-bottom: 0;">The app icon will appear on your home screen just like your other apps!</p>
+              </div>
 
               <p style="font-size: 14px; color: #666;">
                 Or visit the patient portal and enter your access code: <strong>${invitationCode}</strong>
