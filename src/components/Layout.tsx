@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle, History, Menu, MessageSquare, BookOpen, Database } from "lucide-react";
+import { Activity, ClipboardList, FileText, Home, LogOut, User, Shield, BarChart3, FileCheck, Moon, Sun, Settings, Inbox, ClipboardCheck, Bell, TrendingUp, Link2, AlertTriangle, History, Menu, MessageSquare, BookOpen, Database, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
@@ -71,6 +71,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "Export History", href: "/export-history", icon: History },
     { name: "Automation Status", href: "/automation-status", icon: Activity },
     { name: "Clinician Inbox", href: "/clinician-inbox", icon: MessageSquare },
+    { name: "Referral Inbox", href: "/referral-inbox", icon: UserPlus },
     { name: "PCP Summary", href: "/pcp-summary", icon: FileText },
   ];
 

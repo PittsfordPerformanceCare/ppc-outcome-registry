@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText, Mail, MessageSquare, Phone } from "lucide-react";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText, Mail, MessageSquare, Phone, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
@@ -66,6 +66,7 @@ export default function Dashboard() {
   const [exportingPDFs, setExportingPDFs] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [pendingCallbacks, setPendingCallbacks] = useState(0);
+  const [pendingReferralInquiries, setPendingReferralInquiries] = useState(0);
   const { toast } = useToast();
   const { settings } = useClinicSettings();
   const { success } = useHaptics();
@@ -118,8 +119,15 @@ export default function Dashboard() {
         .eq("status", "pending")
         .eq("message_type", "callback_request");
 
+      // Get pending referral inquiries count
+      const { count: referralsCount } = await supabase
+        .from("referral_inquiries")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+
       setUnreadMessages(messagesCount || 0);
       setPendingCallbacks(callbacksCount || 0);
+      setPendingReferralInquiries(referralsCount || 0);
     } catch (error) {
       console.error("Error loading inbox counts:", error);
     }
@@ -697,6 +705,51 @@ export default function Dashboard() {
                 </p>
                 <p className="text-sm text-muted-foreground">Pending Callbacks</p>
               </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Referral Inquiry Inbox Card */}
+      <Card 
+        className="relative overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 border-2 border-green-500/20 hover:border-green-500/40 bg-gradient-to-br from-green-500/5 to-background"
+        onClick={() => navigate("/referral-inbox")}
+      >
+        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-500/20 to-transparent rounded-bl-full" />
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
+                <UserPlus className="h-6 w-6 text-green-500" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl">Referral Inquiry Inbox</CardTitle>
+                <CardDescription>Prospective patients from QR code screening</CardDescription>
+              </div>
+            </div>
+            <Button 
+              size="lg"
+              className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-green-500 hover:bg-green-600"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate("/referral-inbox");
+              }}
+            >
+              Review Inquiries
+              <UserPlus className="h-5 w-5" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-4 p-4 bg-background/50 rounded-lg border border-border/50">
+            <div className="h-16 w-16 rounded-full bg-green-500/10 flex items-center justify-center">
+              <UserPlus className="h-8 w-8 text-green-500" />
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-foreground">
+                {pendingReferralInquiries}
+              </p>
+              <p className="text-sm text-muted-foreground">Pending Screening Inquiries</p>
             </div>
           </div>
         </CardContent>
