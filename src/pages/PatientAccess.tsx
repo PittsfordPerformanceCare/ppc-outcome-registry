@@ -132,6 +132,9 @@ export default function PatientAccess() {
       setStatus("success");
       setMessage("Success! Redirecting to setup...");
 
+      // Clear any existing welcome flag to ensure first-time flow
+      localStorage.removeItem("ppc_patient_welcome_seen");
+
       // Wait a moment for the success message to be visible
       setTimeout(() => {
         navigate("/patient-welcome");
