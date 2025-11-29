@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,8 +21,6 @@ import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import SignatureCanvas from "react-signature-canvas";
-import jsPDF from "jspdf";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { SortableComplaintItem } from "@/components/SortableComplaintItem";
 import { ReturningPatientLookup } from "@/components/ReturningPatientLookup";
@@ -51,6 +49,9 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+
+// Lazy load heavy components
+const SignatureField = lazy(() => import("@/components/intake/SignatureField").then(m => ({ default: m.SignatureField })));
 
 const COMPLAINT_CATEGORIES = [
   "Neck/Cervical",
@@ -256,7 +257,6 @@ export default function PatientIntake() {
     { id: 5, title: "Consent", description: "Signatures" },
   ];
   
-  const signatureRef = useRef<SignatureCanvas>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const { medium, light, success } = useHaptics();
   const { isDark, toggleDarkMode } = useDarkMode();
@@ -1046,164 +1046,20 @@ export default function PatientIntake() {
     }
   };
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     if (!submittedFormData) return;
 
-    const pdf = new jsPDF();
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 20;
-    let yPosition = margin;
-
-    // Helper function to check if we need a new page
-    const checkPageBreak = (height: number) => {
-      if (yPosition + height > pageHeight - margin) {
-        pdf.addPage();
-        yPosition = margin;
-        return true;
-      }
-      return false;
-    };
-
-    // Helper function to add text with word wrap
-    const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
-      pdf.setFontSize(fontSize);
-      pdf.setFont("helvetica", isBold ? "bold" : "normal");
-      const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin);
-      checkPageBreak(lines.length * fontSize * 0.5);
-      pdf.text(lines, margin, yPosition);
-      yPosition += lines.length * fontSize * 0.5 + 3;
-    };
-
-    // Title
-    pdf.setFillColor(165, 28, 48); // Primary color
-    pdf.rect(0, 0, pageWidth, 30, "F");
-    pdf.setTextColor(255, 255, 255);
-    pdf.setFontSize(20);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Patient Intake Form", pageWidth / 2, 20, { align: "center" });
-    
-    yPosition = 40;
-    pdf.setTextColor(0, 0, 0);
-
-    // Access Code
-    addText(`Access Code: ${accessCode}`, 14, true);
-    yPosition += 5;
-
-    // Personal Information
-    addText("PERSONAL INFORMATION", 12, true);
-    addText(`Name: ${submittedFormData.patientName}`);
-    addText(`Date of Birth: ${submittedFormData.dateOfBirth}`);
-    addText(`Episode Type: ${submittedFormData.episodeType}`);
-    if (submittedFormData.phone) addText(`Phone: ${submittedFormData.phone}`);
-    if (submittedFormData.email) addText(`Email: ${submittedFormData.email}`);
-    if (submittedFormData.address) addText(`Address: ${submittedFormData.address}`);
-    yPosition += 5;
-
-    // Insurance Information
-    if (submittedFormData.insuranceProvider || submittedFormData.insuranceId) {
-      addText("INSURANCE INFORMATION", 12, true);
-      if (submittedFormData.insuranceProvider) addText(`Provider: ${submittedFormData.insuranceProvider}`);
-      if (submittedFormData.insuranceId) addText(`Insurance ID: ${submittedFormData.insuranceId}`);
-      if (submittedFormData.billResponsibleParty) addText(`Responsible Party: ${submittedFormData.billResponsibleParty}`);
-      yPosition += 5;
+    try {
+      // Dynamically import the PDF generator
+      const { generateIntakePDF } = await import('@/components/intake/PDFGenerator');
+      
+      const pdf = generateIntakePDF(submittedFormData as any, accessCode);
+      pdf.save(`intake-${submittedFormData.patientName.replace(/\s+/g, '-')}-${accessCode}.pdf`);
+      toast.success("PDF downloaded successfully!");
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast.error("Failed to generate PDF");
     }
-
-    // Emergency Contact
-    if (submittedFormData.emergencyContactName) {
-      addText("EMERGENCY CONTACT", 12, true);
-      addText(`Name: ${submittedFormData.emergencyContactName}`);
-      if (submittedFormData.emergencyContactPhone) addText(`Phone: ${submittedFormData.emergencyContactPhone}`);
-      if (submittedFormData.emergencyContactRelationship) addText(`Relationship: ${submittedFormData.emergencyContactRelationship}`);
-      yPosition += 5;
-    }
-
-    // Medical History
-    addText("MEDICAL HISTORY", 12, true);
-    if (submittedFormData.primaryCarePhysician) addText(`Primary Care Physician: ${submittedFormData.primaryCarePhysician}`);
-    if (submittedFormData.currentMedications) addText(`Current Medications: ${submittedFormData.currentMedications}`);
-    if (submittedFormData.allergies) addText(`Allergies: ${submittedFormData.allergies}`);
-    if (submittedFormData.medicalHistory) addText(`Medical History: ${submittedFormData.medicalHistory}`);
-    yPosition += 5;
-
-    // Chief Complaints
-    addText("AREAS OF CONCERN", 12, true);
-    submittedFormData.complaints.forEach((complaint, index) => {
-      const label = complaint.isPrimary ? "PRIMARY COMPLAINT" : `Additional Concern ${index}`;
-      addText(`${label}:`, 10, true);
-      addText(`Category: ${complaint.category}`);
-      addText(`Severity: ${complaint.severity}`);
-      addText(`Duration: ${complaint.duration}`);
-      addText(`Description: ${complaint.text}`);
-      yPosition += 3;
-    });
-
-    if (submittedFormData.painLevel !== undefined) {
-      addText(`Pain Level: ${submittedFormData.painLevel}/10`);
-    }
-    if (submittedFormData.symptoms) addText(`Symptoms: ${submittedFormData.symptoms}`);
-    yPosition += 5;
-
-    // Review of Systems
-    if (submittedFormData.reviewOfSystems.length > 0) {
-      addText("REVIEW OF SYSTEMS", 12, true);
-      addText(`Selected Symptoms (${submittedFormData.reviewOfSystems.length}):`, 10, true);
-      submittedFormData.reviewOfSystems.forEach(symptom => {
-        addText(`• ${symptom}`, 9);
-      });
-      yPosition += 5;
-    }
-
-    // Consent Information
-    checkPageBreak(80);
-    addText("INFORMED CONSENT", 12, true);
-    addText(`Signed Name: ${submittedFormData.consentSignedName}`);
-    addText(`Date: ${submittedFormData.consentDate}`);
-    addText("Digital Signature:", 10, true);
-    yPosition += 3;
-    
-    // Add signature image if available
-    if (submittedFormData.consentSignature) {
-      try {
-        const signatureHeight = 30;
-        const signatureWidth = 80;
-        checkPageBreak(signatureHeight + 10);
-        pdf.addImage(
-          submittedFormData.consentSignature,
-          'PNG',
-          margin,
-          yPosition,
-          signatureWidth,
-          signatureHeight
-        );
-        yPosition += signatureHeight + 5;
-      } catch (error) {
-        console.error("Error adding signature to PDF:", error);
-        addText("[Signature could not be rendered]");
-      }
-    }
-    yPosition += 5;
-
-    // HIPAA Acknowledgment
-    addText("HIPAA PRIVACY NOTICE", 12, true);
-    addText(`Acknowledged: ${submittedFormData.hipaaAcknowledged ? "Yes" : "No"}`);
-    addText(`Signed Name: ${submittedFormData.hipaaSignedName}`);
-    addText(`Date: ${submittedFormData.hipaaDate}`);
-    yPosition += 10;
-
-    // Footer
-    pdf.setFontSize(8);
-    pdf.setTextColor(128, 128, 128);
-    pdf.text(
-      `Generated on ${new Date().toLocaleString()}`,
-      pageWidth / 2,
-      pageHeight - 10,
-      { align: "center" }
-    );
-
-    // Save the PDF
-    pdf.save(`intake-form-${accessCode}.pdf`);
-    toast.success("PDF downloaded successfully!");
   };
 
   if (submitted) {
@@ -2929,145 +2785,20 @@ export default function PatientIntake() {
                     control={form.control}
                     name="consentSignature"
                     render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center justify-between">
-                          <FormLabel>Signature *</FormLabel>
-                          {isMobile && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setUseTypedSignature(!useTypedSignature);
-                                if (!useTypedSignature) {
-                                  // Switching to typed - generate signature from typed name
-                                  const name = form.getValues('consentSignedName');
-                                  if (name) {
-                                    // Create a simple text-based signature image
-                                    const canvas = document.createElement('canvas');
-                                    canvas.width = 400;
-                                    canvas.height = 100;
-                                    const ctx = canvas.getContext('2d');
-                                    if (ctx) {
-                                      ctx.font = '30px "Dancing Script", cursive';
-                                      ctx.fillStyle = '#000';
-                                      ctx.fillText(name, 20, 60);
-                                      field.onChange(canvas.toDataURL());
-                                    }
-                                  }
-                                } else {
-                                  // Switching to drawn - clear the field
-                                  field.onChange("");
-                                  if (signatureRef.current) {
-                                    signatureRef.current.clear();
-                                  }
-                                }
-                              }}
-                              className="text-xs"
-                            >
-                              {useTypedSignature ? "Draw Instead" : "Type Instead"}
-                            </Button>
-                          )}
+                      <Suspense fallback={
+                        <div className="flex items-center justify-center py-10">
+                          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                          <span className="ml-2 text-muted-foreground">Loading signature pad...</span>
                         </div>
-                        
-                        {useTypedSignature || (isMobile && !field.value) ? (
-                          <>
-                            <FormDescription>
-                              Your typed name will serve as your digital signature
-                            </FormDescription>
-                            <FormControl>
-                              <div className="space-y-2">
-                                <Input
-                                  placeholder="Type your full legal name"
-                                  value={form.watch('consentSignedName')}
-                                  onChange={(e) => {
-                                    const name = e.target.value;
-                                    form.setValue('consentSignedName', name);
-                                    
-                                    // Generate signature image from typed name
-                                    if (name) {
-                                      const canvas = document.createElement('canvas');
-                                      canvas.width = 400;
-                                      canvas.height = 100;
-                                      const ctx = canvas.getContext('2d');
-                                      if (ctx) {
-                                        ctx.font = '30px "Dancing Script", cursive';
-                                        ctx.fillStyle = '#000';
-                                        ctx.textAlign = 'left';
-                                        ctx.textBaseline = 'middle';
-                                        ctx.fillText(name, 20, 50);
-                                        field.onChange(canvas.toDataURL());
-                                      }
-                                    } else {
-                                      field.onChange("");
-                                    }
-                                  }}
-                                  className="text-lg"
-                                  autoComplete="name"
-                                  enterKeyHint="next"
-                                />
-                                {field.value && (
-                                  <div className="border-2 border-input rounded-md p-4 bg-muted/30">
-                                    <p className="text-xs text-muted-foreground mb-2">Preview:</p>
-                                    <img 
-                                      src={field.value} 
-                                      alt="Signature preview" 
-                                      className="h-16 mx-auto"
-                                    />
-                                  </div>
-                                )}
-                              </div>
-                            </FormControl>
-                            <Alert>
-                              <AlertCircle className="h-4 w-4" />
-                              <AlertDescription className="text-xs">
-                                By typing your name, you agree this serves as your legal electronic signature
-                              </AlertDescription>
-                            </Alert>
-                          </>
-                        ) : (
-                          <>
-                            <FormDescription>
-                              Please sign in the box below using your mouse or finger
-                            </FormDescription>
-                            <FormControl>
-                              <div className="border-2 border-input rounded-md">
-                                <SignatureCanvas
-                                  ref={signatureRef}
-                                  canvasProps={{
-                                    className: "w-full h-40 rounded-md",
-                                  }}
-                                  onEnd={() => {
-                                    if (signatureRef.current) {
-                                      const dataUrl = signatureRef.current.toDataURL();
-                                      field.onChange(dataUrl);
-                                    }
-                                  }}
-                                />
-                              </div>
-                            </FormControl>
-                            <div className="flex gap-2">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                  if (signatureRef.current) {
-                                    signatureRef.current.clear();
-                                    field.onChange("");
-                                    toast.success("Signature cleared");
-                                  }
-                                }}
-                                className="border-accent text-accent hover:bg-accent hover:text-accent-foreground transition-all"
-                              >
-                                <X className="h-4 w-4 mr-2" />
-                                Clear Signature
-                              </Button>
-                            </div>
-                          </>
-                        )}
-                        <FormMessage />
-                      </FormItem>
+                      }>
+                        <SignatureField
+                          value={field.value}
+                          onChange={field.onChange}
+                          typedName={form.watch('consentSignedName')}
+                          onTypedNameChange={(name) => form.setValue('consentSignedName', name)}
+                          isMobile={isMobile}
+                        />
+                      </Suspense>
                     )}
                   />
 
