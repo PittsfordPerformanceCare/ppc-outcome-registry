@@ -24,20 +24,28 @@ const handler = async (req: Request): Promise<Response> => {
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
+    // Verify the caller is authenticated using anon key
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       throw new Error("No authorization header");
     }
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    // Use anon key client to verify the JWT token
+    const anonSupabase = createClient(supabaseUrl, supabaseAnonKey);
+    const { data: { user }, error: authError } = await anonSupabase.auth.getUser(token);
 
     if (authError || !user) {
+      console.error("Auth error:", authError);
       throw new Error("Unauthorized");
     }
+
+    // Now use service role key for privileged operations
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { episodeId, patientEmail, patientPhone, patientName, clinicName }: InvitationRequest = 
       await req.json();
