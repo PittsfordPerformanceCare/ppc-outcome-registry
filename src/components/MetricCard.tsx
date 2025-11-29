@@ -184,11 +184,10 @@ export function MetricCard({
           <Label className="text-base font-semibold">Change (Δ)</Label>
           <Badge
             className={cn(
-              "text-lg font-bold px-4 py-1.5 transition-all duration-300",
-              deltaStatus === "good" && "bg-success/15 text-success border-success/30 animate-in zoom-in-50",
-              deltaStatus === "bad" && "bg-warning/15 text-warning border-warning/30 animate-in zoom-in-50",
-              deltaStatus === "neutral" && "bg-secondary text-secondary-foreground",
-              deltaStatus === "good" && delta !== null && delta > 0 && "animate-pulse"
+              "text-lg font-bold px-4 py-1.5 transition-colors duration-200",
+              deltaStatus === "good" && "bg-success/15 text-success border-success/30",
+              deltaStatus === "bad" && "bg-warning/15 text-warning border-warning/30",
+              deltaStatus === "neutral" && "bg-secondary text-secondary-foreground"
             )}
             variant="outline"
           >
