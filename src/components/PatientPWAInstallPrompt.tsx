@@ -85,44 +85,88 @@ export const PatientPWAInstallPrompt = () => {
   if (isStandalone || !showPrompt) return null;
 
   return (
-    <Card className="shadow-sm border-primary/20">
-      <CardContent className="p-3">
-        <div className="flex items-center gap-3">
-          <Smartphone className="h-5 w-5 text-primary flex-shrink-0" />
-          
-          <div className="flex-1 min-w-0">
-            {isIOS ? (
-              <p className="text-xs text-muted-foreground">
-                Tap <Share className="inline h-3 w-3" /> then "Add to Home Screen" for easy access
+    <Card className="shadow-lg border-primary/30 bg-gradient-to-r from-primary/5 to-secondary/5">
+      <CardContent className="p-5">
+        <div className="space-y-4">
+          {/* Header */}
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <Smartphone className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-base mb-1">Install Our App</h3>
+              <p className="text-sm text-muted-foreground">
+                Get quick access from your home screen - works offline!
               </p>
-            ) : (
-              <p className="text-xs text-muted-foreground">
-                {deferredPrompt 
-                  ? "Install for quick access"
-                  : "Use your browser menu to install"}
-              </p>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1 flex-shrink-0">
-            {!isIOS && deferredPrompt && (
-              <Button
-                size="sm"
-                onClick={handleInstallClick}
-                className="h-7 px-3 text-xs"
-              >
-                Install
-              </Button>
-            )}
+            </div>
             <Button
               size="sm"
               variant="ghost"
               onClick={handleDismiss}
-              className="h-7 px-2 text-xs"
+              className="h-8 w-8 p-0 flex-shrink-0"
             >
-              Dismiss
+              ×
             </Button>
           </div>
+
+          {/* Instructions */}
+          {isIOS ? (
+            <div className="space-y-3 pl-13">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-primary">1</span>
+                </div>
+                <p className="text-sm">
+                  Tap the <Share className="inline h-4 w-4 mx-1 align-text-bottom" /> <strong>Share</strong> button at the bottom of your browser
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-primary">2</span>
+                </div>
+                <p className="text-sm">
+                  Scroll down and tap <strong>"Add to Home Screen"</strong>
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-primary">3</span>
+                </div>
+                <p className="text-sm">
+                  Tap <strong>"Add"</strong> in the top right corner
+                </p>
+              </div>
+            </div>
+          ) : deferredPrompt ? (
+            <div className="pl-13">
+              <Button
+                onClick={handleInstallClick}
+                className="w-full"
+                size="lg"
+              >
+                Install Now
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-3 pl-13">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-primary">1</span>
+                </div>
+                <p className="text-sm">
+                  Tap the <strong>menu</strong> (⋮) in your browser
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-primary">2</span>
+                </div>
+                <p className="text-sm">
+                  Select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
