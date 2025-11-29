@@ -52,9 +52,9 @@ const handler = async (req: Request): Promise<Response> => {
     // Verify user exists in profiles (clinician check)
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("id, role")
+      .select("id")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     if (profileError || !profile) {
       console.error("User not found in profiles:", profileError);
