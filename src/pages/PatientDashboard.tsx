@@ -135,6 +135,7 @@ export default function PatientDashboard() {
   const [patientAccount, setPatientAccount] = useState<any>(null);
   const [latestScore, setLatestScore] = useState<any>(null);
   const [clinicSettings, setClinicSettings] = useState<any>(null);
+  const [patientAccountId, setPatientAccountId] = useState<string | null>(null);
 
   const {
     totalPoints,
@@ -145,7 +146,7 @@ export default function PatientDashboard() {
     progressToNext,
     awardWelcomePoints,
     refreshRewards
-  } = usePatientRewards(user?.id);
+  } = usePatientRewards(patientAccountId);
 
   useEffect(() => {
     checkAuth();
@@ -153,11 +154,11 @@ export default function PatientDashboard() {
 
   useEffect(() => {
     // Award welcome points on first visit
-    if (user && !hasAwardedWelcome && !rewardsLoading && totalPoints === 0) {
+    if (patientAccountId && !hasAwardedWelcome && !rewardsLoading && totalPoints === 0) {
       awardWelcomePoints();
       setHasAwardedWelcome(true);
     }
-  }, [user, hasAwardedWelcome, rewardsLoading, totalPoints]);
+  }, [patientAccountId, hasAwardedWelcome, rewardsLoading, totalPoints, awardWelcomePoints]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -165,6 +166,17 @@ export default function PatientDashboard() {
     if (!session) {
       navigate("/patient-auth");
       return;
+    }
+
+    // Load patient account ID first (by email)
+    const { data: accountData } = await supabase
+      .from("patient_accounts")
+      .select("id")
+      .eq("email", session.user.email)
+      .maybeSingle();
+
+    if (accountData) {
+      setPatientAccountId(accountData.id);
     }
 
     // Check if this is first time user
@@ -181,11 +193,17 @@ export default function PatientDashboard() {
     try {
       console.log('=== LOADING PATIENT DATA FOR USER:', userId);
       
-      // Load patient account info
+      // Get user email first
+      const { data: { user } } = await supabase.auth.getUser();
+      const userEmail = user?.email;
+
+      console.log('User email:', userEmail);
+      
+      // Load patient account info by email (since patient_accounts may have different ID)
       const { data: accountData, error: accountError } = await supabase
         .from("patient_accounts")
         .select("*")
-        .eq("id", userId)
+        .eq("email", userEmail)
         .maybeSingle();
 
       console.log('Patient account data:', accountData, 'Error:', accountError);
@@ -205,14 +223,17 @@ export default function PatientDashboard() {
       }
 
       // Load episodes the patient has access to
-      const { data: accessData, error: accessError } = await supabase
+      // Query by patient_accounts.id (not auth user ID)
+      const patientAccountId = accountData?.id;
+      
+      const { data: accessData, error: accessError } = patientAccountId ? await supabase
         .from("patient_episode_access")
         .select(`
           episode_id,
           is_active
         `)
-        .eq("patient_id", userId)
-        .eq("is_active", true);
+        .eq("patient_id", patientAccountId)
+        .eq("is_active", true) : { data: null, error: null };
 
       console.log('Episode access data:', accessData, 'Error:', accessError);
 
@@ -227,7 +248,7 @@ export default function PatientDashboard() {
           episodeIds.map(async (id) => {
             console.log('Calling RPC for episode:', id);
             const { data, error } = await supabase.rpc('get_patient_episode_view', {
-              _patient_id: userId,
+              _patient_id: patientAccountId,
               _episode_id: id,
             });
 
@@ -281,13 +302,13 @@ export default function PatientDashboard() {
         }
       }
 
-      // Load rewards
-      const { data: rewardsData } = await supabase
+      // Load rewards using patient account ID
+      const { data: rewardsData } = patientAccountId ? await supabase
         .from("patient_rewards")
         .select("*")
-        .eq("patient_id", userId)
+        .eq("patient_id", patientAccountId)
         .eq("is_active", true)
-        .gte("valid_until", new Date().toISOString());
+        .gte("valid_until", new Date().toISOString()) : { data: null };
 
       setRewards(rewardsData || []);
       console.log('=== PATIENT DATA LOADING COMPLETE');
@@ -359,7 +380,6 @@ export default function PatientDashboard() {
       const { error: updateError } = await supabase
         .from("patient_episode_access")
         .update({ 
-          patient_id: user!.id,
           code_used_at: new Date().toISOString() 
         })
         .eq("id", accessRecord.id);
@@ -367,13 +387,13 @@ export default function PatientDashboard() {
       if (updateError) throw updateError;
 
       // Update patient account with correct name from episode
-      if (episodeData?.patient_name) {
+      if (episodeData?.patient_name && patientAccountId) {
         await supabase
           .from("patient_accounts")
           .update({ 
             full_name: episodeData.patient_name
           })
-          .eq("id", user!.id);
+          .eq("id", patientAccountId);
       }
 
       toast({
@@ -392,7 +412,7 @@ export default function PatientDashboard() {
     } finally {
       setClaimingCode(false);
     }
-  }, [accessCode, user, toast, loadPatientData]);
+  }, [accessCode, user, patientAccountId, toast, loadPatientData]);
 
   // Memoize computed values
   const activeEpisodes = useMemo(() => 
