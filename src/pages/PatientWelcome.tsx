@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,11 +18,19 @@ const passwordSchema = z.string()
 export default function PatientWelcome() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [passwordSet, setPasswordSet] = useState(false);
   const [isIOS] = useState(/iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream);
+
+  // Clear the localStorage flag if coming from magic link
+  useEffect(() => {
+    if (searchParams.get("fromMagicLink") === "true") {
+      localStorage.removeItem("ppc_patient_welcome_seen");
+    }
+  }, [searchParams]);
 
   const handlePasswordSetup = async (e: React.FormEvent) => {
     e.preventDefault();
