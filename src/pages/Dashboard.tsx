@@ -35,6 +35,7 @@ import { DashboardSkeleton } from "@/components/skeletons/DashboardSkeleton";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 import { EpisodeCardWithSwipe } from "@/components/EpisodeCardWithSwipe";
+import { ReferralQRGenerator } from "@/components/ReferralQRGenerator";
 import {
   Dialog,
   DialogContent,
@@ -754,6 +755,9 @@ export default function Dashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Referral QR Code Generator */}
+      <ReferralQRGenerator />
 
       {/* Performance Dials */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
