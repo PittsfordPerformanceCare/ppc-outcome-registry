@@ -13,6 +13,7 @@ import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
 import { PatientAchievements } from "@/components/PatientAchievements";
 import PatientReferralCard from "@/components/PatientReferralCard";
 import PatientReferralDashboard from "@/components/PatientReferralDashboard";
+import { PatientLetters } from "@/components/PatientLetters";
 import { useAuth } from "@/hooks/useAuth";
 import { usePatientRewards } from "@/hooks/usePatientRewards";
 import RecoverySnapshot from "@/components/RecoverySnapshot";
@@ -579,10 +580,14 @@ export default function PatientDashboard() {
           </Card>
         </div>
 
-        {/* Tabs for Episodes, Achievements, and Referrals */}
+        {/* Tabs for Episodes, Achievements, Letters, and Referrals */}
         <Tabs defaultValue="episodes" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="episodes">My Episodes</TabsTrigger>
+            <TabsTrigger value="letters">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Letters
+            </TabsTrigger>
             <TabsTrigger value="achievements">
               <Trophy className="h-4 w-4 mr-2" />
               Achievements
@@ -623,6 +628,10 @@ export default function PatientDashboard() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="letters">
+            <PatientLetters />
           </TabsContent>
 
           <TabsContent value="achievements">

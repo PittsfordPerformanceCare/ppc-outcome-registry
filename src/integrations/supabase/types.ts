@@ -1992,6 +1992,48 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_letters: {
+        Row: {
+          clinic_id: string | null
+          content: string
+          created_at: string
+          episode_id: string
+          generated_at: string
+          generated_by: string | null
+          id: string
+          letter_type: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          content: string
+          created_at?: string
+          episode_id: string
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          letter_type: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          content?: string
+          created_at?: string
+          episode_id?: string
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          letter_type?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       patient_messages: {
         Row: {
           clinician_response: string | null
