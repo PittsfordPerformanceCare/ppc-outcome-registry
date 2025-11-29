@@ -97,19 +97,52 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Patient account could not be created or found.");
     }
 
-    // Create episode access with invitation code
-    const { error: accessError } = await supabase
+    // Check if patient already has access to this episode
+    const { data: existingAccess, error: existingAccessError } = await supabase
       .from("patient_episode_access")
-      .insert({
-        patient_id: patientAccount.id,
-        episode_id: episodeId,
-        invitation_code: invitationCode,
-        granted_by: user.id,
-      });
+      .select("id, invitation_code")
+      .eq("patient_id", patientAccount.id)
+      .eq("episode_id", episodeId)
+      .maybeSingle();
 
-    if (accessError) {
-      console.error("Error creating episode access:", accessError);
-      throw new Error(`Failed to create episode access: ${accessError.message}`);
+    if (existingAccessError && existingAccessError.code !== "PGRST116") {
+      // PGRST116 = no rows found for maybeSingle; anything else is a real error
+      console.error("Error looking up existing episode access:", existingAccessError);
+      throw new Error(`Failed to look up existing episode access: ${existingAccessError.message}`);
+    }
+
+    let effectiveInvitationCode = invitationCode;
+
+    if (existingAccess) {
+      // Update existing access with a fresh invitation code and reactivate access
+      const { error: updateAccessError } = await supabase
+        .from("patient_episode_access")
+        .update({
+          invitation_code: invitationCode,
+          is_active: true,
+          code_used_at: null,
+        })
+        .eq("id", existingAccess.id);
+
+      if (updateAccessError) {
+        console.error("Error updating existing episode access:", updateAccessError);
+        throw new Error(`Failed to update existing episode access: ${updateAccessError.message}`);
+      }
+    } else {
+      // Create episode access with invitation code
+      const { error: accessError } = await supabase
+        .from("patient_episode_access")
+        .insert({
+          patient_id: patientAccount.id,
+          episode_id: episodeId,
+          invitation_code: invitationCode,
+          granted_by: user.id,
+        });
+
+      if (accessError) {
+        console.error("Error creating episode access:", accessError);
+        throw new Error(`Failed to create episode access: ${accessError.message}`);
+      }
     }
 
     // Send invitation email
