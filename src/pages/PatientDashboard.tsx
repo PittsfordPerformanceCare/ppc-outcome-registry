@@ -285,11 +285,15 @@ export default function PatientDashboard() {
 
     setClaimingCode(true);
     try {
+      console.log("Claiming code:", accessCode, "for user:", user?.email);
+      
       const { data: accessRecord, error: findError } = await supabase
         .from("patient_episode_access")
         .select("*, patient_accounts!inner(email, full_name, phone)")
         .eq("invitation_code", accessCode.toUpperCase())
         .maybeSingle();
+
+      console.log("Access record found:", accessRecord, "Error:", findError);
 
       if (findError) throw findError;
 
@@ -310,6 +314,8 @@ export default function PatientDashboard() {
       const originalPatientData = accessRecord.patient_accounts;
       const originalPatientId = accessRecord.patient_id;
 
+      console.log("Updating patient_episode_access to point to:", user!.id);
+      
       const { error: updateError } = await supabase
         .from("patient_episode_access")
         .update({ 
@@ -318,10 +324,15 @@ export default function PatientDashboard() {
         })
         .eq("id", accessRecord.id);
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error("Update error:", updateError);
+        throw updateError;
+      }
+
+      console.log("Upserting patient_accounts with:", originalPatientData);
 
       // Upsert the current user's patient_accounts with the original invitation data
-      await supabase
+      const { error: upsertError } = await supabase
         .from("patient_accounts")
         .upsert({
           id: user!.id,
@@ -330,12 +341,23 @@ export default function PatientDashboard() {
           phone: originalPatientData.phone,
         });
 
+      if (upsertError) {
+        console.error("Upsert error:", upsertError);
+        throw upsertError;
+      }
+
       // Delete the old patient_accounts record if it's different
       if (originalPatientId !== user!.id) {
-        await supabase
+        console.log("Deleting old patient_accounts:", originalPatientId);
+        const { error: deleteError } = await supabase
           .from("patient_accounts")
           .delete()
           .eq("id", originalPatientId);
+          
+        if (deleteError) {
+          console.error("Delete error:", deleteError);
+          // Don't throw - this is not critical
+        }
       }
 
       toast({
@@ -344,8 +366,9 @@ export default function PatientDashboard() {
       });
 
       setAccessCode("");
-      if (user) await loadPatientData(user.id);
+      await loadPatientData(user!.id);
     } catch (error: any) {
+      console.error("Claim code error:", error);
       toast({
         title: "Failed to Claim Code",
         description: error.message,
@@ -354,7 +377,7 @@ export default function PatientDashboard() {
     } finally {
       setClaimingCode(false);
     }
-  }, [accessCode, user, toast]);
+  }, [accessCode, user, toast, loadPatientData]);
 
   // Memoize computed values
   const activeEpisodes = useMemo(() => 
