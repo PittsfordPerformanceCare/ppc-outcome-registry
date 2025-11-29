@@ -13,7 +13,8 @@ export const ReferralQRGenerator = () => {
   const [referralCode, setReferralCode] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const baseUrl = window.location.origin;
+  // Use production URL from environment, fallback to current origin for development
+  const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
   const generateUrl = () => {
     let url = `${baseUrl}/referral-screening`;
     const params = new URLSearchParams();
