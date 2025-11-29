@@ -47,6 +47,7 @@ import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import DataGovernance from "./pages/DataGovernance";
 import ReferralScreening from "./pages/ReferralScreening";
 import ReferralSuccess from "./pages/ReferralSuccess";
+import ReferralStatus from "./pages/ReferralStatus";
 import ReferralInbox from "./pages/ReferralInbox";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,7 @@ const App = () => (
           <Route path="/referral/:referralCode" element={<ReferralLanding />} />
           <Route path="/referral-screening" element={<ReferralScreening />} />
           <Route path="/referral-success" element={<ReferralSuccess />} />
+          <Route path="/referral-status" element={<ReferralStatus />} />
           
           <Route
             path="/*"
