@@ -1412,6 +1412,20 @@ export default function PatientIntake() {
       </Button>
       
       <div className="mx-auto max-w-3xl">
+        {/* Welcome Banner for Referral Approval */}
+        {searchParams.get('source') === 'referral_approval' && (
+          <Alert className="mb-6 border-success/50 bg-success/5 animate-fade-in">
+            <CheckCircle2 className="h-5 w-5 text-success" />
+            <div className="ml-2">
+              <h3 className="font-semibold text-success mb-1">You're in the Right Place! ✨</h3>
+              <p className="text-sm text-muted-foreground">
+                Welcome! Complete this intake form to schedule your first visit with us. 
+                No account needed - just fill out the information below.
+              </p>
+            </div>
+          </Alert>
+        )}
+        
         <Card className="mb-6">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl">New Patient Intake Form</CardTitle>

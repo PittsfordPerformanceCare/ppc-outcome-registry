@@ -23,8 +23,8 @@ serve(async (req) => {
       throw new Error("Clinic settings not found");
     }
 
-      // Generate intake link
-      const intakeLink = `${APP_URL}/patient-intake`;
+      // Generate intake link - direct to intake form (no auth required)
+      const intakeLink = `${APP_URL}/patient-intake?source=referral_approval`;
 
       // Replace template variables with warm, detailed content
       let emailBody = settings.referral_approval_email_template || `
@@ -98,9 +98,15 @@ serve(async (req) => {
         </div>
       `;
       
+      // Replace all template variables
       emailBody = emailBody.replace(/{{name}}/g, name);
       emailBody = emailBody.replace(/{{clinic_name}}/g, settings.clinic_name);
       emailBody = emailBody.replace(/{{intake_link}}/g, intakeLink);
+      
+      // Also replace any hardcoded URLs that might be pointing to wrong pages
+      // This ensures the intake link always goes to /patient-intake
+      emailBody = emailBody.replace(/href="[^"]*patient-welcome[^"]*"/g, `href="${intakeLink}"`);
+      emailBody = emailBody.replace(/href="[^"]*patient-dashboard[^"]*"/g, `href="${intakeLink}"`);
 
       let subject = settings.referral_approval_email_subject || "Welcome to {{clinic_name}} - Your Next Steps Inside 🎉";
       subject = subject.replace(/{{name}}/g, name);
