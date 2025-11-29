@@ -183,7 +183,7 @@ export default function PatientDashboard() {
         .from("patient_accounts")
         .select("*")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       if (accountData) {
         setPatientAccount(accountData);
@@ -308,7 +308,10 @@ export default function PatientDashboard() {
 
       const { error: updateError } = await supabase
         .from("patient_episode_access")
-        .update({ code_used_at: new Date().toISOString() })
+        .update({ 
+          patient_id: user!.id,
+          code_used_at: new Date().toISOString() 
+        })
         .eq("id", accessRecord.id);
 
       if (updateError) throw updateError;
