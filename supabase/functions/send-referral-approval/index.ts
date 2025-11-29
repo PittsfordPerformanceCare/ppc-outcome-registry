@@ -20,6 +20,28 @@ serve(async (req) => {
   try {
     const { inquiryId, name, email } = await req.json();
 
+    // Determine the correct base URL for the intake link
+    // Priority: 1) Origin header from request, 2) Referer, 3) APP_URL env
+    const requestOrigin = req.headers.get("origin");
+    const referer = req.headers.get("referer");
+    let baseUrl = APP_URL;
+
+    if (requestOrigin && requestOrigin !== "null") {
+      baseUrl = requestOrigin;
+    } else if (referer) {
+      // Extract origin from referer
+      try {
+        const refererUrl = new URL(referer);
+        baseUrl = refererUrl.origin;
+      } catch (e) {
+        console.error("Failed to parse referer:", e);
+      }
+    }
+
+    console.log("Email generation - using base URL:", baseUrl);
+    console.log("Request origin:", requestOrigin);
+    console.log("Referer:", referer);
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     // Get clinic settings for email template
@@ -34,8 +56,8 @@ serve(async (req) => {
     }
 
       // Generate intake link - direct to intake form (no auth required)
-      const origin = req.headers.get("origin") || APP_URL;
-      const intakeLink = `${origin}/patient-intake?source=referral_approval`;
+      const intakeLink = `${baseUrl}/patient-intake?source=referral_approval`;
+      console.log("Generated intake link:", intakeLink);
 
       // Replace template variables with warm, detailed content
       let emailBody = settings.referral_approval_email_template || `
