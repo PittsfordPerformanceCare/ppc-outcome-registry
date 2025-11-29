@@ -13,6 +13,19 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Verify cron secret for automated calls
+    const cronSecret = Deno.env.get('CRON_SECRET');
+    const providedSecret = req.headers.get('x-cron-secret');
+    
+    // Only require secret if it's configured (allows gradual rollout)
+    if (cronSecret && providedSecret !== cronSecret) {
+      console.error('Unauthorized: Invalid or missing cron secret');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     console.log('Checking notification failure rates...');
 
     const supabase = createClient(
