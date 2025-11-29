@@ -130,11 +130,11 @@ export default function PatientAccess() {
       }
 
       setStatus("success");
-      setMessage("Success! Redirecting to your dashboard...");
+      setMessage("Success! Redirecting to setup...");
 
       // Wait a moment for the success message to be visible
       setTimeout(() => {
-        navigate("/patient-dashboard");
+        navigate("/patient-welcome");
       }, 1500);
 
     } catch (error: any) {

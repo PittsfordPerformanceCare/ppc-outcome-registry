@@ -85,18 +85,18 @@ export const PatientPWAInstallPrompt = () => {
   if (isStandalone || !showPrompt) return null;
 
   return (
-    <Card className="shadow-lg border-primary/30 bg-gradient-to-r from-primary/5 to-secondary/5">
-      <CardContent className="p-5">
+    <Card className="shadow-sm border-primary/20 bg-card">
+      <CardContent className="p-4">
         <div className="space-y-4">
           {/* Header */}
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-              <Smartphone className="h-5 w-5 text-primary" />
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+              <Smartphone className="h-4 w-4 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-base mb-1">Install Our App</h3>
-              <p className="text-sm text-muted-foreground">
-                Get quick access from your home screen - works offline!
+              <h3 className="font-semibold text-sm mb-1">Install App</h3>
+              <p className="text-xs text-muted-foreground">
+                Quick access from home screen
               </p>
             </div>
             <Button
@@ -111,58 +111,58 @@ export const PatientPWAInstallPrompt = () => {
 
           {/* Instructions */}
           {isIOS ? (
-            <div className="space-y-3 pl-13">
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">1</span>
+            <div className="space-y-2 pl-11">
+              <div className="flex items-start gap-2">
+                <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-primary">1</span>
                 </div>
-                <p className="text-sm">
-                  Tap the <Share className="inline h-4 w-4 mx-1 align-text-bottom" /> <strong>Share</strong> button at the bottom of your browser
+                <p className="text-xs">
+                  Tap <Share className="inline h-3 w-3 mx-1 align-text-bottom" /> <strong>Share</strong> button
                 </p>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">2</span>
+              <div className="flex items-start gap-2">
+                <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-primary">2</span>
                 </div>
-                <p className="text-sm">
-                  Scroll down and tap <strong>"Add to Home Screen"</strong>
+                <p className="text-xs">
+                  Tap <strong>"Add to Home Screen"</strong>
                 </p>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">3</span>
+              <div className="flex items-start gap-2">
+                <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-primary">3</span>
                 </div>
-                <p className="text-sm">
-                  Tap <strong>"Add"</strong> in the top right corner
+                <p className="text-xs">
+                  Tap <strong>"Add"</strong>
                 </p>
               </div>
             </div>
           ) : deferredPrompt ? (
-            <div className="pl-13">
+            <div className="pl-11">
               <Button
                 onClick={handleInstallClick}
                 className="w-full"
-                size="lg"
+                size="sm"
               >
                 Install Now
               </Button>
             </div>
           ) : (
-            <div className="space-y-3 pl-13">
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">1</span>
+            <div className="space-y-2 pl-11">
+              <div className="flex items-start gap-2">
+                <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-primary">1</span>
                 </div>
-                <p className="text-sm">
-                  Tap the <strong>menu</strong> (⋮) in your browser
+                <p className="text-xs">
+                  Tap <strong>menu</strong> (⋮)
                 </p>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-primary">2</span>
+              <div className="flex items-start gap-2">
+                <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-primary">2</span>
                 </div>
-                <p className="text-sm">
-                  Select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>
+                <p className="text-xs">
+                  Select <strong>"Install app"</strong>
                 </p>
               </div>
             </div>
