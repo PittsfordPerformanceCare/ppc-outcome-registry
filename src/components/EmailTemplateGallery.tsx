@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
+import DOMPurify from "dompurify";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -536,13 +537,15 @@ export function EmailTemplateGallery({ onSelectTemplate }: EmailTemplateGalleryP
                       <ScrollArea className="h-[600px] w-full rounded-md border p-4">
                         <div 
                           dangerouslySetInnerHTML={{ 
-                            __html: template.html
-                              .replace(/\{\{patient_name\}\}/g, "John Doe")
-                              .replace(/\{\{clinician_name\}\}/g, "Dr. Sarah Smith")
-                              .replace(/\{\{episode_id\}\}/g, "EP-2025-001")
-                              .replace(/\{\{clinic_name\}\}/g, "Acme Rehabilitative Medicine")
-                              .replace(/\{\{clinic_phone\}\}/g, "(555) 123-4567")
-                              .replace(/\{\{clinic_email\}\}/g, "info@acmept.com")
+                            __html: DOMPurify.sanitize(
+                              template.html
+                                .replace(/\{\{patient_name\}\}/g, "John Doe")
+                                .replace(/\{\{clinician_name\}\}/g, "Dr. Sarah Smith")
+                                .replace(/\{\{episode_id\}\}/g, "EP-2025-001")
+                                .replace(/\{\{clinic_name\}\}/g, "Acme Rehabilitative Medicine")
+                                .replace(/\{\{clinic_phone\}\}/g, "(555) 123-4567")
+                                .replace(/\{\{clinic_email\}\}/g, "info@acmept.com")
+                            )
                           }}
                         />
                       </ScrollArea>
