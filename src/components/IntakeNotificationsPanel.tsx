@@ -1,4 +1,4 @@
-import { Bell } from 'lucide-react';
+import { Bell, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -13,42 +13,124 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useIntakeNotifications } from '@/hooks/useIntakeNotifications';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { useEffect, useState, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Separator } from '@/components/ui/separator';
 
 export const IntakeNotificationsPanel = () => {
   const { notifications, unreadCount, markAsRead, clearAll } = useIntakeNotifications();
   const navigate = useNavigate();
+  const [inboxUnreadCount, setInboxUnreadCount] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize notification sound
+  useEffect(() => {
+    audioRef.current = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OagTgwOUKzn77dmHAU2jdXvxnkpBSh+zPLaizsKGGS36eylUxELTKXh8bllHgU1iM/u0H8yBSl+y+3ajDwMFmW56+uhUBELSKPi8bxnHwU4h9Hs0oA0Bit7yu3cjDoLFW');
+    audioRef.current.volume = 0.5;
+  }, []);
+
+  // Load inbox message count
+  const loadInboxCount = async () => {
+    try {
+      const { count } = await supabase
+        .from("patient_messages")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending");
+      
+      setInboxUnreadCount(count || 0);
+    } catch (error) {
+      console.error("Error loading inbox count:", error);
+    }
+  };
+
+  // Set up real-time listener for new messages
+  useEffect(() => {
+    loadInboxCount();
+
+    const channel = supabase
+      .channel("inbox-notifications")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "patient_messages",
+        },
+        () => {
+          // Play notification sound
+          if (audioRef.current) {
+            audioRef.current.play().catch(err => console.error("Error playing sound:", err));
+          }
+          
+          // Reload count
+          loadInboxCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleNotificationClick = (id: string) => {
     markAsRead(id);
     navigate('/intake-review', { state: { intakeId: id } });
   };
 
+  const totalUnreadCount = unreadCount + inboxUnreadCount;
+
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
-          {unreadCount > 0 && (
+          {totalUnreadCount > 0 && (
             <Badge 
               variant="destructive" 
-              className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+              className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs animate-pulse"
             >
-              {unreadCount > 9 ? '9+' : unreadCount}
+              {totalUnreadCount > 9 ? '9+' : totalUnreadCount}
             </Badge>
           )}
         </Button>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-xl">
         <SheetHeader>
-          <SheetTitle>Intake Form Notifications</SheetTitle>
+          <SheetTitle>Notifications</SheetTitle>
           <SheetDescription>
-            New patient intake forms ready for review
+            Intake forms and patient messages
           </SheetDescription>
         </SheetHeader>
+
+        {/* Clinician Inbox Summary */}
+        {inboxUnreadCount > 0 && (
+          <div className="mt-4">
+            <Button 
+              variant="outline" 
+              className="w-full justify-start gap-3 h-auto py-4"
+              onClick={() => navigate('/clinician-inbox')}
+            >
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <MessageSquare className="h-5 w-5 text-primary" />
+              </div>
+              <div className="flex-1 text-left">
+                <div className="font-semibold">Clinician Inbox</div>
+                <div className="text-sm text-muted-foreground">
+                  {inboxUnreadCount} unread message{inboxUnreadCount !== 1 ? 's' : ''}
+                </div>
+              </div>
+              <Badge variant="destructive" className="text-sm">
+                {inboxUnreadCount}
+              </Badge>
+            </Button>
+            <Separator className="my-4" />
+          </div>
+        )}
         
         <div className="mt-4 flex justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+            {unreadCount} intake form{unreadCount !== 1 ? 's' : ''}
           </p>
           {unreadCount > 0 && (
             <Button variant="ghost" size="sm" onClick={clearAll}>
