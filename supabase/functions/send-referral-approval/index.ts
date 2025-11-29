@@ -34,7 +34,8 @@ serve(async (req) => {
     }
 
       // Generate intake link - direct to intake form (no auth required)
-      const intakeLink = `${APP_URL}/patient-intake?source=referral_approval`;
+      const origin = req.headers.get("origin") || APP_URL;
+      const intakeLink = `${origin}/patient-intake?source=referral_approval`;
 
       // Replace template variables with warm, detailed content
       let emailBody = settings.referral_approval_email_template || `
