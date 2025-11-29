@@ -178,12 +178,16 @@ export default function PatientDashboard() {
 
   const loadPatientData = async (userId: string) => {
     try {
+      console.log('=== LOADING PATIENT DATA FOR USER:', userId);
+      
       // Load patient account info
-      const { data: accountData } = await supabase
+      const { data: accountData, error: accountError } = await supabase
         .from("patient_accounts")
         .select("*")
         .eq("id", userId)
         .maybeSingle();
+
+      console.log('Patient account data:', accountData, 'Error:', accountError);
 
       if (accountData) {
         setPatientAccount(accountData);
@@ -209,18 +213,24 @@ export default function PatientDashboard() {
         .eq("patient_id", userId)
         .eq("is_active", true);
 
+      console.log('Episode access data:', accessData, 'Error:', accessError);
+
       if (accessError) throw accessError;
 
       if (accessData && accessData.length > 0) {
         const episodeIds = accessData.map(a => a.episode_id);
+        console.log('Episode IDs to load:', episodeIds);
         
         // For each episode id, load patient-safe episode view via RPC
         const episodeViews = await Promise.all(
           episodeIds.map(async (id) => {
+            console.log('Calling RPC for episode:', id);
             const { data, error } = await supabase.rpc('get_patient_episode_view', {
               _patient_id: userId,
               _episode_id: id,
             });
+
+            console.log('RPC result for', id, ':', data, 'Error:', error);
 
             if (error) {
               console.error('Error loading episode via RPC', id, error);
@@ -228,7 +238,11 @@ export default function PatientDashboard() {
             }
 
             // get_patient_episode_view returns an array of rows
-            if (!data || data.length === 0) return null;
+            if (!data || data.length === 0) {
+              console.warn('No data returned for episode', id);
+              return null;
+            }
+            
             const e = data[0];
 
             return {
@@ -246,7 +260,9 @@ export default function PatientDashboard() {
           })
         );
 
-        setEpisodes(episodeViews.filter((e): e is PatientEpisode => e !== null));
+        const filteredEpisodes = episodeViews.filter((e): e is PatientEpisode => e !== null);
+        console.log('Final filtered episodes:', filteredEpisodes);
+        setEpisodes(filteredEpisodes);
 
         // Load latest outcome score for active episode
         if (episodeIds.length > 0) {
@@ -273,6 +289,7 @@ export default function PatientDashboard() {
         .gte("valid_until", new Date().toISOString());
 
       setRewards(rewardsData || []);
+      console.log('=== PATIENT DATA LOADING COMPLETE');
     } catch (error: any) {
       console.error("Error loading patient data:", error);
       toast({
