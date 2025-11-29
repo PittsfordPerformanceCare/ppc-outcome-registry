@@ -58,23 +58,43 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Episode not found: ${episodeError.message}`);
     }
 
-    // Create or update patient account
-    const { data: patientAccount, error: accountError } = await supabase
+    // Create or find patient account by email
+    const { data: existingAccount, error: findAccountError } = await supabase
       .from("patient_accounts")
-      .upsert({
-        email: patientEmail,
-        phone: patientPhone,
-        full_name: patientName,
-      }, {
-        onConflict: "email",
-        ignoreDuplicates: false,
-      })
-      .select()
-      .single();
+      .select("id, email, full_name, phone")
+      .eq("email", patientEmail)
+      .maybeSingle();
 
-    if (accountError) {
-      console.error("Error creating patient account:", accountError);
-      throw new Error(`Failed to create patient account: ${accountError.message}`);
+    if (findAccountError) {
+      console.error("Error looking up patient account:", findAccountError);
+      throw new Error(`Failed to look up patient account: ${findAccountError.message}`);
+    }
+
+    let patientAccount = existingAccount;
+
+    if (!patientAccount) {
+      const newPatientId = crypto.randomUUID();
+      const { data: insertedAccount, error: insertAccountError } = await supabase
+        .from("patient_accounts")
+        .insert({
+          id: newPatientId,
+          email: patientEmail,
+          phone: patientPhone,
+          full_name: patientName,
+        })
+        .select()
+        .single();
+
+      if (insertAccountError) {
+        console.error("Error creating patient account:", insertAccountError);
+        throw new Error(`Failed to create patient account: ${insertAccountError.message}`);
+      }
+
+      patientAccount = insertedAccount;
+    }
+
+    if (!patientAccount) {
+      throw new Error("Patient account could not be created or found.");
     }
 
     // Create episode access with invitation code
