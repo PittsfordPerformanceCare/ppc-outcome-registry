@@ -56,3 +56,33 @@ verify_jwt = false
 
 [functions.generate-neuro-letter]
 verify_jwt = true
+
+[functions.send-referral-approval]
+verify_jwt = false
+
+[functions.send-referral-decline]
+verify_jwt = false
+
+[functions.send-referral-thank-you]
+verify_jwt = false
+
+[functions.send-referral-milestone]
+verify_jwt = false
+
+[functions.send-referral-report]
+verify_jwt = false
+
+[functions.send-clinician-notification]
+verify_jwt = false
+
+[functions.send-patient-invitation]
+verify_jwt = false
+
+[functions.send-post-review-notification]
+verify_jwt = false
+
+[functions.send-neuro-exam-notification]
+verify_jwt = false
+
+[functions.retry-webhooks]
+verify_jwt = false
