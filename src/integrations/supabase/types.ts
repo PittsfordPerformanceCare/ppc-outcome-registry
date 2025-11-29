@@ -126,6 +126,10 @@ export type Database = {
           outcome_reminder_interval_days: number | null
           outcome_reminder_sms_template: string | null
           phone: string | null
+          referral_approval_email_subject: string | null
+          referral_approval_email_template: string | null
+          referral_decline_email_subject: string | null
+          referral_decline_email_template: string | null
           reminder_email_subject: string | null
           reminder_email_template: string | null
           reminder_enabled: boolean | null
@@ -154,6 +158,10 @@ export type Database = {
           outcome_reminder_interval_days?: number | null
           outcome_reminder_sms_template?: string | null
           phone?: string | null
+          referral_approval_email_subject?: string | null
+          referral_approval_email_template?: string | null
+          referral_decline_email_subject?: string | null
+          referral_decline_email_template?: string | null
           reminder_email_subject?: string | null
           reminder_email_template?: string | null
           reminder_enabled?: boolean | null
@@ -182,6 +190,10 @@ export type Database = {
           outcome_reminder_interval_days?: number | null
           outcome_reminder_sms_template?: string | null
           phone?: string | null
+          referral_approval_email_subject?: string | null
+          referral_approval_email_template?: string | null
+          referral_decline_email_subject?: string | null
+          referral_decline_email_template?: string | null
           reminder_email_subject?: string | null
           reminder_email_template?: string | null
           reminder_enabled?: boolean | null
@@ -2638,6 +2650,75 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      referral_inquiries: {
+        Row: {
+          care_for: string
+          chief_complaint: string
+          clinic_id: string | null
+          created_at: string
+          decline_reason: string | null
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          referral_code: string | null
+          referral_source: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          care_for: string
+          chief_complaint: string
+          clinic_id?: string | null
+          created_at?: string
+          decline_reason?: string | null
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          referral_code?: string | null
+          referral_source?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          care_for?: string
+          chief_complaint?: string
+          clinic_id?: string | null
+          created_at?: string
+          decline_reason?: string | null
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          referral_code?: string | null
+          referral_source?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_inquiries_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_inquiries_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       referral_report_deliveries: {
         Row: {

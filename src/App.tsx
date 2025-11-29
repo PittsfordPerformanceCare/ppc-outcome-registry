@@ -45,6 +45,9 @@ import AdministratorQuickStart from "./pages/AdministratorQuickStart";
 import PatientQuickStart from "./pages/PatientQuickStart";
 import AnalyticsDashboard from "./pages/AnalyticsDashboard";
 import DataGovernance from "./pages/DataGovernance";
+import ReferralScreening from "./pages/ReferralScreening";
+import ReferralSuccess from "./pages/ReferralSuccess";
+import ReferralInbox from "./pages/ReferralInbox";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +70,8 @@ const App = () => (
           <Route path="/patient-quick-start" element={<PatientQuickStart />} />
           <Route path="/intake-start" element={<IntakeStart />} />
           <Route path="/referral/:referralCode" element={<ReferralLanding />} />
+          <Route path="/referral-screening" element={<ReferralScreening />} />
+          <Route path="/referral-success" element={<ReferralSuccess />} />
           
           <Route
             path="/*"
@@ -110,6 +115,7 @@ const App = () => (
                     <Route path="/referral-analytics" element={<ReferralAnalytics />} />
                     <Route path="/automation-status" element={<AutomationStatus />} />
                     <Route path="/clinician-inbox" element={<ClinicianInbox />} />
+                    <Route path="/referral-inbox" element={<ReferralInbox />} />
                     <Route path="/quick-start" element={<ClinicianQuickStart />} />
                     <Route
                       path="/admin-quick-start"
