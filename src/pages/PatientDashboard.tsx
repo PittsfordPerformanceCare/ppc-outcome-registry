@@ -214,14 +214,39 @@ export default function PatientDashboard() {
       if (accessData && accessData.length > 0) {
         const episodeIds = accessData.map(a => a.episode_id);
         
-        const { data: episodesData, error: episodesError } = await supabase
-          .from("episodes")
-          .select("*")
-          .in("id", episodeIds)
-          .order("date_of_service", { ascending: false });
+        // For each episode id, load patient-safe episode view via RPC
+        const episodeViews = await Promise.all(
+          episodeIds.map(async (id) => {
+            const { data, error } = await supabase.rpc('get_patient_episode_view', {
+              _patient_id: userId,
+              _episode_id: id,
+            });
 
-        if (episodesError) throw episodesError;
-        setEpisodes(episodesData || []);
+            if (error) {
+              console.error('Error loading episode via RPC', id, error);
+              return null;
+            }
+
+            // get_patient_episode_view returns an array of rows
+            if (!data || data.length === 0) return null;
+            const e = data[0];
+
+            return {
+              id: e.id,
+              patient_name: e.patient_name,
+              region: e.region,
+              date_of_service: e.date_of_service,
+              start_date: e.start_date,
+              discharge_date: e.discharge_date,
+              followup_date: e.followup_date,
+              followup_time: null,
+              clinician: e.clinician,
+              diagnosis: e.diagnosis,
+            } as PatientEpisode;
+          })
+        );
+
+        setEpisodes(episodeViews.filter((e): e is PatientEpisode => e !== null));
 
         // Load latest outcome score for active episode
         if (episodeIds.length > 0) {
