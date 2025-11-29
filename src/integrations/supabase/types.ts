@@ -2085,6 +2085,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "patient_messages_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "patient_messages_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
