@@ -104,30 +104,17 @@ export default function PatientAccess() {
 
       setMessage("Granting episode access...");
 
-      // Update patient_episode_access to link to auth user and mark token as used
+      // Update patient_episode_access to mark token as used
+      // Keep patient_id pointing to the patient_accounts record (don't change it to auth user ID)
       const { error: updateError } = await supabase
         .from("patient_episode_access")
         .update({
-          patient_id: authUserId,
           code_used_at: new Date().toISOString(),
           magic_token: null, // Invalidate the token after use
         })
         .eq("id", accessRecord.id);
 
       if (updateError) throw updateError;
-
-      // Update patient_accounts to link to auth user
-      const { error: accountUpdateError } = await supabase
-        .from("patient_accounts")
-        .update({
-          id: authUserId,
-        })
-        .eq("id", accessRecord.patient_accounts.id);
-
-      if (accountUpdateError) {
-        console.error("Warning: Could not update patient account:", accountUpdateError);
-        // Non-fatal, continue
-      }
 
       setStatus("success");
       setMessage("Success! Redirecting to setup...");
