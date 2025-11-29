@@ -125,7 +125,7 @@ export default function ReferralInbox() {
       toast({
         variant: "destructive",
         title: "Approval failed",
-        description: "Please try again.",
+        description: error instanceof Error ? error.message : String(error),
       });
     } finally {
       setIsApproving(false);
