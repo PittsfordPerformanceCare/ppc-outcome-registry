@@ -183,7 +183,7 @@ export default function PatientAuth() {
       // Find the access record with this invitation code
       const { data: accessRecord, error: findError } = await supabase
         .from("patient_episode_access")
-        .select("*, patient_accounts!inner(email, full_name, phone)")
+        .select("*, patient_accounts!inner(email)")
         .eq("invitation_code", code.toUpperCase())
         .maybeSingle();
 
@@ -203,10 +203,6 @@ export default function PatientAuth() {
         throw new Error(`This code was issued for ${patientEmail}. Please sign in with that email.`);
       }
 
-      // Get the original patient account details
-      const originalPatientData = accessRecord.patient_accounts;
-      const originalPatientId = accessRecord.patient_id;
-
       // Update patient_id to current auth user and mark code as used
       const { error: updateError } = await supabase
         .from("patient_episode_access")
@@ -217,24 +213,6 @@ export default function PatientAuth() {
         .eq("id", accessRecord.id);
 
       if (updateError) throw updateError;
-
-      // Upsert the current user's patient_accounts with the original invitation data
-      await supabase
-        .from("patient_accounts")
-        .upsert({
-          id: session.user.id,
-          email: originalPatientData.email,
-          full_name: originalPatientData.full_name,
-          phone: originalPatientData.phone,
-        });
-
-      // Delete the old patient_accounts record if it's different
-      if (originalPatientId !== session.user.id) {
-        await supabase
-          .from("patient_accounts")
-          .delete()
-          .eq("id", originalPatientId);
-      }
 
       toast({
         title: "Access Granted!",
