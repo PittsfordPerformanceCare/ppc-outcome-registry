@@ -998,7 +998,9 @@ export default function PatientIntake() {
         return true; // Optional
       case 3: // Current Concerns
         return values.complaints.length > 0 && values.complaints.some(c => c.text && c.category);
-      case 4: // Consent
+      case 4: // Review
+        return true; // Review step, no validation needed
+      case 5: // Consent
         return !!(values.consentSignature && values.consentSignedName && values.hipaaAcknowledged && values.hipaaSignedName);
       default:
         return true;
