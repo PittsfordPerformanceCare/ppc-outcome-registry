@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText, Mail } from "lucide-react";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Activity, Clock, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText, Mail, MessageSquare, Phone } from "lucide-react";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
@@ -64,6 +64,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [exportingPDFs, setExportingPDFs] = useState(false);
+  const [unreadMessages, setUnreadMessages] = useState(0);
+  const [pendingCallbacks, setPendingCallbacks] = useState(0);
   const { toast } = useToast();
   const { settings } = useClinicSettings();
   const { success } = useHaptics();
@@ -97,7 +99,31 @@ export default function Dashboard() {
   useEffect(() => {
     loadEpisodes();
     checkAdminStatus();
+    loadInboxCounts();
   }, []);
+
+  const loadInboxCounts = async () => {
+    try {
+      // Get unread messages count
+      const { count: messagesCount } = await supabase
+        .from("patient_messages")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending")
+        .neq("message_type", "callback_request");
+
+      // Get pending callbacks count
+      const { count: callbacksCount } = await supabase
+        .from("patient_messages")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "pending")
+        .eq("message_type", "callback_request");
+
+      setUnreadMessages(messagesCount || 0);
+      setPendingCallbacks(callbacksCount || 0);
+    } catch (error) {
+      console.error("Error loading inbox counts:", error);
+    }
+  };
 
   const checkAdminStatus = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -617,6 +643,64 @@ export default function Dashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Clinician Inbox Card */}
+      <Card 
+        className="relative overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-primary/5 to-background"
+        onClick={() => navigate("/clinician-inbox")}
+      >
+        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-primary/30 to-transparent rounded-bl-full" />
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <MessageSquare className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl">Clinician Inbox</CardTitle>
+                <CardDescription>Patient messages and callback requests</CardDescription>
+              </div>
+            </div>
+            <Button 
+              size="lg"
+              className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate("/clinician-inbox");
+              }}
+            >
+              View Inbox
+              <MessageSquare className="h-5 w-5" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="flex items-center gap-4 p-4 bg-background/50 rounded-lg border border-border/50">
+              <div className="h-16 w-16 rounded-full bg-orange-500/10 flex items-center justify-center">
+                <Mail className="h-8 w-8 text-orange-500" />
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-foreground">
+                  {unreadMessages}
+                </p>
+                <p className="text-sm text-muted-foreground">Unread Messages</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 p-4 bg-background/50 rounded-lg border border-border/50">
+              <div className="h-16 w-16 rounded-full bg-blue-500/10 flex items-center justify-center">
+                <Phone className="h-8 w-8 text-blue-500" />
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-foreground">
+                  {pendingCallbacks}
+                </p>
+                <p className="text-sm text-muted-foreground">Pending Callbacks</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Performance Dials */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
