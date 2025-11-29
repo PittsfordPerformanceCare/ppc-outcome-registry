@@ -39,6 +39,7 @@ import AutomationStatus from "./pages/AutomationStatus";
 import ClinicianInbox from "./pages/ClinicianInbox";
 import NeuroExam from "./pages/NeuroExam";
 import PatientWelcome from "./pages/PatientWelcome";
+import PatientAccess from "./pages/PatientAccess";
 import ClinicianQuickStart from "./pages/ClinicianQuickStart";
 import AdministratorQuickStart from "./pages/AdministratorQuickStart";
 import PatientQuickStart from "./pages/PatientQuickStart";
@@ -57,6 +58,7 @@ const App = () => (
         <Routes>
           <Route path="/auth" element={<Auth />} />
           <Route path="/patient-auth" element={<PatientAuth />} />
+          <Route path="/patient-access" element={<PatientAccess />} />
           <Route path="/patient-welcome" element={<PatientWelcome />} />
           <Route path="/patient-dashboard" element={<PatientDashboard />} />
           <Route path="/patient-episode/:id" element={<PatientEpisodeView />} />

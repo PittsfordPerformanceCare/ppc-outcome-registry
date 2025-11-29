@@ -44,8 +44,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Generating invitation for episode:", episodeId);
 
-    // Generate secure invitation code (8 characters)
+    // Generate secure invitation code (8 characters) and magic token
     const invitationCode = generateInvitationCode();
+    const magicToken = crypto.randomUUID();
+    const tokenExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days
 
     // Get episode details
     const { data: episode, error: episodeError } = await supabase
@@ -114,11 +116,13 @@ const handler = async (req: Request): Promise<Response> => {
     let effectiveInvitationCode = invitationCode;
 
     if (existingAccess) {
-      // Update existing access with a fresh invitation code and reactivate access
+      // Update existing access with fresh tokens and reactivate access
       const { error: updateAccessError } = await supabase
         .from("patient_episode_access")
         .update({
           invitation_code: invitationCode,
+          magic_token: magicToken,
+          token_expires_at: tokenExpiresAt,
           is_active: true,
           code_used_at: null,
         })
@@ -129,13 +133,15 @@ const handler = async (req: Request): Promise<Response> => {
         throw new Error(`Failed to update existing episode access: ${updateAccessError.message}`);
       }
     } else {
-      // Create episode access with invitation code
+      // Create episode access with invitation code and magic token
       const { error: accessError } = await supabase
         .from("patient_episode_access")
         .insert({
           patient_id: patientAccount.id,
           episode_id: episodeId,
           invitation_code: invitationCode,
+          magic_token: magicToken,
+          token_expires_at: tokenExpiresAt,
           granted_by: user.id,
         });
 
@@ -145,9 +151,9 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Send invitation email
+    // Send invitation email with magic link
     const appUrl = Deno.env.get("APP_URL") || "https://your-app-url.com";
-    const invitationLink = `${appUrl}/patient-auth?code=${invitationCode}`;
+    const magicLink = `${appUrl}/patient-access?token=${magicToken}`;
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -183,13 +189,12 @@ const handler = async (req: Request): Promise<Response> => {
                 <li><strong>Clinician:</strong> ${episode.clinician}</li>
               </ul>
 
-              <div class="code-box">
-                <p style="margin-top: 0;">Your Access Code:</p>
-                <div class="code">${invitationCode}</div>
-              </div>
-
-              <p style="text-align: center;">
-                <a href="${invitationLink}" class="button">Access Your Records</a>
+              <p style="text-align: center; margin: 30px 0;">
+                <a href="${magicLink}" class="button">✨ Access Your Records Instantly</a>
+              </p>
+              
+              <p style="text-align: center; font-size: 14px; color: #666; margin-bottom: 30px;">
+                Click the button above to instantly access your care records. No password needed!
               </p>
 
               <div class="install-section">
@@ -215,8 +220,8 @@ const handler = async (req: Request): Promise<Response> => {
                 <p style="font-size: 13px; color: #0369A1; margin-bottom: 0;">The app icon will appear on your home screen just like your other apps!</p>
               </div>
 
-              <p style="font-size: 14px; color: #666;">
-                Or visit the patient portal and enter your access code: <strong>${invitationCode}</strong>
+              <p style="font-size: 12px; color: #999; margin-top: 20px; text-align: center;">
+                This is a secure, one-time link that will automatically sign you in.
               </p>
 
               <div class="footer">

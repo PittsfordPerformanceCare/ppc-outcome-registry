@@ -1908,7 +1908,9 @@ export type Database = {
           id: string
           invitation_code: string | null
           is_active: boolean
+          magic_token: string | null
           patient_id: string
+          token_expires_at: string | null
         }
         Insert: {
           code_used_at?: string | null
@@ -1919,7 +1921,9 @@ export type Database = {
           id?: string
           invitation_code?: string | null
           is_active?: boolean
+          magic_token?: string | null
           patient_id: string
+          token_expires_at?: string | null
         }
         Update: {
           code_used_at?: string | null
@@ -1930,7 +1934,9 @@ export type Database = {
           id?: string
           invitation_code?: string | null
           is_active?: boolean
+          magic_token?: string | null
           patient_id?: string
+          token_expires_at?: string | null
         }
         Relationships: [
           {
