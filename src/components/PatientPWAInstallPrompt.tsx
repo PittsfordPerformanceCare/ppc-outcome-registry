@@ -97,11 +97,23 @@ export const PatientPWAInstallPrompt = () => {
               <h3 className="font-semibold text-lg mb-1">
                 Install PPC Companion App
               </h3>
-              <p className="text-sm text-muted-foreground">
-                {isIOS 
-                  ? "Add this app to your home screen for quick access and a better experience. Tap the share button in Safari, then 'Add to Home Screen'."
-                  : "Install this app on your device for offline access and a better experience."}
-              </p>
+              
+              {isIOS ? (
+                <div className="text-sm space-y-2">
+                  <p className="text-muted-foreground">Get quick access from your home screen:</p>
+                  <ol className="list-decimal list-inside space-y-1 text-muted-foreground ml-2">
+                    <li>Tap the <strong>Share button</strong> (⬆️) at the bottom</li>
+                    <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                    <li>Tap <strong>"Add"</strong> - Done! 🎉</li>
+                  </ol>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {deferredPrompt 
+                    ? "Install this app on your device for offline access and a better experience."
+                    : "Tap the menu (⋮) in your browser and select 'Install app' or 'Add to Home screen'."}
+                </p>
+              )}
             </div>
 
             <div className="flex gap-2">
