@@ -510,24 +510,31 @@ export default function IntakeReview() {
 
           <div className="flex gap-3">
             {selectedForm.converted_to_episode_id ? (
-              <div className="space-y-3 flex-1">
-                <Alert className="border-green-600/20 bg-green-50/50 dark:bg-green-950/20">
-                  <CheckCircle2 className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-sm text-green-900 dark:text-green-100">
+              <Card className="flex-1 border-primary/50 bg-primary/5">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-2 text-primary">
+                    <CheckCircle2 className="h-5 w-5" />
+                    <CardTitle className="text-lg">Review Complete</CardTitle>
+                  </div>
+                  <CardDescription>
                     This intake has been converted to episode <span className="font-mono font-semibold">{selectedForm.converted_to_episode_id}</span>
-                  </AlertDescription>
-                </Alert>
-                <Button
-                  onClick={() => handleViewEpisode(selectedForm.converted_to_episode_id)}
-                  className="w-full"
-                  size="lg"
-                  variant="default"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  View Episode Details
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Ready to continue with the patient episode? View full episode details to add clinical notes, schedule follow-ups, and track outcomes.
+                  </p>
+                  <Button
+                    onClick={() => handleViewEpisode(selectedForm.converted_to_episode_id)}
+                    className="w-full"
+                    size="lg"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Go to Episode
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </CardContent>
+              </Card>
             ) : (
               <>
                 <Button
