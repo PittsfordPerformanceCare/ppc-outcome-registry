@@ -277,6 +277,8 @@ export default function PatientIntake() {
 
   const form = useForm<IntakeFormValues>({
     resolver: zodResolver(intakeFormSchema),
+    mode: "onBlur", // Validate on blur instead of onChange for better performance
+    reValidateMode: "onChange", // Re-validate on change after first validation
     defaultValues: {
       patientName: "",
       dateOfBirth: "",
@@ -985,26 +987,36 @@ export default function PatientIntake() {
     setPendingNavigation(null);
   };
 
-  // Wizard step validation
+  // Wizard step validation - only validate required fields for current step
   const validateStep = async (stepIndex: number): Promise<boolean> => {
-    const values = form.getValues();
+    let fieldsToValidate: (keyof IntakeFormValues)[] = [];
     
     switch (stepIndex) {
       case 0: // Patient Info
-        return !!(values.patientName && values.dateOfBirth && values.episodeType);
+        fieldsToValidate = ["patientName", "dateOfBirth", "episodeType"];
+        break;
       case 1: // Medical History
-        return true; // All optional
+        return true; // All fields optional
       case 2: // Health Review  
-        return true; // Optional
+        return true; // All fields optional
       case 3: // Current Concerns
-        return values.complaints.length > 0 && values.complaints.some(c => c.text && c.category);
+        fieldsToValidate = ["complaints"];
+        break;
       case 4: // Review
         return true; // Review step, no validation needed
       case 5: // Consent
-        return !!(values.consentSignature && values.consentSignedName && values.hipaaAcknowledged && values.hipaaSignedName);
+        fieldsToValidate = ["consentSignature", "consentSignedName", "hipaaAcknowledged", "hipaaSignedName"];
+        break;
       default:
         return true;
     }
+    
+    // Only trigger validation if there are fields to validate
+    if (fieldsToValidate.length > 0) {
+      return await form.trigger(fieldsToValidate);
+    }
+    
+    return true;
   };
 
   const handleNextStep = async () => {
