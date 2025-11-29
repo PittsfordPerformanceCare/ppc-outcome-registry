@@ -2083,7 +2083,15 @@ export type Database = {
           subject?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "patient_messages_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       patient_notification_preferences: {
         Row: {
