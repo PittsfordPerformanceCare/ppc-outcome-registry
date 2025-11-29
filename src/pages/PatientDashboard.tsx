@@ -287,7 +287,7 @@ export default function PatientDashboard() {
     try {
       const { data: accessRecord, error: findError } = await supabase
         .from("patient_episode_access")
-        .select("*, patient_accounts!inner(email)")
+        .select("*, patient_accounts!inner(email, full_name, phone)")
         .eq("invitation_code", accessCode.toUpperCase())
         .maybeSingle();
 
@@ -306,6 +306,10 @@ export default function PatientDashboard() {
         throw new Error(`This code was issued for ${patientEmail}`);
       }
 
+      // Get the original patient account details
+      const originalPatientData = accessRecord.patient_accounts;
+      const originalPatientId = accessRecord.patient_id;
+
       const { error: updateError } = await supabase
         .from("patient_episode_access")
         .update({ 
@@ -315,6 +319,24 @@ export default function PatientDashboard() {
         .eq("id", accessRecord.id);
 
       if (updateError) throw updateError;
+
+      // Upsert the current user's patient_accounts with the original invitation data
+      await supabase
+        .from("patient_accounts")
+        .upsert({
+          id: user!.id,
+          email: originalPatientData.email,
+          full_name: originalPatientData.full_name,
+          phone: originalPatientData.phone,
+        });
+
+      // Delete the old patient_accounts record if it's different
+      if (originalPatientId !== user!.id) {
+        await supabase
+          .from("patient_accounts")
+          .delete()
+          .eq("id", originalPatientId);
+      }
 
       toast({
         title: "Success!",
