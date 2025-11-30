@@ -525,6 +525,7 @@ export type Database = {
         Row: {
           allergy_flag: boolean | null
           allergy_notes: string | null
+          body_region: string | null
           cis_delta: number | null
           cis_post: number | null
           cis_pre: number | null
@@ -536,6 +537,7 @@ export type Database = {
           compliance_notes: string | null
           compliance_rating: string | null
           created_at: string
+          current_status: Database["public"]["Enums"]["episode_status"] | null
           date_of_birth: string | null
           date_of_service: string
           diagnosis: string | null
@@ -543,11 +545,13 @@ export type Database = {
           emergency_contact: string | null
           emergency_phone: string | null
           episode_type: string | null
+          final_closure_date: string | null
           followup_date: string | null
           followup_time: string | null
           functional_limitation: string | null
           functional_limitations: string[] | null
           goals_other: string | null
+          has_ortho_referral: boolean | null
           id: string
           injury_date: string | null
           injury_mechanism: string | null
@@ -566,6 +570,7 @@ export type Database = {
           pcp_fax: string | null
           prior_treatments: Json | null
           prior_treatments_other: string | null
+          referral_id: string | null
           referral_reason: string | null
           referred_out: boolean | null
           referring_physician: string | null
@@ -573,8 +578,11 @@ export type Database = {
           reminder_sent_at: string | null
           resolution_days: string | null
           return_to_function_items: Json | null
+          return_to_registry_required: boolean | null
           source_intake_form_id: string | null
           start_date: string | null
+          surgery_date: string | null
+          surgery_performed: boolean | null
           treatment_goals: Json | null
           updated_at: string
           user_id: string
@@ -583,6 +591,7 @@ export type Database = {
         Insert: {
           allergy_flag?: boolean | null
           allergy_notes?: string | null
+          body_region?: string | null
           cis_delta?: number | null
           cis_post?: number | null
           cis_pre?: number | null
@@ -594,6 +603,7 @@ export type Database = {
           compliance_notes?: string | null
           compliance_rating?: string | null
           created_at?: string
+          current_status?: Database["public"]["Enums"]["episode_status"] | null
           date_of_birth?: string | null
           date_of_service: string
           diagnosis?: string | null
@@ -601,11 +611,13 @@ export type Database = {
           emergency_contact?: string | null
           emergency_phone?: string | null
           episode_type?: string | null
+          final_closure_date?: string | null
           followup_date?: string | null
           followup_time?: string | null
           functional_limitation?: string | null
           functional_limitations?: string[] | null
           goals_other?: string | null
+          has_ortho_referral?: boolean | null
           id: string
           injury_date?: string | null
           injury_mechanism?: string | null
@@ -624,6 +636,7 @@ export type Database = {
           pcp_fax?: string | null
           prior_treatments?: Json | null
           prior_treatments_other?: string | null
+          referral_id?: string | null
           referral_reason?: string | null
           referred_out?: boolean | null
           referring_physician?: string | null
@@ -631,8 +644,11 @@ export type Database = {
           reminder_sent_at?: string | null
           resolution_days?: string | null
           return_to_function_items?: Json | null
+          return_to_registry_required?: boolean | null
           source_intake_form_id?: string | null
           start_date?: string | null
+          surgery_date?: string | null
+          surgery_performed?: boolean | null
           treatment_goals?: Json | null
           updated_at?: string
           user_id: string
@@ -641,6 +657,7 @@ export type Database = {
         Update: {
           allergy_flag?: boolean | null
           allergy_notes?: string | null
+          body_region?: string | null
           cis_delta?: number | null
           cis_post?: number | null
           cis_pre?: number | null
@@ -652,6 +669,7 @@ export type Database = {
           compliance_notes?: string | null
           compliance_rating?: string | null
           created_at?: string
+          current_status?: Database["public"]["Enums"]["episode_status"] | null
           date_of_birth?: string | null
           date_of_service?: string
           diagnosis?: string | null
@@ -659,11 +677,13 @@ export type Database = {
           emergency_contact?: string | null
           emergency_phone?: string | null
           episode_type?: string | null
+          final_closure_date?: string | null
           followup_date?: string | null
           followup_time?: string | null
           functional_limitation?: string | null
           functional_limitations?: string[] | null
           goals_other?: string | null
+          has_ortho_referral?: boolean | null
           id?: string
           injury_date?: string | null
           injury_mechanism?: string | null
@@ -682,6 +702,7 @@ export type Database = {
           pcp_fax?: string | null
           prior_treatments?: Json | null
           prior_treatments_other?: string | null
+          referral_id?: string | null
           referral_reason?: string | null
           referred_out?: boolean | null
           referring_physician?: string | null
@@ -689,8 +710,11 @@ export type Database = {
           reminder_sent_at?: string | null
           resolution_days?: string | null
           return_to_function_items?: Json | null
+          return_to_registry_required?: boolean | null
           source_intake_form_id?: string | null
           start_date?: string | null
+          surgery_date?: string | null
+          surgery_performed?: boolean | null
           treatment_goals?: Json | null
           updated_at?: string
           user_id?: string
@@ -702,6 +726,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episodes_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "ortho_referrals"
             referencedColumns: ["id"]
           },
           {
@@ -1689,6 +1720,176 @@ export type Database = {
         }
         Relationships: []
       }
+      ortho_partners: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          direct_secure_address: string | null
+          fax_or_email_backup: string | null
+          group_name: string | null
+          id: string
+          location: string | null
+          name: string
+          preferred_return_method: string | null
+          priority_scheduling_instructions: string | null
+          return_instructions: string | null
+          subspecialty: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          direct_secure_address?: string | null
+          fax_or_email_backup?: string | null
+          group_name?: string | null
+          id?: string
+          location?: string | null
+          name: string
+          preferred_return_method?: string | null
+          priority_scheduling_instructions?: string | null
+          return_instructions?: string | null
+          subspecialty?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          direct_secure_address?: string | null
+          fax_or_email_backup?: string | null
+          group_name?: string | null
+          id?: string
+          location?: string | null
+          name?: string
+          preferred_return_method?: string | null
+          priority_scheduling_instructions?: string | null
+          return_instructions?: string | null
+          subspecialty?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ortho_referrals: {
+        Row: {
+          clinic_id: string | null
+          communication_channel: string | null
+          created_at: string
+          destination_ortho_id: string
+          episode_id: string
+          expected_return_window_end: string | null
+          expected_return_window_start: string | null
+          id: string
+          notes_to_ortho: string | null
+          patient_id: string | null
+          priority_flag: boolean
+          procedure_class: string | null
+          referral_date: string
+          referral_reason_primary: string
+          referral_reason_secondary: string[] | null
+          return_to_registry_required: boolean
+          suspected_procedure_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          communication_channel?: string | null
+          created_at?: string
+          destination_ortho_id: string
+          episode_id: string
+          expected_return_window_end?: string | null
+          expected_return_window_start?: string | null
+          id?: string
+          notes_to_ortho?: string | null
+          patient_id?: string | null
+          priority_flag?: boolean
+          procedure_class?: string | null
+          referral_date?: string
+          referral_reason_primary: string
+          referral_reason_secondary?: string[] | null
+          return_to_registry_required?: boolean
+          suspected_procedure_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          communication_channel?: string | null
+          created_at?: string
+          destination_ortho_id?: string
+          episode_id?: string
+          expected_return_window_end?: string | null
+          expected_return_window_start?: string | null
+          id?: string
+          notes_to_ortho?: string | null
+          patient_id?: string | null
+          priority_flag?: boolean
+          procedure_class?: string | null
+          referral_date?: string
+          referral_reason_primary?: string
+          referral_reason_secondary?: string[] | null
+          return_to_registry_required?: boolean
+          suspected_procedure_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ortho_referrals_destination_ortho_id_fkey"
+            columns: ["destination_ortho_id"]
+            isOneToOne: false
+            referencedRelation: "ortho_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ortho_tasks: {
+        Row: {
+          assigned_to: string | null
+          clinic_id: string | null
+          created_at: string
+          description: string | null
+          due_date: string
+          episode_id: string | null
+          id: string
+          patient_id: string | null
+          status: Database["public"]["Enums"]["task_status"]
+          task_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date: string
+          episode_id?: string | null
+          id?: string
+          patient_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          task_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          episode_id?: string | null
+          id?: string
+          patient_id?: string | null
+          status?: Database["public"]["Enums"]["task_status"]
+          task_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       outcome_reminder_report_deliveries: {
         Row: {
           clinic_id: string | null
@@ -2429,6 +2630,68 @@ export type Database = {
             columns: ["previous_episode_id"]
             isOneToOne: false
             referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_ortho_return_packets: {
+        Row: {
+          clinic_id: string | null
+          complications: string | null
+          created_at: string
+          episode_id: string
+          id: string
+          next_ortho_followup_date: string | null
+          ortho_partner_id: string
+          patient_id: string | null
+          procedure_performed: string | null
+          rehab_discharge_date: string | null
+          rehab_facility: string | null
+          submitted_by: string | null
+          submitted_via: string | null
+          surgery_date: string | null
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          complications?: string | null
+          created_at?: string
+          episode_id: string
+          id?: string
+          next_ortho_followup_date?: string | null
+          ortho_partner_id: string
+          patient_id?: string | null
+          procedure_performed?: string | null
+          rehab_discharge_date?: string | null
+          rehab_facility?: string | null
+          submitted_by?: string | null
+          submitted_via?: string | null
+          surgery_date?: string | null
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          complications?: string | null
+          created_at?: string
+          episode_id?: string
+          id?: string
+          next_ortho_followup_date?: string | null
+          ortho_partner_id?: string
+          patient_id?: string | null
+          procedure_performed?: string | null
+          rehab_discharge_date?: string | null
+          rehab_facility?: string | null
+          submitted_by?: string | null
+          submitted_via?: string | null
+          surgery_date?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_ortho_return_packets_ortho_partner_id_fkey"
+            columns: ["ortho_partner_id"]
+            isOneToOne: false
+            referencedRelation: "ortho_partners"
             referencedColumns: ["id"]
           },
         ]
@@ -3297,6 +3560,17 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "clinician"
+      episode_status:
+        | "ACTIVE_CONSERVATIVE_CARE"
+        | "REFERRED_TO_ORTHO"
+        | "ORTHO_CONSULT_COMPLETED"
+        | "SURGERY_COMPLETED"
+        | "ORTHO_REHAB_IN_PROGRESS"
+        | "ORTHO_REHAB_COMPLETED"
+        | "PENDING_RETURN_TO_PPC"
+        | "FINAL_PPC_ASSESSMENT_COMPLETED"
+        | "EPISODE_CLOSED"
+      task_status: "Open" | "Done"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3425,6 +3699,18 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "clinician"],
+      episode_status: [
+        "ACTIVE_CONSERVATIVE_CARE",
+        "REFERRED_TO_ORTHO",
+        "ORTHO_CONSULT_COMPLETED",
+        "SURGERY_COMPLETED",
+        "ORTHO_REHAB_IN_PROGRESS",
+        "ORTHO_REHAB_COMPLETED",
+        "PENDING_RETURN_TO_PPC",
+        "FINAL_PPC_ASSESSMENT_COMPLETED",
+        "EPISODE_CLOSED",
+      ],
+      task_status: ["Open", "Done"],
     },
   },
 } as const
