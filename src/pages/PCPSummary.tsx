@@ -14,6 +14,7 @@ import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
 import { NeuroExamDisplay } from "@/components/NeuroExamDisplay";
 import { NeuroExamComparison } from "@/components/NeuroExamComparison";
 import { NeuroLetterGenerator } from "@/components/NeuroLetterGenerator";
+import { ClinicHeader } from "@/components/ClinicHeader";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -96,6 +97,7 @@ export default function PCPSummary() {
   const [loading, setLoading] = useState(true);
   const [isTextRichFormat, setIsTextRichFormat] = useState(false);
   const [showLetterDialog, setShowLetterDialog] = useState(false);
+  const [clinicSettings, setClinicSettings] = useState<any>(null);
 
   useEffect(() => {
     if (episodeId) {
@@ -114,6 +116,13 @@ export default function PCPSummary() {
         setLoading(false);
         return;
       }
+
+      // Load clinic settings
+      const { data: settings } = await supabase
+        .from("clinic_settings")
+        .select("*")
+        .single();
+      setClinicSettings(settings);
 
       // Fetch outcome scores
       const scores = await getOutcomeScores(episodeId);
@@ -328,7 +337,12 @@ export default function PCPSummary() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <KeyboardShortcutsDialog 
+      {/* Clinic Header - Visible only when printing */}
+      <div className="hidden print:block">
+        <ClinicHeader clinicSettings={clinicSettings} />
+      </div>
+      
+      <KeyboardShortcutsDialog
         open={showHelp} 
         onOpenChange={setShowHelp}
         additionalShortcuts={[

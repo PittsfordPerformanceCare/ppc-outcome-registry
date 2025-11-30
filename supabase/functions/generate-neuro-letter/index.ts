@@ -36,6 +36,12 @@ serve(async (req) => {
 
     if (episodeError) throw episodeError;
 
+    // Fetch clinic settings
+    const { data: clinicSettings } = await supabaseClient
+      .from("clinic_settings")
+      .select("*")
+      .single();
+
     // Fetch neuro exams
     const { data: exams, error: examsError } = await supabaseClient
       .from("neurologic_exams")
@@ -80,6 +86,13 @@ serve(async (req) => {
       : `You are a physical therapist writing a professional letter to a school regarding a student's academic accommodations and restrictions following neurological rehabilitation. The letter should be formal, clear, and focused on cognitive and physical considerations for the educational environment.`;
 
     const userPrompt = `Generate a professional ${letterType} letter based on the following patient information:
+
+LETTERHEAD (use this for the top of the letter):
+${clinicSettings?.clinic_name || "PPC Outcome Registry"}
+${clinicSettings?.tagline || "Clinical Excellence Platform"}
+${clinicSettings?.address ? `Address: ${clinicSettings.address}` : ""}
+${clinicSettings?.phone ? `Phone: ${clinicSettings.phone}` : ""}
+${clinicSettings?.email ? `Email: ${clinicSettings.email}` : ""}
 
 Patient: ${context.patient}
 Diagnosis: ${context.diagnosis}

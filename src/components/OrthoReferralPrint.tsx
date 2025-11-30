@@ -11,6 +11,7 @@ import {
 import { Printer } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
+import { ClinicHeader } from "@/components/ClinicHeader";
 
 interface OrthoReferralPrintProps {
   episodeId: string;
@@ -111,19 +112,7 @@ export function OrthoReferralPrint({ episodeId, trigger }: OrthoReferralPrintPro
               {/* Printable Content */}
               <div id="referral-print" className="print:p-8 space-y-6">
                 {/* Clinic Header */}
-                <div className="border-b-2 border-primary pb-4">
-                  <h1 className="text-2xl font-bold text-primary">
-                    {referralData.clinic?.clinic_name || "Physical Therapy Clinic"}
-                  </h1>
-                  {referralData.clinic?.tagline && (
-                    <p className="text-sm text-muted-foreground">{referralData.clinic.tagline}</p>
-                  )}
-                  <div className="text-sm mt-2 space-y-1">
-                    {referralData.clinic?.address && <p>{referralData.clinic.address}</p>}
-                    {referralData.clinic?.phone && <p>Phone: {referralData.clinic.phone}</p>}
-                    {referralData.clinic?.email && <p>Email: {referralData.clinic.email}</p>}
-                  </div>
-                </div>
+                <ClinicHeader clinicSettings={referralData.clinic} />
 
                 {/* Document Title */}
                 <div className="text-center">
