@@ -13,6 +13,8 @@ import { NeuroExamDisplay } from "@/components/NeuroExamDisplay";
 import { NeuroExamComparison } from "@/components/NeuroExamComparison";
 import { NeuroLetterGenerator } from "@/components/NeuroLetterGenerator";
 import { NeuroExamScheduler } from "@/components/NeuroExamScheduler";
+import { OrthoReferralForm } from "@/components/OrthoReferralForm";
+import { OrthoReferralCard } from "@/components/OrthoReferralCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,11 +35,13 @@ import {
   FileText,
   AlertCircle,
   Printer,
-  Home
+  Home,
+  ExternalLink
 } from "lucide-react";
 import { format } from "date-fns";
 import { getMCIDThreshold } from "@/lib/mcidUtils";
 import { toast } from "sonner";
+import { EPISODE_STATUS_LABELS, getStatusColor } from "@/lib/orthoReferralUtils";
 
 interface ProcessedEpisode {
   episodeId: string;
@@ -64,6 +68,9 @@ interface ProcessedEpisode {
   referral_reason?: string;
   episode_type?: string;
   patientEmail?: string;
+  current_status?: string;
+  has_ortho_referral?: boolean;
+  body_region?: string;
 }
 
 interface FollowupData {
@@ -84,6 +91,8 @@ export default function EpisodeSummary() {
   const [baselineExam, setBaselineExam] = useState<any | null>(null);
   const [finalExam, setFinalExam] = useState<any | null>(null);
   const [showLetterDialog, setShowLetterDialog] = useState(false);
+  const [showOrthoReferralForm, setShowOrthoReferralForm] = useState(false);
+  const [episodeDetails, setEpisodeDetails] = useState<any>(null);
 
   useEffect(() => {
     const loadEpisodeData = async () => {
@@ -104,6 +113,8 @@ export default function EpisodeSummary() {
           setLoading(false);
           return;
         }
+
+        setEpisodeDetails(episodeData);
 
         // Fetch intake form and all followups for journey tracking
         const { data: intakeForm } = await supabase
@@ -157,7 +168,10 @@ export default function EpisodeSummary() {
           referred_out: episodeData.referred_out || undefined,
           referral_reason: episodeData.referral_reason || undefined,
           episode_type: episodeData.episode_type || undefined,
-          patientEmail: intakeForm?.email || undefined
+          patientEmail: intakeForm?.email || undefined,
+          current_status: episodeData.current_status || undefined,
+          has_ortho_referral: episodeData.has_ortho_referral || undefined,
+          body_region: episodeData.body_region || undefined
         };
 
         setEpisode(processedEpisode);
@@ -210,6 +224,26 @@ export default function EpisodeSummary() {
   const handlePrint = () => {
     window.print();
     toast.success("Opening print dialog...");
+  };
+
+  const handleReferralSuccess = () => {
+    // Reload episode data to show updated status
+    if (episodeId) {
+      const loadEpisodeData = async () => {
+        const [episodeData] = await Promise.all([
+          getEpisode(episodeId)
+        ]);
+        if (episodeData) {
+          setEpisodeDetails(episodeData);
+          setEpisode(prev => prev ? {
+            ...prev,
+            current_status: episodeData.current_status,
+            has_ortho_referral: episodeData.has_ortho_referral
+          } : null);
+        }
+      };
+      loadEpisodeData();
+    }
   };
 
   // Enable keyboard shortcuts with print handler
@@ -282,6 +316,13 @@ export default function EpisodeSummary() {
         <div className="space-y-1">
           <h1 className="text-3xl font-bold text-primary">Episode Summary</h1>
           <p className="text-muted-foreground print:hidden">Complete patient journey and outcomes</p>
+          {episode.current_status && (
+            <div className="flex items-center gap-2 mt-2">
+              <Badge className={getStatusColor(episode.current_status)}>
+                {EPISODE_STATUS_LABELS[episode.current_status] || episode.current_status}
+              </Badge>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => navigate(-1)} className="gap-2 print:hidden">
@@ -300,6 +341,16 @@ export default function EpisodeSummary() {
             >
               <Activity className="h-4 w-4" />
               Neuro Exam
+            </Button>
+          )}
+          {!episode.has_ortho_referral && (
+            <Button 
+              variant="outline" 
+              onClick={() => setShowOrthoReferralForm(true)} 
+              className="gap-2 print:hidden"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Create Ortho Referral
             </Button>
           )}
           {isCompleted && episode.baselineScores && episode.dischargeScores && (
@@ -338,6 +389,17 @@ export default function EpisodeSummary() {
         </div>
       </div>
 
+      {/* Ortho Referral Form Dialog */}
+      {episodeId && (
+        <OrthoReferralForm
+          open={showOrthoReferralForm}
+          onOpenChange={setShowOrthoReferralForm}
+          episodeId={episodeId}
+          patientName={episode.patientName}
+          onSuccess={handleReferralSuccess}
+        />
+      )}
+
       {/* Patient Journey Timeline */}
       {journey && (
         <PatientJourneyTimeline 
@@ -347,6 +409,11 @@ export default function EpisodeSummary() {
             // Could navigate to relevant page based on milestone type
           }}
         />
+      )}
+
+      {/* Ortho Referral Card */}
+      {episode.has_ortho_referral && episodeId && (
+        <OrthoReferralCard episodeId={episodeId} />
       )}
 
       {/* Patient Demographics */}

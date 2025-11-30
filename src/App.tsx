@@ -50,6 +50,7 @@ import ReferralSuccess from "./pages/ReferralSuccess";
 import ReferralStatus from "./pages/ReferralStatus";
 import ReferralInbox from "./pages/ReferralInbox";
 import AppInstallGuide from "./pages/AppInstallGuide";
+import OrthoPartners from "./pages/OrthoPartners";
 
 const queryClient = new QueryClient();
 
@@ -132,6 +133,7 @@ const App = () => (
                     <Route path="/analytics-dashboard" element={<AnalyticsDashboard />} />
                     <Route path="/data-governance" element={<DataGovernance />} />
                     <Route path="/neuro-exam" element={<NeuroExam />} />
+                    <Route path="/ortho-partners" element={<OrthoPartners />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
