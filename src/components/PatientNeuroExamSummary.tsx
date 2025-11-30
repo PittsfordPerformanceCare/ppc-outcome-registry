@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Printer, Activity, CheckCircle2, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
+import { ClinicHeader } from "@/components/ClinicHeader";
 
 interface NeuroExam {
   id: string;
@@ -41,7 +42,19 @@ export function PatientNeuroExamSummary({
   clinicianName 
 }: PatientNeuroExamSummaryProps) {
   const [loading, setLoading] = useState(false);
+  const [clinicSettings, setClinicSettings] = useState<any>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const loadClinicSettings = async () => {
+      const { data } = await supabase
+        .from("clinic_settings")
+        .select("*")
+        .single();
+      setClinicSettings(data);
+    };
+    loadClinicSettings();
+  }, []);
 
   const handlePrint = () => {
     window.print();
@@ -101,6 +114,11 @@ export function PatientNeuroExamSummary({
 
   return (
     <div className="space-y-4">
+      {/* Clinic Header - Visible only when printing */}
+      <div className="hidden print:block">
+        <ClinicHeader clinicSettings={clinicSettings} />
+      </div>
+      
       <Card className="print:shadow-none">
         <CardHeader>
           <div className="flex items-center justify-between">
