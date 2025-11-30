@@ -681,8 +681,8 @@ export default function PatientDashboard() {
           </TabsContent>
 
           <TabsContent value="referrals" className="space-y-6">
-            <PatientReferralCard patientId={user?.id || ''} />
             <PatientReferralDashboard patientId={user?.id || ''} />
+            <PatientReferralCard patientId={user?.id || ''} />
           </TabsContent>
         </Tabs>
         </div>
