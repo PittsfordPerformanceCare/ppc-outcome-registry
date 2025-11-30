@@ -15,6 +15,7 @@ import { NeuroLetterGenerator } from "@/components/NeuroLetterGenerator";
 import { NeuroExamScheduler } from "@/components/NeuroExamScheduler";
 import { OrthoReferralForm } from "@/components/OrthoReferralForm";
 import { OrthoReferralCard } from "@/components/OrthoReferralCard";
+import { UpdateEpisodeStatusDialog } from "@/components/UpdateEpisodeStatusDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,8 @@ import {
   AlertCircle,
   Printer,
   Home,
-  ExternalLink
+  ExternalLink,
+  RefreshCw
 } from "lucide-react";
 import { format } from "date-fns";
 import { getMCIDThreshold } from "@/lib/mcidUtils";
@@ -93,6 +95,7 @@ export default function EpisodeSummary() {
   const [showLetterDialog, setShowLetterDialog] = useState(false);
   const [showOrthoReferralForm, setShowOrthoReferralForm] = useState(false);
   const [episodeDetails, setEpisodeDetails] = useState<any>(null);
+  const [showStatusUpdateDialog, setShowStatusUpdateDialog] = useState(false);
 
   useEffect(() => {
     const loadEpisodeData = async () => {
@@ -353,6 +356,16 @@ export default function EpisodeSummary() {
               Create Ortho Referral
             </Button>
           )}
+          {episode.has_ortho_referral && episode.current_status && episode.current_status !== "EPISODE_CLOSED" && (
+            <Button 
+              variant="outline" 
+              onClick={() => setShowStatusUpdateDialog(true)} 
+              className="gap-2 print:hidden"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Update Status
+            </Button>
+          )}
           {isCompleted && episode.baselineScores && episode.dischargeScores && (
             <MCIDReportDialog
               patientName={episode.patientName}
@@ -396,6 +409,17 @@ export default function EpisodeSummary() {
           onOpenChange={setShowOrthoReferralForm}
           episodeId={episodeId}
           patientName={episode.patientName}
+          onSuccess={handleReferralSuccess}
+        />
+      )}
+
+      {/* Update Episode Status Dialog */}
+      {episodeId && episode.current_status && (
+        <UpdateEpisodeStatusDialog
+          open={showStatusUpdateDialog}
+          onOpenChange={setShowStatusUpdateDialog}
+          episodeId={episodeId}
+          currentStatus={episode.current_status}
           onSuccess={handleReferralSuccess}
         />
       )}

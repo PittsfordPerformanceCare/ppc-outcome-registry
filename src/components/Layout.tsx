@@ -54,6 +54,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "Discharge", href: "/discharge", icon: LogOut },
     { name: "Follow-up", href: "/follow-up", icon: Activity },
     { name: "Ortho Partners", href: "/ortho-partners", icon: UserPlus },
+    { name: "Return to PPC", href: "/ortho-return-dashboard", icon: Activity },
   ];
 
   const intakeNav = [
