@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Smartphone, Share } from "lucide-react";
+import { Smartphone, Share, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -15,6 +16,7 @@ export const PatientPWAInstallPrompt = () => {
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check if already installed
@@ -111,7 +113,7 @@ export const PatientPWAInstallPrompt = () => {
 
           {/* Instructions */}
           {isIOS ? (
-            <div className="space-y-2 pl-11">
+            <div className="space-y-3 pl-11">
               <div className="flex items-start gap-2">
                 <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-[10px] font-bold text-primary">1</span>
@@ -136,9 +138,18 @@ export const PatientPWAInstallPrompt = () => {
                   Tap <strong>"Add"</strong>
                 </p>
               </div>
+              <Button
+                onClick={() => navigate('/install')}
+                variant="ghost"
+                size="sm"
+                className="w-full mt-2 text-xs h-7"
+              >
+                <HelpCircle className="h-3 w-3 mr-1" />
+                Need detailed help?
+              </Button>
             </div>
           ) : deferredPrompt ? (
-            <div className="pl-11">
+            <div className="pl-11 space-y-2">
               <Button
                 onClick={handleInstallClick}
                 className="w-full"
@@ -146,9 +157,18 @@ export const PatientPWAInstallPrompt = () => {
               >
                 Install Now
               </Button>
+              <Button
+                onClick={() => navigate('/install')}
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs h-7"
+              >
+                <HelpCircle className="h-3 w-3 mr-1" />
+                View instructions
+              </Button>
             </div>
           ) : (
-            <div className="space-y-2 pl-11">
+            <div className="space-y-3 pl-11">
               <div className="flex items-start gap-2">
                 <div className="w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <span className="text-[10px] font-bold text-primary">1</span>
@@ -165,6 +185,15 @@ export const PatientPWAInstallPrompt = () => {
                   Select <strong>"Install app"</strong>
                 </p>
               </div>
+              <Button
+                onClick={() => navigate('/install')}
+                variant="ghost"
+                size="sm"
+                className="w-full mt-2 text-xs h-7"
+              >
+                <HelpCircle className="h-3 w-3 mr-1" />
+                Need detailed help?
+              </Button>
             </div>
           )}
         </div>

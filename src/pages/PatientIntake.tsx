@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock, ChevronRight, ChevronLeft, Loader2, Moon, Sun } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock, ChevronRight, ChevronLeft, Loader2, Moon, Sun, Smartphone } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -1251,14 +1251,24 @@ export default function PatientIntake() {
                 <Activity className="h-4 w-4 mr-2" />
                 Create Your Patient Account
               </Button>
-              <Button 
-                onClick={() => navigate("/")} 
-                className="w-full print:hidden min-h-[52px]"
-                variant="outline"
-              >
-                <Home className="h-4 w-4 mr-2" />
-                Return to Home
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => navigate("/install")} 
+                  className="flex-1 print:hidden min-h-[52px]"
+                  variant="outline"
+                >
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  Install App Guide
+                </Button>
+                <Button 
+                  onClick={() => navigate("/")} 
+                  className="flex-1 print:hidden min-h-[52px]"
+                  variant="outline"
+                >
+                  <Home className="h-4 w-4 mr-2" />
+                  Home
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

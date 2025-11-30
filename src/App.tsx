@@ -49,6 +49,7 @@ import ReferralScreening from "./pages/ReferralScreening";
 import ReferralSuccess from "./pages/ReferralSuccess";
 import ReferralStatus from "./pages/ReferralStatus";
 import ReferralInbox from "./pages/ReferralInbox";
+import AppInstallGuide from "./pages/AppInstallGuide";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,7 @@ const App = () => (
           <Route path="/patient-intake" element={<PatientIntake />} />
           <Route path="/patient-quick-start" element={<PatientQuickStart />} />
           <Route path="/intake-start" element={<IntakeStart />} />
+          <Route path="/install" element={<AppInstallGuide />} />
           <Route path="/referral/:referralCode" element={<ReferralLanding />} />
           <Route path="/referral-screening" element={<ReferralScreening />} />
           <Route path="/referral-success" element={<ReferralSuccess />} />
