@@ -95,11 +95,23 @@ export default function PatientAuth() {
 
         if (accountError) {
           console.error("Error creating patient account:", accountError);
+          toast({
+            title: "Account Setup Issue",
+            description: "Your account was created but there was an issue linking it. Please contact support.",
+            variant: "destructive",
+          });
         }
 
         // If access code is present and user is immediately authenticated, auto-claim it
         if (accessCode && accessCode.length === 8 && authData.session) {
           await claimAccessWithCode(accessCode);
+        } else if (authData.session) {
+          // User is immediately signed in, redirect to patient dashboard
+          toast({
+            title: "Account Created!",
+            description: "Welcome to your Patient Hub!",
+          });
+          navigate("/patient-dashboard");
         } else {
           toast({
             title: "Account Created!",
