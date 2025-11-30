@@ -89,19 +89,22 @@ export default function OrthoReturnDashboard() {
           current_status,
           surgery_date,
           surgery_performed,
-          ortho_referrals!inner (
+          referral_id,
+          ortho_referrals!episodes_referral_id_fkey (
             id,
             referral_date,
             priority_flag,
             expected_return_window_start,
             expected_return_window_end,
-            ortho_partners (
+            destination_ortho_id,
+            ortho_partners!ortho_referrals_destination_ortho_id_fkey (
               name,
               subspecialty
             )
           )
         `)
         .eq("has_ortho_referral", true)
+        .not("referral_id", "is", null)
         .in("current_status", [
           "REFERRED_TO_ORTHO",
           "ORTHO_CONSULT_COMPLETED",
