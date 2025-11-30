@@ -15,6 +15,7 @@ import { NeuroLetterGenerator } from "@/components/NeuroLetterGenerator";
 import { NeuroExamScheduler } from "@/components/NeuroExamScheduler";
 import { OrthoReferralForm } from "@/components/OrthoReferralForm";
 import { OrthoReferralCard } from "@/components/OrthoReferralCard";
+import { OrthoReferralPrint } from "@/components/OrthoReferralPrint";
 import { UpdateEpisodeStatusDialog } from "@/components/UpdateEpisodeStatusDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -357,14 +358,17 @@ export default function EpisodeSummary() {
             </Button>
           )}
           {episode.has_ortho_referral && episode.current_status && episode.current_status !== "EPISODE_CLOSED" && (
-            <Button 
-              variant="outline" 
-              onClick={() => setShowStatusUpdateDialog(true)} 
-              className="gap-2 print:hidden"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Update Status
-            </Button>
+            <>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowStatusUpdateDialog(true)} 
+                className="gap-2 print:hidden"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Update Status
+              </Button>
+              <OrthoReferralPrint episodeId={episode.episodeId} />
+            </>
           )}
           {isCompleted && episode.baselineScores && episode.dischargeScores && (
             <MCIDReportDialog
