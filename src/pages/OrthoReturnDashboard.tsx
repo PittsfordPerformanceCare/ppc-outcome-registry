@@ -33,10 +33,12 @@ import {
   Filter,
   Search,
   User,
+  Printer,
 } from "lucide-react";
 import { format, isAfter, isBefore, isWithinInterval, parseISO } from "date-fns";
 import { toast } from "sonner";
 import { EPISODE_STATUS_LABELS, getStatusColor, BODY_REGIONS } from "@/lib/orthoReferralUtils";
+import { OrthoReferralPrint } from "@/components/OrthoReferralPrint";
 
 interface OrthoEpisode {
   episode_id: string;
@@ -245,14 +247,24 @@ export default function OrthoReturnDashboard() {
         )}
       </TableCell>
       <TableCell className="text-right">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleViewEpisode(episode.episode_id)}
-        >
-          View
-          <ArrowRight className="ml-1 h-4 w-4" />
-        </Button>
+        <div className="flex items-center justify-end gap-2">
+          <OrthoReferralPrint 
+            episodeId={episode.episode_id}
+            trigger={
+              <Button variant="ghost" size="sm">
+                <Printer className="h-4 w-4" />
+              </Button>
+            }
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleViewEpisode(episode.episode_id)}
+          >
+            View
+            <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
       </TableCell>
     </TableRow>
   );
