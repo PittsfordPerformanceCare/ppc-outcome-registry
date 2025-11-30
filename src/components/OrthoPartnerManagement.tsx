@@ -57,15 +57,15 @@ export function OrthoPartnerManagement() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      groupName: "",
-      location: "",
-      subspecialty: "",
+      name: "Dr. Brian Giordano",
+      groupName: "Rochester Orthopedic Associates",
+      location: "Rochester, NY",
+      subspecialty: "Sports Medicine & Shoulder Surgery",
       directSecureAddress: "",
       faxOrEmailBackup: "",
-      preferredReturnMethod: "",
-      prioritySchedulingInstructions: "",
-      returnInstructions: "",
+      preferredReturnMethod: "Direct Secure Messaging",
+      prioritySchedulingInstructions: "Priority scheduling available for post-op returns",
+      returnInstructions: "Return patients 2-4 weeks post-op for initial PT evaluation",
     },
   });
 
