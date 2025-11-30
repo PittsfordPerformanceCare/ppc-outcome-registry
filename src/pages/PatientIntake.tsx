@@ -1242,14 +1242,24 @@ export default function PatientIntake() {
               </Button>
             </div>
 
-            <Button 
-              onClick={() => navigate("/")} 
-              className="w-full print:hidden min-h-[52px] animate-[fade-in_0.5s_ease-out_0.8s_both] bg-success hover:bg-success/90"
-              variant="default"
-            >
-              <Home className="h-4 w-4 mr-2" />
-              Return to Home
-            </Button>
+            <div className="space-y-3">
+              <Button 
+                onClick={() => navigate(`/patient-auth?code=${accessCode}`)} 
+                className="w-full print:hidden min-h-[52px] animate-[fade-in_0.5s_ease-out_0.8s_both] bg-success hover:bg-success/90"
+                variant="default"
+              >
+                <Activity className="h-4 w-4 mr-2" />
+                Create Your Patient Account
+              </Button>
+              <Button 
+                onClick={() => navigate("/")} 
+                className="w-full print:hidden min-h-[52px]"
+                variant="outline"
+              >
+                <Home className="h-4 w-4 mr-2" />
+                Return to Home
+              </Button>
+            </div>
           </CardContent>
         </Card>
         </div>
