@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -89,8 +89,7 @@ export function OrthoReferralForm({
     },
   });
 
-  // Load ortho partners
-  useState(() => {
+  useEffect(() => {
     const loadOrthoPartners = async () => {
       try {
         const { data, error } = await supabase
@@ -115,7 +114,7 @@ export function OrthoReferralForm({
     if (open) {
       loadOrthoPartners();
     }
-  });
+  }, [open]);
 
   const onSubmit = async (values: FormValues) => {
     setLoading(true);
