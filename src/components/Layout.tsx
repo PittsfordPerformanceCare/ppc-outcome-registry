@@ -53,6 +53,7 @@ export function Layout({ children }: LayoutProps) {
     { name: "New Episode", href: "/new-episode", icon: ClipboardList },
     { name: "Discharge", href: "/discharge", icon: LogOut },
     { name: "Follow-up", href: "/follow-up", icon: Activity },
+    { name: "Ortho Partners", href: "/ortho-partners", icon: UserPlus },
   ];
 
   const intakeNav = [
