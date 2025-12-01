@@ -28,7 +28,7 @@ type ReferralInquiry = {
   care_for: 'self' | 'child';
   chief_complaint: string;
   referral_source: string | null;
-  status: 'pending' | 'approved' | 'declined';
+  status: 'prospect_awaiting_review' | 'approved' | 'declined' | 'scheduled' | 'converted';
   created_at: string;
   reviewed_at: string | null;
   decline_reason: string | null;
@@ -202,12 +202,27 @@ export default function ReferralInbox() {
               {formatDistanceToNow(new Date(inquiry.created_at), { addSuffix: true })}
             </CardDescription>
           </div>
-          <Badge variant={
-            inquiry.status === 'pending' ? 'default' :
-            inquiry.status === 'approved' ? 'default' :
-            'secondary'
-          }>
-            {inquiry.status}
+          <Badge 
+            variant={
+              inquiry.status === 'prospect_awaiting_review' ? 'default' :
+              inquiry.status === 'approved' ? 'default' :
+              inquiry.status === 'scheduled' ? 'default' :
+              inquiry.status === 'converted' ? 'default' :
+              'secondary'
+            }
+            className={
+              inquiry.status === 'prospect_awaiting_review' ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' :
+              inquiry.status === 'approved' ? 'bg-green-100 text-green-800 hover:bg-green-200' :
+              inquiry.status === 'scheduled' ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' :
+              inquiry.status === 'converted' ? 'bg-purple-100 text-purple-800 hover:bg-purple-200' :
+              ''
+            }
+          >
+            {inquiry.status === 'prospect_awaiting_review' ? 'Prospect - Awaiting Review' :
+             inquiry.status === 'approved' ? 'Approved' :
+             inquiry.status === 'scheduled' ? 'Scheduled' :
+             inquiry.status === 'converted' ? 'Converted' :
+             inquiry.status}
           </Badge>
         </div>
       </CardHeader>
@@ -236,8 +251,8 @@ export default function ReferralInbox() {
     </Card>
   );
 
-  const pendingInquiries = inquiries.filter(i => i.status === 'pending');
-  const approvedInquiries = inquiries.filter(i => i.status === 'approved');
+  const pendingInquiries = inquiries.filter(i => i.status === 'prospect_awaiting_review');
+  const approvedInquiries = inquiries.filter(i => ['approved', 'scheduled', 'converted'].includes(i.status));
   const declinedInquiries = inquiries.filter(i => i.status === 'declined');
 
   return (
@@ -253,7 +268,7 @@ export default function ReferralInbox() {
         <Tabs defaultValue="pending" className="space-y-4">
           <TabsList>
             <TabsTrigger value="pending">
-              Pending ({pendingInquiries.length})
+              Prospects ({pendingInquiries.length})
             </TabsTrigger>
             <TabsTrigger value="approved">
               Approved ({approvedInquiries.length})
@@ -379,7 +394,7 @@ export default function ReferralInbox() {
                 )}
               </div>
 
-              {selectedInquiry.status === 'pending' && (
+              {selectedInquiry.status === 'prospect_awaiting_review' && (
                 <DialogFooter className="gap-2">
                   <Button
                     variant="outline"
