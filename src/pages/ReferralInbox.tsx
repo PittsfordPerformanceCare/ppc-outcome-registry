@@ -117,7 +117,7 @@ export default function ReferralInbox() {
           complaint_priority: 2, // Medium priority by default
           episode_type: classification.episodeType,
           body_region: classification.bodyRegion,
-          status: 'intake_pending',
+          status: 'pending',
           user_id: user.id,
           clinic_id: profile?.clinic_id || null,
           notes: `Auto-classified as ${classification.episodeType}${classification.bodyRegion ? ` - ${classification.bodyRegion}` : ''} (${classification.confidence} confidence)`,
