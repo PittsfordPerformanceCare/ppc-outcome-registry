@@ -16,6 +16,7 @@ import {
   Activity
 } from "lucide-react";
 import { format } from "date-fns";
+import { IntakeSchedulingMonitor } from "@/components/IntakeSchedulingMonitor";
 
 interface DeliveryHistory {
   id: string;
@@ -83,6 +84,14 @@ export default function AutomationStatus() {
   };
 
   const schedules = [
+    {
+      name: "Intake Scheduling",
+      schedule: "Every hour",
+      icon: Calendar,
+      color: "text-amber-500",
+      lastRun: null, // This would need to be fetched from a dedicated table
+      status: "active",
+    },
     {
       name: "Comparison Reports",
       schedule: "Daily at 9:00 AM",
@@ -187,13 +196,18 @@ export default function AutomationStatus() {
         </div>
 
         {/* Detailed History */}
-        <Tabs defaultValue="comparison" className="space-y-4">
+        <Tabs defaultValue="intake" className="space-y-4">
           <TabsList>
+            <TabsTrigger value="intake">Intake Scheduling</TabsTrigger>
             <TabsTrigger value="comparison">Comparison Reports</TabsTrigger>
             <TabsTrigger value="referral">Referral Reports</TabsTrigger>
             <TabsTrigger value="outcome">Outcome Reminders</TabsTrigger>
             <TabsTrigger value="exports">Exports</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="intake">
+            <IntakeSchedulingMonitor />
+          </TabsContent>
 
           <TabsContent value="comparison">
             <Card>
