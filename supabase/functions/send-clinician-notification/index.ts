@@ -9,15 +9,23 @@ const corsHeaders = {
 };
 
 interface ClinicianNotificationRequest {
-  clinicianId: string;
-  clinicianName: string;
-  clinicianEmail: string;
-  messageId: string;
-  messageType: "message" | "callback_request";
-  patientName: string;
+  clinicianId?: string;
+  clinicianName?: string;
+  clinicianEmail?: string;
+  messageId?: string;
+  messageType: "message" | "callback_request" | "new_prospect";
+  patientName?: string;
   subject: string;
-  message: string;
+  message?: string;
   episodeInfo?: string;
+  // New prospect specific fields
+  prospectName?: string;
+  prospectEmail?: string;
+  prospectPhone?: string;
+  chiefComplaint?: string;
+  referralSource?: string;
+  inquiryId?: string;
+  clinicName?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -27,6 +35,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    const requestData: ClinicianNotificationRequest = await req.json();
     const {
       clinicianName,
       clinicianEmail,
@@ -35,14 +44,230 @@ const handler = async (req: Request): Promise<Response> => {
       subject,
       message,
       episodeInfo,
-    }: ClinicianNotificationRequest = await req.json();
+      prospectName,
+      prospectEmail,
+      prospectPhone,
+      chiefComplaint,
+      referralSource,
+      inquiryId,
+      clinicName,
+    } = requestData;
 
     console.log("Sending clinician notification:", {
-      clinicianEmail,
       messageType,
-      patientName,
+      clinicianEmail,
+      prospectName,
     });
 
+    // Handle new prospect notifications - send to all clinicians
+    if (messageType === "new_prospect") {
+      const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      // Get all clinician emails with notification preferences
+      const { data: clinicians, error: cliniciansError } = await supabase
+        .from("clinician_notification_preferences")
+        .select("notification_email, profiles!inner(email, full_name)")
+        .eq("email_enabled", true);
+
+      if (cliniciansError) {
+        console.error("Error fetching clinicians:", cliniciansError);
+        throw new Error("Failed to fetch clinician list");
+      }
+
+      const emailPromises = (clinicians || []).map(async (clinician: any) => {
+        const email = clinician.notification_email || clinician.profiles.email;
+        const name = clinician.profiles.full_name || "Clinician";
+
+        const prospectEmailHtml = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+                  line-height: 1.6;
+                  color: #333;
+                  max-width: 600px;
+                  margin: 0 auto;
+                  padding: 20px;
+                }
+                .header {
+                  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                  color: white;
+                  padding: 30px;
+                  border-radius: 10px 10px 0 0;
+                  text-align: center;
+                }
+                .header h1 {
+                  margin: 0;
+                  font-size: 24px;
+                }
+                .content {
+                  background: #f8f9fa;
+                  padding: 30px;
+                  border-radius: 0 0 10px 10px;
+                }
+                .badge {
+                  display: inline-block;
+                  padding: 8px 16px;
+                  border-radius: 20px;
+                  font-size: 12px;
+                  font-weight: 700;
+                  background: #dcfce7;
+                  color: #166534;
+                  margin-bottom: 20px;
+                }
+                .prospect-box {
+                  background: white;
+                  border-left: 4px solid #10b981;
+                  padding: 20px;
+                  margin: 20px 0;
+                  border-radius: 5px;
+                }
+                .info-row {
+                  display: flex;
+                  justify-content: space-between;
+                  margin: 12px 0;
+                  padding: 12px;
+                  background: #f9fafb;
+                  border-radius: 5px;
+                }
+                .info-label {
+                  font-weight: 600;
+                  color: #6b7280;
+                }
+                .info-value {
+                  color: #111827;
+                  font-weight: 500;
+                }
+                .complaint-box {
+                  background: #fef3c7;
+                  border-left: 4px solid #f59e0b;
+                  padding: 15px;
+                  margin: 15px 0;
+                  border-radius: 5px;
+                }
+                .button {
+                  display: inline-block;
+                  padding: 14px 32px;
+                  background: #10b981;
+                  color: white;
+                  text-decoration: none;
+                  border-radius: 6px;
+                  font-weight: 600;
+                  margin-top: 20px;
+                }
+                .footer {
+                  text-align: center;
+                  margin-top: 30px;
+                  padding-top: 20px;
+                  border-top: 1px solid #ddd;
+                  color: #666;
+                  font-size: 12px;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <h1>🎯 New Lead Awaiting Approval</h1>
+              </div>
+              <div class="content">
+                <p>Hi ${name},</p>
+                
+                <span class="badge">PROSPECT – AWAITING REVIEW</span>
+                
+                <p style="font-size: 16px; color: #059669; font-weight: 600;">
+                  A new prospect has submitted a referral inquiry through your QR code.
+                </p>
+                
+                <div class="prospect-box">
+                  <div class="info-row">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value">${prospectName}</span>
+                  </div>
+                  
+                  ${prospectEmail ? `
+                  <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">${prospectEmail}</span>
+                  </div>
+                  ` : ""}
+                  
+                  ${prospectPhone ? `
+                  <div class="info-row">
+                    <span class="info-label">Phone:</span>
+                    <span class="info-value">${prospectPhone}</span>
+                  </div>
+                  ` : ""}
+                  
+                  ${referralSource ? `
+                  <div class="info-row">
+                    <span class="info-label">Referral Source:</span>
+                    <span class="info-value">${referralSource}</span>
+                  </div>
+                  ` : ""}
+                </div>
+                
+                ${chiefComplaint ? `
+                <div class="complaint-box">
+                  <strong style="color: #92400e;">Chief Complaint:</strong>
+                  <p style="margin: 8px 0 0 0; color: #78350f;">${chiefComplaint}</p>
+                </div>
+                ` : ""}
+                
+                <p style="margin-top: 20px; color: #374151;">
+                  <strong>Next Steps:</strong><br>
+                  • Review the prospect's information<br>
+                  • Determine if they're a good fit for PPC<br>
+                  • Send approval and intake link, or decline with explanation
+                </p>
+                
+                <a href="${Deno.env.get("APP_URL") || "https://app.example.com"}/referral-inbox" class="button">
+                  Review Prospect in Referral Inbox →
+                </a>
+                
+                <div class="footer">
+                  <p>This lead is now tracked in your PPC Outcome Registry.</p>
+                  <p>No referrals will be lost – every inquiry is recorded from minute 1.</p>
+                </div>
+              </div>
+            </body>
+          </html>
+        `;
+
+        return resend.emails.send({
+          from: "PPC Outcome Registry <notifications@resend.dev>",
+          to: [email],
+          subject: `🎯 New Lead Awaiting Approval - ${prospectName}`,
+          html: prospectEmailHtml,
+        });
+      });
+
+      await Promise.all(emailPromises);
+
+      console.log(`Prospect notification sent to ${emailPromises.length} clinicians`);
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          recipients: emailPromises.length 
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
+    }
+
+    // Handle existing message and callback request notifications
     const isCallbackRequest = messageType === "callback_request";
     const emailSubject = isCallbackRequest
       ? `🔔 New Callback Request from ${patientName}`
@@ -180,7 +405,7 @@ const handler = async (req: Request): Promise<Response> => {
             </p>
             ` : ""}
             
-            <a href="${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "") || "https://app.example.com"}/clinician-inbox" class="button">
+            <a href="${Deno.env.get("APP_URL") || "https://app.example.com"}/clinician-inbox" class="button">
               View in Clinician Inbox →
             </a>
             
@@ -195,7 +420,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailResponse = await resend.emails.send({
       from: "PPC Outcome Registry <notifications@resend.dev>",
-      to: [clinicianEmail],
+      to: [clinicianEmail!],
       subject: emailSubject,
       html: emailHtml,
     });
