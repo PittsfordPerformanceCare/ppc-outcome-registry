@@ -119,6 +119,10 @@ export type Database = {
           email_subject: string | null
           email_template: string | null
           id: string
+          intake_complete_scheduling_subject: string | null
+          intake_complete_scheduling_template: string | null
+          intake_complete_welcome_subject: string | null
+          intake_complete_welcome_template: string | null
           logo_url: string | null
           outcome_reminder_email_subject: string | null
           outcome_reminder_email_template: string | null
@@ -135,6 +139,7 @@ export type Database = {
           reminder_enabled: boolean | null
           reminder_hours_before: number | null
           reminder_sms_template: string | null
+          send_scheduling_email: boolean | null
           sms_template: string | null
           tagline: string | null
           updated_at: string
@@ -151,6 +156,10 @@ export type Database = {
           email_subject?: string | null
           email_template?: string | null
           id?: string
+          intake_complete_scheduling_subject?: string | null
+          intake_complete_scheduling_template?: string | null
+          intake_complete_welcome_subject?: string | null
+          intake_complete_welcome_template?: string | null
           logo_url?: string | null
           outcome_reminder_email_subject?: string | null
           outcome_reminder_email_template?: string | null
@@ -167,6 +176,7 @@ export type Database = {
           reminder_enabled?: boolean | null
           reminder_hours_before?: number | null
           reminder_sms_template?: string | null
+          send_scheduling_email?: boolean | null
           sms_template?: string | null
           tagline?: string | null
           updated_at?: string
@@ -183,6 +193,10 @@ export type Database = {
           email_subject?: string | null
           email_template?: string | null
           id?: string
+          intake_complete_scheduling_subject?: string | null
+          intake_complete_scheduling_template?: string | null
+          intake_complete_welcome_subject?: string | null
+          intake_complete_welcome_template?: string | null
           logo_url?: string | null
           outcome_reminder_email_subject?: string | null
           outcome_reminder_email_template?: string | null
@@ -199,6 +213,7 @@ export type Database = {
           reminder_enabled?: boolean | null
           reminder_hours_before?: number | null
           reminder_sms_template?: string | null
+          send_scheduling_email?: boolean | null
           sms_template?: string | null
           tagline?: string | null
           updated_at?: string
