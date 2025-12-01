@@ -1,8 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { Resend } from "npm:resend@2.0.0";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const resendApiKey = Deno.env.get("RESEND_API_KEY");
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
@@ -114,14 +113,24 @@ serve(async (req: Request) => {
       console.log("Prepared scheduling email");
     }
 
-    // Send all emails
+    // Send all emails using Resend API
     const results = [];
     for (const email of emails) {
       try {
-        const { data, error } = await resend.emails.send(email);
-        if (error) {
-          console.error("Error sending email:", error);
-          results.push({ success: false, error: error.message });
+        const response = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${resendApiKey}`,
+          },
+          body: JSON.stringify(email),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          console.error("Error sending email:", data);
+          results.push({ success: false, error: data.message || "Failed to send email" });
         } else {
           console.log("Email sent successfully:", data);
           results.push({ success: true, data });
