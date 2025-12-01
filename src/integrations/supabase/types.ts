@@ -2551,6 +2551,7 @@ export type Database = {
       }
       pending_episodes: {
         Row: {
+          body_region: string | null
           clinic_id: string | null
           complaint_category: string | null
           complaint_priority: number
@@ -2558,19 +2559,22 @@ export type Database = {
           converted_at: string | null
           converted_to_episode_id: string | null
           created_at: string
-          date_of_birth: string
+          date_of_birth: string | null
           deferred_reason: string | null
+          episode_type: string | null
           id: string
-          intake_form_id: string
+          intake_form_id: string | null
           notes: string | null
           patient_name: string
           previous_episode_id: string | null
+          referral_inquiry_id: string | null
           scheduled_date: string | null
           status: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          body_region?: string | null
           clinic_id?: string | null
           complaint_category?: string | null
           complaint_priority: number
@@ -2578,19 +2582,22 @@ export type Database = {
           converted_at?: string | null
           converted_to_episode_id?: string | null
           created_at?: string
-          date_of_birth: string
+          date_of_birth?: string | null
           deferred_reason?: string | null
+          episode_type?: string | null
           id?: string
-          intake_form_id: string
+          intake_form_id?: string | null
           notes?: string | null
           patient_name: string
           previous_episode_id?: string | null
+          referral_inquiry_id?: string | null
           scheduled_date?: string | null
           status?: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          body_region?: string | null
           clinic_id?: string | null
           complaint_category?: string | null
           complaint_priority?: number
@@ -2598,13 +2605,15 @@ export type Database = {
           converted_at?: string | null
           converted_to_episode_id?: string | null
           created_at?: string
-          date_of_birth?: string
+          date_of_birth?: string | null
           deferred_reason?: string | null
+          episode_type?: string | null
           id?: string
-          intake_form_id?: string
+          intake_form_id?: string | null
           notes?: string | null
           patient_name?: string
           previous_episode_id?: string | null
+          referral_inquiry_id?: string | null
           scheduled_date?: string | null
           status?: string
           updated_at?: string
@@ -2630,6 +2639,13 @@ export type Database = {
             columns: ["previous_episode_id"]
             isOneToOne: false
             referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_episodes_referral_inquiry_id_fkey"
+            columns: ["referral_inquiry_id"]
+            isOneToOne: false
+            referencedRelation: "referral_inquiries"
             referencedColumns: ["id"]
           },
         ]
@@ -2924,6 +2940,7 @@ export type Database = {
           email: string
           id: string
           name: string
+          pending_episode_id: string | null
           phone: string | null
           referral_code: string | null
           referral_source: string | null
@@ -2941,6 +2958,7 @@ export type Database = {
           email: string
           id?: string
           name: string
+          pending_episode_id?: string | null
           phone?: string | null
           referral_code?: string | null
           referral_source?: string | null
@@ -2958,6 +2976,7 @@ export type Database = {
           email?: string
           id?: string
           name?: string
+          pending_episode_id?: string | null
           phone?: string | null
           referral_code?: string | null
           referral_source?: string | null
@@ -2972,6 +2991,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referral_inquiries_pending_episode_id_fkey"
+            columns: ["pending_episode_id"]
+            isOneToOne: false
+            referencedRelation: "pending_episodes"
             referencedColumns: ["id"]
           },
           {

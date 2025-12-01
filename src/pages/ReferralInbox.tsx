@@ -92,12 +92,49 @@ export default function ReferralInbox() {
   const handleApprove = async (inquiry: ReferralInquiry) => {
     setIsApproving(true);
     try {
-      // Update status
+      // Get current user and clinic info
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('clinic_id')
+        .eq('id', user.id)
+        .single();
+
+      // Classify the episode type and body region from chief complaint
+      const { classifyEpisode } = await import('@/lib/episodeClassification');
+      const classification = classifyEpisode(inquiry.chief_complaint);
+
+      // Create pre-episode shell
+      const { data: pendingEpisode, error: pendingError } = await supabase
+        .from('pending_episodes')
+        .insert({
+          referral_inquiry_id: inquiry.id,
+          patient_name: inquiry.name,
+          complaint_text: inquiry.chief_complaint,
+          complaint_category: classification.bodyRegion || 'General',
+          complaint_priority: 2, // Medium priority by default
+          episode_type: classification.episodeType,
+          body_region: classification.bodyRegion,
+          status: 'intake_pending',
+          user_id: user.id,
+          clinic_id: profile?.clinic_id || null,
+          notes: `Auto-classified as ${classification.episodeType}${classification.bodyRegion ? ` - ${classification.bodyRegion}` : ''} (${classification.confidence} confidence)`,
+        })
+        .select()
+        .single();
+
+      if (pendingError) throw pendingError;
+
+      // Update referral inquiry status and link to pending episode
       const { error: updateError } = await supabase
         .from('referral_inquiries')
         .update({
           status: 'approved',
           reviewed_at: new Date().toISOString(),
+          reviewed_by: user.id,
+          pending_episode_id: pendingEpisode.id,
         })
         .eq('id', inquiry.id);
 
@@ -115,8 +152,8 @@ export default function ReferralInbox() {
       if (emailError) throw emailError;
 
       toast({
-        title: "Inquiry Approved",
-        description: `${inquiry.name} has been sent the intake form.`,
+        title: "Prospect Approved",
+        description: `Pre-episode shell created (${classification.episodeType}${classification.bodyRegion ? ` - ${classification.bodyRegion}` : ''}). ${inquiry.name} has been sent the intake form.`,
       });
 
       setSelectedInquiry(null);
@@ -218,8 +255,8 @@ export default function ReferralInbox() {
               ''
             }
           >
-            {inquiry.status === 'prospect_awaiting_review' ? 'Prospect - Awaiting Review' :
-             inquiry.status === 'approved' ? 'Approved' :
+            {inquiry.status === 'prospect_awaiting_review' ? 'Prospect – Awaiting Review' :
+             inquiry.status === 'approved' ? 'Approved – Intake Pending' :
              inquiry.status === 'scheduled' ? 'Scheduled' :
              inquiry.status === 'converted' ? 'Converted' :
              inquiry.status}
@@ -271,7 +308,7 @@ export default function ReferralInbox() {
               Prospects ({pendingInquiries.length})
             </TabsTrigger>
             <TabsTrigger value="approved">
-              Approved ({approvedInquiries.length})
+              Approved – Intake Pending ({approvedInquiries.length})
             </TabsTrigger>
             <TabsTrigger value="declined">
               Declined ({declinedInquiries.length})
