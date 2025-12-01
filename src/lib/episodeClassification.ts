@@ -1,7 +1,7 @@
 // Episode Type and Body Region Classification
 // Classifies chief complaints into episode types and body regions
 
-export type EpisodeType = 'MSK' | 'Neuro' | 'Performance';
+export type EpisodeType = 'MSK' | 'Neuro';
 
 export interface ClassificationResult {
   episodeType: EpisodeType;
@@ -16,17 +16,8 @@ const NEURO_KEYWORDS = [
   'post-concussion', 'pcs', 'tbi', 'traumatic brain', 'whiplash',
   'vestibular', 'neurologic', 'neurological', 'nerve', 'neuropathy',
   'tremor', 'coordination', 'cognitive', 'memory', 'light sensitivity',
-  'sound sensitivity', 'photophobia', 'phonophobia'
-];
-
-// Keywords for Performance/Athletic conditions
-const PERFORMANCE_KEYWORDS = [
-  'athlete', 'athletic', 'sport', 'sports', 'training', 'performance',
-  'return to play', 'rtp', 'competition', 'game', 'running', 'lifting',
-  'strength', 'conditioning', 'gym', 'workout', 'exercise', 'fitness',
-  'speed', 'agility', 'endurance', 'baseball', 'football', 'soccer',
-  'basketball', 'hockey', 'lacrosse', 'tennis', 'golf', 'swimming',
-  'cycling', 'track', 'field', 'wrestling', 'volleyball'
+  'sound sensitivity', 'photophobia', 'phonophobia', 'nystagmus',
+  'post-trauma', 'brain fog', 'confusion'
 ];
 
 // Body region keywords
@@ -46,25 +37,18 @@ const REGION_KEYWORDS = {
 export function classifyEpisode(chiefComplaint: string): ClassificationResult {
   const complaint = chiefComplaint.toLowerCase();
   
-  // Count matches for each type
+  // Count matches for neurological keywords
   const neuroMatches = NEURO_KEYWORDS.filter(keyword => 
     complaint.includes(keyword.toLowerCase())
   ).length;
-  
-  const performanceMatches = PERFORMANCE_KEYWORDS.filter(keyword => 
-    complaint.includes(keyword.toLowerCase())
-  ).length;
 
-  // Determine episode type
-  let episodeType: EpisodeType = 'MSK'; // Default to MSK
+  // Determine episode type - defaults to MSK
+  let episodeType: EpisodeType = 'MSK';
   let confidence: 'high' | 'medium' | 'low' = 'low';
 
   if (neuroMatches > 0) {
     episodeType = 'Neuro';
     confidence = neuroMatches >= 2 ? 'high' : 'medium';
-  } else if (performanceMatches > 0) {
-    episodeType = 'Performance';
-    confidence = performanceMatches >= 2 ? 'high' : 'medium';
   }
 
   // Determine body region
@@ -82,9 +66,15 @@ export function classifyEpisode(chiefComplaint: string): ClassificationResult {
     }
   }
 
-  // If we found body region matches, increase confidence
+  // If we found body region matches and no clear neuro indicators, it's MSK
   if (bodyRegion && maxMatches >= 1) {
-    if (confidence === 'low') confidence = 'medium';
+    if (confidence === 'low') {
+      confidence = 'medium';
+      // If body region found but not neuro, it's MSK with medium confidence
+      if (episodeType === 'MSK') {
+        confidence = 'medium';
+      }
+    }
   }
 
   return {
