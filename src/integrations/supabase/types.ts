@@ -1126,6 +1126,44 @@ export type Database = {
         }
         Relationships: []
       }
+      intake_scheduling_reminders: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          intake_form_id: string
+          reminder_type: string
+          sent_at: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          intake_form_id: string
+          reminder_type: string
+          sent_at?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          intake_form_id?: string
+          reminder_type?: string
+          sent_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_scheduling_reminders_intake_form_id_fkey"
+            columns: ["intake_form_id"]
+            isOneToOne: false
+            referencedRelation: "intake_forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       merge_report_presets: {
         Row: {
           clinic_id: string | null
