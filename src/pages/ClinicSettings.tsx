@@ -49,8 +49,7 @@ export default function ClinicSettings() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [checkingAdmin, setCheckingAdmin] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   
   const [settings, setSettings] = useState<Partial<ClinicSettings>>({});
   
@@ -59,29 +58,12 @@ export default function ClinicSettings() {
   const [sendingTest, setSendingTest] = useState(false);
   const [testingReminders, setTestingReminders] = useState(false);
 
-  useEffect(() => {
-    const checkAdminAndLoadSettings = async () => {
+useEffect(() => {
+    const loadSettings = async () => {
       if (!user) return;
       
-      setCheckingAdmin(true);
+      setInitialLoading(true);
       try {
-        // Check if user is admin
-        const { data: roleData } = await supabase
-          .from("user_roles")
-          .select()
-          .eq("user_id", user.id)
-          .eq("role", "admin")
-          .maybeSingle();
-        
-        if (!roleData) {
-          toast.error("Access denied. Admin privileges required.");
-          navigate("/");
-          return;
-        }
-        
-        setIsAdmin(true);
-        
-        // Load clinic settings
         const { data: settingsData, error } = await supabase
           .from("clinic_settings")
           .select("*")
@@ -93,7 +75,6 @@ export default function ClinicSettings() {
           setSettings(settingsData as Partial<ClinicSettings>);
         }
         
-        // Load user email for test notifications
         if (user?.email) {
           setTestEmail(user.email);
         }
@@ -101,12 +82,12 @@ export default function ClinicSettings() {
         console.error("Error loading settings:", error);
         toast.error("Failed to load settings");
       } finally {
-        setCheckingAdmin(false);
+        setInitialLoading(false);
       }
     };
 
-    checkAdminAndLoadSettings();
-  }, [user, navigate]);
+    loadSettings();
+  }, [user]);
 
   const handleSave = async () => {
     setLoading(true);
@@ -218,7 +199,7 @@ export default function ClinicSettings() {
     }
   };
 
-  if (authLoading || checkingAdmin) {
+if (authLoading || initialLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -226,7 +207,7 @@ export default function ClinicSettings() {
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!user) {
     return null;
   }
 
