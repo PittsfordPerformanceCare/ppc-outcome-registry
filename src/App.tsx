@@ -53,6 +53,7 @@ import AppInstallGuide from "./pages/AppInstallGuide";
 import OrthoPartners from "./pages/OrthoPartners";
 import OrthoReturnDashboard from "./pages/OrthoReturnDashboard";
 import StartNeurologicIntake from "./pages/StartNeurologicIntake";
+import NeurologicLeadsAdmin from "./pages/NeurologicLeadsAdmin";
 
 const queryClient = new QueryClient();
 
@@ -145,6 +146,14 @@ const App = () => (
                     <Route path="/neuro-exam" element={<NeuroExam />} />
                     <Route path="/ortho-partners" element={<OrthoPartners />} />
                     <Route path="/ortho-return-dashboard" element={<OrthoReturnDashboard />} />
+                    <Route
+                      path="/neurologic-leads"
+                      element={
+                        <ProtectedRoute requireAdmin>
+                          <NeurologicLeadsAdmin />
+                        </ProtectedRoute>
+                      }
+                    />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>

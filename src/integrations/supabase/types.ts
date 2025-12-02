@@ -1720,6 +1720,90 @@ export type Database = {
           },
         ]
       }
+      neurologic_intake_leads: {
+        Row: {
+          child_age: string | null
+          child_name: string | null
+          created_at: string
+          duration: string | null
+          email: string
+          id: string
+          name: string | null
+          notes: string | null
+          organization: string | null
+          parent_name: string | null
+          patient_age: string | null
+          patient_name: string | null
+          persona: string
+          phone: string | null
+          primary_concern: string | null
+          referrer_name: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          role: string | null
+          source: string | null
+          status: string
+          symptom_location: string | null
+          symptom_profile: string | null
+          updated_at: string
+          urgency: string | null
+        }
+        Insert: {
+          child_age?: string | null
+          child_name?: string | null
+          created_at?: string
+          duration?: string | null
+          email: string
+          id?: string
+          name?: string | null
+          notes?: string | null
+          organization?: string | null
+          parent_name?: string | null
+          patient_age?: string | null
+          patient_name?: string | null
+          persona: string
+          phone?: string | null
+          primary_concern?: string | null
+          referrer_name?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role?: string | null
+          source?: string | null
+          status?: string
+          symptom_location?: string | null
+          symptom_profile?: string | null
+          updated_at?: string
+          urgency?: string | null
+        }
+        Update: {
+          child_age?: string | null
+          child_name?: string | null
+          created_at?: string
+          duration?: string | null
+          email?: string
+          id?: string
+          name?: string | null
+          notes?: string | null
+          organization?: string | null
+          parent_name?: string | null
+          patient_age?: string | null
+          patient_name?: string | null
+          persona?: string
+          phone?: string | null
+          primary_concern?: string | null
+          referrer_name?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role?: string | null
+          source?: string | null
+          status?: string
+          symptom_location?: string | null
+          symptom_profile?: string | null
+          updated_at?: string
+          urgency?: string | null
+        }
+        Relationships: []
+      }
       notification_alert_config: {
         Row: {
           alert_recipients: string[]
