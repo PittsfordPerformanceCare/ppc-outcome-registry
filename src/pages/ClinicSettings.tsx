@@ -19,6 +19,9 @@ import { RateLimitConfigPanel } from "@/components/RateLimitConfigPanel";
 import { EmailTemplateGallery } from "@/components/EmailTemplateGallery";
 import { SaveTemplateDialog } from "@/components/SaveTemplateDialog";
 import { EmailTemplateAnalytics } from "@/components/EmailTemplateAnalytics";
+import { ClinicBrandingSettings } from "@/components/ClinicBrandingSettings";
+import { WebhookAlertSettings } from "@/components/WebhookAlertSettings";
+import { GoogleCalendarConnect } from "@/components/GoogleCalendarConnect";
 
 interface ClinicSettings {
   clinic_name: string;
