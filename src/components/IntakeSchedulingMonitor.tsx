@@ -1,98 +1,88 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Clock, Send, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { Calendar, Clock, RefreshCw, AlertTriangle, Link2 } from "lucide-react";
+import { format, formatDistanceToNow } from "date-fns";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-interface ReminderHistory {
-  id: string;
-  intake_form_id: string;
-  reminder_type: string;
-  sent_at: string;
-  status: string;
-  error_message: string | null;
-  intake_forms: {
-    patient_name: string;
-    email: string;
-  };
-}
-
-export const IntakeSchedulingMonitor = () => {
-  const [loading, setLoading] = useState(true);
+export function IntakeSchedulingMonitor() {
   const [checking, setChecking] = useState(false);
-  const [history, setHistory] = useState<ReminderHistory[]>([]);
-  const [stats, setStats] = useState({
-    total: 0,
-    reminder1: 0,
-    reminder2: 0,
-    adminAlerts: 0,
-    failed: 0,
-  });
+  const [syncing, setSyncing] = useState(false);
+  const [reminderHistory, setReminderHistory] = useState<any[]>([]);
+  const [syncHistory, setSyncHistory] = useState<any[]>([]);
+  const [calendarConnection, setCalendarConnection] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const fetchHistory = async () => {
+  const fetchData = async () => {
     try {
-      const { data, error } = await supabase
-        .from('intake_scheduling_reminders')
+      // Fetch reminder history
+      const { data: reminders, error: remindersError } = await supabase
+        .from("intake_scheduling_reminders")
         .select(`
           *,
           intake_forms (
             patient_name,
-            email
+            submitted_at
           )
         `)
-        .order('sent_at', { ascending: false })
-        .limit(50);
+        .order("sent_at", { ascending: false })
+        .limit(10);
 
-      if (error) throw error;
+      if (remindersError) throw remindersError;
+      setReminderHistory(reminders || []);
 
-      setHistory(data || []);
+      // Fetch calendar connection
+      const { data: connection, error: connectionError } = await supabase
+        .from("google_calendar_connections")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      // Calculate stats
-      const total = data?.length || 0;
-      const reminder1 = data?.filter(r => r.reminder_type === 'reminder_1').length || 0;
-      const reminder2 = data?.filter(r => r.reminder_type === 'reminder_2').length || 0;
-      const adminAlerts = data?.filter(r => r.reminder_type === 'admin_alert').length || 0;
-      const failed = data?.filter(r => r.status === 'failed').length || 0;
+      if (connectionError) console.error("Error fetching connection:", connectionError);
+      setCalendarConnection(connection);
 
-      setStats({ total, reminder1, reminder2, adminAlerts, failed });
+      // Fetch sync history
+      const { data: syncs, error: syncsError } = await supabase
+        .from("calendar_sync_history")
+        .select("*")
+        .order("started_at", { ascending: false })
+        .limit(5);
+
+      if (syncsError) console.error("Error fetching sync history:", syncsError);
+      setSyncHistory(syncs || []);
     } catch (error: any) {
-      console.error('Error fetching history:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load reminder history",
-        variant: "destructive",
-      });
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchHistory();
+    fetchData();
   }, []);
 
-  const handleManualCheck = async () => {
+  const triggerCheck = async () => {
     setChecking(true);
     try {
-      const { data, error } = await supabase.functions.invoke('check-intake-scheduling');
+      const { data, error } = await supabase.functions.invoke("check-intake-scheduling");
 
       if (error) throw error;
 
       toast({
-        title: "Check Complete",
-        description: `Sent ${data.reminders1Sent} reminder(s), ${data.reminders2Sent} second reminder(s), and ${data.adminAlertsSent} admin alert(s)`,
+        title: "Check completed",
+        description: `Sent ${data.remindersSent || 0} reminders`,
       });
 
-      // Refresh history
-      fetchHistory();
+      await fetchData();
     } catch (error: any) {
-      console.error('Error running check:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to run scheduling check",
+        description: error.message,
         variant: "destructive",
       });
     } finally {
@@ -100,152 +90,143 @@ export const IntakeSchedulingMonitor = () => {
     }
   };
 
-  const getReminderLabel = (type: string) => {
-    switch (type) {
-      case 'reminder_1':
-        return 'Reminder #1 (24h)';
-      case 'reminder_2':
-        return 'Reminder #2 (48h)';
-      case 'admin_alert':
-        return 'Admin Alert (72h)';
-      default:
-        return type;
+  const triggerSync = async () => {
+    setSyncing(true);
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      
+      const { data, error } = await supabase.functions.invoke("sync-calendar-appointments", {
+        body: {
+          syncType: "manual",
+          triggeredBy: user.user?.id,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Sync completed",
+        description: `Found ${data.appointmentsFound} appointments out of ${data.appointmentsChecked} intakes checked`,
+      });
+
+      await fetchData();
+    } catch (error: any) {
+      toast({
+        title: "Sync error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setSyncing(false);
     }
   };
-
-  const getReminderIcon = (type: string) => {
-    switch (type) {
-      case 'reminder_1':
-        return <Send className="h-4 w-4" />;
-      case 'reminder_2':
-        return <Clock className="h-4 w-4" />;
-      case 'admin_alert':
-        return <AlertTriangle className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    return status === 'sent' ? 
-      <CheckCircle className="h-4 w-4 text-green-600" /> : 
-      <XCircle className="h-4 w-4 text-red-600" />;
-  };
-
-  if (loading) {
-    return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <div className="space-y-6">
+      {!calendarConnection && (
+        <Alert>
+          <Link2 className="h-4 w-4" />
+          <AlertDescription>
+            Google Calendar is not connected. Go to <strong>Clinic Settings</strong> to connect your calendar for automatic appointment detection.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Intake Scheduling Automation</CardTitle>
-              <CardDescription>
-                Automatic reminders for patients who haven't scheduled appointments
-              </CardDescription>
-            </div>
-            <Button onClick={handleManualCheck} disabled={checking}>
-              {checking ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Checking...
-                </>
-              ) : (
-                'Run Check Now'
-              )}
-            </Button>
-          </div>
+          <CardTitle>Intake Scheduling Monitor</CardTitle>
+          <CardDescription>
+            {calendarConnection 
+              ? `Connected to: ${calendarConnection.calendar_name}`
+              : "Automatically checks for submitted intakes without scheduled appointments"}
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <div className="text-sm text-muted-foreground">Total Sent</div>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{stats.reminder1}</div>
-              <div className="text-sm text-muted-foreground">Reminder #1</div>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-purple-600">{stats.reminder2}</div>
-              <div className="text-sm text-muted-foreground">Reminder #2</div>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-amber-600">{stats.adminAlerts}</div>
-              <div className="text-sm text-muted-foreground">Admin Alerts</div>
-            </div>
-            <div className="text-center p-4 border rounded-lg">
-              <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
-              <div className="text-sm text-muted-foreground">Failed</div>
-            </div>
-          </div>
-
-          <div className="mt-6 space-y-2">
-            <h3 className="text-sm font-medium">How it works:</h3>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• <strong>24 hours:</strong> First reminder sent to patient - "You're ready to schedule"</li>
-              <li>• <strong>48 hours:</strong> Second reminder sent - "We've held space for you"</li>
-              <li>• <strong>72 hours:</strong> Admin alert sent - "Please call this patient"</li>
-              <li>• Checks run automatically every hour</li>
-            </ul>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Button onClick={triggerCheck} disabled={checking}>
+              <RefreshCw className={`mr-2 h-4 w-4 ${checking ? "animate-spin" : ""}`} />
+              {checking ? "Checking..." : "Check Now"}
+            </Button>
+            {calendarConnection && (
+              <Button onClick={triggerSync} disabled={syncing} variant="outline">
+                <Calendar className={`mr-2 h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+                {syncing ? "Syncing..." : "Sync Calendar"}
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
 
+      {syncHistory.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Calendar Sync History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {syncHistory.map((sync) => (
+                <div
+                  key={sync.id}
+                  className="flex items-start justify-between border-b pb-3 last:border-0"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Calendar className={`h-4 w-4 ${sync.status === 'completed' ? 'text-green-500' : sync.status === 'failed' ? 'text-red-500' : 'text-yellow-500'}`} />
+                      <span className="font-medium capitalize">{sync.sync_type} Sync</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Found {sync.appointments_found} of {sync.appointments_checked} appointments
+                    </p>
+                    {sync.error_message && (
+                      <p className="text-sm text-red-500">{sync.error_message}</p>
+                    )}
+                  </div>
+                  <div className="text-right text-sm text-muted-foreground">
+                    {formatDistanceToNow(new Date(sync.started_at), { addSuffix: true })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle>Recent Reminder History</CardTitle>
-          <CardDescription>Last 50 reminders and alerts sent</CardDescription>
+          <CardTitle>Recent Reminder Activity</CardTitle>
         </CardHeader>
         <CardContent>
-          {history.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No reminders sent yet
-            </div>
+          {loading ? (
+            <p className="text-sm text-muted-foreground">Loading...</p>
+          ) : reminderHistory.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No reminders sent yet</p>
           ) : (
-            <div className="space-y-3">
-              {history.map((item) => (
+            <div className="space-y-4">
+              {reminderHistory.map((reminder) => (
                 <div
-                  key={item.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
+                  key={reminder.id}
+                  className="flex items-start justify-between border-b pb-3 last:border-0"
                 >
-                  <div className="flex items-center gap-3 flex-1">
+                  <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      {getReminderIcon(item.reminder_type)}
-                      {getStatusIcon(item.status)}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium">
-                        {item.intake_forms?.patient_name || 'Unknown Patient'}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {item.intake_forms?.email || 'No email'}
-                      </div>
-                      {item.error_message && (
-                        <div className="text-xs text-red-600 mt-1">
-                          Error: {item.error_message}
-                        </div>
+                      {reminder.status === "success" ? (
+                        <Clock className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <AlertTriangle className="h-4 w-4 text-red-500" />
                       )}
+                      <span className="font-medium">
+                        {reminder.intake_forms?.patient_name}
+                      </span>
                     </div>
+                    <p className="text-sm text-muted-foreground">
+                      {reminder.reminder_type} - {reminder.status}
+                    </p>
+                    {reminder.error_message && (
+                      <p className="text-sm text-red-500">{reminder.error_message}</p>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant={item.status === 'sent' ? 'default' : 'destructive'}>
-                      {getReminderLabel(item.reminder_type)}
-                    </Badge>
-                    <div className="text-sm text-muted-foreground text-right">
-                      {new Date(item.sent_at).toLocaleDateString()}
-                      <br />
-                      {new Date(item.sent_at).toLocaleTimeString()}
-                    </div>
+                  <div className="text-right text-sm text-muted-foreground">
+                    {formatDistanceToNow(new Date(reminder.sent_at), { addSuffix: true })}
                   </div>
                 </div>
               ))}
@@ -255,4 +236,4 @@ export const IntakeSchedulingMonitor = () => {
       </Card>
     </div>
   );
-};
+}

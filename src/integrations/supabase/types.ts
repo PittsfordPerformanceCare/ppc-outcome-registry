@@ -107,6 +107,53 @@ export type Database = {
           },
         ]
       }
+      calendar_sync_history: {
+        Row: {
+          appointments_checked: number | null
+          appointments_found: number | null
+          completed_at: string | null
+          connection_id: string | null
+          error_message: string | null
+          id: string
+          started_at: string | null
+          status: string | null
+          sync_type: string
+          triggered_by: string | null
+        }
+        Insert: {
+          appointments_checked?: number | null
+          appointments_found?: number | null
+          completed_at?: string | null
+          connection_id?: string | null
+          error_message?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string | null
+          sync_type: string
+          triggered_by?: string | null
+        }
+        Update: {
+          appointments_checked?: number | null
+          appointments_found?: number | null
+          completed_at?: string | null
+          connection_id?: string | null
+          error_message?: string | null
+          id?: string
+          started_at?: string | null
+          status?: string | null
+          sync_type?: string
+          triggered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_sync_history_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "google_calendar_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinic_settings: {
         Row: {
           address: string | null
@@ -924,6 +971,116 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      google_calendar_connections: {
+        Row: {
+          access_token: string
+          calendar_id: string
+          calendar_name: string | null
+          clinic_id: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          refresh_token: string
+          token_expiry: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          calendar_id: string
+          calendar_name?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          refresh_token: string
+          token_expiry: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          calendar_id?: string
+          calendar_name?: string | null
+          clinic_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          refresh_token?: string
+          token_expiry?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "google_calendar_connections_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intake_appointments: {
+        Row: {
+          calendar_connection_id: string | null
+          created_at: string | null
+          google_event_id: string | null
+          id: string
+          intake_form_id: string | null
+          patient_email: string | null
+          patient_name: string
+          scheduled_date: string
+          scheduled_time: string
+          status: string | null
+          synced_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          calendar_connection_id?: string | null
+          created_at?: string | null
+          google_event_id?: string | null
+          id?: string
+          intake_form_id?: string | null
+          patient_email?: string | null
+          patient_name: string
+          scheduled_date: string
+          scheduled_time: string
+          status?: string | null
+          synced_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          calendar_connection_id?: string | null
+          created_at?: string | null
+          google_event_id?: string | null
+          id?: string
+          intake_form_id?: string | null
+          patient_email?: string | null
+          patient_name?: string
+          scheduled_date?: string
+          scheduled_time?: string
+          status?: string | null
+          synced_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_appointments_calendar_connection_id_fkey"
+            columns: ["calendar_connection_id"]
+            isOneToOne: false
+            referencedRelation: "google_calendar_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_appointments_intake_form_id_fkey"
+            columns: ["intake_form_id"]
+            isOneToOne: true
+            referencedRelation: "intake_forms"
             referencedColumns: ["id"]
           },
         ]
