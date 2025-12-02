@@ -52,6 +52,7 @@ import ReferralInbox from "./pages/ReferralInbox";
 import AppInstallGuide from "./pages/AppInstallGuide";
 import OrthoPartners from "./pages/OrthoPartners";
 import OrthoReturnDashboard from "./pages/OrthoReturnDashboard";
+import StartNeurologicIntake from "./pages/StartNeurologicIntake";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const App = () => (
           <Route path="/referral-screening" element={<ReferralScreening />} />
           <Route path="/referral-success" element={<ReferralSuccess />} />
           <Route path="/referral-status" element={<ReferralStatus />} />
+          <Route path="/start-neurologic-intake" element={<StartNeurologicIntake />} />
           
           <Route
             path="/*"
