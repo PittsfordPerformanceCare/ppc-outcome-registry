@@ -85,31 +85,41 @@ export function GoogleCalendarConnect() {
     }
   };
 
-  const initiateOAuth = () => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    if (!clientId) {
+  const initiateOAuth = async () => {
+    setConnecting(true);
+    try {
+      // Fetch the Google Client ID from the backend
+      const { data, error } = await supabase.functions.invoke("get-google-client-id");
+      
+      if (error) throw error;
+      
+      const clientId = data?.clientId;
+      if (!clientId) {
+        throw new Error("Google Client ID not configured");
+      }
+
+      const redirectUri = `${window.location.origin}/clinic-settings`;
+      const scope = 'https://www.googleapis.com/auth/calendar.readonly';
+      
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        response_type: 'code',
+        scope: scope,
+        access_type: 'offline',
+        prompt: 'consent',
+        state: 'google_calendar',
+      })}`;
+
+      window.location.href = authUrl;
+    } catch (error: any) {
       toast({
         title: "Configuration error",
-        description: "Google Client ID not configured",
+        description: error.message || "Failed to initiate Google OAuth",
         variant: "destructive",
       });
-      return;
+      setConnecting(false);
     }
-
-    const redirectUri = `${window.location.origin}/clinic-settings`;
-    const scope = 'https://www.googleapis.com/auth/calendar.readonly';
-    
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: scope,
-      access_type: 'offline',
-      prompt: 'consent',
-      state: 'google_calendar',
-    })}`;
-
-    window.location.href = authUrl;
   };
 
   const disconnect = async () => {

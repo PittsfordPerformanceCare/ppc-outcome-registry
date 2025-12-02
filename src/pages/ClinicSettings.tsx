@@ -590,6 +590,7 @@ if (authLoading || initialLoading) {
 
       <NotificationAlertSettings />
       <RateLimitConfigPanel />
+      <GoogleCalendarConnect />
 
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={loading} size="lg">
