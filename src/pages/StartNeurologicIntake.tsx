@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { User, Baby, Stethoscope, ArrowRight, CheckCircle2, Calendar, FileText, MessageSquare, Brain, Eye, Activity, Zap, HelpCircle } from "lucide-react";
 
 type Persona = "self" | "parent" | "professional" | null;
@@ -59,25 +60,26 @@ const StartNeurologicIntake = () => {
     setIsSubmitting(true);
     
     try {
-      // POST to registry leads endpoint
-      const payload = {
-        persona: "self",
-        name: selfForm.name,
-        email: selfForm.email,
-        phone: selfForm.phone,
-        symptom_profile: selfForm.symptom_profile,
-        duration: selfForm.duration,
-        primary_concern: selfForm.primary_concern,
-        source: "concussion_pillar",
-      };
+      const { error } = await supabase
+        .from("neurologic_intake_leads")
+        .insert({
+          persona: "self",
+          name: selfForm.name || null,
+          email: selfForm.email,
+          phone: selfForm.phone || null,
+          symptom_profile: selfForm.symptom_profile || null,
+          duration: selfForm.duration || null,
+          primary_concern: selfForm.primary_concern || null,
+          source: "concussion_pillar",
+        });
       
-      console.log("Submitting self intake:", payload);
-      // TODO: POST /api/registry/leads when endpoint is ready
+      if (error) throw error;
       
       setIsSubmitted(true);
       toast({ title: "Form submitted successfully!" });
-    } catch (error) {
-      toast({ title: "Submission failed", description: "Please try again.", variant: "destructive" });
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      toast({ title: "Submission failed", description: error.message || "Please try again.", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
@@ -92,25 +94,27 @@ const StartNeurologicIntake = () => {
     setIsSubmitting(true);
     
     try {
-      const payload = {
-        persona: "parent",
-        parent_name: parentForm.parent_name,
-        email: parentForm.email,
-        phone: parentForm.phone,
-        child_name: parentForm.child_name,
-        child_age: parentForm.child_age,
-        symptom_location: parentForm.symptom_location,
-        primary_concern: parentForm.primary_concern,
-        source: "concussion_pillar",
-      };
+      const { error } = await supabase
+        .from("neurologic_intake_leads")
+        .insert({
+          persona: "parent",
+          parent_name: parentForm.parent_name || null,
+          email: parentForm.email,
+          phone: parentForm.phone || null,
+          child_name: parentForm.child_name || null,
+          child_age: parentForm.child_age || null,
+          symptom_location: parentForm.symptom_location || null,
+          primary_concern: parentForm.primary_concern || null,
+          source: "concussion_pillar",
+        });
       
-      console.log("Submitting parent intake:", payload);
-      // TODO: POST /api/registry/leads when endpoint is ready
+      if (error) throw error;
       
       setIsSubmitted(true);
       toast({ title: "Form submitted successfully!" });
-    } catch (error) {
-      toast({ title: "Submission failed", description: "Please try again.", variant: "destructive" });
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      toast({ title: "Submission failed", description: error.message || "Please try again.", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
@@ -125,26 +129,29 @@ const StartNeurologicIntake = () => {
     setIsSubmitting(true);
     
     try {
-      const payload = {
-        referrer_name: professionalForm.referrer_name,
-        role: professionalForm.role,
-        organization: professionalForm.organization,
-        email: professionalForm.email,
-        phone: professionalForm.phone,
-        patient_name: professionalForm.patient_name,
-        patient_age: professionalForm.patient_age,
-        notes: professionalForm.notes,
-        urgency: professionalForm.urgency,
-        source: "concussion_pillar",
-      };
+      const { error } = await supabase
+        .from("neurologic_intake_leads")
+        .insert({
+          persona: "professional",
+          referrer_name: professionalForm.referrer_name,
+          role: professionalForm.role || null,
+          organization: professionalForm.organization || null,
+          email: professionalForm.email,
+          phone: professionalForm.phone || null,
+          patient_name: professionalForm.patient_name || null,
+          patient_age: professionalForm.patient_age || null,
+          notes: professionalForm.notes || null,
+          urgency: professionalForm.urgency || "routine",
+          source: "concussion_pillar",
+        });
       
-      console.log("Submitting professional referral:", payload);
-      // TODO: POST /api/registry/referrals when endpoint is ready
+      if (error) throw error;
       
       setIsSubmitted(true);
       toast({ title: "Referral submitted successfully!" });
-    } catch (error) {
-      toast({ title: "Submission failed", description: "Please try again.", variant: "destructive" });
+    } catch (error: any) {
+      console.error("Submission error:", error);
+      toast({ title: "Submission failed", description: error.message || "Please try again.", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
