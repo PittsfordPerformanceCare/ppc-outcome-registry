@@ -111,7 +111,7 @@ const App = () => (
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/intake-review" element={<IntakeReview />} />
                     <Route path="/intake-validation" element={<IntakeValidation />} />
-                    <Route path="/settings" element={<ClinicSettings />} />
+                    <Route path="/clinic-settings" element={<ClinicSettings />} />
                     <Route path="/notification-history" element={<NotificationHistory />} />
                     <Route path="/notification-analytics" element={<NotificationAnalytics />} />
                     <Route path="/retry-analytics" element={<RetryAnalytics />} />
