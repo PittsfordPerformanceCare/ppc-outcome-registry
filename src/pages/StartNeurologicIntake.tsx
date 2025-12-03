@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,11 @@ const StartNeurologicIntake = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  // Debug: confirm component is mounting with latest code
+  useEffect(() => {
+    console.log("=== StartNeurologicIntake MOUNTED (v2) ===");
+  }, []);
 
   // Self form state
   const [selfForm, setSelfForm] = useState({
@@ -447,6 +452,7 @@ const StartNeurologicIntake = () => {
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
+                  onClick={() => console.log("=== SUBMIT BUTTON CLICKED ===")}
                   className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white py-6 text-lg font-semibold"
                 >
                   {isSubmitting ? "Submitting..." : "Submit & Get Recommendations"}
