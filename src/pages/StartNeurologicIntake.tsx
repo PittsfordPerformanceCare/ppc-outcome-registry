@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useUTMParams } from "@/hooks/useUTMParams";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Baby, Stethoscope, ArrowRight, CheckCircle2, Calendar, FileText, MessageSquare, Brain, Eye, Activity, Zap, HelpCircle } from "lucide-react";
 
@@ -19,8 +20,12 @@ const StartNeurologicIntake = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
+  // Capture UTM params for attribution tracking
+  const utm = useUTMParams();
+  
   // Capture source from URL for attribution (e.g., ?source=concussion-pillar)
-  const source = searchParams.get("source") || "direct";
+  // Falls back to utm_source if present, otherwise "direct"
+  const source = searchParams.get("source") || utm.utm_source || "direct";
 
   // Self form state
   const [selfForm, setSelfForm] = useState({
@@ -76,6 +81,10 @@ const StartNeurologicIntake = () => {
           duration: selfForm.duration || null,
           primary_concern: selfForm.primary_concern || null,
           source,
+          utm_source: utm.utm_source,
+          utm_medium: utm.utm_medium,
+          utm_campaign: utm.utm_campaign,
+          utm_content: utm.utm_content,
         })
         .select();
       
@@ -112,6 +121,10 @@ const StartNeurologicIntake = () => {
           symptom_location: parentForm.symptom_location || null,
           primary_concern: parentForm.primary_concern || null,
           source,
+          utm_source: utm.utm_source,
+          utm_medium: utm.utm_medium,
+          utm_campaign: utm.utm_campaign,
+          utm_content: utm.utm_content,
         });
       
       if (error) throw error;
@@ -149,6 +162,10 @@ const StartNeurologicIntake = () => {
           notes: professionalForm.notes || null,
           urgency: professionalForm.urgency || "routine",
           source,
+          utm_source: utm.utm_source,
+          utm_medium: utm.utm_medium,
+          utm_campaign: utm.utm_campaign,
+          utm_content: utm.utm_content,
         });
       
       if (error) throw error;
