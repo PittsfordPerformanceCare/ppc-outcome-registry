@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,15 +13,14 @@ import { User, Baby, Stethoscope, ArrowRight, CheckCircle2, Calendar, FileText, 
 type Persona = "self" | "parent" | "professional" | null;
 
 const StartNeurologicIntake = () => {
+  const [searchParams] = useSearchParams();
   const [selectedPersona, setSelectedPersona] = useState<Persona>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  // Debug: confirm component is mounting with latest code
-  useEffect(() => {
-    console.log("=== StartNeurologicIntake MOUNTED (v2) ===");
-  }, []);
+  // Capture source from URL for attribution (e.g., ?source=concussion-pillar)
+  const source = searchParams.get("source") || "direct";
 
   // Self form state
   const [selfForm, setSelfForm] = useState({
@@ -58,19 +58,14 @@ const StartNeurologicIntake = () => {
 
   const handleSelfSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("=== SELF FORM SUBMIT TRIGGERED ===");
-    console.log("Form data:", selfForm);
-    
     if (!selfForm.email) {
-      console.log("Email validation failed");
       toast({ title: "Email is required", variant: "destructive" });
       return;
     }
     setIsSubmitting(true);
     
     try {
-      console.log("Attempting Supabase insert...");
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("neurologic_intake_leads")
         .insert({
           persona: "self",
@@ -80,11 +75,9 @@ const StartNeurologicIntake = () => {
           symptom_profile: selfForm.symptom_profile || null,
           duration: selfForm.duration || null,
           primary_concern: selfForm.primary_concern || null,
-          source: "concussion_pillar",
+          source,
         })
         .select();
-      
-      console.log("Supabase response - data:", data, "error:", error);
       
       if (error) throw error;
       
@@ -118,7 +111,7 @@ const StartNeurologicIntake = () => {
           child_age: parentForm.child_age || null,
           symptom_location: parentForm.symptom_location || null,
           primary_concern: parentForm.primary_concern || null,
-          source: "concussion_pillar",
+          source,
         });
       
       if (error) throw error;
@@ -155,7 +148,7 @@ const StartNeurologicIntake = () => {
           patient_age: professionalForm.patient_age || null,
           notes: professionalForm.notes || null,
           urgency: professionalForm.urgency || "routine",
-          source: "concussion_pillar",
+          source,
         });
       
       if (error) throw error;
