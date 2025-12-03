@@ -86,3 +86,15 @@ verify_jwt = false
 
 [functions.retry-webhooks]
 verify_jwt = false
+
+[functions.send-intake-completion]
+verify_jwt = false
+
+[functions.send-intake-reminder]
+verify_jwt = false
+
+[functions.send-intake-approval]
+verify_jwt = false
+
+[functions.send-intake-decline]
+verify_jwt = false

@@ -245,7 +245,36 @@ const SeverityCheck = () => {
               {/* CTA */}
               <div className="space-y-3 pt-4">
                 <Button 
-                  onClick={() => navigate("/start-neurologic-intake")}
+                  onClick={async () => {
+                    // Create intake record
+                    try {
+                      const { data: intake, error } = await supabase
+                        .from("intakes")
+                        .insert({
+                          lead_id: leadId,
+                          progress: 0,
+                          status: "started",
+                        })
+                        .select("id")
+                        .single();
+
+                      if (error) throw error;
+
+                      // Update lead status
+                      if (leadId) {
+                        await supabase
+                          .from("leads")
+                          .update({ checkpoint_status: "intake_started" })
+                          .eq("id", leadId);
+                      }
+
+                      // Navigate to intake form with IDs
+                      navigate(`/neurologic-intake?intake=${intake.id}&lead=${leadId || ""}`);
+                    } catch (err) {
+                      console.error("Error starting intake:", err);
+                      navigate("/neurologic-intake");
+                    }
+                  }}
                   className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white py-6 text-lg"
                 >
                   Start Full Intake
