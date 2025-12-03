@@ -54,6 +54,7 @@ import OrthoPartners from "./pages/OrthoPartners";
 import OrthoReturnDashboard from "./pages/OrthoReturnDashboard";
 import StartNeurologicIntake from "./pages/StartNeurologicIntake";
 import NeurologicLeadsAdmin from "./pages/NeurologicLeadsAdmin";
+import SeverityCheck from "./pages/SeverityCheck";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +82,7 @@ const App = () => (
           <Route path="/referral-success" element={<ReferralSuccess />} />
           <Route path="/referral-status" element={<ReferralStatus />} />
           <Route path="/start-neurologic-intake" element={<StartNeurologicIntake />} />
+          <Route path="/severity-check" element={<SeverityCheck />} />
           
           <Route
             path="/*"

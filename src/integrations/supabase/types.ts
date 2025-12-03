@@ -1321,6 +1321,54 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          checkpoint_status: string
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+          phone: string | null
+          severity_score: number | null
+          system_category: string | null
+          updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          checkpoint_status?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          phone?: string | null
+          severity_score?: number | null
+          system_category?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          checkpoint_status?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          phone?: string | null
+          severity_score?: number | null
+          system_category?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: []
+      }
       merge_report_presets: {
         Row: {
           clinic_id: string | null
