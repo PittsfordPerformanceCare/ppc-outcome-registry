@@ -53,14 +53,19 @@ const StartNeurologicIntake = () => {
 
   const handleSelfSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("=== SELF FORM SUBMIT TRIGGERED ===");
+    console.log("Form data:", selfForm);
+    
     if (!selfForm.email) {
+      console.log("Email validation failed");
       toast({ title: "Email is required", variant: "destructive" });
       return;
     }
     setIsSubmitting(true);
     
     try {
-      const { error } = await supabase
+      console.log("Attempting Supabase insert...");
+      const { data, error } = await supabase
         .from("neurologic_intake_leads")
         .insert({
           persona: "self",
@@ -71,7 +76,10 @@ const StartNeurologicIntake = () => {
           duration: selfForm.duration || null,
           primary_concern: selfForm.primary_concern || null,
           source: "concussion_pillar",
-        });
+        })
+        .select();
+      
+      console.log("Supabase response - data:", data, "error:", error);
       
       if (error) throw error;
       
