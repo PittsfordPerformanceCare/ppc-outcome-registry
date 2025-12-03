@@ -36,6 +36,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 import { EpisodeCardWithSwipe } from "@/components/EpisodeCardWithSwipe";
 import { ReferralQRGenerator } from "@/components/ReferralQRGenerator";
+import LeadsOverview from "@/components/LeadsOverview";
 import {
   Dialog,
   DialogContent,
@@ -782,6 +783,9 @@ export default function Dashboard() {
 
       {/* Referral QR Code Generator */}
       <ReferralQRGenerator />
+
+      {/* Leads Overview - Severity Check */}
+      <LeadsOverview />
 
       {/* Performance Dials */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
