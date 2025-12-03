@@ -57,6 +57,9 @@ import NeurologicLeadsAdmin from "./pages/NeurologicLeadsAdmin";
 import SeverityCheck from "./pages/SeverityCheck";
 import NeurologicIntakeForm from "./pages/NeurologicIntakeForm";
 import LeadAnalytics from "./pages/LeadAnalytics";
+import { AdminLayout } from "./components/AdminLayout";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminLeads from "./pages/AdminLeads";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +90,19 @@ const App = () => (
           <Route path="/severity-check" element={<SeverityCheck />} />
           <Route path="/neurologic-intake" element={<NeurologicIntakeForm />} />
           
+          {/* Admin Panel Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAdmin>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<AdminDashboard />} />
+            <Route path="leads" element={<AdminLeads />} />
+          </Route>
+          
           <Route
             path="/*"
             element={
@@ -100,14 +116,11 @@ const App = () => (
                     <Route path="/dashboards" element={<Dashboards />} />
                     <Route path="/pcp-summary" element={<PCPSummary />} />
                     <Route path="/episode-summary" element={<EpisodeSummary />} />
-                    <Route
-                      path="/admin"
-                      element={
-                        <ProtectedRoute requireAdmin>
-                          <AdminManagement />
-                        </ProtectedRoute>
-                      }
-                    />
+                    <Route path="/admin-management" element={
+                      <ProtectedRoute requireAdmin>
+                        <AdminManagement />
+                      </ProtectedRoute>
+                    } />
                     <Route
                       path="/compliance"
                       element={
