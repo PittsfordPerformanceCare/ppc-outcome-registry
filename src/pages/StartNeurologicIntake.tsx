@@ -357,125 +357,135 @@ const StartNeurologicIntake = () => {
 
         {/* Self Form */}
         {selectedPersona === "self" && (
-          <Card className="bg-white/95 backdrop-blur border-0 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" onClick={() => setSelectedPersona(null)} className="text-slate-500">
-                  ← Back
-                </Button>
-              </div>
-              <div className="flex items-center gap-3 mt-2">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center">
-                  <User className="h-6 w-6 text-white" />
+          <Card className="bg-white/95 backdrop-blur border-0 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden">
+            <CardHeader className="pb-6 pt-8 px-6 md:px-10">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setSelectedPersona(null)} 
+                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 -ml-2 mb-4 w-fit"
+              >
+                ← Back to selection
+              </Button>
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center shadow-lg shadow-teal-500/30">
+                  <User className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl text-[#0a1628]">Quick Start Form</CardTitle>
-                  <CardDescription>Tell us about your symptoms so we can guide you</CardDescription>
+                  <CardTitle className="text-2xl font-bold text-[#0a1628]">Quick Start Form</CardTitle>
+                  <CardDescription className="text-base mt-1">Tell us about your symptoms so we can guide you</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSelfSubmit} className="space-y-5">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Name (optional)</Label>
-                    <Input 
-                      id="name" 
-                      placeholder="Your name"
-                      value={selfForm.name}
-                      onChange={(e) => setSelfForm({ ...selfForm, name: e.target.value })}
-                      className="border-slate-200 focus:border-teal-400"
-                    />
+            <CardContent className="px-6 md:px-10 pb-10">
+              <form onSubmit={handleSelfSubmit} className="space-y-6">
+                {/* Contact Info Section */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Contact Information</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-slate-700 font-medium">Name (optional)</Label>
+                      <Input 
+                        id="name" 
+                        placeholder="Your name"
+                        value={selfForm.name}
+                        onChange={(e) => setSelfForm({ ...selfForm, name: e.target.value })}
+                        className="border-slate-200 focus:border-teal-400 focus:ring-teal-400/20 h-12 text-base"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-slate-700 font-medium">Email <span className="text-red-500">*</span></Label>
+                      <Input 
+                        id="email" 
+                        type="email"
+                        placeholder="your@email.com"
+                        required
+                        value={selfForm.email}
+                        onChange={(e) => setSelfForm({ ...selfForm, email: e.target.value })}
+                        className="border-slate-200 focus:border-teal-400 focus:ring-teal-400/20 h-12 text-base"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email <span className="text-red-500">*</span></Label>
+                    <Label htmlFor="phone" className="text-slate-700 font-medium">Phone (optional)</Label>
                     <Input 
-                      id="email" 
-                      type="email"
-                      placeholder="your@email.com"
-                      required
-                      value={selfForm.email}
-                      onChange={(e) => setSelfForm({ ...selfForm, email: e.target.value })}
-                      className="border-slate-200 focus:border-teal-400"
+                      id="phone" 
+                      type="tel"
+                      placeholder="(555) 123-4567"
+                      value={selfForm.phone}
+                      onChange={(e) => setSelfForm({ ...selfForm, phone: e.target.value })}
+                      className="border-slate-200 focus:border-teal-400 focus:ring-teal-400/20 h-12 text-base md:max-w-xs"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone (optional)</Label>
-                  <Input 
-                    id="phone" 
-                    type="tel"
-                    placeholder="(555) 123-4567"
-                    value={selfForm.phone}
-                    onChange={(e) => setSelfForm({ ...selfForm, phone: e.target.value })}
-                    className="border-slate-200 focus:border-teal-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Symptom Profile</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {[
-                      { value: "visual", label: "Visual", icon: Eye },
-                      { value: "dizziness", label: "Dizziness/Balance", icon: Activity },
-                      { value: "fatigue", label: "Fatigue/Autonomic", icon: Zap },
-                      { value: "cognitive", label: "Brain Fog/Cognitive", icon: Brain },
-                      { value: "mixed", label: "Mixed / Not Sure", icon: HelpCircle },
-                    ].map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setSelfForm({ ...selfForm, symptom_profile: option.value })}
-                        className={`p-3 rounded-lg border-2 transition-all text-left flex items-center gap-2 ${
-                          selfForm.symptom_profile === option.value
-                            ? "border-teal-500 bg-teal-50 text-teal-700"
-                            : "border-slate-200 hover:border-teal-300"
-                        }`}
-                      >
-                        <option.icon className="h-4 w-4" />
-                        <span className="text-sm font-medium">{option.label}</span>
-                      </button>
-                    ))}
+                {/* Symptoms Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">About Your Symptoms</h3>
+                  
+                  <div className="space-y-3">
+                    <Label className="text-slate-700 font-medium">Symptom Profile</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {[
+                        { value: "visual", label: "Visual", icon: Eye },
+                        { value: "dizziness", label: "Dizziness/Balance", icon: Activity },
+                        { value: "fatigue", label: "Fatigue/Autonomic", icon: Zap },
+                        { value: "cognitive", label: "Brain Fog/Cognitive", icon: Brain },
+                        { value: "mixed", label: "Mixed / Not Sure", icon: HelpCircle },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setSelfForm({ ...selfForm, symptom_profile: option.value })}
+                          className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 text-center ${
+                            selfForm.symptom_profile === option.value
+                              ? "border-teal-500 bg-teal-50 text-teal-700 shadow-md shadow-teal-500/10"
+                              : "border-slate-200 hover:border-teal-300 hover:bg-slate-50"
+                          }`}
+                        >
+                          <option.icon className={`h-6 w-6 ${selfForm.symptom_profile === option.value ? 'text-teal-600' : 'text-slate-400'}`} />
+                          <span className="text-sm font-medium">{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label>Duration</Label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                    {["< 1 week", "1–4 weeks", "1–3 months", "3+ months"].map((duration) => (
-                      <button
-                        key={duration}
-                        type="button"
-                        onClick={() => setSelfForm({ ...selfForm, duration })}
-                        className={`p-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                          selfForm.duration === duration
-                            ? "border-teal-500 bg-teal-50 text-teal-700"
-                            : "border-slate-200 hover:border-teal-300"
-                        }`}
-                      >
-                        {duration}
-                      </button>
-                    ))}
+                  <div className="space-y-3">
+                    <Label className="text-slate-700 font-medium">How long have you had symptoms?</Label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {["< 1 week", "1–4 weeks", "1–3 months", "3+ months"].map((duration) => (
+                        <button
+                          key={duration}
+                          type="button"
+                          onClick={() => setSelfForm({ ...selfForm, duration })}
+                          className={`p-4 rounded-xl border-2 transition-all text-sm font-medium ${
+                            selfForm.duration === duration
+                              ? "border-teal-500 bg-teal-50 text-teal-700 shadow-md shadow-teal-500/10"
+                              : "border-slate-200 hover:border-teal-300 hover:bg-slate-50"
+                          }`}
+                        >
+                          {duration}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="concern">Primary Concern</Label>
-                  <Textarea 
-                    id="concern"
-                    placeholder="Briefly describe your main concern or symptoms..."
-                    value={selfForm.primary_concern}
-                    onChange={(e) => setSelfForm({ ...selfForm, primary_concern: e.target.value })}
-                    className="border-slate-200 focus:border-teal-400 min-h-[100px]"
-                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="concern" className="text-slate-700 font-medium">Primary Concern</Label>
+                    <Textarea 
+                      id="concern"
+                      placeholder="Briefly describe your main concern or symptoms..."
+                      value={selfForm.primary_concern}
+                      onChange={(e) => setSelfForm({ ...selfForm, primary_concern: e.target.value })}
+                      className="border-slate-200 focus:border-teal-400 focus:ring-teal-400/20 min-h-[120px] text-base resize-none"
+                    />
+                  </div>
                 </div>
 
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  onClick={() => console.log("=== SUBMIT BUTTON CLICKED ===")}
-                  className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white py-6 text-lg font-semibold"
+                  className="w-full bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white h-14 text-lg font-semibold rounded-xl shadow-lg shadow-teal-500/25 hover:shadow-xl hover:shadow-teal-500/30 transition-all"
                 >
                   {isSubmitting ? "Submitting..." : "Submit & Get Recommendations"}
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -487,125 +497,141 @@ const StartNeurologicIntake = () => {
 
         {/* Parent Form */}
         {selectedPersona === "parent" && (
-          <Card className="bg-white/95 backdrop-blur border-0 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" onClick={() => setSelectedPersona(null)} className="text-slate-500">
-                  ← Back
-                </Button>
-              </div>
-              <div className="flex items-center gap-3 mt-2">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center">
-                  <Baby className="h-6 w-6 text-white" />
+          <Card className="bg-white/95 backdrop-blur border-0 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden">
+            <CardHeader className="pb-6 pt-8 px-6 md:px-10">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setSelectedPersona(null)} 
+                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 -ml-2 mb-4 w-fit"
+              >
+                ← Back to selection
+              </Button>
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                  <Baby className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl text-[#0a1628]">Pediatric Intake Form</CardTitle>
-                  <CardDescription>Help us understand your child's needs</CardDescription>
+                  <CardTitle className="text-2xl font-bold text-[#0a1628]">Pediatric Intake Form</CardTitle>
+                  <CardDescription className="text-base mt-1">Help us understand your child's needs</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleParentSubmit} className="space-y-5">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="parent_name">Parent Name</Label>
-                    <Input 
-                      id="parent_name" 
-                      placeholder="Your name"
-                      value={parentForm.parent_name}
-                      onChange={(e) => setParentForm({ ...parentForm, parent_name: e.target.value })}
-                      className="border-slate-200 focus:border-cyan-400"
-                    />
+            <CardContent className="px-6 md:px-10 pb-10">
+              <form onSubmit={handleParentSubmit} className="space-y-6">
+                {/* Parent Info Section */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Parent Information</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="parent_name" className="text-slate-700 font-medium">Parent Name</Label>
+                      <Input 
+                        id="parent_name" 
+                        placeholder="Your name"
+                        value={parentForm.parent_name}
+                        onChange={(e) => setParentForm({ ...parentForm, parent_name: e.target.value })}
+                        className="border-slate-200 focus:border-cyan-400 focus:ring-cyan-400/20 h-12 text-base"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="parent_email" className="text-slate-700 font-medium">Email <span className="text-red-500">*</span></Label>
+                      <Input 
+                        id="parent_email" 
+                        type="email"
+                        placeholder="your@email.com"
+                        required
+                        value={parentForm.email}
+                        onChange={(e) => setParentForm({ ...parentForm, email: e.target.value })}
+                        className="border-slate-200 focus:border-cyan-400 focus:ring-cyan-400/20 h-12 text-base"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="parent_email">Email <span className="text-red-500">*</span></Label>
-                    <Input 
-                      id="parent_email" 
-                      type="email"
-                      placeholder="your@email.com"
-                      required
-                      value={parentForm.email}
-                      onChange={(e) => setParentForm({ ...parentForm, email: e.target.value })}
-                      className="border-slate-200 focus:border-cyan-400"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="parent_phone">Phone (optional)</Label>
+                    <Label htmlFor="parent_phone" className="text-slate-700 font-medium">Phone (optional)</Label>
                     <Input 
                       id="parent_phone" 
                       type="tel"
                       placeholder="(555) 123-4567"
                       value={parentForm.phone}
                       onChange={(e) => setParentForm({ ...parentForm, phone: e.target.value })}
-                      className="border-slate-200 focus:border-cyan-400"
+                      className="border-slate-200 focus:border-cyan-400 focus:ring-cyan-400/20 h-12 text-base md:max-w-xs"
                     />
                   </div>
+                </div>
+
+                {/* Child Info Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Child Information</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="child_name" className="text-slate-700 font-medium">Child's Name (optional)</Label>
+                      <Input 
+                        id="child_name" 
+                        placeholder="Child's name"
+                        value={parentForm.child_name}
+                        onChange={(e) => setParentForm({ ...parentForm, child_name: e.target.value })}
+                        className="border-slate-200 focus:border-cyan-400 focus:ring-cyan-400/20 h-12 text-base"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="child_age" className="text-slate-700 font-medium">Child's Age or Grade</Label>
+                      <Input 
+                        id="child_age" 
+                        placeholder="e.g., 12 years old or 7th grade"
+                        value={parentForm.child_age}
+                        onChange={(e) => setParentForm({ ...parentForm, child_age: e.target.value })}
+                        className="border-slate-200 focus:border-cyan-400 focus:ring-cyan-400/20 h-12 text-base"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Symptoms Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">About Their Symptoms</h3>
+                  
+                  <div className="space-y-3">
+                    <Label className="text-slate-700 font-medium">Where are symptoms most noticeable?</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {[
+                        { value: "school", label: "At school", icon: "📚" },
+                        { value: "screens", label: "Screens/homework", icon: "💻" },
+                        { value: "sports", label: "Sports", icon: "⚽" },
+                        { value: "general", label: "General/day-to-day", icon: "🏠" },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setParentForm({ ...parentForm, symptom_location: option.value })}
+                          className={`p-4 rounded-xl border-2 transition-all text-left flex items-center gap-3 ${
+                            parentForm.symptom_location === option.value
+                              ? "border-cyan-500 bg-cyan-50 text-cyan-700 shadow-md shadow-cyan-500/10"
+                              : "border-slate-200 hover:border-cyan-300 hover:bg-slate-50"
+                          }`}
+                        >
+                          <span className="text-xl">{option.icon}</span>
+                          <span className="text-sm font-medium">{option.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="child_name">Child's Name (optional)</Label>
-                    <Input 
-                      id="child_name" 
-                      placeholder="Child's name"
-                      value={parentForm.child_name}
-                      onChange={(e) => setParentForm({ ...parentForm, child_name: e.target.value })}
-                      className="border-slate-200 focus:border-cyan-400"
+                    <Label htmlFor="parent_concern" className="text-slate-700 font-medium">Primary Concern</Label>
+                    <Textarea 
+                      id="parent_concern"
+                      placeholder="Describe your main concern about your child's symptoms..."
+                      value={parentForm.primary_concern}
+                      onChange={(e) => setParentForm({ ...parentForm, primary_concern: e.target.value })}
+                      className="border-slate-200 focus:border-cyan-400 focus:ring-cyan-400/20 min-h-[120px] text-base resize-none"
                     />
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="child_age">Child's Age or Grade</Label>
-                  <Input 
-                    id="child_age" 
-                    placeholder="e.g., 12 years old or 7th grade"
-                    value={parentForm.child_age}
-                    onChange={(e) => setParentForm({ ...parentForm, child_age: e.target.value })}
-                    className="border-slate-200 focus:border-cyan-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Where are symptoms most noticeable?</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { value: "school", label: "At school" },
-                      { value: "screens", label: "Screens/homework" },
-                      { value: "sports", label: "Sports" },
-                      { value: "general", label: "General/day-to-day" },
-                    ].map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setParentForm({ ...parentForm, symptom_location: option.value })}
-                        className={`p-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                          parentForm.symptom_location === option.value
-                            ? "border-cyan-500 bg-cyan-50 text-cyan-700"
-                            : "border-slate-200 hover:border-cyan-300"
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="parent_concern">Primary Concern</Label>
-                  <Textarea 
-                    id="parent_concern"
-                    placeholder="Describe your main concern about your child's symptoms..."
-                    value={parentForm.primary_concern}
-                    onChange={(e) => setParentForm({ ...parentForm, primary_concern: e.target.value })}
-                    className="border-slate-200 focus:border-cyan-400 min-h-[100px]"
-                  />
                 </div>
 
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white py-6 text-lg font-semibold"
+                  className="w-full bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white h-14 text-lg font-semibold rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/30 transition-all"
                 >
                   {isSubmitting ? "Submitting..." : "Submit & Get Recommendations"}
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -617,166 +643,178 @@ const StartNeurologicIntake = () => {
 
         {/* Professional Referral Form */}
         {selectedPersona === "professional" && (
-          <Card className="bg-white/95 backdrop-blur border-0 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Button variant="ghost" size="sm" onClick={() => setSelectedPersona(null)} className="text-slate-500">
-                  ← Back
-                </Button>
-              </div>
-              <div className="flex items-center gap-3 mt-2">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-                  <Stethoscope className="h-6 w-6 text-white" />
+          <Card className="bg-white/95 backdrop-blur border-0 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 overflow-hidden">
+            <CardHeader className="pb-6 pt-8 px-6 md:px-10">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setSelectedPersona(null)} 
+                className="text-slate-500 hover:text-slate-700 hover:bg-slate-100 -ml-2 mb-4 w-fit"
+              >
+                ← Back to selection
+              </Button>
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                  <Stethoscope className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl text-[#0a1628]">Professional Referral Form</CardTitle>
-                  <CardDescription>Refer a patient to our neurologic care team</CardDescription>
+                  <CardTitle className="text-2xl font-bold text-[#0a1628]">Professional Referral Form</CardTitle>
+                  <CardDescription className="text-base mt-1">Refer a patient to our neurologic care team</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleProfessionalSubmit} className="space-y-5">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="referrer_name">Your Name <span className="text-red-500">*</span></Label>
-                    <Input 
-                      id="referrer_name" 
-                      placeholder="Your name"
-                      required
-                      value={professionalForm.referrer_name}
-                      onChange={(e) => setProfessionalForm({ ...professionalForm, referrer_name: e.target.value })}
-                      className="border-slate-200 focus:border-blue-400"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="role">Role</Label>
-                    <Select 
-                      value={professionalForm.role} 
-                      onValueChange={(value) => setProfessionalForm({ ...professionalForm, role: value })}
-                    >
-                      <SelectTrigger className="border-slate-200 focus:border-blue-400">
-                        <SelectValue placeholder="Select your role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="md">MD</SelectItem>
-                        <SelectItem value="do">DO</SelectItem>
-                        <SelectItem value="np">NP</SelectItem>
-                        <SelectItem value="pa">PA</SelectItem>
-                        <SelectItem value="pt">PT</SelectItem>
-                        <SelectItem value="atc">ATC</SelectItem>
-                        <SelectItem value="school_nurse">School Nurse</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="organization">Organization</Label>
-                    <Input 
-                      id="organization" 
-                      placeholder="Hospital, clinic, or school name"
-                      value={professionalForm.organization}
-                      onChange={(e) => setProfessionalForm({ ...professionalForm, organization: e.target.value })}
-                      className="border-slate-200 focus:border-blue-400"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="pro_email">Email <span className="text-red-500">*</span></Label>
-                    <Input 
-                      id="pro_email" 
-                      type="email"
-                      placeholder="your@email.com"
-                      required
-                      value={professionalForm.email}
-                      onChange={(e) => setProfessionalForm({ ...professionalForm, email: e.target.value })}
-                      className="border-slate-200 focus:border-blue-400"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="pro_phone">Phone (optional)</Label>
-                  <Input 
-                    id="pro_phone" 
-                    type="tel"
-                    placeholder="(555) 123-4567"
-                    value={professionalForm.phone}
-                    onChange={(e) => setProfessionalForm({ ...professionalForm, phone: e.target.value })}
-                    className="border-slate-200 focus:border-blue-400"
-                  />
-                </div>
-
-                <div className="border-t border-slate-200 pt-5">
-                  <h4 className="text-sm font-semibold text-slate-700 mb-4">Patient Information (optional)</h4>
+            <CardContent className="px-6 md:px-10 pb-10">
+              <form onSubmit={handleProfessionalSubmit} className="space-y-6">
+                {/* Referrer Info Section */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Your Information</h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="patient_name">Patient Name</Label>
+                      <Label htmlFor="referrer_name" className="text-slate-700 font-medium">Your Name <span className="text-red-500">*</span></Label>
+                      <Input 
+                        id="referrer_name" 
+                        placeholder="Your name"
+                        required
+                        value={professionalForm.referrer_name}
+                        onChange={(e) => setProfessionalForm({ ...professionalForm, referrer_name: e.target.value })}
+                        className="border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 h-12 text-base"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="role" className="text-slate-700 font-medium">Role</Label>
+                      <Select 
+                        value={professionalForm.role} 
+                        onValueChange={(value) => setProfessionalForm({ ...professionalForm, role: value })}
+                      >
+                        <SelectTrigger className="border-slate-200 focus:border-blue-400 h-12 text-base">
+                          <SelectValue placeholder="Select your role" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="md">MD</SelectItem>
+                          <SelectItem value="do">DO</SelectItem>
+                          <SelectItem value="np">NP</SelectItem>
+                          <SelectItem value="pa">PA</SelectItem>
+                          <SelectItem value="pt">PT</SelectItem>
+                          <SelectItem value="atc">ATC</SelectItem>
+                          <SelectItem value="school_nurse">School Nurse</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="organization" className="text-slate-700 font-medium">Organization</Label>
+                      <Input 
+                        id="organization" 
+                        placeholder="Hospital, clinic, or school name"
+                        value={professionalForm.organization}
+                        onChange={(e) => setProfessionalForm({ ...professionalForm, organization: e.target.value })}
+                        className="border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 h-12 text-base"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="pro_email" className="text-slate-700 font-medium">Email <span className="text-red-500">*</span></Label>
+                      <Input 
+                        id="pro_email" 
+                        type="email"
+                        placeholder="your@email.com"
+                        required
+                        value={professionalForm.email}
+                        onChange={(e) => setProfessionalForm({ ...professionalForm, email: e.target.value })}
+                        className="border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 h-12 text-base"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="pro_phone" className="text-slate-700 font-medium">Phone (optional)</Label>
+                    <Input 
+                      id="pro_phone" 
+                      type="tel"
+                      placeholder="(555) 123-4567"
+                      value={professionalForm.phone}
+                      onChange={(e) => setProfessionalForm({ ...professionalForm, phone: e.target.value })}
+                      className="border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 h-12 text-base md:max-w-xs"
+                    />
+                  </div>
+                </div>
+
+                {/* Patient Info Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Patient Information (optional)</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="patient_name" className="text-slate-700 font-medium">Patient Name</Label>
                       <Input 
                         id="patient_name" 
                         placeholder="Patient's name"
                         value={professionalForm.patient_name}
                         onChange={(e) => setProfessionalForm({ ...professionalForm, patient_name: e.target.value })}
-                        className="border-slate-200 focus:border-blue-400"
+                        className="border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 h-12 text-base"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="patient_age">Patient Age</Label>
+                      <Label htmlFor="patient_age" className="text-slate-700 font-medium">Patient Age</Label>
                       <Input 
                         id="patient_age" 
                         placeholder="e.g., 25"
                         value={professionalForm.patient_age}
                         onChange={(e) => setProfessionalForm({ ...professionalForm, patient_age: e.target.value })}
-                        className="border-slate-200 focus:border-blue-400"
+                        className="border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 h-12 text-base"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="notes">Notes / Primary Concern</Label>
-                  <Textarea 
-                    id="notes"
-                    placeholder="Clinical notes, reason for referral, relevant history..."
-                    value={professionalForm.notes}
-                    onChange={(e) => setProfessionalForm({ ...professionalForm, notes: e.target.value })}
-                    className="border-slate-200 focus:border-blue-400 min-h-[100px]"
-                  />
-                </div>
+                {/* Referral Details Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider">Referral Details</h3>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="notes" className="text-slate-700 font-medium">Notes / Primary Concern</Label>
+                    <Textarea 
+                      id="notes"
+                      placeholder="Clinical notes, reason for referral, relevant history..."
+                      value={professionalForm.notes}
+                      onChange={(e) => setProfessionalForm({ ...professionalForm, notes: e.target.value })}
+                      className="border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 min-h-[120px] text-base resize-none"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Urgency</Label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { value: "routine", label: "Routine" },
-                      { value: "soon", label: "Soon" },
-                      { value: "priority", label: "Priority" },
-                    ].map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setProfessionalForm({ ...professionalForm, urgency: option.value })}
-                        className={`p-3 rounded-lg border-2 transition-all text-sm font-medium ${
-                          professionalForm.urgency === option.value
-                            ? option.value === "priority" 
-                              ? "border-red-500 bg-red-50 text-red-700"
-                              : option.value === "soon"
-                              ? "border-amber-500 bg-amber-50 text-amber-700"
-                              : "border-blue-500 bg-blue-50 text-blue-700"
-                            : "border-slate-200 hover:border-blue-300"
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
+                  <div className="space-y-3">
+                    <Label className="text-slate-700 font-medium">Urgency Level</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { value: "routine", label: "Routine", description: "2-4 weeks", color: "blue" },
+                        { value: "soon", label: "Soon", description: "1-2 weeks", color: "amber" },
+                        { value: "priority", label: "Priority", description: "ASAP", color: "red" },
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setProfessionalForm({ ...professionalForm, urgency: option.value })}
+                          className={`p-4 rounded-xl border-2 transition-all text-center ${
+                            professionalForm.urgency === option.value
+                              ? option.color === "red" 
+                                ? "border-red-500 bg-red-50 text-red-700 shadow-md shadow-red-500/10"
+                                : option.color === "amber"
+                                ? "border-amber-500 bg-amber-50 text-amber-700 shadow-md shadow-amber-500/10"
+                                : "border-blue-500 bg-blue-50 text-blue-700 shadow-md shadow-blue-500/10"
+                              : "border-slate-200 hover:border-blue-300 hover:bg-slate-50"
+                          }`}
+                        >
+                          <div className="font-semibold">{option.label}</div>
+                          <div className={`text-xs mt-1 ${professionalForm.urgency === option.value ? '' : 'text-slate-500'}`}>{option.description}</div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
                 <Button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-6 text-lg font-semibold"
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white h-14 text-lg font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all"
                 >
                   {isSubmitting ? "Submitting..." : "Submit Referral"}
                   <ArrowRight className="ml-2 h-5 w-5" />
