@@ -68,6 +68,7 @@ export default function Dashboard() {
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [pendingCallbacks, setPendingCallbacks] = useState(0);
   const [pendingReferralInquiries, setPendingReferralInquiries] = useState(0);
+  const [pendingNeurologicLeads, setPendingNeurologicLeads] = useState(0);
   const { toast } = useToast();
   const { settings } = useClinicSettings();
   const { success } = useHaptics();
@@ -126,9 +127,16 @@ export default function Dashboard() {
         .select("*", { count: "exact", head: true })
         .eq("status", "pending");
 
+      // Get pending neurologic intake leads count
+      const { count: neuroLeadsCount } = await supabase
+        .from("neurologic_intake_leads")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "new");
+
       setUnreadMessages(messagesCount || 0);
       setPendingCallbacks(callbacksCount || 0);
       setPendingReferralInquiries(referralsCount || 0);
+      setPendingNeurologicLeads(neuroLeadsCount || 0);
     } catch (error) {
       console.error("Error loading inbox counts:", error);
     }
@@ -725,7 +733,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <CardTitle className="text-2xl">Referral Inquiry Inbox</CardTitle>
-                <CardDescription>Prospective patients from QR code screening</CardDescription>
+                <CardDescription>Prospective patients from QR code & Pillar app leads</CardDescription>
               </div>
             </div>
             <Button 
@@ -742,15 +750,28 @@ export default function Dashboard() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4 p-4 bg-background/50 rounded-lg border border-border/50">
-            <div className="h-16 w-16 rounded-full bg-green-500/10 flex items-center justify-center">
-              <UserPlus className="h-8 w-8 text-green-500" />
+          <div className="grid grid-cols-2 gap-6">
+            <div className="flex items-center gap-4 p-4 bg-background/50 rounded-lg border border-border/50">
+              <div className="h-16 w-16 rounded-full bg-green-500/10 flex items-center justify-center">
+                <UserPlus className="h-8 w-8 text-green-500" />
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-foreground">
+                  {pendingReferralInquiries}
+                </p>
+                <p className="text-sm text-muted-foreground">QR Screening Inquiries</p>
+              </div>
             </div>
-            <div>
-              <p className="text-3xl font-bold text-foreground">
-                {pendingReferralInquiries}
-              </p>
-              <p className="text-sm text-muted-foreground">Pending Screening Inquiries</p>
+            <div className="flex items-center gap-4 p-4 bg-background/50 rounded-lg border border-border/50">
+              <div className="h-16 w-16 rounded-full bg-purple-500/10 flex items-center justify-center">
+                <Activity className="h-8 w-8 text-purple-500" />
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-foreground">
+                  {pendingNeurologicLeads}
+                </p>
+                <p className="text-sm text-muted-foreground">Pillar App Leads</p>
+              </div>
             </div>
           </div>
         </CardContent>
