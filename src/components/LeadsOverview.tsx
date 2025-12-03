@@ -16,9 +16,13 @@ interface Lead {
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
+  origin_page: string | null;
+  origin_cta: string | null;
   checkpoint_status: string;
   severity_score: number | null;
   system_category: string | null;
+  intake_completed_at: string | null;
+  episode_opened_at: string | null;
   created_at: string;
 }
 
@@ -80,9 +84,11 @@ const LeadsOverview = () => {
   const stats = {
     total: filteredLeads.length,
     started: filteredLeads.filter(l => l.checkpoint_status === "severity_check_started").length,
-    completed: filteredLeads.filter(l => l.checkpoint_status === "severity_check_completed").length,
+    completed: filteredLeads.filter(l => ["severity_check_completed", "intake_started", "intake_completed", "episode_opened"].includes(l.checkpoint_status)).length,
+    intakeCompleted: filteredLeads.filter(l => l.intake_completed_at !== null).length,
+    episodeOpened: filteredLeads.filter(l => l.episode_opened_at !== null).length,
     conversionRate: filteredLeads.length > 0 
-      ? Math.round((filteredLeads.filter(l => l.checkpoint_status === "severity_check_completed").length / filteredLeads.length) * 100)
+      ? Math.round((filteredLeads.filter(l => l.intake_completed_at !== null).length / filteredLeads.length) * 100)
       : 0,
   };
 
@@ -97,10 +103,18 @@ const LeadsOverview = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    if (status === "severity_check_completed") {
-      return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Completed</Badge>;
+    switch (status) {
+      case "episode_opened":
+        return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">Episode</Badge>;
+      case "intake_completed":
+        return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Intake Done</Badge>;
+      case "intake_started":
+        return <Badge className="bg-teal-100 text-teal-700 hover:bg-teal-100">Intake Started</Badge>;
+      case "severity_check_completed":
+        return <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-100">Checked</Badge>;
+      default:
+        return <Badge variant="secondary" className="bg-amber-100 text-amber-700">Started</Badge>;
     }
-    return <Badge variant="secondary" className="bg-amber-100 text-amber-700">Started</Badge>;
   };
 
   return (
@@ -127,11 +141,11 @@ const LeadsOverview = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-800/50">
             <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 mb-1">
               <Users className="h-4 w-4" />
-              <span className="text-sm">Total Leads</span>
+              <span className="text-sm">Total</span>
             </div>
             <div className="text-2xl font-bold">{stats.total}</div>
           </div>
@@ -142,19 +156,26 @@ const LeadsOverview = () => {
             </div>
             <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">{stats.started}</div>
           </div>
+          <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20">
+            <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 mb-1">
+              <CheckCircle2 className="h-4 w-4" />
+              <span className="text-sm">Checked</span>
+            </div>
+            <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">{stats.completed}</div>
+          </div>
           <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20">
             <div className="flex items-center gap-2 text-green-600 dark:text-green-400 mb-1">
               <CheckCircle2 className="h-4 w-4" />
-              <span className="text-sm">Completed</span>
+              <span className="text-sm">Intakes</span>
             </div>
-            <div className="text-2xl font-bold text-green-700 dark:text-green-300">{stats.completed}</div>
+            <div className="text-2xl font-bold text-green-700 dark:text-green-300">{stats.intakeCompleted}</div>
           </div>
           <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20">
             <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 mb-1">
               <TrendingUp className="h-4 w-4" />
-              <span className="text-sm">Conversion</span>
+              <span className="text-sm">Episodes</span>
             </div>
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{stats.conversionRate}%</div>
+            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{stats.episodeOpened}</div>
           </div>
         </div>
 

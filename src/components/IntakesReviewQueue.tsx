@@ -109,11 +109,14 @@ const IntakesReviewQueue = () => {
         .update({ status: "approved" })
         .eq("id", intake.id);
 
-      // Update lead status
+      // Update lead status and set episode_opened_at timestamp
       if (intake.lead_id) {
         await supabase
           .from("leads")
-          .update({ checkpoint_status: "approved" })
+          .update({ 
+            checkpoint_status: "episode_opened",
+            episode_opened_at: new Date().toISOString(),
+          })
           .eq("id", intake.lead_id);
       }
 

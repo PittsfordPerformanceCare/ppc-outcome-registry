@@ -52,6 +52,10 @@ const categoryInfo: Record<SystemCategory, { label: string; icon: React.ElementT
 const SeverityCheck = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  
+  // Capture origin tracking params
+  const originPage = searchParams.get("origin_page") || "severity_check";
+  const originCta = searchParams.get("origin_cta") || "severity_check_start";
   const { toast } = useToast();
   const utm = useUTMParams();
   
@@ -77,6 +81,8 @@ const SeverityCheck = () => {
             utm_medium: utm.utm_medium || searchParams.get("utm_medium"),
             utm_campaign: utm.utm_campaign || searchParams.get("utm_campaign"),
             utm_content: utm.utm_content || searchParams.get("utm_content"),
+            origin_page: originPage,
+            origin_cta: originCta,
             checkpoint_status: "severity_check_started",
           })
           .select("id")
@@ -90,7 +96,7 @@ const SeverityCheck = () => {
     };
 
     createLead();
-  }, [utm, searchParams]);
+  }, [utm, searchParams, originPage, originCta]);
 
   const handleAnswer = (score: number) => {
     const question = questions[currentQuestion];

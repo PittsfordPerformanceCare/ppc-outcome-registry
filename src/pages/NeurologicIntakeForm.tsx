@@ -124,7 +124,7 @@ const NeurologicIntakeForm = () => {
           .eq("id", intakeId);
       }
 
-      // Update lead checkpoint status
+      // Update lead checkpoint status and intake_completed_at timestamp
       if (leadId) {
         await supabase
           .from("leads")
@@ -133,6 +133,7 @@ const NeurologicIntakeForm = () => {
             email: formData.email,
             phone: formData.phone,
             checkpoint_status: "intake_completed",
+            intake_completed_at: new Date().toISOString(),
           })
           .eq("id", leadId);
       }
