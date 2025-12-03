@@ -1321,6 +1321,59 @@ export type Database = {
           },
         ]
       }
+      intakes: {
+        Row: {
+          created_at: string
+          form_data: Json | null
+          id: string
+          lead_id: string | null
+          patient_email: string | null
+          patient_name: string | null
+          patient_phone: string | null
+          progress: number
+          status: string
+          timestamp_completed: string | null
+          timestamp_started: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          form_data?: Json | null
+          id?: string
+          lead_id?: string | null
+          patient_email?: string | null
+          patient_name?: string | null
+          patient_phone?: string | null
+          progress?: number
+          status?: string
+          timestamp_completed?: string | null
+          timestamp_started?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          form_data?: Json | null
+          id?: string
+          lead_id?: string | null
+          patient_email?: string | null
+          patient_name?: string | null
+          patient_phone?: string | null
+          progress?: number
+          status?: string
+          timestamp_completed?: string | null
+          timestamp_started?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intakes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           checkpoint_status: string

@@ -55,6 +55,7 @@ import OrthoReturnDashboard from "./pages/OrthoReturnDashboard";
 import StartNeurologicIntake from "./pages/StartNeurologicIntake";
 import NeurologicLeadsAdmin from "./pages/NeurologicLeadsAdmin";
 import SeverityCheck from "./pages/SeverityCheck";
+import NeurologicIntakeForm from "./pages/NeurologicIntakeForm";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +84,7 @@ const App = () => (
           <Route path="/referral-status" element={<ReferralStatus />} />
           <Route path="/start-neurologic-intake" element={<StartNeurologicIntake />} />
           <Route path="/severity-check" element={<SeverityCheck />} />
+          <Route path="/neurologic-intake" element={<NeurologicIntakeForm />} />
           
           <Route
             path="/*"

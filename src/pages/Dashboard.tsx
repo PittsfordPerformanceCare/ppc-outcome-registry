@@ -37,6 +37,7 @@ import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 import { EpisodeCardWithSwipe } from "@/components/EpisodeCardWithSwipe";
 import { ReferralQRGenerator } from "@/components/ReferralQRGenerator";
 import LeadsOverview from "@/components/LeadsOverview";
+import IntakesReviewQueue from "@/components/IntakesReviewQueue";
 import {
   Dialog,
   DialogContent,
@@ -786,6 +787,9 @@ export default function Dashboard() {
 
       {/* Leads Overview - Severity Check */}
       <LeadsOverview />
+
+      {/* Intakes Ready for Review */}
+      <IntakesReviewQueue />
 
       {/* Performance Dials */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
