@@ -732,7 +732,7 @@ export default function Dashboard() {
                 <UserPlus className="h-6 w-6 text-green-500" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Referral Inquiry Inbox</CardTitle>
+                <CardTitle className="text-2xl">Lead Generation Inbox</CardTitle>
                 <CardDescription>Prospective patients from QR code & Pillar app leads</CardDescription>
               </div>
             </div>
