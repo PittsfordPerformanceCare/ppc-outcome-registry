@@ -1747,6 +1747,10 @@ export type Database = {
           symptom_profile: string | null
           updated_at: string
           urgency: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
         }
         Insert: {
           child_age?: string | null
@@ -1774,6 +1778,10 @@ export type Database = {
           symptom_profile?: string | null
           updated_at?: string
           urgency?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Update: {
           child_age?: string | null
@@ -1801,6 +1809,10 @@ export type Database = {
           symptom_profile?: string | null
           updated_at?: string
           urgency?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Relationships: []
       }
