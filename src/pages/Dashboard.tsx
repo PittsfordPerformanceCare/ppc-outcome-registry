@@ -762,7 +762,10 @@ export default function Dashboard() {
                 <p className="text-sm text-muted-foreground">QR Screening Inquiries</p>
               </div>
             </div>
-            <div className="flex items-center gap-4 p-4 bg-background/50 rounded-lg border border-border/50">
+            <Link 
+              to="/neurologic-leads" 
+              className="flex items-center gap-4 p-4 bg-background/50 rounded-lg border border-border/50 hover:bg-accent/50 hover:border-purple-500/50 transition-colors cursor-pointer"
+            >
               <div className="h-16 w-16 rounded-full bg-purple-500/10 flex items-center justify-center">
                 <Activity className="h-8 w-8 text-purple-500" />
               </div>
@@ -770,9 +773,9 @@ export default function Dashboard() {
                 <p className="text-3xl font-bold text-foreground">
                   {pendingNeurologicLeads}
                 </p>
-                <p className="text-sm text-muted-foreground">Pillar App Leads</p>
+                <p className="text-sm text-muted-foreground">Pillar App Leads →</p>
               </div>
-            </div>
+            </Link>
           </div>
         </CardContent>
       </Card>
