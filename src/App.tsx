@@ -56,6 +56,7 @@ import StartNeurologicIntake from "./pages/StartNeurologicIntake";
 import NeurologicLeadsAdmin from "./pages/NeurologicLeadsAdmin";
 import SeverityCheck from "./pages/SeverityCheck";
 import NeurologicIntakeForm from "./pages/NeurologicIntakeForm";
+import LeadAnalytics from "./pages/LeadAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -155,6 +156,14 @@ const App = () => (
                       element={
                         <ProtectedRoute requireAdmin>
                           <NeurologicLeadsAdmin />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/lead-analytics"
+                      element={
+                        <ProtectedRoute requireAdmin>
+                          <LeadAnalytics />
                         </ProtectedRoute>
                       }
                     />

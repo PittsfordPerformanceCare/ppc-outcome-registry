@@ -63,6 +63,7 @@ export function Layout({ children }: LayoutProps) {
   ];
 
   const analyticsNav = [
+    { name: "Lead Analytics", href: "/lead-analytics", icon: TrendingUp },
     { name: "Metrics Dashboard", href: "/analytics-dashboard", icon: BarChart3 },
     { name: "Dashboards", href: "/dashboards", icon: BarChart3 },
     { name: "Notifications", href: "/notification-history", icon: Bell },
