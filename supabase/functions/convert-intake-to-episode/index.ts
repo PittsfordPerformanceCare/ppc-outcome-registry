@@ -274,6 +274,22 @@ const handler = async (req: Request): Promise<Response> => {
       console.log(`Support staff notifications sent to ${supportStaff.length} staff members`);
     }
 
+    // Log successful intake completion
+    await supabase.from("audit_logs").insert({
+      action: "intake_completion_success",
+      table_name: "funnel_events",
+      record_id: episode.id,
+      user_id: userId,
+      clinic_id: clinicId,
+      new_data: {
+        intake_form_id: intakeFormId,
+        episode_id: episode.id,
+        patient_name: intakeForm.patient_name,
+        region: primaryRegion,
+        timestamp: new Date().toISOString(),
+      },
+    });
+
     return new Response(
       JSON.stringify({ 
         success: true, 
@@ -288,6 +304,22 @@ const handler = async (req: Request): Promise<Response> => {
 
   } catch (error: any) {
     console.error("Error in convert-intake-to-episode:", error);
+    
+    // Log failed intake completion
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    await supabase.from("audit_logs").insert({
+      action: "intake_completion_failed",
+      table_name: "funnel_events",
+      record_id: `intake_fail_${Date.now()}`,
+      new_data: {
+        error_message: error.message,
+        timestamp: new Date().toISOString(),
+      },
+    });
+    
     return new Response(
       JSON.stringify({ error: error.message }),
       {
