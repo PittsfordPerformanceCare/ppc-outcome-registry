@@ -12,50 +12,77 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log("=== Neurologic Lead Submission Request ===");
+  console.log("Method:", req.method);
+  console.log("URL:", req.url);
+
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const body = await req.json();
+    console.log("Request body:", JSON.stringify(body, null, 2));
     
+    // Flexible field mapping - support various field name formats
+    const email = body.email || body.Email || body.EMAIL || body.patient_email || body.patientEmail;
+    const persona = body.persona || body.Persona || "self"; // Default to "self" if not provided
+    const name = body.name || body.Name || body.full_name || body.fullName || body.patient_name || body.patientName;
+    const phone = body.phone || body.Phone || body.patient_phone || body.patientPhone;
+    const primaryConcern = body.primary_concern || body.primaryConcern || body.concern || body.Concern || body.symptoms || body.Symptoms || body.chief_complaint || body.chiefComplaint;
+    const symptomProfile = body.symptom_profile || body.symptomProfile || body.symptoms || body.symptom_list || body.symptomList;
+    const duration = body.duration || body.Duration || body.symptom_duration || body.symptomDuration;
+    const source = body.source || body.Source || body.referral_source || body.referralSource || "pillar-app";
+    
+    // UTM tracking fields
+    const utmSource = body.utm_source || body.utmSource || null;
+    const utmMedium = body.utm_medium || body.utmMedium || null;
+    const utmCampaign = body.utm_campaign || body.utmCampaign || null;
+    const utmContent = body.utm_content || body.utmContent || null;
+
     // Validate required fields
-    if (!body.email || !body.persona) {
+    if (!email) {
+      console.error("Missing email field. Body keys:", Object.keys(body));
       return new Response(
-        JSON.stringify({ error: "Missing required fields: email and persona" }),
+        JSON.stringify({ 
+          error: "Missing required field: email",
+          receivedFields: Object.keys(body),
+          hint: "Please include an 'email' field in your request"
+        }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    console.log("Parsed data:", { email, persona, name, source });
 
     // Insert the lead
     const { data, error } = await supabase
       .from("neurologic_intake_leads")
       .insert({
-        email: body.email,
-        persona: body.persona,
-        name: body.name || null,
-        phone: body.phone || null,
-        primary_concern: body.primary_concern || null,
-        symptom_profile: body.symptom_profile || null,
-        duration: body.duration || null,
-        parent_name: body.parent_name || null,
-        child_name: body.child_name || null,
-        child_age: body.child_age || null,
-        symptom_location: body.symptom_location || null,
-        referrer_name: body.referrer_name || null,
-        role: body.role || null,
-        organization: body.organization || null,
-        patient_name: body.patient_name || null,
-        patient_age: body.patient_age || null,
-        urgency: body.urgency || "routine",
-        notes: body.notes || null,
-        source: body.source || "external",
+        email: email,
+        persona: persona,
+        name: name || null,
+        phone: phone || null,
+        primary_concern: primaryConcern || null,
+        symptom_profile: symptomProfile || null,
+        duration: duration || null,
+        parent_name: body.parent_name || body.parentName || null,
+        child_name: body.child_name || body.childName || null,
+        child_age: body.child_age || body.childAge || null,
+        symptom_location: body.symptom_location || body.symptomLocation || null,
+        referrer_name: body.referrer_name || body.referrerName || null,
+        role: body.role || body.Role || null,
+        organization: body.organization || body.Organization || null,
+        patient_name: body.patient_name || body.patientName || null,
+        patient_age: body.patient_age || body.patientAge || null,
+        urgency: body.urgency || body.Urgency || "routine",
+        notes: body.notes || body.Notes || body.additional_info || body.additionalInfo || null,
+        source: source,
         status: "new",
-        // UTM tracking
-        utm_source: body.utm_source || null,
-        utm_medium: body.utm_medium || null,
-        utm_campaign: body.utm_campaign || null,
-        utm_content: body.utm_content || null,
+        utm_source: utmSource,
+        utm_medium: utmMedium,
+        utm_campaign: utmCampaign,
+        utm_content: utmContent,
       })
       .select()
       .single();
@@ -66,19 +93,24 @@ Deno.serve(async (req) => {
       // Log failed lead submission to audit_logs
       await supabase.from("audit_logs").insert({
         action: "lead_submission_failed",
-        table_name: "funnel_events",
+        table_name: "neurologic_intake_leads",
         record_id: `lead_fail_${Date.now()}`,
         new_data: {
-          email: body.email,
-          persona: body.persona,
+          email: email,
+          persona: persona,
           error_message: error.message,
-          source: body.source || "external",
+          error_code: error.code,
+          source: source,
           timestamp: new Date().toISOString(),
         },
       });
       
       return new Response(
-        JSON.stringify({ error: "Failed to submit lead", details: error.message }),
+        JSON.stringify({ 
+          error: "Failed to submit lead", 
+          details: error.message,
+          code: error.code 
+        }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -88,13 +120,13 @@ Deno.serve(async (req) => {
     // Log successful lead submission
     await supabase.from("audit_logs").insert({
       action: "lead_submission_success",
-      table_name: "funnel_events",
+      table_name: "neurologic_intake_leads",
       record_id: data.id,
       new_data: {
         lead_id: data.id,
-        email: body.email,
-        persona: body.persona,
-        source: body.source || "external",
+        email: email,
+        persona: persona,
+        source: source,
         timestamp: new Date().toISOString(),
       },
     });
@@ -111,7 +143,10 @@ Deno.serve(async (req) => {
   } catch (err) {
     console.error("Error processing request:", err);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ 
+        error: "Internal server error",
+        details: err instanceof Error ? err.message : "Unknown error"
+      }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
