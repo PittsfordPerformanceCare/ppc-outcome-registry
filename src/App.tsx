@@ -9,6 +9,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { DevToolbar } from "./components/DevToolbar";
 import { DashboardSkeleton } from "./components/skeletons/DashboardSkeleton";
 import { AdminLayout } from "./components/AdminLayout";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Lazy load all pages for better initial load performance
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -75,14 +76,15 @@ const PageLoader = () => (
 );
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <DevToolbar />
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <DevToolbar />
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/patient-auth" element={<PatientAuth />} />
             <Route path="/patient-access" element={<PatientAccess />} />
@@ -201,11 +203,12 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

@@ -35,6 +35,7 @@ import { RegionalPerformanceChart } from "@/components/RegionalPerformanceChart"
 import { TreatmentEfficacyChart } from "@/components/TreatmentEfficacyChart";
 import { useDashboardData, Episode } from "@/hooks/useDashboardData";
 import { DashboardHero, InboxCards, PerformanceDials } from "@/components/dashboard";
+import { ErrorBoundary, InlineErrorBoundary } from "@/components/ErrorBoundary";
 import {
   Dialog,
   DialogContent,
@@ -249,21 +250,39 @@ export default function Dashboard() {
     <PullToRefresh onRefresh={handleRefresh}>
       <div className="space-y-8">
         <DashboardHero onNeuroExamClick={handleNeuroExamClick} />
-        <DailyPrepWidget />
-        <InboxCards inboxCounts={inboxCounts} />
-        <ReferralQRGenerator />
-        <LeadsOverview />
-        <IntakesReviewQueue />
+        <ErrorBoundary>
+          <DailyPrepWidget />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <InboxCards inboxCounts={inboxCounts} />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <ReferralQRGenerator />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <LeadsOverview />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <IntakesReviewQueue />
+        </ErrorBoundary>
         
-        <PerformanceDials 
-          avgOutcomeImprovement={avgOutcomeImprovement}
-          avgDaysToDischarge={avgDaysToDischarge}
-          completedEpisodesCount={episodes.filter(ep => ep.discharge_date).length}
-        />
+        <ErrorBoundary>
+          <PerformanceDials 
+            avgOutcomeImprovement={avgOutcomeImprovement}
+            avgDaysToDischarge={avgDaysToDischarge}
+            completedEpisodesCount={episodes.filter(ep => ep.discharge_date).length}
+          />
+        </ErrorBoundary>
 
-        <PendingEpisodesWidget />
-        <OutcomeReminderCronStatus />
-        <OutcomeReminderHistory />
+        <ErrorBoundary>
+          <PendingEpisodesWidget />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <OutcomeReminderCronStatus />
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <OutcomeReminderHistory />
+        </ErrorBoundary>
 
         {/* Analytics Section */}
         <div className="space-y-6">
@@ -282,23 +301,33 @@ export default function Dashboard() {
 
             <TabsContent value="overview" className="space-y-6">
               <div className="grid gap-6 lg:grid-cols-2">
-                <TrendChart episodes={episodesWithScores} />
-                <RegionalPerformanceChart episodes={episodesWithScores} />
+                <ErrorBoundary>
+                  <TrendChart episodes={episodesWithScores} />
+                </ErrorBoundary>
+                <ErrorBoundary>
+                  <RegionalPerformanceChart episodes={episodesWithScores} />
+                </ErrorBoundary>
               </div>
-              <TreatmentEfficacyChart episodes={episodesWithScores} />
+              <ErrorBoundary>
+                <TreatmentEfficacyChart episodes={episodesWithScores} />
+              </ErrorBoundary>
             </TabsContent>
 
             <TabsContent value="advanced-filters">
-              <AdvancedFilters
-                availableDiagnoses={uniqueDiagnoses}
-                availableRegions={uniqueRegions}
-                onFiltersChange={setAdvancedFilters}
-                initialFilters={advancedFilters}
-              />
+              <ErrorBoundary>
+                <AdvancedFilters
+                  availableDiagnoses={uniqueDiagnoses}
+                  availableRegions={uniqueRegions}
+                  onFiltersChange={setAdvancedFilters}
+                  initialFilters={advancedFilters}
+                />
+              </ErrorBoundary>
             </TabsContent>
 
             <TabsContent value="comparison">
-              <DateRangeComparison episodes={episodes} />
+              <ErrorBoundary>
+                <DateRangeComparison episodes={episodes} />
+              </ErrorBoundary>
             </TabsContent>
 
             <TabsContent value="scheduler">
