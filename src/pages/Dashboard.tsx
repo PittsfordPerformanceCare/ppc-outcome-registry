@@ -38,6 +38,7 @@ import { EpisodeCardWithSwipe } from "@/components/EpisodeCardWithSwipe";
 import { ReferralQRGenerator } from "@/components/ReferralQRGenerator";
 import LeadsOverview from "@/components/LeadsOverview";
 import IntakesReviewQueue from "@/components/IntakesReviewQueue";
+import { DailyPrepWidget } from "@/components/DailyPrepWidget";
 import {
   Dialog,
   DialogContent,
@@ -662,6 +663,9 @@ export default function Dashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Daily Prep Widget - Clinician's morning action panel */}
+      <DailyPrepWidget />
 
       {/* Clinician Inbox Card */}
       <Card 
