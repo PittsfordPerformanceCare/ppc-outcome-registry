@@ -65,6 +65,7 @@ const NeurologicIntakeForm = lazy(() => import("./pages/NeurologicIntakeForm"));
 const LeadAnalytics = lazy(() => import("./pages/LeadAnalytics"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminLeads = lazy(() => import("./pages/AdminLeads"));
+const EpisodeIntegrity = lazy(() => import("./pages/EpisodeIntegrity"));
 
 const queryClient = new QueryClient();
 
@@ -192,6 +193,14 @@ const App = () => (
                           element={
                             <ProtectedRoute requireAdmin>
                               <LeadAnalytics />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/episode-integrity"
+                          element={
+                            <ProtectedRoute requireAdmin>
+                              <EpisodeIntegrity />
                             </ProtectedRoute>
                           }
                         />

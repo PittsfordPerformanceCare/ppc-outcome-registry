@@ -583,6 +583,115 @@ export type Database = {
         }
         Relationships: []
       }
+      episode_integrity_check_runs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          email_recipients: string[] | null
+          email_sent: boolean
+          error_message: string | null
+          id: string
+          issues_by_type: Json | null
+          issues_found: number
+          started_at: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          email_recipients?: string[] | null
+          email_sent?: boolean
+          error_message?: string | null
+          id?: string
+          issues_by_type?: Json | null
+          issues_found?: number
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          email_recipients?: string[] | null
+          email_sent?: boolean
+          error_message?: string | null
+          id?: string
+          issues_by_type?: Json | null
+          issues_found?: number
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      episode_integrity_issues: {
+        Row: {
+          clinic_id: string | null
+          clinician_id: string | null
+          created_at: string
+          detected_at: string
+          episode_id: string
+          id: string
+          is_active: boolean
+          issue_details: string
+          issue_type: string
+          patient_name: string
+          resolved_at: string | null
+          resolved_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          clinician_id?: string | null
+          created_at?: string
+          detected_at?: string
+          episode_id: string
+          id?: string
+          is_active?: boolean
+          issue_details: string
+          issue_type: string
+          patient_name: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string | null
+          clinician_id?: string | null
+          created_at?: string
+          detected_at?: string
+          episode_id?: string
+          id?: string
+          is_active?: boolean
+          issue_details?: string
+          issue_type?: string
+          patient_name?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episode_integrity_issues_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episode_integrity_issues_clinician_id_fkey"
+            columns: ["clinician_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episode_integrity_issues_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       episodes: {
         Row: {
           allergy_flag: boolean | null
