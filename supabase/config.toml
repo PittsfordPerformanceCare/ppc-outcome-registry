@@ -101,3 +101,6 @@ verify_jwt = false
 
 [functions.send-intake-auto-reminders]
 verify_jwt = false
+
+[functions.check-missing-episodes]
+verify_jwt = false
