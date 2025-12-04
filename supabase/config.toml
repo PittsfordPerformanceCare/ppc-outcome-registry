@@ -116,3 +116,6 @@ verify_jwt = false
 
 [functions.send-weekly-cleanup]
 verify_jwt = false
+
+[functions.utm-health-monitor]
+verify_jwt = false
