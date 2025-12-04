@@ -104,3 +104,9 @@ verify_jwt = false
 
 [functions.check-missing-episodes]
 verify_jwt = false
+
+[functions.health]
+verify_jwt = false
+
+[functions.submit-neurologic-lead]
+verify_jwt = false

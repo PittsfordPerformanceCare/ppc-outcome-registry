@@ -62,6 +62,21 @@ Deno.serve(async (req) => {
 
     if (error) {
       console.error("Error inserting lead:", error);
+      
+      // Log failed lead submission to audit_logs
+      await supabase.from("audit_logs").insert({
+        action: "lead_submission_failed",
+        table_name: "funnel_events",
+        record_id: `lead_fail_${Date.now()}`,
+        new_data: {
+          email: body.email,
+          persona: body.persona,
+          error_message: error.message,
+          source: body.source || "external",
+          timestamp: new Date().toISOString(),
+        },
+      });
+      
       return new Response(
         JSON.stringify({ error: "Failed to submit lead", details: error.message }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -69,6 +84,20 @@ Deno.serve(async (req) => {
     }
 
     console.log("Lead submitted successfully:", data.id);
+    
+    // Log successful lead submission
+    await supabase.from("audit_logs").insert({
+      action: "lead_submission_success",
+      table_name: "funnel_events",
+      record_id: data.id,
+      new_data: {
+        lead_id: data.id,
+        email: body.email,
+        persona: body.persona,
+        source: body.source || "external",
+        timestamp: new Date().toISOString(),
+      },
+    });
 
     return new Response(
       JSON.stringify({ 
