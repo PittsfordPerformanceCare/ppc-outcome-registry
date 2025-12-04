@@ -630,6 +630,8 @@ export type Database = {
           patient_name: string
           pcp_action_items: Json | null
           pcp_fax: string | null
+          pcp_summary_generated_at: string | null
+          pcp_summary_sent_at: string | null
           prior_treatments: Json | null
           prior_treatments_other: string | null
           referral_id: string | null
@@ -696,6 +698,8 @@ export type Database = {
           patient_name: string
           pcp_action_items?: Json | null
           pcp_fax?: string | null
+          pcp_summary_generated_at?: string | null
+          pcp_summary_sent_at?: string | null
           prior_treatments?: Json | null
           prior_treatments_other?: string | null
           referral_id?: string | null
@@ -762,6 +766,8 @@ export type Database = {
           patient_name?: string
           pcp_action_items?: Json | null
           pcp_fax?: string | null
+          pcp_summary_generated_at?: string | null
+          pcp_summary_sent_at?: string | null
           prior_treatments?: Json | null
           prior_treatments_other?: string | null
           referral_id?: string | null
@@ -2999,6 +3005,78 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patient_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pcp_summary_tasks: {
+        Row: {
+          clinic_id: string | null
+          clinician_name: string | null
+          created_at: string
+          discharge_date: string
+          episode_id: string
+          id: string
+          notes: string | null
+          patient_name: string
+          pcp_contact: string | null
+          pcp_name: string | null
+          region: string | null
+          sent_at: string | null
+          sent_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          clinician_name?: string | null
+          created_at?: string
+          discharge_date: string
+          episode_id: string
+          id?: string
+          notes?: string | null
+          patient_name: string
+          pcp_contact?: string | null
+          pcp_name?: string | null
+          region?: string | null
+          sent_at?: string | null
+          sent_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          clinician_name?: string | null
+          created_at?: string
+          discharge_date?: string
+          episode_id?: string
+          id?: string
+          notes?: string | null
+          patient_name?: string
+          pcp_contact?: string | null
+          pcp_name?: string | null
+          region?: string | null
+          sent_at?: string | null
+          sent_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pcp_summary_tasks_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pcp_summary_tasks_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: true
+            referencedRelation: "episodes"
             referencedColumns: ["id"]
           },
         ]
