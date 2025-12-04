@@ -12,18 +12,25 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    // Verify cron secret for automated calls
+    // Verify authentication for automated calls
     const cronSecret = Deno.env.get('CRON_SECRET');
     const providedSecret = req.headers.get('x-cron-secret');
+    const authHeader = req.headers.get('authorization');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
     
-    // Only require secret if it's configured (allows gradual rollout)
-    if (cronSecret && providedSecret !== cronSecret) {
-      console.error('Unauthorized: Invalid or missing cron secret');
+    // Accept either x-cron-secret header OR valid Authorization header (for pg_cron calls)
+    const hasValidCronSecret = cronSecret && providedSecret === cronSecret;
+    const hasValidAuthHeader = authHeader && anonKey && authHeader.includes(anonKey);
+    
+    if (!hasValidCronSecret && !hasValidAuthHeader) {
+      console.error('Unauthorized: Invalid or missing authentication');
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+    
+    console.log('Authentication verified successfully');
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
