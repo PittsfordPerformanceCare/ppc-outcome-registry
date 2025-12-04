@@ -3895,6 +3895,47 @@ export type Database = {
         }
         Relationships: []
       }
+      utm_health_issues: {
+        Row: {
+          created_at: string
+          detected_at: string
+          id: string
+          is_active: boolean
+          issue_details: string
+          issue_type: string
+          lead_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          detected_at?: string
+          id?: string
+          is_active?: boolean
+          issue_details: string
+          issue_type: string
+          lead_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          detected_at?: string
+          id?: string
+          is_active?: boolean
+          issue_details?: string
+          issue_type?: string
+          lead_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "utm_health_issues_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_activity_log: {
         Row: {
           clinic_id: string | null

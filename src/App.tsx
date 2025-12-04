@@ -68,6 +68,7 @@ const AdminLeads = lazy(() => import("./pages/AdminLeads"));
 const EpisodeIntegrity = lazy(() => import("./pages/EpisodeIntegrity"));
 const DirectorDashboard = lazy(() => import("./pages/DirectorDashboard"));
 const WeeklyCleanup = lazy(() => import("./pages/WeeklyCleanup"));
+const UTMHealth = lazy(() => import("./pages/UTMHealth"));
 
 const queryClient = new QueryClient();
 
@@ -120,6 +121,7 @@ const App = () => (
               <Route path="leads" element={<AdminLeads />} />
               <Route path="episode-integrity" element={<EpisodeIntegrity />} />
               <Route path="weekly-cleanup" element={<WeeklyCleanup />} />
+              <Route path="utm-health" element={<UTMHealth />} />
             </Route>
             
             <Route
