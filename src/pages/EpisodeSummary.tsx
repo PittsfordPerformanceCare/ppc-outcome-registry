@@ -274,7 +274,7 @@ export default function EpisodeSummary() {
           <CardContent className="py-12 text-center">
             <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             <p className="text-muted-foreground">Episode not found</p>
-            <Button className="mt-4" variant="outline" onClick={() => navigate("/")}>
+            <Button className="mt-4" variant="outline" onClick={() => navigate("/dashboard")}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Dashboard
             </Button>
@@ -333,7 +333,7 @@ export default function EpisodeSummary() {
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
-          <Button variant="outline" onClick={() => navigate("/")} className="gap-2 print:hidden">
+          <Button variant="outline" onClick={() => navigate("/dashboard")} className="gap-2 print:hidden">
             <Home className="h-4 w-4" />
             Home
           </Button>

@@ -271,7 +271,7 @@ export default function NewEpisode() {
       }
 
       toast.success("Episode created successfully!");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       toast.error(`Failed to create episode: ${error.message}`);
     }
@@ -708,7 +708,7 @@ export default function NewEpisode() {
         )}
 
         <div className="mt-6 flex justify-end gap-4">
-          <Button type="button" variant="outline" onClick={() => navigate("/")}>
+          <Button type="button" variant="outline" onClick={() => navigate("/dashboard")}>
             Cancel
           </Button>
           <Button type="submit" className="gap-2">

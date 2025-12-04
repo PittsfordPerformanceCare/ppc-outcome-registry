@@ -36,7 +36,7 @@ export function useNavigationShortcuts(options?: UseNavigationShortcutsOptions) 
           navigate(-1);
           break;
         case "h":
-          navigate("/");
+          navigate("/dashboard");
           break;
         case "?":
           if (options?.onShowHelp) {

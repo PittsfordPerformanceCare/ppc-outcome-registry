@@ -232,7 +232,7 @@ export default function FollowUp() {
           </Card>
 
           <div className="mt-6 flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={() => navigate("/")}>
+            <Button type="button" variant="outline" onClick={() => navigate("/dashboard")}>
               Cancel
             </Button>
             <Button type="submit" className="gap-2">
@@ -304,7 +304,7 @@ export default function FollowUp() {
             })}
 
             <div className="flex justify-end gap-4">
-              <Button variant="outline" onClick={() => navigate("/")}>
+              <Button variant="outline" onClick={() => navigate("/dashboard")}>
                 Return to Dashboard
               </Button>
               <Button onClick={() => navigate(`/pcp-summary?episode=${episode.episodeId}`)}>

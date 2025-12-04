@@ -104,7 +104,7 @@ export default function Profile() {
     <div className="container mx-auto py-8 max-w-2xl space-y-6">
       <Button
         variant="ghost"
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/dashboard")}
         className="mb-4"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />

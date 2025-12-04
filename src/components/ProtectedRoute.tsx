@@ -20,7 +20,7 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
       if (!user) {
         navigate("/auth");
       } else if (requireAdmin && !isAdmin) {
-        navigate("/");
+        navigate("/dashboard");
       }
     }
   }, [user, isAdmin, loading, navigate, requireAdmin]);
