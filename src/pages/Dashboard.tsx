@@ -10,11 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, ClipboardPlus, TrendingUp, Users, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText } from "lucide-react";
 import { format } from "date-fns";
-import { Checkbox } from "@/components/ui/checkbox";
 import { MCIDStatisticsCard } from "@/components/MCIDStatisticsCard";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { generateBatchMCIDReports } from "@/lib/batchPDFExport";
 import { useClinicSettings } from "@/hooks/useClinicSettings";
+import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExportScheduler } from "@/components/ExportScheduler";
 import { AdvancedFilters, FilterState } from "@/components/AdvancedFilters";
@@ -45,6 +45,7 @@ import {
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { 
     episodes, 
     episodesWithScores, 
@@ -57,7 +58,6 @@ export default function Dashboard() {
     avgDaysToDischarge,
     mcidStatistics,
     loadEpisodes,
-    toast,
   } = useDashboardData();
   
   const [exportingPDFs, setExportingPDFs] = useState(false);
