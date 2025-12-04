@@ -98,3 +98,6 @@ verify_jwt = false
 
 [functions.send-intake-decline]
 verify_jwt = false
+
+[functions.send-intake-auto-reminders]
+verify_jwt = false

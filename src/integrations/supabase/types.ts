@@ -1382,6 +1382,8 @@ export type Database = {
           episode_opened_at: string | null
           id: string
           intake_completed_at: string | null
+          intake_first_reminder_sent_at: string | null
+          intake_second_reminder_sent_at: string | null
           name: string | null
           origin_cta: string | null
           origin_page: string | null
@@ -1401,6 +1403,8 @@ export type Database = {
           episode_opened_at?: string | null
           id?: string
           intake_completed_at?: string | null
+          intake_first_reminder_sent_at?: string | null
+          intake_second_reminder_sent_at?: string | null
           name?: string | null
           origin_cta?: string | null
           origin_page?: string | null
@@ -1420,6 +1424,8 @@ export type Database = {
           episode_opened_at?: string | null
           id?: string
           intake_completed_at?: string | null
+          intake_first_reminder_sent_at?: string | null
+          intake_second_reminder_sent_at?: string | null
           name?: string | null
           origin_cta?: string | null
           origin_page?: string | null
