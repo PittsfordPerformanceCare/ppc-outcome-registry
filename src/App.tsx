@@ -12,6 +12,7 @@ import { AdminLayout } from "./components/AdminLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Lazy load all pages for better initial load performance
+const Index = lazy(() => import("./pages/Index"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NewEpisode = lazy(() => import("./pages/NewEpisode"));
 const FollowUp = lazy(() => import("./pages/FollowUp"));
@@ -90,6 +91,7 @@ const App = () => (
           <DevToolbar />
           <Suspense fallback={<PageLoader />}>
             <Routes>
+            <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/patient-auth" element={<PatientAuth />} />
             <Route path="/patient-access" element={<PatientAccess />} />
@@ -133,7 +135,7 @@ const App = () => (
                   <Layout>
                     <Suspense fallback={<PageLoader />}>
                       <Routes>
-                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/new-episode" element={<NewEpisode />} />
                         <Route path="/follow-up" element={<FollowUp />} />
                         <Route path="/discharge" element={<Discharge />} />
