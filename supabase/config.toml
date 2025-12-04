@@ -110,3 +110,6 @@ verify_jwt = false
 
 [functions.submit-neurologic-lead]
 verify_jwt = false
+
+[functions.episode-lifecycle-integrity-check]
+verify_jwt = false
