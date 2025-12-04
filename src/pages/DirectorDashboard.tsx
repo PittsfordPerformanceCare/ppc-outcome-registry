@@ -91,20 +91,30 @@ export default function DirectorDashboard() {
       {/* Section A: Episode Volume & Types */}
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Activity className="h-5 w-5 text-primary" />
-              Episode Volume
-            </CardTitle>
-            <CardDescription>Total episodes created in period</CardDescription>
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Activity className="h-5 w-5 text-primary" />
+                Episode Volume
+              </CardTitle>
+              <CardDescription>Total episodes created in period</CardDescription>
+            </div>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/dashboards">
+                View All
+                <ExternalLink className="ml-2 h-3 w-3" />
+              </Link>
+            </Button>
           </CardHeader>
           <CardContent>
             {isLoading ? (
               <Skeleton className="h-24 w-full" />
             ) : (
-              <div className="text-4xl font-bold text-primary">
-                {data?.totalEpisodes || 0}
-              </div>
+              <Link to="/dashboards" className="block hover:opacity-80 transition-opacity">
+                <div className="text-4xl font-bold text-primary cursor-pointer">
+                  {data?.totalEpisodes || 0}
+                </div>
+              </Link>
             )}
           </CardContent>
         </Card>
@@ -193,18 +203,24 @@ export default function DirectorDashboard() {
 
       {/* Section C: Conversion Funnel */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-primary" />
             Lead → Intake → Episode Conversion
           </CardTitle>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/admin/leads">
+              View Leads
+              <ExternalLink className="ml-2 h-3 w-3" />
+            </Link>
+          </Button>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <Skeleton className="h-32 w-full" />
           ) : (
             <div className="space-y-4">
-              <div className="flex items-center justify-between gap-4">
+              <Link to="/admin/leads" className="flex items-center justify-between gap-4 hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors">
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium">Leads Created</span>
@@ -214,8 +230,8 @@ export default function DirectorDashboard() {
                     <div className="h-full bg-primary" style={{ width: "100%" }} />
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center justify-between gap-4">
+              </Link>
+              <Link to="/intake-review" className="flex items-center justify-between gap-4 hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors">
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium">Intakes Completed</span>
@@ -233,8 +249,8 @@ export default function DirectorDashboard() {
                     />
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center justify-between gap-4">
+              </Link>
+              <Link to="/dashboards" className="flex items-center justify-between gap-4 hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors">
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium">Episodes Created</span>
@@ -252,7 +268,7 @@ export default function DirectorDashboard() {
                     />
                   </div>
                 </div>
-              </div>
+              </Link>
             </div>
           )}
         </CardContent>
