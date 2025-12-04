@@ -150,6 +150,47 @@ export function useWeeklyCleanup() {
         });
       }
 
+      // F. Special Situations - open and older than 7 days
+      const { data: specialSituations } = await supabase
+        .from("special_situations")
+        .select("id, episode_id, patient_name, situation_type, summary, detected_at")
+        .eq("status", "open")
+        .order("detected_at", { ascending: true });
+
+      if (specialSituations && specialSituations.length > 0) {
+        const typeLabels: Record<string, string> = {
+          referral_initiated: "Referral",
+          new_neurologic_symptoms: "Neuro Symptoms",
+          red_flag: "Red Flag",
+          emergency_or_911: "Emergency",
+          provider_transition: "Provider Transition",
+          change_in_plan_unexpected: "Plan Change"
+        };
+        
+        const olderThan7Days = specialSituations.filter(s => 
+          new Date(s.detected_at) < sevenDaysAgo
+        );
+
+        sections.push({
+          title: "Special Situations",
+          count: specialSituations.length,
+          items: specialSituations.slice(0, 15).map((situation) => ({
+            id: situation.id,
+            name: situation.patient_name,
+            details: `${typeLabels[situation.situation_type] || situation.situation_type}${new Date(situation.detected_at) < sevenDaysAgo ? ' (>7 days old)' : ''} - ${situation.summary.substring(0, 80)}`,
+            link: `/admin/special-situations`,
+          })),
+        });
+
+        // Also note if there are stale situations
+        if (olderThan7Days.length > 0) {
+          const existingSection = sections.find(s => s.title === "Special Situations");
+          if (existingSection) {
+            existingSection.title = `Special Situations (${olderThan7Days.length} open > 7 days)`;
+          }
+        }
+      }
+
       // G. Episode Lifecycle Issues
       const { data: integrityIssues, error: integrityError } = await supabase
         .from("episode_integrity_issues")

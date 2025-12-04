@@ -119,3 +119,6 @@ verify_jwt = false
 
 [functions.utm-health-monitor]
 verify_jwt = false
+
+[functions.detect-special-situations]
+verify_jwt = false

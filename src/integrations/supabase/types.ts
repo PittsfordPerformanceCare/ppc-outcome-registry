@@ -3835,6 +3835,60 @@ export type Database = {
         }
         Relationships: []
       }
+      special_situations: {
+        Row: {
+          clinic_id: string | null
+          clinician_id: string
+          clinician_name: string | null
+          created_at: string
+          detected_at: string
+          episode_id: string
+          id: string
+          note_content: string | null
+          patient_name: string
+          resolved_at: string | null
+          resolved_by: string | null
+          situation_type: string
+          status: string
+          summary: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          clinician_id: string
+          clinician_name?: string | null
+          created_at?: string
+          detected_at?: string
+          episode_id: string
+          id?: string
+          note_content?: string | null
+          patient_name: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          situation_type: string
+          status?: string
+          summary: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string | null
+          clinician_id?: string
+          clinician_name?: string | null
+          created_at?: string
+          detected_at?: string
+          episode_id?: string
+          id?: string
+          note_content?: string | null
+          patient_name?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          situation_type?: string
+          status?: string
+          summary?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

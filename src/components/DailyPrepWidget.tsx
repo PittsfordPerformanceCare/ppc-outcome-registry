@@ -358,6 +358,34 @@ export function DailyPrepWidget() {
     try {
       const flags: SpecialFlag[] = [];
 
+      // Get special situations from the new table for this clinician
+      const { data: specialSituations } = await supabase
+        .from("special_situations")
+        .select("id, situation_type, patient_name, summary, detected_at, episode_id")
+        .eq("clinician_id", userId)
+        .eq("status", "open")
+        .order("detected_at", { ascending: false })
+        .limit(10);
+
+      specialSituations?.forEach(situation => {
+        const typeLabels: Record<string, string> = {
+          referral_initiated: "Referral",
+          new_neurologic_symptoms: "Neuro Symptoms",
+          red_flag: "Red Flag",
+          emergency_or_911: "Emergency",
+          provider_transition: "Provider Transition",
+          change_in_plan_unexpected: "Plan Change"
+        };
+        flags.push({
+          id: situation.id,
+          type: typeLabels[situation.situation_type] || situation.situation_type,
+          patient_name: situation.patient_name,
+          description: situation.summary,
+          created_at: situation.detected_at,
+          episode_id: situation.episode_id
+        });
+      });
+
       // Get pending ortho referrals with episode info
       const { data: referrals } = await supabase
         .from("ortho_referrals")

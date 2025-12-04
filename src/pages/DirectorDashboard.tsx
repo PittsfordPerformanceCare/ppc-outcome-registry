@@ -16,7 +16,8 @@ import {
   Target,
   ExternalLink,
   Activity,
-  PieChart
+  PieChart,
+  Flag
 } from "lucide-react";
 import {
   BarChart,
@@ -476,6 +477,78 @@ export default function DirectorDashboard() {
                 </Table>
               ) : (
                 <p className="text-sm text-green-600">No active integrity issues detected</p>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Section H: Special Situations */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Flag className="h-5 w-5 text-red-500" />
+              Special Situations
+            </CardTitle>
+            <CardDescription>
+              Clinical flags requiring attention (referrals, red flags, etc.)
+            </CardDescription>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/admin/special-situations">
+              View All
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <Skeleton className="h-32 w-full" />
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Badge variant={data?.totalOpenSituations ? "destructive" : "secondary"}>
+                  {data?.totalOpenSituations || 0} Open Situations
+                </Badge>
+              </div>
+              {data?.specialSituations && data.specialSituations.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Situation Type</TableHead>
+                      <TableHead className="text-right">Count</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data.specialSituations.map((row) => {
+                      const typeLabels: Record<string, { label: string; color: string }> = {
+                        referral_initiated: { label: "Referral Initiated", color: "bg-blue-500" },
+                        new_neurologic_symptoms: { label: "New Neuro Symptoms", color: "bg-purple-500" },
+                        red_flag: { label: "Red Flag", color: "bg-red-500" },
+                        emergency_or_911: { label: "Emergency/911", color: "bg-red-700" },
+                        provider_transition: { label: "Provider Transition", color: "bg-orange-500" },
+                        change_in_plan_unexpected: { label: "Unexpected Change", color: "bg-yellow-500" }
+                      };
+                      const typeInfo = typeLabels[row.situation_type];
+                      return (
+                        <TableRow key={row.situation_type}>
+                          <TableCell className="font-medium">
+                            <Badge 
+                              variant="outline" 
+                              className={`${typeInfo?.color || 'bg-gray-500'} text-white border-0`}
+                            >
+                              {typeInfo?.label || row.situation_type.replace(/_/g, " ")}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">{row.count}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              ) : (
+                <p className="text-sm text-green-600">No open special situations</p>
               )}
             </div>
           )}
