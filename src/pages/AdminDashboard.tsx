@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Users, FileText, CalendarClock, TrendingUp, ArrowRight } from "lucide-react";
 import MissingEpisodeAlerts from "@/components/MissingEpisodeAlerts";
-
+import { PCPSummaryTasks } from "@/components/PCPSummaryTasks";
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalLeads: 0,
@@ -136,6 +136,8 @@ const AdminDashboard = () => {
       {/* Missing Episode Alerts */}
       <MissingEpisodeAlerts />
 
+      {/* PCP Summary Tasks */}
+      <PCPSummaryTasks />
       {/* Quick Links */}
       <div className="grid md:grid-cols-2 gap-4">
         <Card>
