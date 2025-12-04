@@ -113,3 +113,6 @@ verify_jwt = false
 
 [functions.episode-lifecycle-integrity-check]
 verify_jwt = false
+
+[functions.send-weekly-cleanup]
+verify_jwt = false

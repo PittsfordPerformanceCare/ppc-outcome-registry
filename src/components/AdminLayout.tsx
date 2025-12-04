@@ -1,9 +1,10 @@
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Users, BarChart3, Settings, FileText, Activity, LayoutDashboard, AlertTriangle } from "lucide-react";
+import { Users, BarChart3, Settings, FileText, Activity, LayoutDashboard, AlertTriangle, ClipboardList } from "lucide-react";
 
 const navItems = [
   { href: "/admin", label: "Director Dashboard", icon: LayoutDashboard },
+  { href: "/admin/weekly-cleanup", label: "Weekly Cleanup", icon: ClipboardList },
   { href: "/admin/leads", label: "Leads", icon: Users },
   { href: "/lead-analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/episode-integrity", label: "Data Integrity", icon: AlertTriangle },
