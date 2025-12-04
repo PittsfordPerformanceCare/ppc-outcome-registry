@@ -1029,6 +1029,7 @@ export type Database = {
         Row: {
           calendar_connection_id: string | null
           created_at: string | null
+          episode_missing_alert_sent_at: string | null
           google_event_id: string | null
           id: string
           intake_form_id: string | null
@@ -1043,6 +1044,7 @@ export type Database = {
         Insert: {
           calendar_connection_id?: string | null
           created_at?: string | null
+          episode_missing_alert_sent_at?: string | null
           google_event_id?: string | null
           id?: string
           intake_form_id?: string | null
@@ -1057,6 +1059,7 @@ export type Database = {
         Update: {
           calendar_connection_id?: string | null
           created_at?: string | null
+          episode_missing_alert_sent_at?: string | null
           google_event_id?: string | null
           id?: string
           intake_form_id?: string | null
@@ -1480,6 +1483,59 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      missing_episode_alerts: {
+        Row: {
+          alert_type: string
+          appointment_id: string
+          clinician_name: string | null
+          created_at: string
+          id: string
+          patient_name: string
+          resolved_at: string | null
+          resolved_by: string | null
+          scheduled_date: string
+          scheduled_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          alert_type?: string
+          appointment_id: string
+          clinician_name?: string | null
+          created_at?: string
+          id?: string
+          patient_name: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          scheduled_date: string
+          scheduled_time: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          alert_type?: string
+          appointment_id?: string
+          clinician_name?: string | null
+          created_at?: string
+          id?: string
+          patient_name?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          scheduled_date?: string
+          scheduled_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "missing_episode_alerts_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: true
+            referencedRelation: "intake_appointments"
             referencedColumns: ["id"]
           },
         ]
