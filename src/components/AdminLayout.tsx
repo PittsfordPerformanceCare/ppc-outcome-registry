@@ -1,10 +1,12 @@
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Users, BarChart3, Settings, FileText, Activity } from "lucide-react";
+import { Users, BarChart3, Settings, FileText, Activity, LayoutDashboard, AlertTriangle } from "lucide-react";
 
 const navItems = [
+  { href: "/admin", label: "Director Dashboard", icon: LayoutDashboard },
   { href: "/admin/leads", label: "Leads", icon: Users },
   { href: "/lead-analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin/episode-integrity", label: "Data Integrity", icon: AlertTriangle },
   { href: "/admin/patients", label: "Patients", icon: FileText, disabled: true },
   { href: "/admin/episodes", label: "Episodes", icon: Activity, disabled: true },
   { href: "/admin/settings", label: "Settings", icon: Settings, disabled: true },

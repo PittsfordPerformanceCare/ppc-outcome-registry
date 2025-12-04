@@ -66,6 +66,7 @@ const LeadAnalytics = lazy(() => import("./pages/LeadAnalytics"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminLeads = lazy(() => import("./pages/AdminLeads"));
 const EpisodeIntegrity = lazy(() => import("./pages/EpisodeIntegrity"));
+const DirectorDashboard = lazy(() => import("./pages/DirectorDashboard"));
 
 const queryClient = new QueryClient();
 
@@ -114,8 +115,9 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route index element={<AdminDashboard />} />
+              <Route index element={<DirectorDashboard />} />
               <Route path="leads" element={<AdminLeads />} />
+              <Route path="episode-integrity" element={<EpisodeIntegrity />} />
             </Route>
             
             <Route
@@ -193,14 +195,6 @@ const App = () => (
                           element={
                             <ProtectedRoute requireAdmin>
                               <LeadAnalytics />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/episode-integrity"
-                          element={
-                            <ProtectedRoute requireAdmin>
-                              <EpisodeIntegrity />
                             </ProtectedRoute>
                           }
                         />
