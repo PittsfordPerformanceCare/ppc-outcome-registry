@@ -25,6 +25,11 @@ interface IntegrityIssueCount {
   count: number;
 }
 
+interface SpecialSituationCount {
+  situation_type: string;
+  count: number;
+}
+
 interface DirectorDashboardData {
   // Episode Volume & Types
   totalEpisodes: number;
@@ -54,6 +59,10 @@ interface DirectorDashboardData {
   // Integrity Issues
   integrityIssues: IntegrityIssueCount[];
   totalActiveIssues: number;
+
+  // Special Situations
+  specialSituations: SpecialSituationCount[];
+  totalOpenSituations: number;
 }
 
 export function useDirectorDashboard(dateRange: DateRange = 7) {
@@ -219,6 +228,25 @@ export function useDirectorDashboard(dateRange: DateRange = 7) {
         .map(([issue_type, count]) => ({ issue_type, count }))
         .sort((a, b) => b.count - a.count);
 
+      // Special Situations
+      const { data: specialSituationsData, error: specialError } = await supabase
+        .from("special_situations")
+        .select("situation_type, status, detected_at")
+        .eq("status", "open")
+        .gte("detected_at", startDate)
+        .lte("detected_at", endDate);
+
+      if (specialError) throw specialError;
+
+      const situationCount: Record<string, number> = {};
+      specialSituationsData?.forEach((situation) => {
+        situationCount[situation.situation_type] = (situationCount[situation.situation_type] || 0) + 1;
+      });
+
+      const specialSituations = Object.entries(situationCount)
+        .map(([situation_type, count]) => ({ situation_type, count }))
+        .sort((a, b) => b.count - a.count);
+
       return {
         totalEpisodes: episodes?.length || 0,
         episodesByType: Object.entries(episodesByType)
@@ -239,6 +267,8 @@ export function useDirectorDashboard(dateRange: DateRange = 7) {
         totalLeadsForUTM: leadsCreated,
         integrityIssues,
         totalActiveIssues: integrityData?.length || 0,
+        specialSituations,
+        totalOpenSituations: specialSituationsData?.length || 0,
       };
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
