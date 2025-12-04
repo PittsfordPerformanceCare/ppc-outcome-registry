@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, RefreshCw, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, RefreshCw, ChevronUp, ChevronDown, Mail, MailCheck, Clock } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { TableSkeleton } from "@/components/skeletons/TableSkeleton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Lead {
   id: string;
@@ -27,6 +28,8 @@ interface Lead {
   origin_cta: string | null;
   intake_completed_at: string | null;
   episode_opened_at: string | null;
+  intake_first_reminder_sent_at: string | null;
+  intake_second_reminder_sent_at: string | null;
 }
 
 type SortField = "created_at" | "name" | "severity_score" | "checkpoint_status";
@@ -39,6 +42,7 @@ const AdminLeads = () => {
   const [dateRange, setDateRange] = useState("30");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [campaignFilter, setCampaignFilter] = useState("");
+  const [reminderFilter, setReminderFilter] = useState("all");
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
@@ -103,6 +107,26 @@ const AdminLeads = () => {
       );
     }
 
+    // Reminder filter
+    if (reminderFilter !== "all") {
+      result = result.filter(l => {
+        const isIncomplete = !l.intake_completed_at;
+        if (reminderFilter === "no_reminder") {
+          return isIncomplete && !l.intake_first_reminder_sent_at;
+        }
+        if (reminderFilter === "first_sent") {
+          return isIncomplete && l.intake_first_reminder_sent_at && !l.intake_second_reminder_sent_at;
+        }
+        if (reminderFilter === "second_sent") {
+          return isIncomplete && l.intake_second_reminder_sent_at;
+        }
+        if (reminderFilter === "completed") {
+          return !!l.intake_completed_at;
+        }
+        return true;
+      });
+    }
+
     // Sort
     result.sort((a, b) => {
       let aVal: any = a[sortField];
@@ -126,7 +150,7 @@ const AdminLeads = () => {
     });
 
     return result;
-  }, [leads, search, sourceFilter, campaignFilter, sortField, sortDirection]);
+  }, [leads, search, sourceFilter, campaignFilter, reminderFilter, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -159,6 +183,95 @@ const AdminLeads = () => {
     return <Badge variant="outline">New</Badge>;
   };
 
+  const getReminderStatus = (lead: Lead) => {
+    // If intake is completed, show completed status
+    if (lead.intake_completed_at) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Badge className="bg-green-500/10 text-green-600 border-green-200">
+                <MailCheck className="h-3 w-3 mr-1" />
+                Done
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Intake completed {format(new Date(lead.intake_completed_at), "MMM d, h:mm a")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
+    // Second reminder sent
+    if (lead.intake_second_reminder_sent_at) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Badge className="bg-orange-500/10 text-orange-600 border-orange-200">
+                <Mail className="h-3 w-3 mr-1" />
+                2nd Sent
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>1st: {format(new Date(lead.intake_first_reminder_sent_at!), "MMM d, h:mm a")}</p>
+              <p>2nd: {format(new Date(lead.intake_second_reminder_sent_at), "MMM d, h:mm a")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
+    // First reminder sent
+    if (lead.intake_first_reminder_sent_at) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-200">
+                <Mail className="h-3 w-3 mr-1" />
+                1st Sent
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Sent {format(new Date(lead.intake_first_reminder_sent_at), "MMM d, h:mm a")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
+    // No reminders sent yet
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Badge variant="outline" className="text-muted-foreground">
+              <Clock className="h-3 w-3 mr-1" />
+              Pending
+            </Badge>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>No reminders sent yet</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
+  // Stats for reminder status
+  const reminderStats = useMemo(() => {
+    const incomplete = leads.filter(l => !l.intake_completed_at);
+    return {
+      total: leads.length,
+      completed: leads.filter(l => l.intake_completed_at).length,
+      noReminder: incomplete.filter(l => !l.intake_first_reminder_sent_at).length,
+      firstSent: incomplete.filter(l => l.intake_first_reminder_sent_at && !l.intake_second_reminder_sent_at).length,
+      secondSent: incomplete.filter(l => l.intake_second_reminder_sent_at).length,
+    };
+  }, [leads]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -174,13 +287,37 @@ const AdminLeads = () => {
         </Button>
       </div>
 
+      {/* Reminder Status Overview */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <Card className="p-3">
+          <div className="text-sm text-muted-foreground">Total Leads</div>
+          <div className="text-2xl font-bold">{reminderStats.total}</div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-sm text-muted-foreground">Completed</div>
+          <div className="text-2xl font-bold text-green-600">{reminderStats.completed}</div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-sm text-muted-foreground">No Reminder</div>
+          <div className="text-2xl font-bold text-gray-500">{reminderStats.noReminder}</div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-sm text-muted-foreground">1st Sent</div>
+          <div className="text-2xl font-bold text-yellow-600">{reminderStats.firstSent}</div>
+        </Card>
+        <Card className="p-3">
+          <div className="text-sm text-muted-foreground">2nd Sent</div>
+          <div className="text-2xl font-bold text-orange-600">{reminderStats.secondSent}</div>
+        </Card>
+      </div>
+
       {/* Filters */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Filters</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -212,6 +349,18 @@ const AdminLeads = () => {
                     {source}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+            <Select value={reminderFilter} onValueChange={setReminderFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Reminder Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="no_reminder">No reminder sent</SelectItem>
+                <SelectItem value="first_sent">1st reminder sent</SelectItem>
+                <SelectItem value="second_sent">2nd reminder sent</SelectItem>
               </SelectContent>
             </Select>
             <Input
@@ -255,6 +404,7 @@ const AdminLeads = () => {
                     >
                       Status <SortIcon field="checkpoint_status" />
                     </TableHead>
+                    <TableHead>Reminders</TableHead>
                     <TableHead
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => handleSort("severity_score")}
@@ -273,7 +423,7 @@ const AdminLeads = () => {
                 <TableBody>
                   {filteredLeads.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={13} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={14} className="text-center py-8 text-muted-foreground">
                         No leads found
                       </TableCell>
                     </TableRow>
@@ -297,6 +447,7 @@ const AdminLeads = () => {
                           {lead.phone || <span className="text-muted-foreground">—</span>}
                         </TableCell>
                         <TableCell>{getStatusBadge(lead)}</TableCell>
+                        <TableCell>{getReminderStatus(lead)}</TableCell>
                         <TableCell>
                           {lead.severity_score !== null ? (
                             <span className="font-mono">{lead.severity_score}</span>
