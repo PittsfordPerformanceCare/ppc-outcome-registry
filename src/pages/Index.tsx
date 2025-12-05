@@ -56,11 +56,11 @@ const Index = () => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 md:py-32">
         <div className="text-center space-y-8 max-w-4xl mx-auto">
-          <div className="space-y-4">
-            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+          <div className="space-y-6">
+            <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent leading-tight pb-2">
               PPC Clinical Outcome Registry
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Evidence-based outcome tracking for MSK and neurology practices
             </p>
           </div>
