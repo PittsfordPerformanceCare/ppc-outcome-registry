@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useUTMParams } from "@/hooks/useUTMParams";
-import { supabase } from "@/integrations/supabase/client";
+import { useCTATracking } from "@/hooks/useCTATracking";
+import { submitNeurologicLead } from "@/lib/leadTracking";
 import { User, Baby, Stethoscope, ArrowRight, CheckCircle2, Calendar, FileText, MessageSquare, Brain, Eye, Activity, Zap, HelpCircle } from "lucide-react";
 
 type Persona = "self" | "parent" | "professional" | null;
@@ -20,12 +20,11 @@ const StartNeurologicIntake = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  // Capture UTM params for attribution tracking
-  const utm = useUTMParams();
-  
-  // Capture source from URL for attribution (e.g., ?source=concussion-pillar)
-  // Falls back to utm_source if present, otherwise "direct"
-  const source = searchParams.get("source") || utm.utm_source || "direct";
+  // Enhanced CTA tracking with full attribution
+  const tracking = useCTATracking({ 
+    funnelStage: "intake-started",
+    ctaLabel: "neurologic-intake-form"
+  });
 
   // Self form state
   const [selfForm, setSelfForm] = useState({
@@ -70,25 +69,18 @@ const StartNeurologicIntake = () => {
     setIsSubmitting(true);
     
     try {
-      const { error } = await supabase
-        .from("neurologic_intake_leads")
-        .insert({
-          persona: "self",
-          name: selfForm.name || null,
-          email: selfForm.email,
-          phone: selfForm.phone || null,
-          symptom_profile: selfForm.symptom_profile || null,
-          duration: selfForm.duration || null,
-          primary_concern: selfForm.primary_concern || null,
-          source,
-          utm_source: utm.utm_source,
-          utm_medium: utm.utm_medium,
-          utm_campaign: utm.utm_campaign,
-          utm_content: utm.utm_content,
-        })
-        .select();
+      const result = await submitNeurologicLead({
+        email: selfForm.email,
+        name: selfForm.name,
+        phone: selfForm.phone,
+        persona: "self",
+        symptom_profile: selfForm.symptom_profile,
+        duration: selfForm.duration,
+        primary_concern: selfForm.primary_concern,
+        tracking,
+      });
       
-      if (error) throw error;
+      if (!result.success) throw new Error(result.error);
       
       setIsSubmitted(true);
       toast({ title: "Form submitted successfully!" });
@@ -109,25 +101,19 @@ const StartNeurologicIntake = () => {
     setIsSubmitting(true);
     
     try {
-      const { error } = await supabase
-        .from("neurologic_intake_leads")
-        .insert({
-          persona: "parent",
-          parent_name: parentForm.parent_name || null,
-          email: parentForm.email,
-          phone: parentForm.phone || null,
-          child_name: parentForm.child_name || null,
-          child_age: parentForm.child_age || null,
-          symptom_location: parentForm.symptom_location || null,
-          primary_concern: parentForm.primary_concern || null,
-          source,
-          utm_source: utm.utm_source,
-          utm_medium: utm.utm_medium,
-          utm_campaign: utm.utm_campaign,
-          utm_content: utm.utm_content,
-        });
+      const result = await submitNeurologicLead({
+        email: parentForm.email,
+        phone: parentForm.phone,
+        persona: "parent",
+        parent_name: parentForm.parent_name,
+        child_name: parentForm.child_name,
+        child_age: parentForm.child_age,
+        symptom_location: parentForm.symptom_location,
+        primary_concern: parentForm.primary_concern,
+        tracking,
+      });
       
-      if (error) throw error;
+      if (!result.success) throw new Error(result.error);
       
       setIsSubmitted(true);
       toast({ title: "Form submitted successfully!" });
@@ -148,27 +134,21 @@ const StartNeurologicIntake = () => {
     setIsSubmitting(true);
     
     try {
-      const { error } = await supabase
-        .from("neurologic_intake_leads")
-        .insert({
-          persona: "professional",
-          referrer_name: professionalForm.referrer_name,
-          role: professionalForm.role || null,
-          organization: professionalForm.organization || null,
-          email: professionalForm.email,
-          phone: professionalForm.phone || null,
-          patient_name: professionalForm.patient_name || null,
-          patient_age: professionalForm.patient_age || null,
-          notes: professionalForm.notes || null,
-          urgency: professionalForm.urgency || "routine",
-          source,
-          utm_source: utm.utm_source,
-          utm_medium: utm.utm_medium,
-          utm_campaign: utm.utm_campaign,
-          utm_content: utm.utm_content,
-        });
+      const result = await submitNeurologicLead({
+        email: professionalForm.email,
+        phone: professionalForm.phone,
+        persona: "professional",
+        referrer_name: professionalForm.referrer_name,
+        role: professionalForm.role,
+        organization: professionalForm.organization,
+        patient_name: professionalForm.patient_name,
+        patient_age: professionalForm.patient_age,
+        notes: professionalForm.notes,
+        urgency: professionalForm.urgency,
+        tracking,
+      });
       
-      if (error) throw error;
+      if (!result.success) throw new Error(result.error);
       
       setIsSubmitted(true);
       toast({ title: "Referral submitted successfully!" });
@@ -187,6 +167,7 @@ const StartNeurologicIntake = () => {
     setParentForm({ parent_name: "", email: "", phone: "", child_name: "", child_age: "", symptom_location: "", primary_concern: "" });
     setProfessionalForm({ referrer_name: "", role: "", organization: "", email: "", phone: "", patient_name: "", patient_age: "", notes: "", urgency: "routine" });
   };
+
 
   // Success/Next Steps View
   if (isSubmitted) {

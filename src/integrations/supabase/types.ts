@@ -1498,6 +1498,7 @@ export type Database = {
           created_at: string
           email: string | null
           episode_opened_at: string | null
+          funnel_stage: string | null
           id: string
           intake_completed_at: string | null
           intake_first_reminder_sent_at: string | null
@@ -1506,6 +1507,7 @@ export type Database = {
           origin_cta: string | null
           origin_page: string | null
           phone: string | null
+          pillar_origin: string | null
           severity_score: number | null
           system_category: string | null
           updated_at: string
@@ -1519,6 +1521,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           episode_opened_at?: string | null
+          funnel_stage?: string | null
           id?: string
           intake_completed_at?: string | null
           intake_first_reminder_sent_at?: string | null
@@ -1527,6 +1530,7 @@ export type Database = {
           origin_cta?: string | null
           origin_page?: string | null
           phone?: string | null
+          pillar_origin?: string | null
           severity_score?: number | null
           system_category?: string | null
           updated_at?: string
@@ -1540,6 +1544,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           episode_opened_at?: string | null
+          funnel_stage?: string | null
           id?: string
           intake_completed_at?: string | null
           intake_first_reminder_sent_at?: string | null
@@ -1548,6 +1553,7 @@ export type Database = {
           origin_cta?: string | null
           origin_page?: string | null
           phone?: string | null
+          pillar_origin?: string | null
           severity_score?: number | null
           system_category?: string | null
           updated_at?: string
@@ -2017,15 +2023,19 @@ export type Database = {
           created_at: string
           duration: string | null
           email: string
+          funnel_stage: string | null
           id: string
           name: string | null
           notes: string | null
           organization: string | null
+          origin_cta: string | null
+          origin_page: string | null
           parent_name: string | null
           patient_age: string | null
           patient_name: string | null
           persona: string
           phone: string | null
+          pillar_origin: string | null
           primary_concern: string | null
           referrer_name: string | null
           reviewed_at: string | null
@@ -2048,15 +2058,19 @@ export type Database = {
           created_at?: string
           duration?: string | null
           email: string
+          funnel_stage?: string | null
           id?: string
           name?: string | null
           notes?: string | null
           organization?: string | null
+          origin_cta?: string | null
+          origin_page?: string | null
           parent_name?: string | null
           patient_age?: string | null
           patient_name?: string | null
           persona: string
           phone?: string | null
+          pillar_origin?: string | null
           primary_concern?: string | null
           referrer_name?: string | null
           reviewed_at?: string | null
@@ -2079,15 +2093,19 @@ export type Database = {
           created_at?: string
           duration?: string | null
           email?: string
+          funnel_stage?: string | null
           id?: string
           name?: string | null
           notes?: string | null
           organization?: string | null
+          origin_cta?: string | null
+          origin_page?: string | null
           parent_name?: string | null
           patient_age?: string | null
           patient_name?: string | null
           persona?: string
           phone?: string | null
+          pillar_origin?: string | null
           primary_concern?: string | null
           referrer_name?: string | null
           reviewed_at?: string | null

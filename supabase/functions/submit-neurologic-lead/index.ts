@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     
     // Flexible field mapping - support various field name formats
     const email = body.email || body.Email || body.EMAIL || body.patient_email || body.patientEmail;
-    const persona = body.persona || body.Persona || "self"; // Default to "self" if not provided
+    const persona = body.persona || body.Persona || "self";
     const name = body.name || body.Name || body.full_name || body.fullName || body.patient_name || body.patientName;
     const phone = body.phone || body.Phone || body.patient_phone || body.patientPhone;
     const primaryConcern = body.primary_concern || body.primaryConcern || body.concern || body.Concern || body.symptoms || body.Symptoms || body.chief_complaint || body.chiefComplaint;
@@ -34,11 +34,21 @@ Deno.serve(async (req) => {
     const duration = body.duration || body.Duration || body.symptom_duration || body.symptomDuration;
     const source = body.source || body.Source || body.referral_source || body.referralSource || "pillar-app";
     
-    // UTM tracking fields
+    // UTM tracking fields (full ecosystem support)
     const utmSource = body.utm_source || body.utmSource || null;
     const utmMedium = body.utm_medium || body.utmMedium || null;
     const utmCampaign = body.utm_campaign || body.utmCampaign || null;
     const utmContent = body.utm_content || body.utmContent || null;
+    
+    // Enhanced CTA tracking fields (ecosystem-wide attribution)
+    const originPage = body.origin_page || body.originPage || null;
+    const originCta = body.origin_cta || body.originCta || null;
+    const funnelStage = body.funnel_stage || body.funnelStage || "landing";
+    const pillarOrigin = body.pillar_origin || body.pillarOrigin || 
+      (source?.includes("hub") ? "hub" : 
+       source?.includes("concussion") ? "concussion_pillar" :
+       source?.includes("msk") ? "msk_pillar" :
+       source?.includes("registry") ? "registry" : "direct");
 
     // Validate required fields
     if (!email) {
@@ -53,9 +63,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log("Parsed data:", { email, persona, name, source });
+    console.log("Parsed data:", { email, persona, name, source, pillarOrigin, funnelStage });
 
-    // Insert the lead
+    // Insert the lead with full tracking attribution
     const { data, error } = await supabase
       .from("neurologic_intake_leads")
       .insert({
@@ -79,10 +89,16 @@ Deno.serve(async (req) => {
         notes: body.notes || body.Notes || body.additional_info || body.additionalInfo || null,
         source: source,
         status: "new",
+        // UTM tracking
         utm_source: utmSource,
         utm_medium: utmMedium,
         utm_campaign: utmCampaign,
         utm_content: utmContent,
+        // Enhanced CTA tracking
+        origin_page: originPage,
+        origin_cta: originCta,
+        funnel_stage: funnelStage,
+        pillar_origin: pillarOrigin,
       })
       .select()
       .single();
@@ -117,7 +133,7 @@ Deno.serve(async (req) => {
 
     console.log("Lead submitted successfully:", data.id);
     
-    // Log successful lead submission
+    // Log successful lead submission with full tracking attribution
     await supabase.from("audit_logs").insert({
       action: "lead_submission_success",
       table_name: "neurologic_intake_leads",
@@ -127,6 +143,15 @@ Deno.serve(async (req) => {
         email: email,
         persona: persona,
         source: source,
+        // Include full tracking attribution in audit log
+        utm_source: utmSource,
+        utm_medium: utmMedium,
+        utm_campaign: utmCampaign,
+        utm_content: utmContent,
+        origin_page: originPage,
+        origin_cta: originCta,
+        funnel_stage: funnelStage,
+        pillar_origin: pillarOrigin,
         timestamp: new Date().toISOString(),
       },
     });

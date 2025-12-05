@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { useUTMParams } from "@/hooks/useUTMParams";
+import { useCTATracking, extendTracking } from "@/hooks/useCTATracking";
+import { submitLead, updateLeadFunnelStage } from "@/lib/leadTracking";
 import { supabase } from "@/integrations/supabase/client";
 import { Brain, Eye, Activity, Zap, CheckCircle2, ArrowRight, ArrowLeft } from "lucide-react";
 
@@ -51,13 +52,13 @@ const categoryInfo: Record<SystemCategory, { label: string; icon: React.ElementT
 
 const SeverityCheck = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  
-  // Capture origin tracking params
-  const originPage = searchParams.get("origin_page") || "severity_check";
-  const originCta = searchParams.get("origin_cta") || "severity_check_start";
   const { toast } = useToast();
-  const utm = useUTMParams();
+  
+  // Enhanced CTA tracking with full attribution
+  const tracking = useCTATracking({ 
+    funnelStage: "severity-check",
+    ctaLabel: "severity-check-start"
+  });
   
   const [leadId, setLeadId] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -70,33 +71,24 @@ const SeverityCheck = () => {
     dominantCategory: SystemCategory;
   } | null>(null);
 
-  // Create lead on component mount
+  // Create lead on component mount with full tracking
   useEffect(() => {
     const createLead = async () => {
       try {
-        const { data, error } = await supabase
-          .from("leads")
-          .insert({
-            utm_source: utm.utm_source || searchParams.get("utm_source"),
-            utm_medium: utm.utm_medium || searchParams.get("utm_medium"),
-            utm_campaign: utm.utm_campaign || searchParams.get("utm_campaign"),
-            utm_content: utm.utm_content || searchParams.get("utm_content"),
-            origin_page: originPage,
-            origin_cta: originCta,
-            checkpoint_status: "severity_check_started",
-          })
-          .select("id")
-          .single();
+        const result = await submitLead({
+          tracking: extendTracking(tracking, { funnel_stage: "severity-check" }),
+        });
 
-        if (error) throw error;
-        setLeadId(data.id);
+        if (result.success && result.leadId) {
+          setLeadId(result.leadId);
+        }
       } catch (error) {
         console.error("Error creating lead:", error);
       }
     };
 
     createLead();
-  }, [utm, searchParams, originPage, originCta]);
+  }, []);
 
   const handleAnswer = (score: number) => {
     const question = questions[currentQuestion];
