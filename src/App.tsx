@@ -60,6 +60,7 @@ const AppInstallGuide = lazy(() => import("./pages/AppInstallGuide"));
 const OrthoPartners = lazy(() => import("./pages/OrthoPartners"));
 const OrthoReturnDashboard = lazy(() => import("./pages/OrthoReturnDashboard"));
 const StartNeurologicIntake = lazy(() => import("./pages/StartNeurologicIntake"));
+const BeginIntake = lazy(() => import("./pages/BeginIntake"));
 const NeurologicLeadsAdmin = lazy(() => import("./pages/NeurologicLeadsAdmin"));
 const SeverityCheck = lazy(() => import("./pages/SeverityCheck"));
 const NeurologicIntakeForm = lazy(() => import("./pages/NeurologicIntakeForm"));
@@ -102,6 +103,7 @@ const App = () => (
             <Route path="/patient-intake" element={<PatientIntake />} />
             <Route path="/patient-quick-start" element={<PatientQuickStart />} />
             <Route path="/intake-start" element={<IntakeStart />} />
+            <Route path="/begin-intake" element={<BeginIntake />} />
             <Route path="/install" element={<AppInstallGuide />} />
             <Route path="/referral/:referralCode" element={<ReferralLanding />} />
             <Route path="/referral-screening" element={<ReferralScreening />} />
