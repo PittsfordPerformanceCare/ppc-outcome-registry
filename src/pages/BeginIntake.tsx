@@ -88,7 +88,7 @@ const BeginIntake = () => {
           </div>
 
           {/* Primary CTA */}
-          <div className="text-center mb-10">
+          <div className="text-center mb-6">
             <Button 
               size="lg" 
               className="text-base md:text-lg px-8 md:px-12 py-6 md:py-7 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
@@ -99,6 +99,20 @@ const BeginIntake = () => {
             </Button>
             <p className="mt-4 text-sm text-muted-foreground">
               A brief set of questions tailored to your needs
+            </p>
+          </div>
+
+          {/* Professional Referral Link */}
+          <div className="text-center mb-10">
+            <p className="text-sm text-muted-foreground">
+              Are you a medical professional?{" "}
+              <a 
+                href="/start-neurologic-intake" 
+                onClick={(e) => { e.preventDefault(); navigate("/start-neurologic-intake"); }}
+                className="text-primary hover:underline font-medium"
+              >
+                Submit a referral for your patient here
+              </a>.
             </p>
           </div>
 
