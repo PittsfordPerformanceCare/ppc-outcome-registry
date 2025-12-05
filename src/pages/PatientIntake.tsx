@@ -842,6 +842,22 @@ export default function PatientIntake() {
       setSubmitted(true);
       success(); // Haptic feedback on success
       
+      // Send welcome email to patient (non-blocking)
+      if (data.email) {
+        const firstName = data.patientName.split(' ')[0];
+        supabase.functions.invoke('send-intake-welcome-email', {
+          body: { email: data.email, firstName }
+        }).then(({ error }) => {
+          if (error) {
+            console.error('Failed to send welcome email:', error);
+          } else {
+            console.log('Welcome email sent successfully');
+          }
+        }).catch(err => {
+          console.error('Error invoking welcome email function:', err);
+        });
+      }
+      
       // Trigger confetti effect
       const duration = 3000;
       const animationEnd = Date.now() + duration;
