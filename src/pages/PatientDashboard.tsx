@@ -179,9 +179,11 @@ export default function PatientDashboard() {
       setPatientAccountId(accountData.id);
     }
 
-    // Check if this is first time user
-    const hasSeenWelcome = localStorage.getItem("ppc_patient_welcome_seen");
-    if (!hasSeenWelcome) {
+    // Only redirect to welcome if coming from magic link (needs password setup)
+    // Don't redirect existing users who just cleared localStorage
+    const needsWelcome = localStorage.getItem("ppc_needs_welcome") === "true";
+    if (needsWelcome) {
+      localStorage.removeItem("ppc_needs_welcome");
       navigate("/patient-welcome");
       return;
     }
