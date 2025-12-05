@@ -43,7 +43,7 @@ const BeginIntake = () => {
               Welcome to Pittsford Performance Care
             </h1>
             <p className="text-lg md:text-xl text-primary font-medium">
-              Where Neurology, MSK Care, and Hospitality Meet
+              Where Neurology, MSK Care and Outcomes Meet
             </p>
           </header>
 
