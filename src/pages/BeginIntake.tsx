@@ -1,22 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, ClipboardList, User, Target, HeartPulse, FileText, Brain, Sparkles, Clock, Shield } from "lucide-react";
+import { ArrowRight, ClipboardList, Phone, Brain, Sparkles, CheckCircle2, Calendar, UserCheck, MessageSquare } from "lucide-react";
 
 const BeginIntake = () => {
   const navigate = useNavigate();
 
   const expectItems = [
-    { icon: User, text: "Who the evaluation is for", delay: "0ms" },
-    { icon: HeartPulse, text: "Your main symptoms or concerns", delay: "100ms" },
-    { icon: Target, text: "Your goals for care", delay: "200ms" },
-    { icon: FileText, text: "A brief health and performance history", delay: "300ms" },
-  ];
-
-  const features = [
-    { icon: Clock, label: "5 Minutes", sublabel: "Quick & Easy" },
-    { icon: Shield, label: "HIPAA Secure", sublabel: "Private & Safe" },
-    { icon: Sparkles, label: "Smart Matching", sublabel: "Right Care Path" },
+    { icon: CheckCircle2, text: "Clear, simple questions" },
+    { icon: Sparkles, text: "Tailored evaluation pathway" },
+    { icon: UserCheck, text: "A clinician will review your intake" },
+    { icon: Calendar, text: "Your first visit will be prepared for you" },
+    { icon: MessageSquare, text: "Our admin team will follow up promptly to schedule and answer questions" },
   ];
 
   return (
@@ -48,37 +43,29 @@ const BeginIntake = () => {
                 Welcome to Pittsford Performance Care
               </h1>
               <p className="text-xl md:text-2xl text-primary font-semibold tracking-tight">
-                Your Personalized Neurologic & Musculoskeletal Intake Portal
+                Where Neurology, MSK Care, and Hospitality Meet
               </p>
             </div>
           </div>
 
-          {/* Feature Pills */}
-          <div className="flex flex-wrap justify-center gap-3 animate-fade-in" style={{ animationDelay: "150ms" }}>
-            {features.map((feature, index) => (
-              <div 
-                key={index}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 shadow-sm"
-              >
-                <feature.icon className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">{feature.label}</span>
-                <span className="text-xs text-muted-foreground hidden sm:inline">• {feature.sublabel}</span>
-              </div>
-            ))}
-          </div>
-
           {/* Main Content Card */}
-          <Card className="border-border/50 shadow-xl shadow-primary/5 backdrop-blur-sm bg-card/95 animate-fade-in" style={{ animationDelay: "200ms" }}>
+          <Card className="border-border/50 shadow-xl shadow-primary/5 backdrop-blur-sm bg-card/95 animate-fade-in" style={{ animationDelay: "150ms" }}>
             <CardContent className="pt-8 pb-8 space-y-6">
               {/* Intro Paragraph */}
-              <div className="space-y-4 text-center max-w-lg mx-auto">
-                <p className="text-muted-foreground leading-relaxed text-lg">
-                  Before we schedule your first appointment, we'd like to learn a little about you.
-                  This helps our clinicians prepare in advance so your care can begin with{" "}
-                  <span className="text-primary font-medium">clarity and momentum</span>.
+              <div className="space-y-5 text-center max-w-lg mx-auto">
+                <p className="text-foreground leading-relaxed text-lg font-medium">
+                  We're honored you're considering us for your care.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  This short intake takes only a few minutes and ensures we match you with the right evaluation pathway.
+                  Whether you're navigating a concussion, chronic symptoms, or something you don't yet have words for — you're in the right place.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Before scheduling your first visit, we ask each new patient to complete a short intake.
+                  This helps our clinicians prepare in advance so your first appointment feels{" "}
+                  <span className="text-primary font-medium">focused, personal, and productive</span>.
+                </p>
+                <p className="text-muted-foreground leading-relaxed text-sm">
+                  You'll still have time at your first visit to review details, finalize paperwork, and go over insurance coverage options with our team.
                 </p>
               </div>
 
@@ -94,8 +81,27 @@ const BeginIntake = () => {
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
+              
+              <p className="text-center text-sm text-muted-foreground">
+                This will take you to a brief set of questions tailored to your needs.
+              </p>
             </CardContent>
           </Card>
+
+          {/* Human Touch Section */}
+          <div className="text-center animate-fade-in" style={{ animationDelay: "250ms" }}>
+            <div className="inline-flex flex-col sm:flex-row items-center gap-2 px-6 py-4 rounded-2xl bg-muted/50 border border-border/50">
+              <span className="text-muted-foreground">Prefer to speak with someone first?</span>
+              <a 
+                href="tel:5855551234" 
+                className="inline-flex items-center gap-2 text-primary font-semibold hover:underline"
+              >
+                <Phone className="h-4 w-4" />
+                Call us at (585) 555-1234
+              </a>
+              <span className="text-muted-foreground hidden sm:inline">— we're here to help.</span>
+            </div>
+          </div>
 
           {/* What to Expect Section */}
           <Card className="border-border/50 bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm animate-fade-in" style={{ animationDelay: "300ms" }}>
@@ -110,40 +116,20 @@ const BeginIntake = () => {
                 {expectItems.map((item, index) => (
                   <li 
                     key={index} 
-                    className="flex items-center gap-4 p-3 rounded-lg hover:bg-background/50 transition-colors animate-fade-in"
-                    style={{ animationDelay: item.delay }}
+                    className="flex items-start gap-4 p-3 rounded-lg hover:bg-background/50 transition-colors"
                   >
-                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 shadow-sm">
-                      <item.icon className="h-5 w-5 text-primary" />
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
+                      <item.icon className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-foreground font-medium">{item.text}</span>
+                    <span className="text-foreground">{item.text}</span>
                   </li>
                 ))}
               </ul>
-              <div className="pt-4 border-t border-border/50">
-                <p className="text-sm text-muted-foreground text-center">
-                  Once submitted, our clinical team will review your intake and contact you{" "}
-                  <span className="text-primary font-medium">promptly</span> with next steps.
-                </p>
-              </div>
             </CardContent>
           </Card>
 
-          {/* Secondary CTA */}
-          <div className="flex justify-center animate-fade-in" style={{ animationDelay: "400ms" }}>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="rounded-xl hover:bg-primary/5 transition-all duration-300"
-              onClick={() => navigate("/intake-start")}
-            >
-              Continue a Saved Intake
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-
           {/* Footer */}
-          <footer className="text-center space-y-3 pt-8 border-t border-border/30 animate-fade-in" style={{ animationDelay: "500ms" }}>
+          <footer className="text-center space-y-3 pt-8 border-t border-border/30 animate-fade-in" style={{ animationDelay: "400ms" }}>
             <div className="flex items-center justify-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                 <Brain className="h-4 w-4 text-primary" />
@@ -153,7 +139,7 @@ const BeginIntake = () => {
             <p className="text-sm text-muted-foreground font-medium tracking-wide">
               Neurology <span className="text-primary">•</span> MSK <span className="text-primary">•</span> Performance
             </p>
-            <p className="text-primary italic font-medium">Where clarity meets recovery.</p>
+            <p className="text-primary italic font-medium">Experience care that feels human.</p>
           </footer>
         </div>
       </div>
