@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => ({
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
-        start_url: '/patient-dashboard',
+        start_url: '/',
         icons: [
           {
             src: 'icon-192x192.png',
