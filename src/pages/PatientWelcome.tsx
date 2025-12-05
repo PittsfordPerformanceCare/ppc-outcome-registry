@@ -25,12 +25,7 @@ export default function PatientWelcome() {
   const [passwordSet, setPasswordSet] = useState(false);
   const [isIOS] = useState(/iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream);
 
-  // Clear the localStorage flag if coming from magic link
-  useEffect(() => {
-    if (searchParams.get("fromMagicLink") === "true") {
-      localStorage.removeItem("ppc_patient_welcome_seen");
-    }
-  }, [searchParams]);
+  // No longer needed - welcome page is only shown via direct navigation from magic link
 
   const handlePasswordSetup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +77,6 @@ export default function PatientWelcome() {
   };
 
   const handleContinue = () => {
-    localStorage.setItem("ppc_patient_welcome_seen", "true");
     navigate("/patient-dashboard");
   };
 
