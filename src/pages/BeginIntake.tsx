@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Phone, CheckCircle2, Shield, Clock, Heart } from "lucide-react";
+import { ArrowRight, CheckCircle2, Shield, Clock, Heart } from "lucide-react";
 
 const BeginIntake = () => {
   const navigate = useNavigate();
@@ -72,6 +72,21 @@ const BeginIntake = () => {
             </div>
           </div>
 
+          {/* Human Touch - Phone */}
+          <div className="text-center mb-10">
+            <p className="text-muted-foreground mb-2">Prefer to speak with someone first?</p>
+            <p className="text-foreground">
+              Call us at{" "}
+              <a 
+                href="tel:+15852031050" 
+                className="text-primary font-semibold hover:underline"
+              >
+                (585) 203-1050
+              </a>
+              {" "}— we're here to help.
+            </p>
+          </div>
+
           {/* Primary CTA */}
           <div className="text-center mb-10">
             <Button 
@@ -85,19 +100,6 @@ const BeginIntake = () => {
             <p className="mt-4 text-sm text-muted-foreground">
               A brief set of questions tailored to your needs
             </p>
-          </div>
-
-          {/* Human Touch - Phone */}
-          <div className="text-center py-6 border-y border-border mb-10">
-            <p className="text-muted-foreground mb-2">Prefer to speak with someone first?</p>
-            <a 
-              href="tel:5855551234" 
-              className="inline-flex items-center gap-2 text-primary font-semibold hover:underline text-lg"
-            >
-              <Phone className="h-4 w-4" />
-              Call us at (585) 555-1234
-            </a>
-            <p className="text-sm text-muted-foreground mt-1">We're here to help.</p>
           </div>
 
           {/* What to Expect */}
