@@ -1,55 +1,10 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Activity, BarChart3, Heart, Shield, Smartphone, Users } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    checkAuthAndRedirect();
-  }, []);
-
-  const checkAuthAndRedirect = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        // Check if this is a patient account
-        const { data: patientAccount } = await supabase
-          .from("patient_accounts")
-          .select("id")
-          .eq("id", session.user.id)
-          .maybeSingle();
-
-        if (patientAccount) {
-          navigate("/patient-dashboard");
-        } else {
-          // Clinician account
-          navigate("/dashboard");
-        }
-      } else {
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error("Auth check error:", error);
-      setIsLoading(false);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
