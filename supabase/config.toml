@@ -122,3 +122,6 @@ verify_jwt = false
 
 [functions.detect-special-situations]
 verify_jwt = false
+
+[functions.send-intake-welcome-email]
+verify_jwt = false
