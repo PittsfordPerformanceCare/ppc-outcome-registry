@@ -66,13 +66,16 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Build lead data - mapping to existing leads table columns
-    // Note: who_is_this_for, primary_concern, symptom_summary, preferred_contact_method, notes
-    // are not in the current schema - storing primary_concern in system_category for now
+    // Build lead data - mapping to leads table columns
     const leadData = {
       name: body.full_name.trim(),
       email: body.email?.trim() || null,
       phone: body.phone?.trim() || null,
+      who_is_this_for: body.who_is_this_for || null,
+      primary_concern: body.primary_concern || null,
+      symptom_summary: body.symptom_summary || null,
+      preferred_contact_method: body.preferred_contact_method || null,
+      notes: body.notes || null,
       utm_source: body.utm_source || null,
       utm_medium: body.utm_medium || null,
       utm_campaign: body.utm_campaign || null,
@@ -80,7 +83,7 @@ Deno.serve(async (req) => {
       origin_page: body.origin_page || null,
       origin_cta: body.origin_cta || null,
       pillar_origin: body.pillar_origin || null,
-      // Map primary_concern to system_category if provided
+      // Also map primary_concern to system_category for analytics compatibility
       system_category: body.primary_concern || null,
       checkpoint_status: 'lead_created',
       funnel_stage: 'lead',
@@ -114,13 +117,6 @@ Deno.serve(async (req) => {
         new_data: {
           ...leadData,
           source: 'create-lead-api',
-          // Store additional fields that aren't in leads table for reference
-          _extra: {
-            who_is_this_for: body.who_is_this_for,
-            symptom_summary: body.symptom_summary,
-            preferred_contact_method: body.preferred_contact_method,
-            notes: body.notes,
-          }
         }
       });
     } catch (auditError) {
