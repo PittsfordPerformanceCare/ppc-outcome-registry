@@ -116,8 +116,17 @@ const BeginIntake = () => {
             <p className="text-sm text-muted-foreground mb-3">
               Neurology • MSK • Performance
             </p>
-            <p className="text-primary font-medium italic">
+            <p className="text-primary font-medium italic mb-6">
               Experience care that feels human.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              <a 
+                href="/staff-login" 
+                onClick={(e) => { e.preventDefault(); navigate("/staff-login"); }}
+                className="hover:text-primary transition-colors"
+              >
+                Staff Login
+              </a>
             </p>
           </footer>
           
