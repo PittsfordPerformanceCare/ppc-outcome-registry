@@ -93,7 +93,11 @@ const App = () => (
           <DevToolbar />
           <Suspense fallback={<PageLoader />}>
             <Routes>
-            {/* ========== PUBLIC ROUTES (No Authentication Required) ========== */}
+            {/* ========== PUBLIC INTAKE GATEWAY (Must be first - No Authentication) ========== */}
+            <Route path="/begin-intake" element={<BeginIntake />} />
+            <Route path="/begin-intake/*" element={<BeginIntake />} />
+            
+            {/* ========== OTHER PUBLIC ROUTES (No Authentication Required) ========== */}
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/patient-auth" element={<PatientAuth />} />
@@ -105,8 +109,6 @@ const App = () => (
             <Route path="/patient-intake" element={<PatientIntake />} />
             <Route path="/patient-quick-start" element={<PatientQuickStart />} />
             <Route path="/intake-start" element={<IntakeStart />} />
-            <Route path="/begin-intake" element={<BeginIntake />} />
-            <Route path="/begin-intake/*" element={<BeginIntake />} />
             <Route path="/staff-login" element={<StaffLogin />} />
             <Route path="/install" element={<AppInstallGuide />} />
             <Route path="/referral/:referralCode" element={<ReferralLanding />} />
