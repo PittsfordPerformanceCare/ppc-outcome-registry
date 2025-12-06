@@ -4318,6 +4318,10 @@ export type Database = {
         Args: { p_patient_id: string }
         Returns: string
       }
+      get_clinician_display_name: {
+        Args: { clinician_id: string }
+        Returns: string
+      }
       get_patient_episode_view: {
         Args: { _episode_id: string; _patient_id: string }
         Returns: {
