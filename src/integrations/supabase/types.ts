@@ -1504,17 +1504,22 @@ export type Database = {
           intake_first_reminder_sent_at: string | null
           intake_second_reminder_sent_at: string | null
           name: string | null
+          notes: string | null
           origin_cta: string | null
           origin_page: string | null
           phone: string | null
           pillar_origin: string | null
+          preferred_contact_method: string | null
+          primary_concern: string | null
           severity_score: number | null
+          symptom_summary: string | null
           system_category: string | null
           updated_at: string
           utm_campaign: string | null
           utm_content: string | null
           utm_medium: string | null
           utm_source: string | null
+          who_is_this_for: string | null
         }
         Insert: {
           checkpoint_status?: string
@@ -1527,17 +1532,22 @@ export type Database = {
           intake_first_reminder_sent_at?: string | null
           intake_second_reminder_sent_at?: string | null
           name?: string | null
+          notes?: string | null
           origin_cta?: string | null
           origin_page?: string | null
           phone?: string | null
           pillar_origin?: string | null
+          preferred_contact_method?: string | null
+          primary_concern?: string | null
           severity_score?: number | null
+          symptom_summary?: string | null
           system_category?: string | null
           updated_at?: string
           utm_campaign?: string | null
           utm_content?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          who_is_this_for?: string | null
         }
         Update: {
           checkpoint_status?: string
@@ -1550,17 +1560,22 @@ export type Database = {
           intake_first_reminder_sent_at?: string | null
           intake_second_reminder_sent_at?: string | null
           name?: string | null
+          notes?: string | null
           origin_cta?: string | null
           origin_page?: string | null
           phone?: string | null
           pillar_origin?: string | null
+          preferred_contact_method?: string | null
+          primary_concern?: string | null
           severity_score?: number | null
+          symptom_summary?: string | null
           system_category?: string | null
           updated_at?: string
           utm_campaign?: string | null
           utm_content?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          who_is_this_for?: string | null
         }
         Relationships: []
       }
