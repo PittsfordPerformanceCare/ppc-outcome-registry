@@ -244,62 +244,112 @@ const SiteConcussion = () => {
       </section>
 
       {/* Energy Crisis */}
-      <section className="py-20 bg-background" id="energy-crisis">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <h2 className="text-3xl font-bold">
-                  The Post-Concussion Energy Crisis
-                </h2>
-                <p className="text-muted-foreground">
-                  After a concussion, your brain's energy metabolism is disrupted. 
-                  Normal activities now require more neural resources—leading to fatigue, 
-                  brain fog, and symptom flares when you push too hard.
-                </p>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Reduced mitochondrial efficiency in affected areas</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Increased metabolic demand for routine tasks</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Threshold symptoms when energy reserves deplete</span>
-                  </li>
-                </ul>
-                <p className="text-muted-foreground">
-                  Our approach includes carefully dosed neurologic exercise to rebuild 
-                  capacity without triggering symptom flares.
-                </p>
+      <section className="py-24 relative overflow-hidden" id="energy-crisis">
+        {/* Decorative background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-background to-red-500/5" />
+        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Header */}
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 mb-6">
+                <Battery className="h-4 w-4" />
+                <span className="text-sm font-semibold tracking-wide">Understanding Fatigue</span>
               </div>
-              <div className="bg-muted/50 rounded-lg p-8">
-                <h3 className="font-semibold mb-4">Common Energy Crisis Signs:</h3>
-                <ul className="space-y-3 text-sm">
-                  <li className="flex items-start gap-2">
-                    <div className="h-2 w-2 rounded-full bg-primary mt-2 shrink-0" />
-                    <span>Worse symptoms later in the day</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="h-2 w-2 rounded-full bg-primary mt-2 shrink-0" />
-                    <span>Crashes after cognitive or physical exertion</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="h-2 w-2 rounded-full bg-primary mt-2 shrink-0" />
-                    <span>Need for frequent rest breaks</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="h-2 w-2 rounded-full bg-primary mt-2 shrink-0" />
-                    <span>Inability to return to normal activity levels</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="h-2 w-2 rounded-full bg-primary mt-2 shrink-0" />
-                    <span>Sleep doesn't fully restore energy</span>
-                  </li>
-                </ul>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text">
+                The Post-Concussion Energy Crisis
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                After a concussion, your brain's energy metabolism is disrupted—normal activities 
+                now require more neural resources than you have available.
+              </p>
+            </div>
+            
+            <div className="grid lg:grid-cols-2 gap-10 items-stretch">
+              {/* Left: What's Happening */}
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-orange-500/30 to-red-500/30 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                <div className="relative h-full p-8 rounded-2xl bg-card border border-border/60 backdrop-blur-sm space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500/20 to-red-500/10 flex items-center justify-center">
+                      <Zap className="h-6 w-6 text-orange-500" />
+                    </div>
+                    <h3 className="text-xl font-bold">What's Happening</h3>
+                  </div>
+                  
+                  <p className="text-muted-foreground leading-relaxed">
+                    The metabolic disruption after concussion creates an energy mismatch—your brain 
+                    needs more fuel but can produce less. This leads to fatigue, brain fog, and symptom 
+                    flares when you push too hard.
+                  </p>
+                  
+                  <div className="space-y-4 pt-2">
+                    {[
+                      { text: "Reduced mitochondrial efficiency in affected areas", icon: "🔋" },
+                      { text: "Increased metabolic demand for routine tasks", icon: "📈" },
+                      { text: "Threshold symptoms when energy reserves deplete", icon: "⚡" }
+                    ].map((item, index) => (
+                      <div 
+                        key={index}
+                        className="flex items-start gap-3 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors duration-300"
+                      >
+                        <span className="text-lg">{item.icon}</span>
+                        <span className="text-sm font-medium">{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <p className="text-sm text-muted-foreground pt-2 border-t border-border/50">
+                    Our approach includes carefully dosed neurologic exercise to rebuild 
+                    capacity without triggering symptom flares.
+                  </p>
+                </div>
+              </div>
+              
+              {/* Right: Signs Grid */}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/10 flex items-center justify-center">
+                    <HeartPulse className="h-6 w-6 text-red-500" />
+                  </div>
+                  <h3 className="text-xl font-bold">Common Energy Crisis Signs</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { sign: "Worse symptoms later in the day", color: "from-orange-500/20 to-orange-500/5", borderColor: "hover:border-orange-500/40" },
+                    { sign: "Crashes after cognitive or physical exertion", color: "from-red-500/20 to-red-500/5", borderColor: "hover:border-red-500/40" },
+                    { sign: "Need for frequent rest breaks", color: "from-amber-500/20 to-amber-500/5", borderColor: "hover:border-amber-500/40" },
+                    { sign: "Inability to return to normal activity levels", color: "from-rose-500/20 to-rose-500/5", borderColor: "hover:border-rose-500/40" },
+                    { sign: "Sleep doesn't fully restore energy", color: "from-pink-500/20 to-pink-500/5", borderColor: "hover:border-pink-500/40" },
+                    { sign: "Mental exhaustion from simple tasks", color: "from-orange-500/20 to-orange-500/5", borderColor: "hover:border-orange-500/40" }
+                  ].map((item, index) => (
+                    <div 
+                      key={index}
+                      className={`group relative p-4 rounded-xl border border-border/60 bg-card/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 ${item.borderColor} animate-fade-in`}
+                      style={{ animationDelay: `${index * 75}ms`, animationFillMode: 'backwards' }}
+                    >
+                      <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                      <div className="relative flex items-start gap-3">
+                        <div className="h-2 w-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 mt-2 shrink-0" />
+                        <span className="text-sm font-medium leading-relaxed">{item.sign}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* CTA */}
+                <div className="pt-4">
+                  <Link 
+                    to="/site/articles/concussion/concussion-energy-crisis-and-recovery"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+                  >
+                    Learn more about the energy crisis
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
