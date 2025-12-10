@@ -68,8 +68,8 @@ const SiteFooter = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0" />
-                <a href="tel:+15852031050" className="hover:text-foreground">
-                  (585) 203-1050
+                <a href="tel:+15858807542" className="hover:text-foreground">
+                  (585) 880-7542
                 </a>
               </div>
               <div className="flex items-center gap-2">

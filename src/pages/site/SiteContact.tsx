@@ -71,7 +71,7 @@ const SiteContact = () => {
                   <div>
                     <h3 className="font-semibold">Location</h3>
                     <p className="text-muted-foreground mt-1">
-                      123 Main Street<br />
+                      3800 Monroe Ave. Suite 22<br />
                       Pittsford, NY 14534
                     </p>
                   </div>
@@ -84,10 +84,10 @@ const SiteContact = () => {
                   <div>
                     <h3 className="font-semibold">Phone</h3>
                     <a 
-                      href="tel:+15855551234" 
+                      href="tel:+15858807542" 
                       className="text-muted-foreground mt-1 hover:text-primary transition-colors"
                     >
-                      (585) 555-1234
+                      (585) 880-7542
                     </a>
                   </div>
                 </div>
@@ -99,10 +99,10 @@ const SiteContact = () => {
                   <div>
                     <h3 className="font-semibold">Email</h3>
                     <a 
-                      href="mailto:info@pittsfordpc.com" 
+                      href="mailto:info@pittsfordperformancecare.com" 
                       className="text-muted-foreground mt-1 hover:text-primary transition-colors"
                     >
-                      info@pittsfordpc.com
+                      info@pittsfordperformancecare.com
                     </a>
                   </div>
                 </div>

@@ -55,10 +55,10 @@ const BeginIntake = () => {
             <p className="text-foreground">
               Call us at{" "}
               <a 
-                href="tel:+15852031050" 
+                href="tel:+15858807542" 
                 className="text-primary font-semibold hover:underline"
               >
-                (585) 203-1050
+                (585) 880-7542
               </a>
               {" "}— we're here to help.
             </p>
