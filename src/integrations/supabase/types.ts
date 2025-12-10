@@ -1492,9 +1492,51 @@ export type Database = {
           },
         ]
       }
+      lead_contact_attempts: {
+        Row: {
+          attempt_number: number
+          contacted_at: string
+          created_at: string
+          created_by: string | null
+          id: string
+          lead_id: string
+          method: string
+          notes: string | null
+        }
+        Insert: {
+          attempt_number: number
+          contacted_at?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_id: string
+          method: string
+          notes?: string | null
+        }
+        Update: {
+          attempt_number?: number
+          contacted_at?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          lead_id?: string
+          method?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_contact_attempts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           checkpoint_status: string
+          contact_attempt_count: number | null
           created_at: string
           email: string | null
           episode_opened_at: string | null
@@ -1503,7 +1545,10 @@ export type Database = {
           intake_completed_at: string | null
           intake_first_reminder_sent_at: string | null
           intake_second_reminder_sent_at: string | null
+          last_contacted_at: string | null
+          lead_status: string | null
           name: string | null
+          next_follow_up_date: string | null
           notes: string | null
           origin_cta: string | null
           origin_page: string | null
@@ -1523,6 +1568,7 @@ export type Database = {
         }
         Insert: {
           checkpoint_status?: string
+          contact_attempt_count?: number | null
           created_at?: string
           email?: string | null
           episode_opened_at?: string | null
@@ -1531,7 +1577,10 @@ export type Database = {
           intake_completed_at?: string | null
           intake_first_reminder_sent_at?: string | null
           intake_second_reminder_sent_at?: string | null
+          last_contacted_at?: string | null
+          lead_status?: string | null
           name?: string | null
+          next_follow_up_date?: string | null
           notes?: string | null
           origin_cta?: string | null
           origin_page?: string | null
@@ -1551,6 +1600,7 @@ export type Database = {
         }
         Update: {
           checkpoint_status?: string
+          contact_attempt_count?: number | null
           created_at?: string
           email?: string | null
           episode_opened_at?: string | null
@@ -1559,7 +1609,10 @@ export type Database = {
           intake_completed_at?: string | null
           intake_first_reminder_sent_at?: string | null
           intake_second_reminder_sent_at?: string | null
+          last_contacted_at?: string | null
+          lead_status?: string | null
           name?: string | null
+          next_follow_up_date?: string | null
           notes?: string | null
           origin_cta?: string | null
           origin_page?: string | null

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, RefreshCw, ChevronUp, ChevronDown, Mail, MailCheck, Clock, Users } from "lucide-react";
+import { Search, RefreshCw, ChevronUp, ChevronDown, Mail, MailCheck, Clock, Users, Phone, Pause, Flame } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { TableSkeleton } from "@/components/skeletons/TableSkeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -38,19 +39,27 @@ export interface Lead {
   pillar_origin: string | null;
   funnel_stage: string | null;
   notes: string | null;
+  // New contact tracking fields
+  lead_status: string | null;
+  contact_attempt_count: number | null;
+  last_contacted_at: string | null;
+  next_follow_up_date: string | null;
 }
 
-type SortField = "created_at" | "name" | "severity_score" | "checkpoint_status";
+type SortField = "created_at" | "name" | "severity_score" | "lead_status";
 type SortDirection = "asc" | "desc";
 
 const AdminLeads = () => {
+  const [searchParams] = useSearchParams();
+  const initialFilter = searchParams.get("filter") || "all";
+  
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [dateRange, setDateRange] = useState("30");
   const [sourceFilter, setSourceFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(initialFilter);
   const [campaignFilter, setCampaignFilter] = useState("");
-  const [reminderFilter, setReminderFilter] = useState("all");
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -83,6 +92,14 @@ const AdminLeads = () => {
     fetchLeads();
   }, [dateRange]);
 
+  // Reset status filter when URL param changes
+  useEffect(() => {
+    const filter = searchParams.get("filter");
+    if (filter) {
+      setStatusFilter(filter);
+    }
+  }, [searchParams]);
+
   // Get unique sources for filter dropdown
   const uniqueSources = useMemo(() => {
     const sources = new Set(leads.map(l => l.utm_source).filter(Boolean));
@@ -92,6 +109,7 @@ const AdminLeads = () => {
   // Filter and sort leads
   const filteredLeads = useMemo(() => {
     let result = [...leads];
+    const todayStr = format(new Date(), "yyyy-MM-dd");
 
     // Search filter
     if (search) {
@@ -99,7 +117,8 @@ const AdminLeads = () => {
       result = result.filter(
         l =>
           l.name?.toLowerCase().includes(searchLower) ||
-          l.email?.toLowerCase().includes(searchLower)
+          l.email?.toLowerCase().includes(searchLower) ||
+          l.phone?.includes(search)
       );
     }
 
@@ -108,32 +127,39 @@ const AdminLeads = () => {
       result = result.filter(l => l.utm_source === sourceFilter);
     }
 
+    // Status filter based on lead_status and next_follow_up_date
+    if (statusFilter !== "all") {
+      result = result.filter(l => {
+        const leadStatus = l.lead_status || "new";
+        const nextFollowUp = l.next_follow_up_date;
+        
+        switch (statusFilter) {
+          case "new":
+            return leadStatus === "new" && !l.episode_opened_at;
+          case "followup_today":
+            return leadStatus === "attempting" && nextFollowUp === todayStr;
+          case "paused":
+            return leadStatus === "paused" && (!nextFollowUp || nextFollowUp > todayStr);
+          case "rewarm":
+            return leadStatus === "paused" && nextFollowUp && nextFollowUp <= todayStr;
+          case "referral":
+            return l.utm_source?.toLowerCase().includes("referral");
+          case "attempting":
+            return leadStatus === "attempting";
+          case "scheduled":
+            return leadStatus === "scheduled";
+          default:
+            return true;
+        }
+      });
+    }
+
     // Campaign filter
     if (campaignFilter) {
       const campaignLower = campaignFilter.toLowerCase();
       result = result.filter(l =>
         l.utm_campaign?.toLowerCase().includes(campaignLower)
       );
-    }
-
-    // Reminder filter
-    if (reminderFilter !== "all") {
-      result = result.filter(l => {
-        const isIncomplete = !l.intake_completed_at;
-        if (reminderFilter === "no_reminder") {
-          return isIncomplete && !l.intake_first_reminder_sent_at;
-        }
-        if (reminderFilter === "first_sent") {
-          return isIncomplete && l.intake_first_reminder_sent_at && !l.intake_second_reminder_sent_at;
-        }
-        if (reminderFilter === "second_sent") {
-          return isIncomplete && l.intake_second_reminder_sent_at;
-        }
-        if (reminderFilter === "completed") {
-          return !!l.intake_completed_at;
-        }
-        return true;
-      });
     }
 
     // Sort
@@ -159,7 +185,7 @@ const AdminLeads = () => {
     });
 
     return result;
-  }, [leads, search, sourceFilter, campaignFilter, reminderFilter, sortField, sortDirection]);
+  }, [leads, search, sourceFilter, statusFilter, campaignFilter, sortField, sortDirection]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
@@ -179,17 +205,34 @@ const AdminLeads = () => {
     );
   };
 
-  const getStatusBadge = (lead: Lead) => {
-    if (lead.episode_opened_at) {
-      return <Badge className="bg-green-500/10 text-green-600 border-green-200">Episode</Badge>;
+  const getLeadStatusBadge = (lead: Lead) => {
+    const status = lead.lead_status || "new";
+    const todayStr = format(new Date(), "yyyy-MM-dd");
+    const isRewarm = status === "paused" && lead.next_follow_up_date && lead.next_follow_up_date <= todayStr;
+    
+    if (isRewarm) {
+      return (
+        <Badge className="bg-orange-500/10 text-orange-600 border-orange-200">
+          <Flame className="h-3 w-3 mr-1" />
+          Rewarm
+        </Badge>
+      );
     }
-    if (lead.intake_completed_at) {
-      return <Badge className="bg-blue-500/10 text-blue-600 border-blue-200">Intake Done</Badge>;
-    }
-    if (lead.checkpoint_status === "severity_check_completed") {
-      return <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-200">Screened</Badge>;
-    }
-    return <Badge variant="outline">New</Badge>;
+    
+    const config: Record<string, { label: string; icon: any; className: string }> = {
+      new: { label: "New", icon: null, className: "bg-blue-500/10 text-blue-600 border-blue-200" },
+      attempting: { label: "Attempting", icon: Phone, className: "bg-amber-500/10 text-amber-600 border-amber-200" },
+      scheduled: { label: "Scheduled", icon: null, className: "bg-emerald-500/10 text-emerald-600 border-emerald-200" },
+      paused: { label: "Paused", icon: Pause, className: "bg-slate-500/10 text-slate-600 border-slate-200" },
+    };
+    
+    const { label, icon: Icon, className } = config[status] || config.new;
+    return (
+      <Badge className={className}>
+        {Icon && <Icon className="h-3 w-3 mr-1" />}
+        {label}
+      </Badge>
+    );
   };
 
   const getReminderStatus = (lead: Lead) => {
@@ -212,46 +255,32 @@ const AdminLeads = () => {
       );
     }
 
-    // Second reminder sent
-    if (lead.intake_second_reminder_sent_at) {
+    // Show contact attempt count
+    const attemptCount = lead.contact_attempt_count || 0;
+    if (attemptCount > 0) {
       return (
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Badge className="bg-orange-500/10 text-orange-600 border-orange-200">
-                <Mail className="h-3 w-3 mr-1" />
-                2nd Sent
+              <Badge variant="outline" className="text-muted-foreground">
+                <Phone className="h-3 w-3 mr-1" />
+                {attemptCount} {attemptCount === 1 ? "attempt" : "attempts"}
               </Badge>
             </TooltipTrigger>
             <TooltipContent>
-              <p>1st: {format(new Date(lead.intake_first_reminder_sent_at!), "MMM d, h:mm a")}</p>
-              <p>2nd: {format(new Date(lead.intake_second_reminder_sent_at), "MMM d, h:mm a")}</p>
+              {lead.last_contacted_at && (
+                <p>Last contacted: {format(new Date(lead.last_contacted_at), "MMM d, h:mm a")}</p>
+              )}
+              {lead.next_follow_up_date && (
+                <p>Next follow-up: {format(new Date(lead.next_follow_up_date), "MMM d")}</p>
+              )}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       );
     }
 
-    // First reminder sent
-    if (lead.intake_first_reminder_sent_at) {
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <Badge className="bg-yellow-500/10 text-yellow-600 border-yellow-200">
-                <Mail className="h-3 w-3 mr-1" />
-                1st Sent
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Sent {format(new Date(lead.intake_first_reminder_sent_at), "MMM d, h:mm a")}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    }
-
-    // No reminders sent yet
+    // No contact attempts yet
     return (
       <TooltipProvider>
         <Tooltip>
@@ -262,22 +291,22 @@ const AdminLeads = () => {
             </Badge>
           </TooltipTrigger>
           <TooltipContent>
-            <p>No reminders sent yet</p>
+            <p>No contact attempts yet</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );
   };
 
-  // Stats for reminder status
-  const reminderStats = useMemo(() => {
-    const incomplete = leads.filter(l => !l.intake_completed_at);
+  // Stats for status overview
+  const statusStats = useMemo(() => {
+    const todayStr = format(new Date(), "yyyy-MM-dd");
     return {
       total: leads.length,
-      completed: leads.filter(l => l.intake_completed_at).length,
-      noReminder: incomplete.filter(l => !l.intake_first_reminder_sent_at).length,
-      firstSent: incomplete.filter(l => l.intake_first_reminder_sent_at && !l.intake_second_reminder_sent_at).length,
-      secondSent: incomplete.filter(l => l.intake_second_reminder_sent_at).length,
+      new: leads.filter(l => (l.lead_status || "new") === "new" && !l.episode_opened_at).length,
+      followUpToday: leads.filter(l => l.lead_status === "attempting" && l.next_follow_up_date === todayStr).length,
+      paused: leads.filter(l => l.lead_status === "paused" && (!l.next_follow_up_date || l.next_follow_up_date > todayStr)).length,
+      rewarm: leads.filter(l => l.lead_status === "paused" && l.next_follow_up_date && l.next_follow_up_date <= todayStr).length,
     };
   }, [leads]);
 
@@ -302,41 +331,56 @@ const AdminLeads = () => {
         </Button>
       </div>
 
-      {/* Reminder Status Overview */}
+      {/* Status Overview Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <Card className="relative overflow-hidden">
+        <Card 
+          className={`relative overflow-hidden cursor-pointer transition-all hover:shadow-md ${statusFilter === "all" ? "ring-2 ring-primary" : ""}`}
+          onClick={() => setStatusFilter("all")}
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-500/5" />
           <CardContent className="relative pt-4 pb-4">
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">Total Leads</div>
-            <div className="text-2xl font-bold mt-1">{reminderStats.total}</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Total</div>
+            <div className="text-2xl font-bold mt-1">{statusStats.total}</div>
           </CardContent>
         </Card>
-        <Card className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5" />
+        <Card 
+          className={`relative overflow-hidden cursor-pointer transition-all hover:shadow-md ${statusFilter === "new" ? "ring-2 ring-blue-500" : ""}`}
+          onClick={() => setStatusFilter("new")}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-blue-500/5" />
           <CardContent className="relative pt-4 pb-4">
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">Completed</div>
-            <div className="text-2xl font-bold text-emerald-600 mt-1">{reminderStats.completed}</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">New</div>
+            <div className="text-2xl font-bold text-blue-600 mt-1">{statusStats.new}</div>
           </CardContent>
         </Card>
-        <Card className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-500/10 to-gray-500/5" />
-          <CardContent className="relative pt-4 pb-4">
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">No Reminder</div>
-            <div className="text-2xl font-bold text-gray-500 mt-1">{reminderStats.noReminder}</div>
-          </CardContent>
-        </Card>
-        <Card className="relative overflow-hidden">
+        <Card 
+          className={`relative overflow-hidden cursor-pointer transition-all hover:shadow-md ${statusFilter === "followup_today" ? "ring-2 ring-amber-500" : ""}`}
+          onClick={() => setStatusFilter("followup_today")}
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-amber-500/5" />
           <CardContent className="relative pt-4 pb-4">
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">1st Sent</div>
-            <div className="text-2xl font-bold text-amber-600 mt-1">{reminderStats.firstSent}</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Follow-Up Today</div>
+            <div className="text-2xl font-bold text-amber-600 mt-1">{statusStats.followUpToday}</div>
           </CardContent>
         </Card>
-        <Card className="relative overflow-hidden">
+        <Card 
+          className={`relative overflow-hidden cursor-pointer transition-all hover:shadow-md ${statusFilter === "rewarm" ? "ring-2 ring-orange-500" : ""}`}
+          onClick={() => setStatusFilter("rewarm")}
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-orange-500/5" />
           <CardContent className="relative pt-4 pb-4">
-            <div className="text-xs text-muted-foreground uppercase tracking-wide">2nd Sent</div>
-            <div className="text-2xl font-bold text-orange-600 mt-1">{reminderStats.secondSent}</div>
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Ready to Rewarm</div>
+            <div className="text-2xl font-bold text-orange-600 mt-1">{statusStats.rewarm}</div>
+          </CardContent>
+        </Card>
+        <Card 
+          className={`relative overflow-hidden cursor-pointer transition-all hover:shadow-md ${statusFilter === "paused" ? "ring-2 ring-slate-500" : ""}`}
+          onClick={() => setStatusFilter("paused")}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-500/5" />
+          <CardContent className="relative pt-4 pb-4">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Paused</div>
+            <div className="text-2xl font-bold text-slate-600 mt-1">{statusStats.paused}</div>
           </CardContent>
         </Card>
       </div>
@@ -351,7 +395,7 @@ const AdminLeads = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search name or email..."
+                placeholder="Search name, email, phone..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
@@ -368,6 +412,21 @@ const AdminLeads = () => {
                 <SelectItem value="all">All time</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger>
+                <SelectValue placeholder="Lead Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="new">New</SelectItem>
+                <SelectItem value="attempting">Attempting Contact</SelectItem>
+                <SelectItem value="followup_today">Follow-Up Today</SelectItem>
+                <SelectItem value="paused">Paused</SelectItem>
+                <SelectItem value="rewarm">Ready to Rewarm</SelectItem>
+                <SelectItem value="scheduled">Scheduled</SelectItem>
+                <SelectItem value="referral">Referrals</SelectItem>
+              </SelectContent>
+            </Select>
             <Select value={sourceFilter} onValueChange={setSourceFilter}>
               <SelectTrigger>
                 <SelectValue placeholder="UTM Source" />
@@ -379,18 +438,6 @@ const AdminLeads = () => {
                     {source}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-            <Select value={reminderFilter} onValueChange={setReminderFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Reminder Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All statuses</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="no_reminder">No reminder sent</SelectItem>
-                <SelectItem value="first_sent">1st reminder sent</SelectItem>
-                <SelectItem value="second_sent">2nd reminder sent</SelectItem>
               </SelectContent>
             </Select>
             <Input
@@ -429,17 +476,12 @@ const AdminLeads = () => {
                     <TableHead>Contact</TableHead>
                     <TableHead
                       className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => handleSort("checkpoint_status")}
+                      onClick={() => handleSort("lead_status")}
                     >
-                      Status <SortIcon field="checkpoint_status" />
+                      Status <SortIcon field="lead_status" />
                     </TableHead>
-                    <TableHead>Reminders</TableHead>
-                    <TableHead
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => handleSort("severity_score")}
-                    >
-                      Severity <SortIcon field="severity_score" />
-                    </TableHead>
+                    <TableHead>Attempts</TableHead>
+                    <TableHead>Next Follow-Up</TableHead>
                     <TableHead>Source</TableHead>
                     <TableHead>Progress</TableHead>
                   </TableRow>
@@ -473,32 +515,23 @@ const AdminLeads = () => {
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            {lead.email ? (
-                              <span className="truncate max-w-[150px] block">{lead.email}</span>
+                            {lead.phone ? (
+                              <span className="font-medium">{lead.phone}</span>
                             ) : (
                               <span className="text-muted-foreground">—</span>
                             )}
                           </div>
-                          <div className="text-xs text-muted-foreground">
-                            {lead.phone || "No phone"}
+                          <div className="text-xs text-muted-foreground truncate max-w-[150px]">
+                            {lead.email || "No email"}
                           </div>
                         </TableCell>
-                        <TableCell>{getStatusBadge(lead)}</TableCell>
+                        <TableCell>{getLeadStatusBadge(lead)}</TableCell>
                         <TableCell>{getReminderStatus(lead)}</TableCell>
                         <TableCell>
-                          {lead.severity_score !== null ? (
-                            <Badge 
-                              variant="outline" 
-                              className={
-                                lead.severity_score >= 7 
-                                  ? "border-red-500/30 text-red-600" 
-                                  : lead.severity_score >= 4 
-                                    ? "border-amber-500/30 text-amber-600" 
-                                    : "border-emerald-500/30 text-emerald-600"
-                              }
-                            >
-                              {lead.severity_score}/10
-                            </Badge>
+                          {lead.next_follow_up_date ? (
+                            <span className="text-sm">
+                              {format(new Date(lead.next_follow_up_date), "MMM d")}
+                            </span>
                           ) : (
                             <span className="text-muted-foreground text-sm">—</span>
                           )}
@@ -538,6 +571,20 @@ const AdminLeads = () => {
         lead={selectedLead}
         open={!!selectedLead}
         onClose={() => setSelectedLead(null)}
+        onUpdate={() => {
+          fetchLeads();
+          if (selectedLead) {
+            // Refetch the selected lead to get updated data
+            supabase
+              .from("leads")
+              .select("*")
+              .eq("id", selectedLead.id)
+              .single()
+              .then(({ data }) => {
+                if (data) setSelectedLead(data);
+              });
+          }
+        }}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { startOfDay, endOfDay, subDays } from "date-fns";
+import { startOfDay, endOfDay, subDays, format } from "date-fns";
 
 interface AdminDashboardData {
   today: {
@@ -14,12 +14,15 @@ interface AdminDashboardData {
     needsFollowUpToday: number;
     returningPatients: number;
     referralLeads: number;
+    pausedLeads: number;
+    readyToRewarm: number;
     recentLeads: Array<{
       id: string;
       name: string;
       source: string;
       created_at: string;
       status: string;
+      lead_status: string;
     }>;
   };
   scheduling: {
@@ -54,6 +57,8 @@ const initialData: AdminDashboardData = {
     needsFollowUpToday: 0,
     returningPatients: 0,
     referralLeads: 0,
+    pausedLeads: 0,
+    readyToRewarm: 0,
     recentLeads: [],
   },
   scheduling: {
@@ -91,7 +96,7 @@ export function useAdminDashboard() {
       const todayEnd = endOfDay(now).toISOString();
       const weekAgo = subDays(now, 7).toISOString();
       const threeDaysAgo = subDays(now, 3).toISOString();
-      const todayStr = now.toISOString().split('T')[0];
+      const todayStr = format(now, "yyyy-MM-dd");
 
       // Parallel queries for efficiency
       const [
@@ -100,8 +105,11 @@ export function useAdminDashboard() {
         intakesTodayResult,
         episodesStartedTodayResult,
         episodesDischargedTodayResult,
-        // Lead metrics
-        newUncontactedResult,
+        // Lead metrics with new status fields
+        newLeadsResult,
+        needsFollowUpTodayResult,
+        pausedLeadsResult,
+        readyToRewarmResult,
         recentLeadsResult,
         referralLeadsResult,
         // Scheduling metrics
@@ -144,17 +152,38 @@ export function useAdminDashboard() {
           .gte("discharge_date", todayStr)
           .lte("discharge_date", todayStr),
         
-        // New uncontacted leads (last 3 days, no intake)
+        // New leads (lead_status = 'new')
         supabase
           .from("leads")
           .select("*", { count: "exact", head: true })
-          .gte("created_at", threeDaysAgo)
-          .is("intake_completed_at", null),
+          .eq("lead_status", "new")
+          .is("episode_opened_at", null),
+        
+        // Needs follow-up today (lead_status = 'attempting' AND next_follow_up_date = today)
+        supabase
+          .from("leads")
+          .select("*", { count: "exact", head: true })
+          .eq("lead_status", "attempting")
+          .eq("next_follow_up_date", todayStr),
+        
+        // Paused leads (lead_status = 'paused' AND next_follow_up_date > today)
+        supabase
+          .from("leads")
+          .select("*", { count: "exact", head: true })
+          .eq("lead_status", "paused")
+          .gt("next_follow_up_date", todayStr),
+        
+        // Ready to rewarm (lead_status = 'paused' AND next_follow_up_date <= today)
+        supabase
+          .from("leads")
+          .select("*", { count: "exact", head: true })
+          .eq("lead_status", "paused")
+          .lte("next_follow_up_date", todayStr),
         
         // Recent leads
         supabase
           .from("leads")
-          .select("id, name, utm_source, created_at, checkpoint_status")
+          .select("id, name, utm_source, created_at, checkpoint_status, lead_status")
           .order("created_at", { ascending: false })
           .limit(5),
         
@@ -220,6 +249,7 @@ export function useAdminDashboard() {
         source: lead.utm_source || "Direct",
         created_at: lead.created_at,
         status: lead.checkpoint_status || "new",
+        lead_status: lead.lead_status || "new",
       }));
 
       setData({
@@ -230,10 +260,12 @@ export function useAdminDashboard() {
           episodesDischargedToday: episodesDischargedTodayResult.count || 0,
         },
         leads: {
-          newUncontacted: newUncontactedResult.count || 0,
-          needsFollowUpToday: 0, // Would require additional logic/fields
+          newUncontacted: newLeadsResult.count || 0,
+          needsFollowUpToday: needsFollowUpTodayResult.count || 0,
           returningPatients: 0, // Would require returning_patient flag
           referralLeads: referralLeadsResult.count || 0,
+          pausedLeads: pausedLeadsResult.count || 0,
+          readyToRewarm: readyToRewarmResult.count || 0,
           recentLeads,
         },
         scheduling: {
