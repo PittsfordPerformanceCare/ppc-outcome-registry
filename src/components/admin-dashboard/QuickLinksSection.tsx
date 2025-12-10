@@ -8,91 +8,98 @@ import {
   Stethoscope, 
   BarChart3,
   Mail,
-  Settings
+  Settings,
+  Zap
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function QuickLinksSection() {
   const links = [
     {
-      title: "View All Leads",
+      title: "All Leads",
       icon: Users,
       href: "/admin/leads",
-      color: "text-blue-600",
-      bgColor: "bg-blue-500/10"
+      gradient: "from-blue-500/10 to-blue-500/5",
+      iconColor: "text-blue-600"
     },
     {
-      title: "View Registry",
+      title: "Registry",
       icon: UserCheck,
       href: "/admin-shell/registry",
-      color: "text-green-600",
-      bgColor: "bg-green-500/10"
+      gradient: "from-emerald-500/10 to-emerald-500/5",
+      iconColor: "text-emerald-600"
     },
     {
-      title: "View Episodes",
+      title: "Episodes",
       icon: Activity,
       href: "/admin-shell/episodes",
-      color: "text-purple-600",
-      bgColor: "bg-purple-500/10"
+      gradient: "from-purple-500/10 to-purple-500/5",
+      iconColor: "text-purple-600"
     },
     {
-      title: "View Tasks",
+      title: "Tasks",
       icon: CheckSquare,
       href: "/admin-shell/tasks",
-      color: "text-amber-600",
-      bgColor: "bg-amber-500/10"
+      gradient: "from-amber-500/10 to-amber-500/5",
+      iconColor: "text-amber-600"
     },
     {
       title: "Provider Tools",
       icon: Stethoscope,
       href: "/admin-shell/provider-tools",
-      color: "text-red-600",
-      bgColor: "bg-red-500/10"
+      gradient: "from-rose-500/10 to-rose-500/5",
+      iconColor: "text-rose-600"
     },
     {
       title: "Analytics",
       icon: BarChart3,
       href: "/lead-analytics",
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-500/10"
+      gradient: "from-indigo-500/10 to-indigo-500/5",
+      iconColor: "text-indigo-600"
     },
     {
       title: "Communications",
       icon: Mail,
       href: "/admin-shell/communications",
-      color: "text-cyan-600",
-      bgColor: "bg-cyan-500/10"
+      gradient: "from-cyan-500/10 to-cyan-500/5",
+      iconColor: "text-cyan-600"
     },
     {
       title: "Settings",
       icon: Settings,
       href: "/clinic-settings",
-      color: "text-gray-600",
-      bgColor: "bg-gray-500/10"
+      gradient: "from-slate-500/10 to-slate-500/5",
+      iconColor: "text-slate-600"
     }
   ];
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base">Quick Links</CardTitle>
+    <Card className="border-border/50">
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 bg-primary/10 rounded-lg">
+            <Zap className="h-4 w-4 text-primary" />
+          </div>
+          <CardTitle className="text-base font-medium">Quick Links</CardTitle>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {links.map((link) => {
             const Icon = link.icon;
             return (
               <Button
                 key={link.href}
                 variant="outline"
-                className="h-auto py-3 flex flex-col items-center gap-2 justify-center"
+                className={`relative h-auto py-4 flex flex-col items-center gap-2.5 justify-center overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300`}
                 asChild
               >
                 <Link to={link.href}>
-                  <div className={`p-2 ${link.bgColor} rounded-lg`}>
-                    <Icon className={`h-4 w-4 ${link.color}`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${link.gradient} opacity-50`} />
+                  <div className="relative p-2 bg-background/80 rounded-xl shadow-sm">
+                    <Icon className={`h-5 w-5 ${link.iconColor}`} />
                   </div>
-                  <span className="text-xs font-medium">{link.title}</span>
+                  <span className="relative text-xs font-medium">{link.title}</span>
                 </Link>
               </Button>
             );
