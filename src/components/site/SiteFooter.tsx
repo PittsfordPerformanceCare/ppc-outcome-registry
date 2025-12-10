@@ -94,10 +94,8 @@ const SiteFooter = () => {
                   rel="noopener noreferrer"
                   className="flex items-start gap-3 group"
                 >
-                  <div className="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <MapPin className="h-5 w-5 text-primary" />
-                  </div>
-                  <span className="text-slate-400 group-hover:text-white transition-colors pt-1">
+                  <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-slate-400 group-hover:text-white transition-colors">
                     3800 Monroe Ave., Suite 22<br />
                     Pittsford, NY 14534
                   </span>
@@ -106,21 +104,17 @@ const SiteFooter = () => {
                   href="tel:+15858807542"
                   className="flex items-center gap-3 group"
                 >
-                  <div className="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <Phone className="h-5 w-5 text-primary" />
-                  </div>
+                  <Phone className="h-5 w-5 text-primary shrink-0" />
                   <span className="text-slate-400 group-hover:text-white transition-colors">
                     (585) 880-7542
                   </span>
                 </a>
                 <a 
                   href="mailto:info@pittsfordperformancecare.com"
-                  className="flex items-center gap-3 group"
+                  className="flex items-start gap-3 group"
                 >
-                  <div className="h-10 w-10 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-                    <Mail className="h-5 w-5 text-primary" />
-                  </div>
-                  <span className="text-slate-400 group-hover:text-white transition-colors text-sm">
+                  <Mail className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-slate-400 group-hover:text-white transition-colors break-all">
                     info@pittsfordperformancecare.com
                   </span>
                 </a>
