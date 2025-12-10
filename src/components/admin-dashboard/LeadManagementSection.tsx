@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, Clock, RefreshCw, UserPlus, ArrowRight, ExternalLink, Inbox } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Users, Clock, RefreshCw, UserPlus, ArrowRight, ExternalLink, Inbox, Pause, Flame } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
 interface LeadStats {
@@ -10,12 +10,15 @@ interface LeadStats {
   needsFollowUpToday: number;
   returningPatients: number;
   referralLeads: number;
+  pausedLeads: number;
+  readyToRewarm: number;
   recentLeads: Array<{
     id: string;
     name: string;
     source: string;
     created_at: string;
     status: string;
+    lead_status: string;
   }>;
 }
 
@@ -25,17 +28,20 @@ interface LeadManagementSectionProps {
 }
 
 export function LeadManagementSection({ stats, loading }: LeadManagementSectionProps) {
+  const navigate = useNavigate();
+
   const cards = [
     {
       title: "New Leads",
       count: stats.newUncontacted,
       icon: Users,
-      gradient: "from-rose-500/15 to-rose-500/5",
-      iconBg: "bg-rose-500/10",
-      iconColor: "text-rose-600",
-      borderAccent: "hover:border-rose-300 dark:hover:border-rose-800",
+      gradient: "from-blue-500/15 to-blue-500/5",
+      iconBg: "bg-blue-500/10",
+      iconColor: "text-blue-600",
+      borderAccent: "hover:border-blue-300 dark:hover:border-blue-800",
       description: "Awaiting first contact",
-      priority: stats.newUncontacted > 0
+      priority: stats.newUncontacted > 0,
+      filter: "new"
     },
     {
       title: "Follow-Up Today",
@@ -46,18 +52,32 @@ export function LeadManagementSection({ stats, loading }: LeadManagementSectionP
       iconColor: "text-amber-600",
       borderAccent: "hover:border-amber-300 dark:hover:border-amber-800",
       description: "Scheduled for today",
-      priority: stats.needsFollowUpToday > 0
+      priority: stats.needsFollowUpToday > 0,
+      filter: "followup_today"
     },
     {
-      title: "Returning Patients",
-      count: stats.returningPatients,
-      icon: RefreshCw,
-      gradient: "from-teal-500/15 to-teal-500/5",
-      iconBg: "bg-teal-500/10",
-      iconColor: "text-teal-600",
-      borderAccent: "hover:border-teal-300 dark:hover:border-teal-800",
-      description: "Previous patients returning",
-      priority: false
+      title: "Ready to Rewarm",
+      count: stats.readyToRewarm,
+      icon: Flame,
+      gradient: "from-orange-500/15 to-orange-500/5",
+      iconBg: "bg-orange-500/10",
+      iconColor: "text-orange-600",
+      borderAccent: "hover:border-orange-300 dark:hover:border-orange-800",
+      description: "30-day pause complete",
+      priority: stats.readyToRewarm > 0,
+      filter: "rewarm"
+    },
+    {
+      title: "Paused",
+      count: stats.pausedLeads,
+      icon: Pause,
+      gradient: "from-slate-500/15 to-slate-500/5",
+      iconBg: "bg-slate-500/10",
+      iconColor: "text-slate-600",
+      borderAccent: "hover:border-slate-300 dark:hover:border-slate-800",
+      description: "Try again later",
+      priority: false,
+      filter: "paused"
     },
     {
       title: "Referral Leads",
@@ -68,19 +88,36 @@ export function LeadManagementSection({ stats, loading }: LeadManagementSectionP
       iconColor: "text-emerald-600",
       borderAccent: "hover:border-emerald-300 dark:hover:border-emerald-800",
       description: "Provider-referred leads",
-      priority: false
+      priority: false,
+      filter: "referral"
+    },
+    {
+      title: "Returning",
+      count: stats.returningPatients,
+      icon: RefreshCw,
+      gradient: "from-teal-500/15 to-teal-500/5",
+      iconBg: "bg-teal-500/10",
+      iconColor: "text-teal-600",
+      borderAccent: "hover:border-teal-300 dark:hover:border-teal-800",
+      description: "Previous patients",
+      priority: false,
+      filter: "returning"
     }
   ];
 
-  const getStatusBadge = (status: string) => {
-    const config: Record<string, { variant: "default" | "secondary" | "destructive" | "outline"; className?: string }> = {
-      new: { variant: "destructive" },
-      contacted: { variant: "secondary" },
-      in_progress: { variant: "default" },
-      completed: { variant: "outline" }
+  const getStatusBadge = (leadStatus: string) => {
+    const config: Record<string, { label: string; className: string }> = {
+      new: { label: "New", className: "bg-blue-500/10 text-blue-600 border-blue-200" },
+      attempting: { label: "Attempting", className: "bg-amber-500/10 text-amber-600 border-amber-200" },
+      scheduled: { label: "Scheduled", className: "bg-emerald-500/10 text-emerald-600 border-emerald-200" },
+      paused: { label: "Paused", className: "bg-slate-500/10 text-slate-600 border-slate-200" },
     };
-    const { variant, className } = config[status] || { variant: "secondary" as const };
-    return <Badge variant={variant} className={className}>{status}</Badge>;
+    const { label, className } = config[leadStatus] || { label: leadStatus, className: "" };
+    return <Badge className={className}>{label}</Badge>;
+  };
+
+  const handleCardClick = (filter: string) => {
+    navigate(`/admin/leads?filter=${filter}`);
   };
 
   return (
@@ -103,13 +140,17 @@ export function LeadManagementSection({ stats, loading }: LeadManagementSectionP
         </Button>
       </div>
 
-      {/* Lead Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Lead Cards - 3x2 grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {cards.map((card) => {
           const Icon = card.icon;
           return (
-            <Link key={card.title} to="/admin/leads" className="group">
-              <Card className={`relative overflow-hidden h-full transition-all duration-300 hover:shadow-lg ${card.borderAccent} ${card.priority ? 'ring-2 ring-rose-500/20' : ''}`}>
+            <div
+              key={card.title}
+              onClick={() => handleCardClick(card.filter)}
+              className="cursor-pointer group"
+            >
+              <Card className={`relative overflow-hidden h-full transition-all duration-300 hover:shadow-lg ${card.borderAccent} ${card.priority ? 'ring-2 ring-primary/20' : ''}`}>
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient}`} />
                 <CardContent className="relative pt-5 pb-5">
                   <div className="flex items-start justify-between mb-3">
@@ -131,7 +172,7 @@ export function LeadManagementSection({ stats, loading }: LeadManagementSectionP
                   </div>
                 </CardContent>
               </Card>
-            </Link>
+            </div>
           );
         })}
       </div>
@@ -158,7 +199,7 @@ export function LeadManagementSection({ stats, loading }: LeadManagementSectionP
                     </p>
                   </div>
                   <div className="flex items-center gap-3 ml-4">
-                    {getStatusBadge(lead.status)}
+                    {getStatusBadge(lead.lead_status || "new")}
                     <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
                       <Link to="/admin/leads">
                         <ExternalLink className="h-3.5 w-3.5" />
