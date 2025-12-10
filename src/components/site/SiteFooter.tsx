@@ -54,9 +54,8 @@ const SiteFooter = () => {
                   <Link 
                     key={link.to}
                     to={link.to} 
-                    className="text-slate-400 hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center gap-2"
+                    className="text-slate-400 hover:text-white transition-colors duration-200"
                   >
-                    <span className="h-1 w-1 rounded-full bg-primary" />
                     {link.label}
                   </Link>
                 ))}
@@ -75,9 +74,8 @@ const SiteFooter = () => {
                   <Link 
                     key={link.to}
                     to={link.to} 
-                    className="text-slate-400 hover:text-white hover:translate-x-1 transition-all duration-200 flex items-center gap-2"
+                    className="text-slate-400 hover:text-white transition-colors duration-200"
                   >
-                    <span className="h-1 w-1 rounded-full bg-primary" />
                     {link.label}
                   </Link>
                 ))}
