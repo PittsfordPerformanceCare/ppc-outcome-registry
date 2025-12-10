@@ -1,6 +1,7 @@
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Users, BarChart3, Settings, FileText, Activity, LayoutDashboard, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp } from "lucide-react";
+import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: Home },
@@ -23,9 +24,12 @@ export function AdminLayout() {
     <div className="flex min-h-screen">
       {/* Sidebar */}
       <aside className="w-64 border-r bg-muted/30 p-4 hidden md:block">
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold">Admin Panel</h2>
-          <p className="text-sm text-muted-foreground">Manage leads & analytics</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Admin Panel</h2>
+            <p className="text-sm text-muted-foreground">Manage leads & analytics</p>
+          </div>
+          <NotificationBell />
         </div>
         <nav className="space-y-1">
           {navItems.map((item) => {
