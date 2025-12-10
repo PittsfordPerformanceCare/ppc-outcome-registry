@@ -1,20 +1,30 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Baby, Stethoscope, ArrowRight, Brain } from "lucide-react";
 
 const StartNeurologicIntake = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Preserve UTM parameters when routing
+  const getRouteWithParams = (basePath: string) => {
+    const params = searchParams.toString();
+    return params ? `${basePath}?${params}` : basePath;
+  };
 
   const handleMyselfClick = () => {
-    navigate("/begin-intake?intake_for=myself");
+    // Route to unified patient intake path
+    navigate(getRouteWithParams("/patient/intake/adult"));
   };
 
   const handleMyChildClick = () => {
-    navigate("/begin-intake?intake_for=my_child");
+    // Route to unified patient intake path
+    navigate(getRouteWithParams("/patient/intake/pediatric"));
   };
 
   const handleProfessionalClick = () => {
-    navigate("/referral-screening");
+    // Route to unified patient intake path
+    navigate(getRouteWithParams("/patient/intake/referral"));
   };
 
   return (

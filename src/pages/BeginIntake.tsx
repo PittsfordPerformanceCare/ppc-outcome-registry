@@ -99,8 +99,8 @@ const BeginIntake = () => {
             <p className="text-sm text-muted-foreground">
               Are you a medical professional?{" "}
               <a 
-                href="/start-neurologic-intake" 
-                onClick={(e) => { e.preventDefault(); navigate("/start-neurologic-intake"); }}
+                href="/patient/intake/referral" 
+                onClick={(e) => { e.preventDefault(); navigate("/patient/intake/referral"); }}
                 className="text-primary hover:underline font-medium"
               >
                 Submit a referral for your patient here
