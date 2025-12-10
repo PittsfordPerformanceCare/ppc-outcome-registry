@@ -2,10 +2,28 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Users, Stethoscope, Brain, ArrowRight } from "lucide-react";
+import { useEffect } from "react";
 
 const PatientConcierge = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  
+  // Log UTM parameters for lead attribution tracking
+  useEffect(() => {
+    const utmParams = {
+      utm_source: searchParams.get('utm_source'),
+      utm_medium: searchParams.get('utm_medium'),
+      utm_campaign: searchParams.get('utm_campaign'),
+      utm_content: searchParams.get('utm_content'),
+      origin_page: document.referrer || searchParams.get('origin_page'),
+      origin_cta: searchParams.get('origin_cta'),
+    };
+    
+    // Store in sessionStorage for later use in intake forms
+    if (Object.values(utmParams).some(v => v)) {
+      sessionStorage.setItem('ppc_lead_tracking', JSON.stringify(utmParams));
+    }
+  }, [searchParams]);
   
   // Preserve UTM parameters when routing
   const getRouteWithParams = (basePath: string) => {

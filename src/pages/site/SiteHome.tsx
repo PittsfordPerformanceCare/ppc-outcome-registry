@@ -18,13 +18,13 @@ const SiteHome = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild>
-                <Link to="/site/hub">
-                  Explore Our Approach
+                <Link to="/patient/concierge">
+                  Schedule Neurologic Evaluation
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link to="/patient/concierge">Schedule Evaluation</Link>
+                <Link to="/site/hub">Explore Our Approach</Link>
               </Button>
             </div>
           </div>

@@ -16,7 +16,7 @@ export const ReferralQRGenerator = () => {
   // Use production URL from environment, fallback to current origin for development
   const baseUrl = import.meta.env.VITE_APP_URL || window.location.origin;
   const generateUrl = () => {
-    let url = `${baseUrl}/referral-screening`;
+    let url = `${baseUrl}/patient/intake/referral`;
     const params = new URLSearchParams();
     
     if (referralSource) params.append('ref', referralSource);

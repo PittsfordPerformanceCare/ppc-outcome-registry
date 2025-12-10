@@ -14,8 +14,8 @@ const Auth = () => {
         // Authenticated users go to dashboard
         navigate("/dashboard", { replace: true });
       } else {
-        // Unauthenticated users go to intake gateway
-        navigate("/begin-intake", { replace: true });
+        // Unauthenticated users go to unified patient concierge
+        navigate("/patient/concierge", { replace: true });
       }
       setChecking(false);
     };

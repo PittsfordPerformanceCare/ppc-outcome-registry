@@ -157,11 +157,11 @@ const StaffLogin = () => {
         <div className="p-8 md:p-12 bg-gradient-to-br from-background via-background to-muted/30">
           <div className="mb-6">
             <button
-              onClick={() => navigate("/begin-intake")}
+              onClick={() => navigate("/patient/concierge")}
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Patient Intake
+              Back to Patient Portal
             </button>
           </div>
 

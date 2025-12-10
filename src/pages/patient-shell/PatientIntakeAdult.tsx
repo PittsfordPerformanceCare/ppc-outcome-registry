@@ -61,14 +61,20 @@ const PatientIntakeAdult = () => {
     setIsSubmitting(true);
 
     try {
-      // Collect UTM parameters
-      const utmSource = searchParams.get("utm_source") || null;
-      const utmMedium = searchParams.get("utm_medium") || null;
-      const utmCampaign = searchParams.get("utm_campaign") || null;
-      const utmContent = searchParams.get("utm_content") || null;
-      const originPage = searchParams.get("origin_page") || "/patient/intake/adult";
-      const originCta = searchParams.get("origin_cta") || null;
-      const pillarOrigin = searchParams.get("pillar_origin") || null;
+      // Get UTM parameters from URL or sessionStorage (from Concierge)
+      let storedTracking: Record<string, string | null> = {};
+      try {
+        const stored = sessionStorage.getItem('ppc_lead_tracking');
+        if (stored) storedTracking = JSON.parse(stored);
+      } catch {}
+
+      const utmSource = searchParams.get("utm_source") || storedTracking.utm_source || null;
+      const utmMedium = searchParams.get("utm_medium") || storedTracking.utm_medium || null;
+      const utmCampaign = searchParams.get("utm_campaign") || storedTracking.utm_campaign || null;
+      const utmContent = searchParams.get("utm_content") || storedTracking.utm_content || null;
+      const originPage = searchParams.get("origin_page") || storedTracking.origin_page || "/patient/intake/adult";
+      const originCta = searchParams.get("origin_cta") || storedTracking.origin_cta || null;
+      const pillarOrigin = searchParams.get("pillar_origin") || storedTracking.pillar_origin || null;
 
       // Insert lead into database
       const { error } = await supabase.from("leads").insert({
