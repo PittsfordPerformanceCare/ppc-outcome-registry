@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import BeginIntake from "./BeginIntake";
+import SiteHome from "./site/SiteHome";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const Index = () => {
         // Authenticated users go to dashboard
         navigate("/dashboard", { replace: true });
       } else {
-        // Unauthenticated users see the intake page directly
+        // Unauthenticated users see the hub home page
         setIsAuthenticated(false);
       }
       setChecking(false);
@@ -33,9 +33,9 @@ const Index = () => {
     );
   }
 
-  // Show BeginIntake for unauthenticated users
+  // Show Hub Home for unauthenticated users
   if (!isAuthenticated) {
-    return <BeginIntake />;
+    return <SiteHome />;
   }
 
   return null;
