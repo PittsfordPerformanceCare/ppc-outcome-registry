@@ -46,11 +46,11 @@ const PatientThankYou = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <a 
-                href="tel:585-625-2555" 
+                href="tel:585-880-7542" 
                 className="inline-flex items-center justify-center gap-2 text-sm text-primary hover:underline"
               >
                 <Phone className="h-4 w-4" />
-                (585) 625-2555
+                (585) 880-7542
               </a>
               <a 
                 href="mailto:info@pittsfordperformancecare.com" 
