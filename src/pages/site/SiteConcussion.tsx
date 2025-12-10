@@ -411,59 +411,57 @@ const SiteConcussion = () => {
       </section>
 
       {/* Related Articles */}
-      <section className="py-20 bg-gradient-to-b from-muted/20 via-background to-muted/30 relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl" />
+      <section className="py-24 relative overflow-hidden">
+        {/* Background with subtle pattern */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-blue-50/30 dark:via-blue-950/20 to-background" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
         
         <div className="container mx-auto px-4 relative">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             {/* Section header */}
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary mb-6">
-                <ArrowRight className="h-4 w-4" />
-                <span className="text-sm font-semibold tracking-wide">Deep Dive Resources</span>
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white dark:bg-card shadow-md border border-border/50 mb-8">
+                <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                <span className="text-sm font-semibold text-foreground tracking-wide">Deep Dive Resources</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text">
-                Learn More About Concussion Recovery
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                Learn More About <br className="hidden sm:block" />
+                <span className="text-primary">Concussion Recovery</span>
               </h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Explore our in-depth guides on specific post-concussion challenges and recovery strategies.
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Explore our in-depth guides on specific post-concussion challenges and evidence-based recovery strategies.
               </p>
             </div>
             
-            {/* Article cards */}
-            <div className="grid md:grid-cols-3 gap-6">
+            {/* Article cards - Larger, more spacious design */}
+            <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
                   title: "Visual-Vestibular Mismatch",
-                  description: "Why your eyes and inner ear aren't working together—and what to do about it",
+                  description: "Understanding why your eyes and inner ear aren't working together—and what targeted treatment looks like.",
                   href: "/site/articles/concussion/visual-vestibular-mismatch",
                   icon: Eye,
-                  color: "from-blue-500/20 to-purple-500/10",
-                  iconBg: "bg-blue-500/10",
-                  iconColor: "text-blue-500",
-                  borderHover: "group-hover:border-blue-500/50"
+                  accentColor: "bg-blue-500",
+                  lightBg: "bg-blue-50 dark:bg-blue-950/40",
+                  iconColor: "text-blue-600 dark:text-blue-400"
                 },
                 {
-                  title: "Autonomic Nervous System Flow",
-                  description: "How ANS dysregulation causes fatigue, anxiety, and exercise intolerance",
+                  title: "Autonomic Nervous System",
+                  description: "How ANS dysregulation causes fatigue, anxiety, and exercise intolerance after concussion.",
                   href: "/site/articles/concussion/autonomic-nervous-system-flow",
                   icon: Heart,
-                  color: "from-rose-500/20 to-orange-500/10",
-                  iconBg: "bg-rose-500/10",
-                  iconColor: "text-rose-500",
-                  borderHover: "group-hover:border-rose-500/50"
+                  accentColor: "bg-teal-500",
+                  lightBg: "bg-teal-50 dark:bg-teal-950/40",
+                  iconColor: "text-teal-600 dark:text-teal-400"
                 },
                 {
-                  title: "Cerebellar Timing & Coordination",
-                  description: "When your brain's master clock is disrupted and recovery feels impossible",
+                  title: "Cerebellar Timing",
+                  description: "When your brain's master clock is disrupted and recovery feels impossible to achieve.",
                   href: "/site/articles/concussion/cerebellar-timing-and-coordination",
                   icon: Brain,
-                  color: "from-emerald-500/20 to-teal-500/10",
-                  iconBg: "bg-emerald-500/10",
-                  iconColor: "text-emerald-500",
-                  borderHover: "group-hover:border-emerald-500/50"
+                  accentColor: "bg-indigo-500",
+                  lightBg: "bg-indigo-50 dark:bg-indigo-950/40",
+                  iconColor: "text-indigo-600 dark:text-indigo-400"
                 }
               ].map((article, index) => {
                 const IconComponent = article.icon;
@@ -471,34 +469,35 @@ const SiteConcussion = () => {
                   <Link 
                     key={index}
                     to={article.href}
-                    className={`group relative p-8 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ${article.borderHover} animate-fade-in`}
+                    className="group relative flex flex-col bg-white dark:bg-card rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 overflow-hidden animate-fade-in"
                     style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                   >
-                    {/* Gradient background on hover */}
-                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${article.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                    {/* Top accent bar */}
+                    <div className={`h-1.5 w-full ${article.accentColor}`} />
                     
-                    {/* Icon */}
-                    <div className={`relative mb-8 h-20 w-20 rounded-2xl ${article.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className={`h-9 w-9 ${article.iconColor}`} />
+                    {/* Icon area with generous padding */}
+                    <div className={`${article.lightBg} px-8 pt-10 pb-8`}>
+                      <div className="w-24 h-24 rounded-3xl bg-white dark:bg-card shadow-md flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+                        <IconComponent className={`h-12 w-12 ${article.iconColor}`} />
+                      </div>
                     </div>
                     
-                    {/* Content */}
-                    <div className="relative space-y-4">
-                      <h3 className="font-semibold text-lg group-hover:text-primary transition-colors duration-300 flex items-center gap-2">
+                    {/* Content area */}
+                    <div className="flex-1 p-8 pt-6 flex flex-col">
+                      <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">
                         {article.title}
-                        <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
                       </h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">
+                      <p className="text-muted-foreground leading-relaxed flex-1">
                         {article.description}
                       </p>
-                    </div>
-                    
-                    {/* Read more indicator */}
-                    <div className="relative mt-6 pt-5 border-t border-border/50">
-                      <span className="text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1">
-                        Read full article
-                        <ArrowRight className="h-3 w-3" />
-                      </span>
+                      
+                      {/* Read more link */}
+                      <div className="mt-6 pt-6 border-t border-border/50 flex items-center justify-between">
+                        <span className="text-sm font-semibold text-primary">Read Article</span>
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                          <ArrowRight className="h-5 w-5 text-primary group-hover:text-white transition-colors" />
+                        </div>
+                      </div>
                     </div>
                   </Link>
                 );
@@ -506,13 +505,13 @@ const SiteConcussion = () => {
             </div>
             
             {/* Browse all link */}
-            <div className="flex justify-center mt-10">
+            <div className="flex justify-center mt-14">
               <Link 
                 to="/site/articles" 
-                className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-muted/50 border border-border hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
+                className="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white dark:bg-card shadow-lg border border-border/50 hover:border-primary/50 hover:shadow-xl transition-all duration-300"
               >
-                <span className="text-sm font-medium">Browse All Resources</span>
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                <span className="font-semibold">Browse All Resources</span>
+                <ArrowRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
           </div>
