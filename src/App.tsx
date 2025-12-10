@@ -74,6 +74,43 @@ const WeeklyCleanup = lazy(() => import("./pages/WeeklyCleanup"));
 const UTMHealth = lazy(() => import("./pages/UTMHealth"));
 const SpecialSituations = lazy(() => import("./pages/SpecialSituations"));
 
+// ========== PHASE 1 SHELL: NEW LAYOUTS ==========
+const SiteLayout = lazy(() => import("./layouts/SiteLayout"));
+const PatientLayout = lazy(() => import("./layouts/PatientLayout"));
+const ShellAdminLayout = lazy(() => import("./layouts/ShellAdminLayout"));
+
+// ========== PHASE 1 SHELL: /site PAGES ==========
+const SiteHome = lazy(() => import("./pages/site/SiteHome"));
+const SiteHub = lazy(() => import("./pages/site/SiteHub"));
+const SiteConcussion = lazy(() => import("./pages/site/SiteConcussion"));
+const SiteMsk = lazy(() => import("./pages/site/SiteMsk"));
+const SiteArticles = lazy(() => import("./pages/site/SiteArticles"));
+const SiteArticleDetail = lazy(() => import("./pages/site/SiteArticleDetail"));
+const SiteCta = lazy(() => import("./pages/site/SiteCta"));
+const SiteAbout = lazy(() => import("./pages/site/SiteAbout"));
+const SiteProviders = lazy(() => import("./pages/site/SiteProviders"));
+const SiteContact = lazy(() => import("./pages/site/SiteContact"));
+
+// ========== PHASE 1 SHELL: /patient PAGES ==========
+const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
+const PatientIntakeShell = lazy(() => import("./pages/patient-shell/PatientIntakeShell"));
+const PatientIntakeAdult = lazy(() => import("./pages/patient-shell/PatientIntakeAdult"));
+const PatientIntakePediatric = lazy(() => import("./pages/patient-shell/PatientIntakePediatric"));
+const PatientIntakeReferral = lazy(() => import("./pages/patient-shell/PatientIntakeReferral"));
+const PatientThankYou = lazy(() => import("./pages/patient-shell/PatientThankYou"));
+const PatientStatus = lazy(() => import("./pages/patient-shell/PatientStatus"));
+const PatientSelfTests = lazy(() => import("./pages/patient-shell/PatientSelfTests"));
+const PatientSelfTestsConcussion = lazy(() => import("./pages/patient-shell/PatientSelfTestsConcussion"));
+const PatientSelfTestsMsk = lazy(() => import("./pages/patient-shell/PatientSelfTestsMsk"));
+
+// ========== PHASE 1 SHELL: /admin-shell PAGES ==========
+const AdminShellRegistry = lazy(() => import("./pages/admin-shell/AdminShellRegistry"));
+const AdminShellEpisodes = lazy(() => import("./pages/admin-shell/AdminShellEpisodes"));
+const AdminShellPatients = lazy(() => import("./pages/admin-shell/AdminShellPatients"));
+const AdminShellTasks = lazy(() => import("./pages/admin-shell/AdminShellTasks"));
+const AdminShellProviderTools = lazy(() => import("./pages/admin-shell/AdminShellProviderTools"));
+const AdminShellCommunications = lazy(() => import("./pages/admin-shell/AdminShellCommunications"));
+
 const queryClient = new QueryClient();
 
 // Loading fallback component
@@ -93,6 +130,45 @@ const App = () => (
           <DevToolbar />
           <Suspense fallback={<PageLoader />}>
             <Routes>
+            {/* ========== PHASE 1 SHELL: /site ROUTES (PUBLIC) ========== */}
+            <Route path="/site" element={<SiteLayout />}>
+              <Route index element={<SiteHome />} />
+              <Route path="home" element={<SiteHome />} />
+              <Route path="hub" element={<SiteHub />} />
+              <Route path="concussion" element={<SiteConcussion />} />
+              <Route path="msk" element={<SiteMsk />} />
+              <Route path="articles" element={<SiteArticles />} />
+              <Route path="articles/:category/:slug" element={<SiteArticleDetail />} />
+              <Route path="cta" element={<SiteCta />} />
+              <Route path="about" element={<SiteAbout />} />
+              <Route path="providers" element={<SiteProviders />} />
+              <Route path="contact" element={<SiteContact />} />
+            </Route>
+
+            {/* ========== PHASE 1 SHELL: /patient ROUTES (PUBLIC) ========== */}
+            <Route path="/patient" element={<PatientLayout />}>
+              <Route path="concierge" element={<PatientConcierge />} />
+              <Route path="intake" element={<PatientIntakeShell />} />
+              <Route path="intake/adult" element={<PatientIntakeAdult />} />
+              <Route path="intake/pediatric" element={<PatientIntakePediatric />} />
+              <Route path="intake/referral" element={<PatientIntakeReferral />} />
+              <Route path="thank-you" element={<PatientThankYou />} />
+              <Route path="status" element={<PatientStatus />} />
+              <Route path="self-tests" element={<PatientSelfTests />} />
+              <Route path="self-tests/concussion" element={<PatientSelfTestsConcussion />} />
+              <Route path="self-tests/msk" element={<PatientSelfTestsMsk />} />
+            </Route>
+
+            {/* ========== PHASE 1 SHELL: /admin-shell ROUTES (PLACEHOLDER ONLY) ========== */}
+            <Route path="/admin-shell" element={<ShellAdminLayout />}>
+              <Route path="registry" element={<AdminShellRegistry />} />
+              <Route path="episodes" element={<AdminShellEpisodes />} />
+              <Route path="patients" element={<AdminShellPatients />} />
+              <Route path="tasks" element={<AdminShellTasks />} />
+              <Route path="provider-tools" element={<AdminShellProviderTools />} />
+              <Route path="communications" element={<AdminShellCommunications />} />
+            </Route>
+
             {/* ========== PUBLIC INTAKE GATEWAY (Must be first - No Authentication) ========== */}
             <Route path="/begin-intake" element={<BeginIntake />} />
             <Route path="/begin-intake/*" element={<BeginIntake />} />
