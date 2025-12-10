@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
-import { UserCircle, Baby, Mail, Phone, Clock, CheckCircle, XCircle, Loader2, Activity, Building, Stethoscope } from 'lucide-react';
+import { UserCircle, Baby, Mail, Phone, Clock, CheckCircle, XCircle, Loader2, Activity, Building, Stethoscope, ClipboardList } from 'lucide-react';
 import { Layout } from '@/components/Layout';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -63,14 +63,35 @@ type ReferralInquiry = {
   decline_reason: string | null;
 };
 
+type IntakeLead = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  primary_concern: string | null;
+  symptom_summary: string | null;
+  system_category: string | null;
+  who_is_this_for: string | null;
+  origin_page: string | null;
+  checkpoint_status: string;
+  funnel_stage: string | null;
+  notes: string | null;
+  created_at: string;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+};
+
 export default function ReferralInbox() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [inquiries, setInquiries] = useState<ReferralInquiry[]>([]);
   const [neurologicLeads, setNeurologicLeads] = useState<NeurologicLead[]>([]);
+  const [intakeLeads, setIntakeLeads] = useState<IntakeLead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedInquiry, setSelectedInquiry] = useState<ReferralInquiry | null>(null);
   const [selectedLead, setSelectedLead] = useState<NeurologicLead | null>(null);
+  const [selectedIntakeLead, setSelectedIntakeLead] = useState<IntakeLead | null>(null);
   const [isApproving, setIsApproving] = useState(false);
   const [showDeclineDialog, setShowDeclineDialog] = useState(false);
   const [declineReason, setDeclineReason] = useState('');
@@ -80,6 +101,7 @@ export default function ReferralInbox() {
   useEffect(() => {
     loadInquiries();
     loadNeurologicLeads();
+    loadIntakeLeads();
 
     const channel = supabase
       .channel('referral-inquiries')
@@ -111,9 +133,25 @@ export default function ReferralInbox() {
       )
       .subscribe();
 
+    const leadsChannel = supabase
+      .channel('intake-leads')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'leads',
+        },
+        () => {
+          loadIntakeLeads();
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(neuroChannel);
       supabase.removeChannel(channel);
+      supabase.removeChannel(leadsChannel);
     };
   }, []);
 
@@ -149,6 +187,20 @@ export default function ReferralInbox() {
       setNeurologicLeads((data || []) as NeurologicLead[]);
     } catch (error) {
       console.error('Error loading neurologic leads:', error);
+    }
+  };
+
+  const loadIntakeLeads = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('leads')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setIntakeLeads((data || []) as IntakeLead[]);
+    } catch (error) {
+      console.error('Error loading intake leads:', error);
     }
   };
 
@@ -458,12 +510,80 @@ export default function ReferralInbox() {
     </Card>
   );
 
+  const getIntakeStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { className: string; label: string }> = {
+      lead_created: { className: 'bg-amber-100 text-amber-800', label: 'New Lead' },
+      lead_intake: { className: 'bg-blue-100 text-blue-800', label: 'Intake Started' },
+      lead_intake_completed: { className: 'bg-green-100 text-green-800', label: 'Intake Done' },
+      episode_opened: { className: 'bg-purple-100 text-purple-800', label: 'Episode Opened' },
+    };
+    const config = statusConfig[status] || { className: 'bg-gray-100 text-gray-800', label: status };
+    return <Badge className={config.className}>{config.label}</Badge>;
+  };
+
+  const IntakeLeadCard = ({ lead }: { lead: IntakeLead }) => (
+    <Card 
+      className="hover:shadow-md transition-shadow cursor-pointer border-l-4 border-l-green-500"
+      onClick={() => setSelectedIntakeLead(lead)}
+    >
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="space-y-1">
+            <CardTitle className="flex items-center gap-2">
+              <ClipboardList className="h-5 w-5 text-green-600" />
+              {lead.name || lead.email || 'Unknown'}
+            </CardTitle>
+            <CardDescription className="flex items-center gap-2">
+              <Clock className="h-3 w-3" />
+              {formatDistanceToNow(new Date(lead.created_at), { addSuffix: true })}
+            </CardDescription>
+          </div>
+          {getIntakeStatusBadge(lead.checkpoint_status)}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <p className="text-sm text-muted-foreground line-clamp-2">
+          {lead.symptom_summary || lead.primary_concern || 'No details provided'}
+        </p>
+        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+          {lead.email && (
+            <span className="flex items-center gap-1">
+              <Mail className="h-3 w-3" />
+              {lead.email}
+            </span>
+          )}
+          {lead.phone && (
+            <span className="flex items-center gap-1">
+              <Phone className="h-3 w-3" />
+              {lead.phone}
+            </span>
+          )}
+        </div>
+        <div className="flex gap-2">
+          {lead.system_category && (
+            <Badge variant="outline" className="text-xs bg-green-50">
+              {lead.system_category === 'msk' ? 'MSK' : lead.system_category === 'concussion' ? 'Concussion' : lead.system_category}
+            </Badge>
+          )}
+          {lead.who_is_this_for && (
+            <Badge variant="outline" className="text-xs">
+              {lead.who_is_this_for === 'self' ? 'Self' : lead.who_is_this_for}
+            </Badge>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   const pendingInquiries = inquiries.filter(i => i.status === 'prospect_awaiting_review');
   const approvedInquiries = inquiries.filter(i => ['approved', 'scheduled', 'converted'].includes(i.status));
   const declinedInquiries = inquiries.filter(i => i.status === 'declined');
   
   const newLeads = neurologicLeads.filter(l => l.status === 'new');
   const processedLeads = neurologicLeads.filter(l => ['contacted', 'qualified', 'converted', 'declined'].includes(l.status));
+  
+  // Intake leads filters
+  const newIntakeLeads = intakeLeads.filter(l => l.checkpoint_status === 'lead_intake_completed' || l.checkpoint_status === 'lead_intake' || l.checkpoint_status === 'lead_created');
 
   return (
     <Layout>
@@ -475,8 +595,12 @@ export default function ReferralInbox() {
           </p>
         </div>
 
-        <Tabs defaultValue="pillar" className="space-y-4">
+        <Tabs defaultValue="intake" className="space-y-4">
           <TabsList className="flex-wrap">
+            <TabsTrigger value="intake" className="flex items-center gap-1">
+              <ClipboardList className="h-4 w-4" />
+              Adult Intake Leads ({newIntakeLeads.length})
+            </TabsTrigger>
             <TabsTrigger value="pillar" className="flex items-center gap-1">
               <Activity className="h-4 w-4" />
               Pillar App Leads ({newLeads.length})
@@ -491,6 +615,27 @@ export default function ReferralInbox() {
               Processed Leads ({processedLeads.length})
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="intake" className="space-y-4">
+            {isLoading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin" />
+              </div>
+            ) : newIntakeLeads.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <ClipboardList className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No adult intake leads</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {newIntakeLeads.map(lead => (
+                  <IntakeLeadCard key={lead.id} lead={lead} />
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
           <TabsContent value="pillar" className="space-y-4">
             {isLoading ? (
@@ -871,6 +1016,55 @@ export default function ReferralInbox() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Intake Lead Detail Dialog */}
+        {selectedIntakeLead && (
+          <Dialog open={!!selectedIntakeLead} onOpenChange={() => setSelectedIntakeLead(null)}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <ClipboardList className="h-5 w-5 text-green-600" />
+                  {selectedIntakeLead.name || selectedIntakeLead.email || 'Lead Details'}
+                </DialogTitle>
+                <DialogDescription>
+                  Submitted {formatDistanceToNow(new Date(selectedIntakeLead.created_at), { addSuffix: true })}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label>Contact</Label>
+                  <div className="mt-2 space-y-1 text-sm">
+                    {selectedIntakeLead.email && <p className="flex items-center gap-2"><Mail className="h-4 w-4" />{selectedIntakeLead.email}</p>}
+                    {selectedIntakeLead.phone && <p className="flex items-center gap-2"><Phone className="h-4 w-4" />{selectedIntakeLead.phone}</p>}
+                  </div>
+                </div>
+                {selectedIntakeLead.symptom_summary && (
+                  <div>
+                    <Label>Symptoms</Label>
+                    <p className="text-sm mt-1">{selectedIntakeLead.symptom_summary}</p>
+                  </div>
+                )}
+                {selectedIntakeLead.notes && (
+                  <div>
+                    <Label>Notes</Label>
+                    <p className="text-sm mt-1">{selectedIntakeLead.notes}</p>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  {getIntakeStatusBadge(selectedIntakeLead.checkpoint_status)}
+                  {selectedIntakeLead.system_category && <Badge variant="outline">{selectedIntakeLead.system_category.toUpperCase()}</Badge>}
+                </div>
+              </div>
+              <DialogFooter>
+                {selectedIntakeLead.email && (
+                  <Button asChild>
+                    <a href={`mailto:${selectedIntakeLead.email}`}><Mail className="mr-2 h-4 w-4" />Email Lead</a>
+                  </Button>
+                )}
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     </Layout>
   );
