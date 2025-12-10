@@ -478,8 +478,8 @@ const SiteConcussion = () => {
                     <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${article.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                     
                     {/* Icon */}
-                    <div className={`relative mb-8 h-16 w-16 rounded-2xl ${article.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className={`h-8 w-8 ${article.iconColor}`} />
+                    <div className={`relative mb-8 h-20 w-20 rounded-2xl ${article.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className={`h-9 w-9 ${article.iconColor}`} />
                     </div>
                     
                     {/* Content */}
