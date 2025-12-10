@@ -10,7 +10,13 @@ import {
   Clock,
   ArrowRight, 
   CheckCircle2,
-  AlertTriangle
+  CloudFog,
+  Compass,
+  Sun,
+  Scale,
+  Battery,
+  Monitor,
+  HeartPulse
 } from "lucide-react";
 
 const SiteConcussion = () => {
@@ -47,59 +53,85 @@ const SiteConcussion = () => {
       </section>
 
       {/* Symptoms Section */}
-      <section className="py-20 bg-gradient-to-b from-background via-muted/20 to-background">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-sm font-medium mb-4">
-                <AlertTriangle className="h-4 w-4" />
-                Recognize the Signs
+      <section className="py-24 relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-warning-soft/30 to-background" />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-warning/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-warning/20 to-warning/10 border border-warning/20 text-warning dark:text-warning mb-6">
+                <Brain className="h-4 w-4" />
+                <span className="text-sm font-semibold tracking-wide">Recognize the Signs</span>
               </div>
-              <h2 className="text-3xl font-bold mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text">
                 Do These Symptoms Sound Familiar?
               </h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Persistent post-concussion symptoms indicate underlying neurologic dysfunction 
                 that won't resolve with rest alone.
               </p>
             </div>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Symptom Cards - Bento Grid Layout */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
               {[
-                { symptom: "Persistent headaches that won't go away", icon: "head" },
-                { symptom: "Brain fog and difficulty concentrating", icon: "fog" },
-                { symptom: "Dizziness when moving your head", icon: "dizzy" },
-                { symptom: "Sensitivity to light and sound", icon: "light" },
-                { symptom: "Feeling off-balance or unsteady", icon: "balance" },
-                { symptom: "Fatigue that limits your daily activities", icon: "fatigue" },
-                { symptom: "Trouble with screens and reading", icon: "screen" },
-                { symptom: "Anxiety or mood changes since injury", icon: "mood" }
-              ].map((item, index) => (
-                <div 
-                  key={index} 
-                  className="group relative p-5 rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-amber-500/30 hover:bg-amber-500/5 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
-                  <div className="absolute top-3 right-3 h-8 w-8 rounded-full bg-amber-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <AlertTriangle className="h-4 w-4 text-amber-500" />
+                { symptom: "Persistent headaches that won't go away", icon: Brain, color: "from-rose-500/20 to-rose-500/5", iconColor: "text-rose-500", borderColor: "hover:border-rose-500/40" },
+                { symptom: "Brain fog and difficulty concentrating", icon: CloudFog, color: "from-violet-500/20 to-violet-500/5", iconColor: "text-violet-500", borderColor: "hover:border-violet-500/40" },
+                { symptom: "Dizziness when moving your head", icon: Compass, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500", borderColor: "hover:border-amber-500/40" },
+                { symptom: "Sensitivity to light and sound", icon: Sun, color: "from-yellow-500/20 to-yellow-500/5", iconColor: "text-yellow-500", borderColor: "hover:border-yellow-500/40" },
+                { symptom: "Feeling off-balance or unsteady", icon: Scale, color: "from-teal-500/20 to-teal-500/5", iconColor: "text-teal-500", borderColor: "hover:border-teal-500/40" },
+                { symptom: "Fatigue that limits daily activities", icon: Battery, color: "from-orange-500/20 to-orange-500/5", iconColor: "text-orange-500", borderColor: "hover:border-orange-500/40" },
+                { symptom: "Trouble with screens and reading", icon: Monitor, color: "from-blue-500/20 to-blue-500/5", iconColor: "text-blue-500", borderColor: "hover:border-blue-500/40" },
+                { symptom: "Anxiety or mood changes since injury", icon: HeartPulse, color: "from-pink-500/20 to-pink-500/5", iconColor: "text-pink-500", borderColor: "hover:border-pink-500/40" }
+              ].map((item, index) => {
+                const IconComponent = item.icon;
+                return (
+                  <div 
+                    key={index} 
+                    className={`group relative p-6 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1 ${item.borderColor} animate-fade-in`}
+                    style={{ animationDelay: `${index * 75}ms`, animationFillMode: 'backwards' }}
+                  >
+                    {/* Gradient overlay on hover */}
+                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                    
+                    {/* Icon */}
+                    <div className={`relative mb-4 h-12 w-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className={`h-6 w-6 ${item.iconColor}`} />
+                    </div>
+                    
+                    {/* Text */}
+                    <p className="relative text-sm font-medium leading-relaxed text-foreground/90">{item.symptom}</p>
                   </div>
-                  <p className="text-sm font-medium leading-relaxed pr-8">{item.symptom}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
             
-            <div className="mt-12 text-center">
-              <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 rounded-2xl bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border border-primary/20">
-                <p className="text-muted-foreground">
-                  If you've been told to "wait it out" but aren't improving, it's time for a 
-                  <span className="text-foreground font-medium"> different approach</span>.
-                </p>
-                <Button variant="default" size="sm" asChild className="shrink-0">
-                  <Link to="/patient/concierge">
-                    Get Started
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
+            {/* Bottom CTA */}
+            <div className="mt-16 flex justify-center">
+              <div className="relative group">
+                {/* Glow effect */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary/50 via-warning/50 to-primary/50 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                
+                <div className="relative flex flex-col sm:flex-row items-center gap-6 p-8 rounded-2xl bg-card border border-border/50 shadow-lg">
+                  <div className="flex-1 text-center sm:text-left">
+                    <p className="text-lg font-medium text-foreground mb-1">
+                      Tired of waiting for symptoms to resolve?
+                    </p>
+                    <p className="text-muted-foreground">
+                      It's time for a <span className="text-primary font-semibold">different approach</span>.
+                    </p>
+                  </div>
+                  <Button size="lg" className="shrink-0 shadow-lg" asChild>
+                    <Link to="/patient/concierge">
+                      Get Started
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
