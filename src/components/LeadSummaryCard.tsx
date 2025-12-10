@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Phone, 
   Mail, 
@@ -40,6 +41,7 @@ interface LeadSummaryCardProps {
 export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCardProps) {
   const { attempts, refetch: refetchAttempts } = useLeadContactAttempts(lead?.id || null);
   const [sendingOnboarding, setSendingOnboarding] = useState(false);
+  const [onboardingType, setOnboardingType] = useState<string>("");
 
   if (!lead) return null;
 
@@ -99,14 +101,19 @@ export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCa
       return;
     }
 
+    if (!onboardingType) {
+      toast.error("Please choose Neurologic or MSK before sending.");
+      return;
+    }
+
     setSendingOnboarding(true);
     try {
-      // Send the onboarding email
       const { data, error } = await supabase.functions.invoke("send-onboarding-email", {
         body: {
           email: lead.email,
           patientName: lead.name || "Patient",
-          leadId: lead.id
+          leadId: lead.id,
+          templateType: onboardingType
         }
       });
 
@@ -114,16 +121,16 @@ export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCa
 
       // Log a contact attempt for the email
       const newAttemptCount = (lead.contact_attempt_count || 0) + 1;
+      const typeLabel = onboardingType === "neuro" ? "Neurologic" : "MSK";
       
       await supabase.from("lead_contact_attempts").insert({
         lead_id: lead.id,
         attempt_number: newAttemptCount,
         method: "email",
-        notes: "New Patient Forms + What to Expect sent",
+        notes: `Onboarding email sent (${typeLabel})`,
         contacted_at: new Date().toISOString()
       });
 
-      // Update lead contact count
       await supabase
         .from("leads")
         .update({
@@ -205,7 +212,7 @@ export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCa
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <FileText className="h-4 w-4 text-emerald-600" />
-                Send New Patient Forms + What to Expect
+                Send Onboarding Email
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -214,6 +221,25 @@ export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCa
                 <span className="text-muted-foreground">To:</span>
                 <span className="font-medium">{lead.email || "No email available"}</span>
               </div>
+              <Select value={onboardingType} onValueChange={setOnboardingType}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select onboarding type..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="neuro">
+                    <div className="flex items-center gap-2">
+                      <Brain className="h-4 w-4 text-purple-600" />
+                      Neurologic New Patient
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="msk">
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-4 w-4 text-blue-600" />
+                      MSK New Patient
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
               <Button 
                 className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700"
                 onClick={handleSendOnboardingEmail}
@@ -232,7 +258,7 @@ export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCa
                 )}
               </Button>
               <p className="text-xs text-muted-foreground">
-                Sends digital intake forms and "What to Expect at Your First Visit" guide
+                Sends digital intake forms and "What to Expect" guide tailored to patient type
               </p>
             </CardContent>
           </Card>
