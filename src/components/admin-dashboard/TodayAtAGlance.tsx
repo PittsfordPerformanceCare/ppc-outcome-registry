@@ -76,7 +76,7 @@ export function TodayAtAGlance({ stats, loading }: TodayAtAGlanceProps) {
           <GreetingIcon className="h-6 w-6 text-primary" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold">{greeting.text}, PPC Admin Team</h1>
+          <h1 className="text-2xl font-bold">{greeting.text}, Jennifer!</h1>
           <p className="text-muted-foreground text-sm">{formatDate()}</p>
         </div>
       </div>
