@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Lead } from "@/pages/AdminLeads";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -18,11 +19,16 @@ import {
   Stethoscope,
   RefreshCw,
   ArrowRight,
-  Zap
+  Zap,
+  Send,
+  FileText,
+  Loader2
 } from "lucide-react";
 import { format } from "date-fns";
 import { ContactAttemptTracker } from "./ContactAttemptTracker";
 import { useLeadContactAttempts } from "@/hooks/useLeadContactAttempts";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface LeadSummaryCardProps {
   lead: Lead | null;
@@ -33,6 +39,7 @@ interface LeadSummaryCardProps {
 
 export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCardProps) {
   const { attempts, refetch: refetchAttempts } = useLeadContactAttempts(lead?.id || null);
+  const [sendingOnboarding, setSendingOnboarding] = useState(false);
 
   if (!lead) return null;
 
@@ -86,6 +93,54 @@ export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCa
     onUpdate?.();
   };
 
+  const handleSendOnboardingEmail = async () => {
+    if (!lead.email) {
+      toast.error("No email address available for this lead");
+      return;
+    }
+
+    setSendingOnboarding(true);
+    try {
+      // Send the onboarding email
+      const { data, error } = await supabase.functions.invoke("send-onboarding-email", {
+        body: {
+          email: lead.email,
+          patientName: lead.name || "Patient",
+          leadId: lead.id
+        }
+      });
+
+      if (error) throw error;
+
+      // Log a contact attempt for the email
+      const newAttemptCount = (lead.contact_attempt_count || 0) + 1;
+      
+      await supabase.from("lead_contact_attempts").insert({
+        lead_id: lead.id,
+        attempt_number: newAttemptCount,
+        method: "email",
+        notes: "New Patient Forms + What to Expect sent",
+        contacted_at: new Date().toISOString()
+      });
+
+      // Update lead contact count
+      await supabase
+        .from("leads")
+        .update({
+          contact_attempt_count: newAttemptCount,
+          last_contacted_at: new Date().toISOString()
+        })
+        .eq("id", lead.id);
+
+      toast.success("Onboarding email sent successfully!");
+      handleUpdate();
+    } catch (error) {
+      console.error("Error sending onboarding email:", error);
+      toast.error("Failed to send onboarding email");
+    } finally {
+      setSendingOnboarding(false);
+    }
+  };
   return (
     <Sheet open={open} onOpenChange={onClose}>
       <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
@@ -142,6 +197,43 @@ export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCa
               <Button variant="outline" className="w-full gap-2">
                 <CalendarPlus className="h-4 w-4" /> Schedule NPE
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Send Onboarding Email Section */}
+          <Card className="border-emerald-500/30 bg-emerald-500/5">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium flex items-center gap-2">
+                <FileText className="h-4 w-4 text-emerald-600" />
+                Send New Patient Forms + What to Expect
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-2 text-sm">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">To:</span>
+                <span className="font-medium">{lead.email || "No email available"}</span>
+              </div>
+              <Button 
+                className="w-full gap-2 bg-emerald-600 hover:bg-emerald-700"
+                onClick={handleSendOnboardingEmail}
+                disabled={!lead.email || sendingOnboarding}
+              >
+                {sendingOnboarding ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" />
+                    Send Onboarding Email
+                  </>
+                )}
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Sends digital intake forms and "What to Expect at Your First Visit" guide
+              </p>
             </CardContent>
           </Card>
 
