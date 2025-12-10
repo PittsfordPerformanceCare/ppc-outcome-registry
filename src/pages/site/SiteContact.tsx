@@ -114,9 +114,9 @@ const SiteContact = () => {
                   <div>
                     <h3 className="font-semibold">Hours</h3>
                     <div className="text-muted-foreground mt-1 space-y-1">
-                      <p>Monday - Friday: 8:00 AM - 6:00 PM</p>
-                      <p>Saturday: 9:00 AM - 1:00 PM</p>
-                      <p>Sunday: Closed</p>
+                      <p>Monday - Thursday: 9:00 AM - 5:00 PM</p>
+                      <p>Friday: 9:00 AM - 12:00 PM</p>
+                      <p>Saturday & Sunday: Closed</p>
                     </div>
                   </div>
                 </div>
