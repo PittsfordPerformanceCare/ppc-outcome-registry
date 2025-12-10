@@ -489,6 +489,290 @@ export const concussionArticles: ArticleData[] = [
       label: "Take the Concussion Self-Test",
       route: "/patient/self-tests/concussion"
     }
+  },
+  {
+    slug: "frontal-system-fog-after-concussion",
+    title: "Frontal System Fog: When Thinking Feels Like Wading Through Mud",
+    category: "concussion",
+    readTime: "9 min read",
+    excerpt: "Understanding the cognitive fog that persists after concussion and how frontal lobe function affects everyday thinking.",
+    heroContent: "The words are there, but they won't come out right. Decisions that used to be automatic now require conscious effort. You start tasks and lose track of what you were doing. This isn't laziness or lack of focus—it's frontal system dysfunction after concussion.",
+    sections: [
+      {
+        type: "callout",
+        content: "If you feel like you're thinking through fog—slower, less sharp, more effortful—your frontal systems may not have fully recovered from concussion.",
+        variant: "insight"
+      },
+      {
+        type: "heading",
+        content: "What the Frontal System Does"
+      },
+      {
+        type: "paragraph",
+        content: "Your frontal lobes are the CEO of your brain. They manage executive functions: planning, decision-making, working memory, impulse control, attention regulation, and cognitive flexibility. When these systems work well, thinking feels effortless. When they're compromised, every cognitive task becomes a struggle."
+      },
+      {
+        type: "paragraph",
+        content: "After concussion, frontal system function often suffers—even when structural imaging looks normal. The metabolic and connectivity disruptions that occur after concussion particularly affect these high-level processing networks."
+      },
+      {
+        type: "heading",
+        content: "Signs of Frontal System Fog"
+      },
+      {
+        type: "callout",
+        content: "Do these cognitive changes sound familiar?",
+        variant: "symptom"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Word-finding difficulties—the word is 'on the tip of your tongue' but won't come",
+          "Difficulty organizing thoughts or tasks",
+          "Losing track of what you were doing mid-task",
+          "Trouble following conversations, especially in groups",
+          "Reduced mental stamina—brain fatigue after cognitive work",
+          "Difficulty making decisions, even simple ones",
+          "Feeling overwhelmed by multi-step tasks",
+          "Reduced ability to filter distractions",
+          "Slower processing speed for complex information"
+        ]
+      },
+      {
+        type: "inline-cta",
+        content: "If cognitive fog is affecting your daily life, comprehensive neurologic evaluation can identify the specific frontal systems that need rehabilitation."
+      },
+      {
+        type: "heading",
+        content: "Why Standard Testing Misses It"
+      },
+      {
+        type: "paragraph",
+        content: "Most cognitive screening after concussion uses brief, standardized tests administered in quiet rooms. But your frontal systems fail under real-world conditions—multiple demands, distractions, time pressure, and sustained effort. The gap between test performance and daily function is where frontal fog lives."
+      },
+      {
+        type: "callout",
+        content: "Passing a 10-minute cognitive screen doesn't mean your frontal systems can handle an 8-hour workday.",
+        variant: "insight"
+      },
+      {
+        type: "heading",
+        content: "The Energy-Cognition Connection"
+      },
+      {
+        type: "paragraph",
+        content: "Frontal lobe function is metabolically expensive. These brain regions consume enormous amounts of energy. After concussion, when the brain's energy systems are compromised, the frontal lobes often bear the brunt. This is why cognitive fog is typically worse later in the day, after sustained mental effort, or when you're already fatigued."
+      },
+      {
+        type: "heading",
+        content: "How We Assess Frontal Function"
+      },
+      {
+        type: "paragraph",
+        content: "Our evaluation specifically challenges frontal systems under realistic conditions:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Sustained attention and cognitive endurance testing",
+          "Working memory under increasing load",
+          "Cognitive flexibility and task-switching",
+          "Processing speed across multiple domains",
+          "Executive function during divided attention",
+          "Decision-making speed and accuracy under pressure"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "This reveals the specific frontal system deficits that explain your daily struggles and guides targeted rehabilitation."
+      },
+      {
+        type: "heading",
+        content: "Rehabilitation Approaches"
+      },
+      {
+        type: "paragraph",
+        content: "Frontal system rehabilitation involves structured cognitive training that progressively challenges your capacity. This isn't generic 'brain games'—it's targeted intervention based on your specific deficit patterns."
+      },
+      {
+        type: "paragraph",
+        content: "Equally important is metabolic support: optimizing sleep, managing cognitive load throughout the day, and strategic rest periods. The goal is rebuilding frontal capacity while preventing the depletion that worsens function."
+      },
+      {
+        type: "callout",
+        content: "Cognitive fog doesn't have to be permanent. With targeted intervention, frontal function can be rebuilt—even months or years after injury.",
+        variant: "insight"
+      }
+    ],
+    relatedArticles: [
+      "post-concussion-performance-decline",
+      "concussion-energy-crisis-and-recovery",
+      "autonomic-nervous-system-flow"
+    ],
+    primaryCTA: {
+      label: "Schedule Neurologic Evaluation",
+      route: "/patient/concierge",
+      description: "Identify what's driving your cognitive fog with comprehensive assessment."
+    },
+    secondaryCTA: {
+      label: "Take the Concussion Self-Test",
+      route: "/patient/self-tests/concussion",
+      description: "Get an initial assessment of your cognitive symptoms."
+    }
+  },
+  {
+    slug: "concussion-energy-crisis-and-recovery",
+    title: "Concussion Energy Crisis: Why Your Brain Runs Out of Fuel",
+    category: "concussion",
+    readTime: "10 min read",
+    excerpt: "Understanding the metabolic disruption that makes everything exhausting after concussion.",
+    heroContent: "You sleep eight hours and wake up exhausted. Simple tasks drain you. By afternoon, your brain feels like it's running on empty. This isn't depression or laziness—it's the metabolic energy crisis that follows concussion, and understanding it is the first step to recovery.",
+    sections: [
+      {
+        type: "heading",
+        content: "The Brain's Energy Demands"
+      },
+      {
+        type: "paragraph",
+        content: "Your brain is only 2% of your body weight but consumes 20% of your energy. It's the most metabolically demanding organ you have. This energy comes from glucose and oxygen, processed through intricate cellular machinery that generates ATP—the fuel that powers every thought, every movement, every sensation."
+      },
+      {
+        type: "paragraph",
+        content: "After concussion, this energy system is disrupted at multiple levels. The result is a brain that can't meet its own energy demands—a metabolic crisis that explains why everything feels so exhausting."
+      },
+      {
+        type: "heading",
+        content: "What Happens During the Energy Crisis"
+      },
+      {
+        type: "callout",
+        content: "Concussion triggers a cascade of metabolic disruptions:",
+        variant: "insight"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Ion imbalances that require extra energy to correct",
+          "Mitochondrial dysfunction that reduces ATP production",
+          "Altered blood flow regulation that limits fuel delivery",
+          "Increased inflammation that diverts resources",
+          "Impaired glucose metabolism at the cellular level"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "The brain compensates by limiting activity—which is why rest helps initially. But the metabolic dysfunction can persist long after the acute phase resolves."
+      },
+      {
+        type: "heading",
+        content: "Recognizing Energy Crisis Symptoms"
+      },
+      {
+        type: "callout",
+        content: "The energy crisis manifests in predictable patterns:",
+        variant: "symptom"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Fatigue that doesn't improve with rest",
+          "Mental exhaustion after minimal cognitive work",
+          "Physical exhaustion after minimal physical work",
+          "Symptoms that worsen as the day progresses",
+          "Need for frequent breaks during activities",
+          "Recovery that requires hours or days after exertion",
+          "Sleep that isn't restorative",
+          "Brain fog that appears when 'fuel' runs low"
+        ]
+      },
+      {
+        type: "inline-cta",
+        content: "If fatigue is your dominant symptom, understanding your metabolic status is essential for recovery planning."
+      },
+      {
+        type: "heading",
+        content: "The Boom-Bust Cycle"
+      },
+      {
+        type: "paragraph",
+        content: "Many people with post-concussion energy crisis fall into a destructive pattern: feeling relatively good, overdoing it, then crashing and spending days recovering. Each cycle can worsen overall function and delay recovery."
+      },
+      {
+        type: "callout",
+        content: "Breaking the boom-bust cycle requires understanding your actual energy capacity—not your perceived capacity or your pre-injury capacity.",
+        variant: "insight"
+      },
+      {
+        type: "heading",
+        content: "How We Assess Metabolic Function"
+      },
+      {
+        type: "paragraph",
+        content: "Our evaluation includes:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Graded exertion testing to identify symptom thresholds",
+          "Heart rate variability analysis",
+          "Autonomic function testing",
+          "Cognitive load testing to measure mental energy capacity",
+          "Recovery pattern assessment"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "This reveals your current metabolic capacity and guides pacing strategies and progressive loading protocols."
+      },
+      {
+        type: "heading",
+        content: "Rebuilding Energy Capacity"
+      },
+      {
+        type: "paragraph",
+        content: "Recovery from metabolic crisis involves carefully calibrated challenge. Too little stimulus and systems don't adapt. Too much and you trigger the crash cycle. The key is finding your threshold and systematically expanding it."
+      },
+      {
+        type: "paragraph",
+        content: "Treatment typically involves:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Sub-symptom threshold aerobic exercise (Buffalo Protocol)",
+          "Strategic cognitive loading with planned recovery",
+          "Sleep optimization for metabolic restoration",
+          "Nutritional support for energy production",
+          "Pacing strategies for daily function"
+        ]
+      },
+      {
+        type: "callout",
+        content: "The energy crisis resolves when metabolic systems recover—but this requires intentional rehabilitation, not just time.",
+        variant: "insight"
+      }
+    ],
+    relatedArticles: [
+      "frontal-system-fog-after-concussion",
+      "autonomic-nervous-system-flow",
+      "post-concussion-performance-decline"
+    ],
+    primaryCTA: {
+      label: "Schedule Neurologic Evaluation",
+      route: "/patient/concierge",
+      description: "Assess your metabolic function and create a recovery plan."
+    },
+    secondaryCTA: {
+      label: "Take the Concussion Self-Test",
+      route: "/patient/self-tests/concussion",
+      description: "Get an initial assessment of your energy and fatigue symptoms."
+    }
   }
 ];
 
