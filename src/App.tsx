@@ -204,7 +204,9 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route index element={<DirectorDashboard />} />
+              <Route index element={<AdminDashboard />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="director" element={<DirectorDashboard />} />
               <Route path="leads" element={<AdminLeads />} />
               <Route path="episode-integrity" element={<EpisodeIntegrity />} />
               <Route path="weekly-cleanup" element={<WeeklyCleanup />} />
