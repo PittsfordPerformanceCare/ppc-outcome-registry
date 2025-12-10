@@ -1,10 +1,11 @@
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp } from "lucide-react";
+import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: Home },
+  { href: "/admin/clinician", label: "My Schedule", icon: Calendar },
   { href: "/admin/director", label: "Director View", icon: TrendingUp },
   { href: "/admin/weekly-cleanup", label: "Weekly Cleanup", icon: ClipboardList },
   { href: "/admin/special-situations", label: "Special Situations", icon: Flag },
