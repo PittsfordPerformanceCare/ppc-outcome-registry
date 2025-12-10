@@ -47,33 +47,61 @@ const SiteConcussion = () => {
       </section>
 
       {/* Symptoms Section */}
-      <section className="py-16 bg-background">
+      <section className="py-20 bg-gradient-to-b from-background via-muted/20 to-background">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-center mb-8">
-              Do These Symptoms Sound Familiar?
-            </h2>
-            <div className="grid md:grid-cols-2 gap-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-sm font-medium mb-4">
+                <AlertTriangle className="h-4 w-4" />
+                Recognize the Signs
+              </div>
+              <h2 className="text-3xl font-bold mb-4">
+                Do These Symptoms Sound Familiar?
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Persistent post-concussion symptoms indicate underlying neurologic dysfunction 
+                that won't resolve with rest alone.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                "Persistent headaches that won't go away",
-                "Brain fog and difficulty concentrating",
-                "Dizziness when moving your head",
-                "Sensitivity to light and sound",
-                "Feeling off-balance or unsteady",
-                "Fatigue that limits your daily activities",
-                "Trouble with screens and reading",
-                "Anxiety or mood changes since injury"
-              ].map((symptom, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                  <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
-                  <span>{symptom}</span>
+                { symptom: "Persistent headaches that won't go away", icon: "head" },
+                { symptom: "Brain fog and difficulty concentrating", icon: "fog" },
+                { symptom: "Dizziness when moving your head", icon: "dizzy" },
+                { symptom: "Sensitivity to light and sound", icon: "light" },
+                { symptom: "Feeling off-balance or unsteady", icon: "balance" },
+                { symptom: "Fatigue that limits your daily activities", icon: "fatigue" },
+                { symptom: "Trouble with screens and reading", icon: "screen" },
+                { symptom: "Anxiety or mood changes since injury", icon: "mood" }
+              ].map((item, index) => (
+                <div 
+                  key={index} 
+                  className="group relative p-5 rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-amber-500/30 hover:bg-amber-500/5 transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/5"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <div className="absolute top-3 right-3 h-8 w-8 rounded-full bg-amber-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  </div>
+                  <p className="text-sm font-medium leading-relaxed pr-8">{item.symptom}</p>
                 </div>
               ))}
             </div>
-            <p className="text-center text-muted-foreground mt-8">
-              If you've been told to "wait it out" but aren't improving, it's time for a 
-              different approach.
-            </p>
+            
+            <div className="mt-12 text-center">
+              <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-6 rounded-2xl bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border border-primary/20">
+                <p className="text-muted-foreground">
+                  If you've been told to "wait it out" but aren't improving, it's time for a 
+                  <span className="text-foreground font-medium"> different approach</span>.
+                </p>
+                <Button variant="default" size="sm" asChild className="shrink-0">
+                  <Link to="/patient/concierge">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
