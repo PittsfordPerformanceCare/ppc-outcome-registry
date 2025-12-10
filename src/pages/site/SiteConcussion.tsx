@@ -10,12 +10,7 @@ import {
   Clock,
   ArrowRight, 
   CheckCircle2,
-  CloudFog,
-  Compass,
-  Sun,
-  Scale,
   Battery,
-  Monitor,
   HeartPulse
 } from "lucide-react";
 
@@ -24,34 +19,31 @@ const SiteConcussion = () => {
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative py-24 lg:py-32 overflow-hidden">
-        {/* Deep blue gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-primary/90" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
-        
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+        {/* Calming light blue gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-100 via-blue-50 to-slate-100 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
         
         <div className="container mx-auto px-4 relative">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-medium">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
               <Brain className="h-4 w-4" />
               Concussion Care Division
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white">
               Still Struggling Months After Your Concussion?
             </h1>
-            <p className="text-xl text-slate-300 leading-relaxed">
+            <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed">
               Persistent post-concussion symptoms aren't just "in your head." They're real 
               neurologic deficits that require a systems-based evaluation—not just rest and time.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100" asChild>
+              <Button size="lg" asChild>
                 <Link to="/patient/concierge">
                   Schedule Neurologic Evaluation
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 bg-white/5" asChild>
+              <Button size="lg" variant="outline" asChild>
                 <Link to="/patient/self-tests/concussion">Take Self-Assessment</Link>
               </Button>
             </div>
@@ -60,85 +52,40 @@ const SiteConcussion = () => {
       </section>
 
       {/* Symptoms Section */}
-      <section className="py-24 relative overflow-hidden bg-slate-50 dark:bg-slate-900/50">
-        {/* Subtle background accents */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
-        
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-6xl mx-auto">
+      <section className="py-24 bg-white dark:bg-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
             {/* Header */}
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary mb-6">
-                <Brain className="h-4 w-4" />
-                <span className="text-sm font-semibold tracking-wide">Recognize the Signs</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
                 Do These Symptoms Sound Familiar?
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
                 Persistent post-concussion symptoms indicate underlying neurologic dysfunction 
                 that won't resolve with rest alone.
               </p>
             </div>
             
-            {/* Symptom Cards - Bento Grid Layout */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+            {/* Clinical Symptom List */}
+            <div className="grid md:grid-cols-2 gap-4">
               {[
-                { symptom: "Persistent headaches that won't go away", icon: Brain, color: "from-rose-500/20 to-rose-500/5", iconColor: "text-rose-500", borderColor: "hover:border-rose-500/40" },
-                { symptom: "Brain fog and difficulty concentrating", icon: CloudFog, color: "from-violet-500/20 to-violet-500/5", iconColor: "text-violet-500", borderColor: "hover:border-violet-500/40" },
-                { symptom: "Dizziness when moving your head", icon: Compass, color: "from-amber-500/20 to-amber-500/5", iconColor: "text-amber-500", borderColor: "hover:border-amber-500/40" },
-                { symptom: "Sensitivity to light and sound", icon: Sun, color: "from-yellow-500/20 to-yellow-500/5", iconColor: "text-yellow-500", borderColor: "hover:border-yellow-500/40" },
-                { symptom: "Feeling off-balance or unsteady", icon: Scale, color: "from-teal-500/20 to-teal-500/5", iconColor: "text-teal-500", borderColor: "hover:border-teal-500/40" },
-                { symptom: "Fatigue that limits daily activities", icon: Battery, color: "from-orange-500/20 to-orange-500/5", iconColor: "text-orange-500", borderColor: "hover:border-orange-500/40" },
-                { symptom: "Trouble with screens and reading", icon: Monitor, color: "from-blue-500/20 to-blue-500/5", iconColor: "text-blue-500", borderColor: "hover:border-blue-500/40" },
-                { symptom: "Anxiety or mood changes since injury", icon: HeartPulse, color: "from-pink-500/20 to-pink-500/5", iconColor: "text-pink-500", borderColor: "hover:border-pink-500/40" }
-              ].map((item, index) => {
-                const IconComponent = item.icon;
-                return (
-                  <div 
-                    key={index} 
-                    className={`group relative p-6 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-1 ${item.borderColor} animate-fade-in`}
-                    style={{ animationDelay: `${index * 75}ms`, animationFillMode: 'backwards' }}
-                  >
-                    {/* Gradient overlay on hover */}
-                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                    
-                    {/* Icon */}
-                    <div className={`relative mb-4 h-12 w-12 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className={`h-6 w-6 ${item.iconColor}`} />
-                    </div>
-                    
-                    {/* Text */}
-                    <p className="relative text-sm font-medium leading-relaxed text-foreground/90">{item.symptom}</p>
-                  </div>
-                );
-              })}
-            </div>
-            
-            {/* Bottom CTA */}
-            <div className="mt-16 flex justify-center">
-              <div className="relative group">
-                {/* Glow effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/50 via-warning/50 to-primary/50 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
-                
-                <div className="relative flex flex-col sm:flex-row items-center gap-6 p-8 rounded-2xl bg-card border border-border/50 shadow-lg">
-                  <div className="flex-1 text-center sm:text-left">
-                    <p className="text-lg font-medium text-foreground mb-1">
-                      Tired of waiting for symptoms to resolve?
-                    </p>
-                    <p className="text-muted-foreground">
-                      It's time for a <span className="text-primary font-semibold">different approach</span>.
-                    </p>
-                  </div>
-                  <Button size="lg" className="shrink-0 shadow-lg" asChild>
-                    <Link to="/patient/concierge">
-                      Get Started
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
+                "Persistent headaches that won't go away",
+                "Brain fog and difficulty concentrating",
+                "Dizziness when moving your head",
+                "Sensitivity to light and sound",
+                "Feeling off-balance or unsteady",
+                "Fatigue that limits daily activities",
+                "Trouble with screens and reading",
+                "Anxiety or mood changes since injury"
+              ].map((symptom, index) => (
+                <div 
+                  key={index} 
+                  className="flex items-center gap-4 p-5 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700"
+                >
+                  <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                  <p className="text-slate-700 dark:text-slate-300 font-medium">{symptom}</p>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
