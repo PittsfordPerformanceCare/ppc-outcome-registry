@@ -1,14 +1,15 @@
 import { Outlet } from "react-router-dom";
+import SiteHeader from "@/components/site/SiteHeader";
+import SiteFooter from "@/components/site/SiteFooter";
 
 const SiteLayout = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="p-4 border-b bg-muted/30">
-        <span className="text-sm text-muted-foreground">SiteLayout Placeholder</span>
-      </div>
-      <main>
+    <div className="min-h-screen flex flex-col bg-background">
+      <SiteHeader />
+      <main className="flex-1">
         <Outlet />
       </main>
+      <SiteFooter />
     </div>
   );
 };
