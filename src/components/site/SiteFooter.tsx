@@ -74,8 +74,8 @@ const SiteFooter = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0" />
-                <a href="mailto:info@pittsfordpc.com" className="hover:text-foreground">
-                  info@pittsfordpc.com
+                <a href="mailto:info@pittsfordperformancecare.com" className="hover:text-foreground">
+                  info@pittsfordperformancecare.com
                 </a>
               </div>
             </div>
