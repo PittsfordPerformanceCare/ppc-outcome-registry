@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Search, RefreshCw, ChevronUp, ChevronDown, Mail, MailCheck, Clock } from "lucide-react";
+import { Search, RefreshCw, ChevronUp, ChevronDown, Mail, MailCheck, Clock, Users } from "lucide-react";
 import { format, subDays } from "date-fns";
 import { TableSkeleton } from "@/components/skeletons/TableSkeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { LeadSummaryCard } from "@/components/LeadSummaryCard";
 
-interface Lead {
+export interface Lead {
   id: string;
   created_at: string;
   name: string | null;
@@ -30,6 +31,13 @@ interface Lead {
   episode_opened_at: string | null;
   intake_first_reminder_sent_at: string | null;
   intake_second_reminder_sent_at: string | null;
+  primary_concern: string | null;
+  symptom_summary: string | null;
+  who_is_this_for: string | null;
+  preferred_contact_method: string | null;
+  pillar_origin: string | null;
+  funnel_stage: string | null;
+  notes: string | null;
 }
 
 type SortField = "created_at" | "name" | "severity_score" | "checkpoint_status";
@@ -45,6 +53,7 @@ const AdminLeads = () => {
   const [reminderFilter, setReminderFilter] = useState("all");
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -274,47 +283,68 @@ const AdminLeads = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Leads Management</h1>
-          <p className="text-muted-foreground text-sm">
-            {filteredLeads.length} leads found
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-primary/10 rounded-xl">
+            <Users className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Leads Management</h1>
+            <p className="text-muted-foreground text-sm">
+              {filteredLeads.length} leads found
+            </p>
+          </div>
         </div>
-        <Button onClick={fetchLeads} variant="outline" size="sm" disabled={loading}>
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+        <Button onClick={fetchLeads} variant="outline" size="sm" disabled={loading} className="gap-2">
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           Refresh
         </Button>
       </div>
 
       {/* Reminder Status Overview */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <Card className="p-3">
-          <div className="text-sm text-muted-foreground">Total Leads</div>
-          <div className="text-2xl font-bold">{reminderStats.total}</div>
+        <Card className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-500/10 to-slate-500/5" />
+          <CardContent className="relative pt-4 pb-4">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Total Leads</div>
+            <div className="text-2xl font-bold mt-1">{reminderStats.total}</div>
+          </CardContent>
         </Card>
-        <Card className="p-3">
-          <div className="text-sm text-muted-foreground">Completed</div>
-          <div className="text-2xl font-bold text-green-600">{reminderStats.completed}</div>
+        <Card className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5" />
+          <CardContent className="relative pt-4 pb-4">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">Completed</div>
+            <div className="text-2xl font-bold text-emerald-600 mt-1">{reminderStats.completed}</div>
+          </CardContent>
         </Card>
-        <Card className="p-3">
-          <div className="text-sm text-muted-foreground">No Reminder</div>
-          <div className="text-2xl font-bold text-gray-500">{reminderStats.noReminder}</div>
+        <Card className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-500/10 to-gray-500/5" />
+          <CardContent className="relative pt-4 pb-4">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">No Reminder</div>
+            <div className="text-2xl font-bold text-gray-500 mt-1">{reminderStats.noReminder}</div>
+          </CardContent>
         </Card>
-        <Card className="p-3">
-          <div className="text-sm text-muted-foreground">1st Sent</div>
-          <div className="text-2xl font-bold text-yellow-600">{reminderStats.firstSent}</div>
+        <Card className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-amber-500/5" />
+          <CardContent className="relative pt-4 pb-4">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">1st Sent</div>
+            <div className="text-2xl font-bold text-amber-600 mt-1">{reminderStats.firstSent}</div>
+          </CardContent>
         </Card>
-        <Card className="p-3">
-          <div className="text-sm text-muted-foreground">2nd Sent</div>
-          <div className="text-2xl font-bold text-orange-600">{reminderStats.secondSent}</div>
+        <Card className="relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-orange-500/5" />
+          <CardContent className="relative pt-4 pb-4">
+            <div className="text-xs text-muted-foreground uppercase tracking-wide">2nd Sent</div>
+            <div className="text-2xl font-bold text-orange-600 mt-1">{reminderStats.secondSent}</div>
+          </CardContent>
         </Card>
       </div>
 
       {/* Filters */}
-      <Card>
+      <Card className="border-border/50">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Filters</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Filters</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -373,7 +403,7 @@ const AdminLeads = () => {
       </Card>
 
       {/* Table */}
-      <Card>
+      <Card className="border-border/50">
         <CardContent className="p-0">
           {loading ? (
             <div className="p-4">
@@ -383,7 +413,7 @@ const AdminLeads = () => {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="hover:bg-transparent">
                     <TableHead
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => handleSort("created_at")}
@@ -396,8 +426,7 @@ const AdminLeads = () => {
                     >
                       Name <SortIcon field="name" />
                     </TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
+                    <TableHead>Contact</TableHead>
                     <TableHead
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => handleSort("checkpoint_status")}
@@ -411,86 +440,88 @@ const AdminLeads = () => {
                     >
                       Severity <SortIcon field="severity_score" />
                     </TableHead>
-                    <TableHead>UTM Source</TableHead>
-                    <TableHead>UTM Medium</TableHead>
-                    <TableHead>UTM Campaign</TableHead>
-                    <TableHead>Origin Page</TableHead>
-                    <TableHead>Origin CTA</TableHead>
-                    <TableHead>Intake</TableHead>
-                    <TableHead>Episode</TableHead>
+                    <TableHead>Source</TableHead>
+                    <TableHead>Progress</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredLeads.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={14} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         No leads found
                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredLeads.map((lead) => (
-                      <TableRow key={lead.id}>
+                      <TableRow 
+                        key={lead.id} 
+                        className="cursor-pointer hover:bg-muted/50 transition-colors"
+                        onClick={() => setSelectedLead(lead)}
+                      >
                         <TableCell className="whitespace-nowrap">
-                          {format(new Date(lead.created_at), "MMM d, yyyy")}
-                          <br />
-                          <span className="text-xs text-muted-foreground">
+                          <div className="font-medium text-sm">
+                            {format(new Date(lead.created_at), "MMM d, yyyy")}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
                             {format(new Date(lead.created_at), "h:mm a")}
-                          </span>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {lead.name || <span className="text-muted-foreground">—</span>}
+                          </div>
                         </TableCell>
                         <TableCell>
-                          {lead.email || <span className="text-muted-foreground">—</span>}
+                          <div className="font-medium">
+                            {lead.name || <span className="text-muted-foreground">—</span>}
+                          </div>
                         </TableCell>
                         <TableCell>
-                          {lead.phone || <span className="text-muted-foreground">—</span>}
+                          <div className="text-sm">
+                            {lead.email ? (
+                              <span className="truncate max-w-[150px] block">{lead.email}</span>
+                            ) : (
+                              <span className="text-muted-foreground">—</span>
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {lead.phone || "No phone"}
+                          </div>
                         </TableCell>
                         <TableCell>{getStatusBadge(lead)}</TableCell>
                         <TableCell>{getReminderStatus(lead)}</TableCell>
                         <TableCell>
                           {lead.severity_score !== null ? (
-                            <span className="font-mono">{lead.severity_score}</span>
+                            <Badge 
+                              variant="outline" 
+                              className={
+                                lead.severity_score >= 7 
+                                  ? "border-red-500/30 text-red-600" 
+                                  : lead.severity_score >= 4 
+                                    ? "border-amber-500/30 text-amber-600" 
+                                    : "border-emerald-500/30 text-emerald-600"
+                              }
+                            >
+                              {lead.severity_score}/10
+                            </Badge>
                           ) : (
-                            <span className="text-muted-foreground">—</span>
+                            <span className="text-muted-foreground text-sm">—</span>
                           )}
                         </TableCell>
                         <TableCell>
                           {lead.utm_source ? (
-                            <Badge variant="outline">{lead.utm_source}</Badge>
+                            <Badge variant="outline" className="text-xs">{lead.utm_source}</Badge>
                           ) : (
-                            <span className="text-muted-foreground">—</span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {lead.utm_medium || <span className="text-muted-foreground">—</span>}
-                        </TableCell>
-                        <TableCell className="text-sm max-w-[150px] truncate">
-                          {lead.utm_campaign || <span className="text-muted-foreground">—</span>}
-                        </TableCell>
-                        <TableCell className="text-xs max-w-[120px] truncate" title={lead.origin_page || undefined}>
-                          {lead.origin_page || <span className="text-muted-foreground">—</span>}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {lead.origin_cta || <span className="text-muted-foreground">—</span>}
-                        </TableCell>
-                        <TableCell>
-                          {lead.intake_completed_at ? (
-                            <span className="text-green-600 text-xs">
-                              {format(new Date(lead.intake_completed_at), "M/d/yy")}
-                            </span>
-                          ) : (
-                            <span className="text-muted-foreground">—</span>
+                            <span className="text-muted-foreground text-sm">Direct</span>
                           )}
                         </TableCell>
                         <TableCell>
-                          {lead.episode_opened_at ? (
-                            <span className="text-green-600 text-xs">
-                              {format(new Date(lead.episode_opened_at), "M/d/yy")}
-                            </span>
-                          ) : (
-                            <span className="text-muted-foreground">—</span>
-                          )}
+                          <div className="flex gap-1">
+                            {lead.intake_completed_at && (
+                              <Badge className="bg-blue-500/10 text-blue-600 text-[10px] px-1">Intake</Badge>
+                            )}
+                            {lead.episode_opened_at && (
+                              <Badge className="bg-emerald-500/10 text-emerald-600 text-[10px] px-1">Episode</Badge>
+                            )}
+                            {!lead.intake_completed_at && !lead.episode_opened_at && (
+                              <span className="text-muted-foreground text-xs">Pending</span>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -501,6 +532,13 @@ const AdminLeads = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Lead Summary Card Sheet */}
+      <LeadSummaryCard
+        lead={selectedLead}
+        open={!!selectedLead}
+        onClose={() => setSelectedLead(null)}
+      />
     </div>
   );
 };
