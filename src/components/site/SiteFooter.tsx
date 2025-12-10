@@ -94,10 +94,10 @@ const SiteFooter = () => {
                   Pittsford, NY 14534
                 </a>
                 <a 
-                  href="tel:+15858807542"
+                  href="tel:+15852031050"
                   className="text-slate-400 hover:text-white transition-colors"
                 >
-                  (585) 880-7542
+                  (585) 203-1050
                 </a>
                 <a 
                   href="mailto:info@pittsfordperformancecare.com"

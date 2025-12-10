@@ -212,7 +212,7 @@ export default function ReferralStatus() {
                     <Phone className="h-5 w-5 text-primary mt-0.5" />
                     <div>
                       <p className="text-sm text-muted-foreground">Call us</p>
-                      <p className="font-medium">(585) 880-7542</p>
+                      <p className="font-medium">(585) 203-1050</p>
                     </div>
                   </div>
                   
