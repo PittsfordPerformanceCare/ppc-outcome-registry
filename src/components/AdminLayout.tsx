@@ -1,18 +1,19 @@
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Users, BarChart3, Settings, FileText, Activity, LayoutDashboard, AlertTriangle, ClipboardList, Link2, Flag } from "lucide-react";
+import { Users, BarChart3, Settings, FileText, Activity, LayoutDashboard, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp } from "lucide-react";
 
 const navItems = [
-  { href: "/admin", label: "Director Dashboard", icon: LayoutDashboard },
+  { href: "/admin", label: "Dashboard", icon: Home },
+  { href: "/admin/director", label: "Director View", icon: TrendingUp },
   { href: "/admin/weekly-cleanup", label: "Weekly Cleanup", icon: ClipboardList },
   { href: "/admin/special-situations", label: "Special Situations", icon: Flag },
   { href: "/admin/utm-health", label: "UTM Health", icon: Link2 },
   { href: "/admin/leads", label: "Leads", icon: Users },
   { href: "/lead-analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/episode-integrity", label: "Data Integrity", icon: AlertTriangle },
-  { href: "/admin/patients", label: "Patients", icon: FileText, disabled: true },
-  { href: "/admin/episodes", label: "Episodes", icon: Activity, disabled: true },
-  { href: "/admin/settings", label: "Settings", icon: Settings, disabled: true },
+  { href: "/admin-shell/patients", label: "Patients", icon: FileText },
+  { href: "/admin-shell/episodes", label: "Episodes", icon: Activity },
+  { href: "/clinic-settings", label: "Settings", icon: Settings },
 ];
 
 export function AdminLayout() {
@@ -29,25 +30,21 @@ export function AdminLayout() {
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.href;
+            const isActive = location.pathname === item.href || 
+              (item.href === "/admin" && location.pathname === "/admin/dashboard");
             return (
               <Link
                 key={item.href}
-                to={item.disabled ? "#" : item.href}
+                to={item.href}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
                   isActive
                     ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted",
-                  item.disabled && "opacity-50 cursor-not-allowed"
+                    : "hover:bg-muted"
                 )}
-                onClick={(e) => item.disabled && e.preventDefault()}
               >
                 <Icon className="h-4 w-4" />
                 {item.label}
-                {item.disabled && (
-                  <span className="ml-auto text-xs opacity-60">Soon</span>
-                )}
               </Link>
             );
           })}
