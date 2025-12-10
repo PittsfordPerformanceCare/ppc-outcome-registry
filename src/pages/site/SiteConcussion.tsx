@@ -471,19 +471,19 @@ const SiteConcussion = () => {
                   <Link 
                     key={index}
                     to={article.href}
-                    className={`group relative p-6 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ${article.borderHover} animate-fade-in`}
+                    className={`group relative p-8 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ${article.borderHover} animate-fade-in`}
                     style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
                   >
                     {/* Gradient background on hover */}
                     <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${article.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                     
-                    {/* Icon with float animation */}
-                    <div className={`relative mb-5 h-14 w-14 rounded-xl ${article.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      <IconComponent className={`h-7 w-7 ${article.iconColor}`} />
+                    {/* Icon */}
+                    <div className={`relative mb-6 h-16 w-16 rounded-2xl ${article.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className={`h-8 w-8 ${article.iconColor}`} />
                     </div>
                     
                     {/* Content */}
-                    <div className="relative space-y-3">
+                    <div className="relative space-y-4">
                       <h3 className="font-semibold text-lg group-hover:text-primary transition-colors duration-300 flex items-center gap-2">
                         {article.title}
                         <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
@@ -494,7 +494,7 @@ const SiteConcussion = () => {
                     </div>
                     
                     {/* Read more indicator */}
-                    <div className="relative mt-5 pt-4 border-t border-border/50">
+                    <div className="relative mt-6 pt-5 border-t border-border/50">
                       <span className="text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1">
                         Read full article
                         <ArrowRight className="h-3 w-3" />
