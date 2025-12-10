@@ -28,12 +28,10 @@ const SiteFooter = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
             {/* Brand */}
-            <div className="lg:col-span-1">
-              <Link to="/site/home" className="flex items-center gap-3 mb-6 group">
-                <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-                  <Brain className="h-6 w-6 text-primary" />
-                </div>
-                <span className="font-bold text-white text-lg">Pittsford<br />Performance Care</span>
+            <div>
+              <Link to="/site/home" className="inline-flex items-center gap-2 mb-6 group">
+                <Brain className="h-5 w-5 text-primary" />
+                <span className="font-semibold text-white text-lg">Pittsford Performance Care</span>
               </Link>
               <p className="text-slate-400 leading-relaxed">
                 Neurologic-driven care for concussion recovery and musculoskeletal performance.
