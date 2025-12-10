@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Brain, MapPin, Phone, Mail, ArrowRight } from "lucide-react";
+import { Brain, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const SiteFooter = () => {
@@ -85,36 +85,27 @@ const SiteFooter = () => {
             {/* Contact Info */}
             <div>
               <h4 className="font-semibold text-white mb-6 text-lg">Contact</h4>
-              <div className="space-y-4">
+              <div className="flex flex-col gap-3">
                 <a 
                   href="https://maps.google.com/?q=3800+Monroe+Ave+Suite+22+Pittsford+NY+14534"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-3 group"
+                  className="text-slate-400 hover:text-white transition-colors"
                 >
-                  <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-slate-400 group-hover:text-white transition-colors">
-                    3800 Monroe Ave., Suite 22<br />
-                    Pittsford, NY 14534
-                  </span>
+                  3800 Monroe Ave., Suite 22<br />
+                  Pittsford, NY 14534
                 </a>
                 <a 
                   href="tel:+15858807542"
-                  className="flex items-center gap-3 group"
+                  className="text-slate-400 hover:text-white transition-colors"
                 >
-                  <Phone className="h-5 w-5 text-primary shrink-0" />
-                  <span className="text-slate-400 group-hover:text-white transition-colors">
-                    (585) 880-7542
-                  </span>
+                  (585) 880-7542
                 </a>
                 <a 
                   href="mailto:info@pittsfordperformancecare.com"
-                  className="flex items-start gap-3 group"
+                  className="text-slate-400 hover:text-white transition-colors break-all"
                 >
-                  <Mail className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-slate-400 group-hover:text-white transition-colors break-all">
-                    info@pittsfordperformancecare.com
-                  </span>
+                  info@pittsfordperformancecare.com
                 </a>
               </div>
             </div>
