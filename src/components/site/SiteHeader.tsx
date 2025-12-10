@@ -12,40 +12,60 @@ import { Menu, X, Brain } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
+const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
+  <Link
+    to={to}
+    className="relative text-sm font-medium text-muted-foreground transition-all duration-200 hover:text-foreground after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+  >
+    {children}
+  </Link>
+);
+
 const SiteHeader = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
+      <div className="container mx-auto flex h-18 items-center justify-between px-6 py-4 lg:px-8">
         {/* Logo */}
-        <Link to="/site/home" className="flex items-center gap-2">
-          <Brain className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold tracking-tight">
-            Pittsford Performance Care
-          </span>
+        <Link 
+          to="/site/home" 
+          className="group flex items-center gap-3 transition-transform duration-200 hover:scale-[1.02]"
+        >
+          <div className="relative">
+            <Brain className="h-9 w-9 text-primary transition-transform duration-300 group-hover:rotate-6" />
+            <div className="absolute inset-0 -z-10 h-9 w-9 rounded-full bg-primary/10 blur-md transition-opacity duration-300 group-hover:opacity-100 opacity-0" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-lg font-bold tracking-tight lg:text-xl">
+              Pittsford Performance Care
+            </span>
+            <span className="hidden text-[10px] font-medium uppercase tracking-widest text-muted-foreground lg:block">
+              Neurologic Rehabilitation
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden lg:flex items-center gap-8">
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent">
+                <NavigationMenuTrigger className="bg-transparent text-sm font-medium text-muted-foreground transition-colors hover:text-foreground data-[state=open]:text-foreground">
                   Conditions
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                  <ul className="grid w-[420px] gap-4 p-6 md:w-[520px] md:grid-cols-2">
                     <li>
                       <NavigationMenuLink asChild>
                         <Link
                           to="/site/concussion"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="group block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:shadow-sm focus:bg-accent focus:text-accent-foreground"
                         >
-                          <div className="text-sm font-medium leading-none">
+                          <div className="text-sm font-semibold leading-none tracking-tight group-hover:text-primary transition-colors">
                             Concussion Care
                           </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
                             Specialized neurologic evaluation for persistent post-concussion symptoms
                           </p>
                         </Link>
@@ -55,12 +75,12 @@ const SiteHeader = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/site/msk"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="group block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:shadow-sm focus:bg-accent focus:text-accent-foreground"
                         >
-                          <div className="text-sm font-medium leading-none">
+                          <div className="text-sm font-semibold leading-none tracking-tight group-hover:text-primary transition-colors">
                             Musculoskeletal Care
                           </div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
                             Neuromuscular-driven approach to chronic pain and movement dysfunction
                           </p>
                         </Link>
@@ -72,116 +92,109 @@ const SiteHeader = () => {
             </NavigationMenuList>
           </NavigationMenu>
 
-          <Link
-            to="/site/articles"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Resources
-          </Link>
-          <Link
-            to="/site/about"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            About
-          </Link>
-          <Link
-            to="/site/providers"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Providers
-          </Link>
-          <Link
-            to="/site/contact"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Contact
-          </Link>
-          <Link
-            to="/staff-login"
-            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Staff Login
-          </Link>
+          <NavLink to="/site/articles">Resources</NavLink>
+          <NavLink to="/site/about">About</NavLink>
+          <NavLink to="/site/providers">Providers</NavLink>
+          <NavLink to="/site/contact">Contact</NavLink>
+          
+          <div className="h-5 w-px bg-border/60" />
+          
+          <NavLink to="/staff-login">Staff Login</NavLink>
 
-          <Button asChild className="ml-4">
+          <Button asChild size="default" className="ml-2 px-6 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02]">
             <Link to="/patient/concierge">Schedule Evaluation</Link>
           </Button>
         </nav>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2"
+          className="lg:hidden p-2.5 rounded-lg transition-colors hover:bg-accent"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileMenuOpen ? (
+            <X className="h-6 w-6 transition-transform duration-200" />
+          ) : (
+            <Menu className="h-6 w-6 transition-transform duration-200" />
+          )}
         </button>
       </div>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden border-t bg-background">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Conditions</p>
-              <Link
-                to="/site/concussion"
-                className="block pl-4 py-2 text-sm hover:text-primary"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Concussion Care
-              </Link>
-              <Link
-                to="/site/msk"
-                className="block pl-4 py-2 text-sm hover:text-primary"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Musculoskeletal Care
-              </Link>
-            </div>
+      <div
+        className={cn(
+          "lg:hidden border-t border-border/40 bg-background overflow-hidden transition-all duration-300 ease-in-out",
+          mobileMenuOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+        )}
+      >
+        <nav className="container mx-auto px-6 py-6 flex flex-col gap-2">
+          <div className="space-y-1 pb-4 border-b border-border/40">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Conditions
+            </p>
+            <Link
+              to="/site/concussion"
+              className="block pl-4 py-2.5 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-primary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Concussion Care
+            </Link>
+            <Link
+              to="/site/msk"
+              className="block pl-4 py-2.5 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-primary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Musculoskeletal Care
+            </Link>
+          </div>
+          
+          <div className="py-2 space-y-1">
             <Link
               to="/site/articles"
-              className="py-2 text-sm font-medium hover:text-primary"
+              className="block py-2.5 px-4 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               Resources
             </Link>
             <Link
               to="/site/about"
-              className="py-2 text-sm font-medium hover:text-primary"
+              className="block py-2.5 px-4 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               About
             </Link>
             <Link
               to="/site/providers"
-              className="py-2 text-sm font-medium hover:text-primary"
+              className="block py-2.5 px-4 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               Providers
             </Link>
             <Link
               to="/site/contact"
-              className="py-2 text-sm font-medium hover:text-primary"
+              className="block py-2.5 px-4 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact
             </Link>
+          </div>
+          
+          <div className="pt-4 border-t border-border/40 space-y-3">
             <Link
               to="/staff-login"
-              className="py-2 text-sm font-medium hover:text-primary"
+              className="block py-2.5 px-4 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:bg-accent hover:text-primary"
               onClick={() => setMobileMenuOpen(false)}
             >
               Staff Login
             </Link>
-            <Button asChild className="mt-2">
+            <Button asChild className="w-full shadow-sm">
               <Link to="/patient/concierge" onClick={() => setMobileMenuOpen(false)}>
                 Schedule Evaluation
               </Link>
             </Button>
-          </nav>
-        </div>
-      )}
+          </div>
+        </nav>
+      </div>
     </header>
   );
 };
