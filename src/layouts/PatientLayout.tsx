@@ -46,9 +46,9 @@ const PatientLayout = () => {
               <span>Pittsford Performance Care</span>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-4">
-              <a href="tel:585-880-7542" className="flex items-center gap-1 hover:text-foreground">
+              <a href="tel:585-203-1050" className="flex items-center gap-1 hover:text-foreground">
                 <Phone className="h-3 w-3" />
-                (585) 880-7542
+                (585) 203-1050
               </a>
               <a href="mailto:info@pittsfordperformancecare.com" className="flex items-center gap-1 hover:text-foreground">
                 <Mail className="h-3 w-3" />

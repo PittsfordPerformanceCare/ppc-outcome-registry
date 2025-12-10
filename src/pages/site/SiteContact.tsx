@@ -84,10 +84,10 @@ const SiteContact = () => {
                   <div>
                     <h3 className="font-semibold">Phone</h3>
                     <a 
-                      href="tel:+15858807542" 
+                      href="tel:+15852031050" 
                       className="text-muted-foreground mt-1 hover:text-primary transition-colors"
                     >
-                      (585) 880-7542
+                      (585) 203-1050
                     </a>
                   </div>
                 </div>
