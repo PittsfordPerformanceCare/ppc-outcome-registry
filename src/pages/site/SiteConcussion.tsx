@@ -23,28 +23,35 @@ const SiteConcussion = () => {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-28 bg-gradient-to-b from-primary/5 to-background">
-        <div className="container mx-auto px-4">
+      <section className="relative py-24 lg:py-32 overflow-hidden">
+        {/* Deep blue gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-primary/90" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+        
+        <div className="container mx-auto px-4 relative">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-medium">
               <Brain className="h-4 w-4" />
               Concussion Care Division
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white">
               Still Struggling Months After Your Concussion?
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-slate-300 leading-relaxed">
               Persistent post-concussion symptoms aren't just "in your head." They're real 
               neurologic deficits that require a systems-based evaluation—not just rest and time.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button size="lg" asChild>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100" asChild>
                 <Link to="/patient/concierge">
                   Schedule Neurologic Evaluation
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 bg-white/5" asChild>
                 <Link to="/patient/self-tests/concussion">Take Self-Assessment</Link>
               </Button>
             </div>
@@ -53,21 +60,20 @@ const SiteConcussion = () => {
       </section>
 
       {/* Symptoms Section */}
-      <section className="py-24 relative overflow-hidden">
-        {/* Decorative background elements */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-warning-soft/30 to-background" />
-        <div className="absolute top-20 left-10 w-72 h-72 bg-warning/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+      <section className="py-24 relative overflow-hidden bg-slate-50 dark:bg-slate-900/50">
+        {/* Subtle background accents */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
         
         <div className="container mx-auto px-4 relative">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-warning/20 to-warning/10 border border-warning/20 text-warning dark:text-warning mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary mb-6">
                 <Brain className="h-4 w-4" />
                 <span className="text-sm font-semibold tracking-wide">Recognize the Signs</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground via-foreground to-muted-foreground bg-clip-text">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6">
                 Do These Symptoms Sound Familiar?
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -139,11 +145,15 @@ const SiteConcussion = () => {
       </section>
 
       {/* Five-System Model */}
-      <section className="py-20 bg-muted/30" id="five-system-model">
+      <section className="py-24 bg-white dark:bg-slate-900" id="five-system-model">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">The Five-System Concussion Model</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary mb-6">
+              <Brain className="h-4 w-4" />
+              <span className="text-sm font-semibold tracking-wide">Our Approach</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">The Five-System Concussion Model</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Concussions rarely affect just one system. Our comprehensive evaluation 
               examines all five neurologic systems that can be disrupted by brain injury.
             </p>
