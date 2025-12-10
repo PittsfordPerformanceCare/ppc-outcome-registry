@@ -74,6 +74,7 @@ const WeeklyCleanup = lazy(() => import("./pages/WeeklyCleanup"));
 const UTMHealth = lazy(() => import("./pages/UTMHealth"));
 const SpecialSituations = lazy(() => import("./pages/SpecialSituations"));
 const ClinicianDashboard = lazy(() => import("./pages/ClinicianDashboard"));
+const MyDay = lazy(() => import("./pages/MyDay"));
 
 // ========== PHASE 1 SHELL: NEW LAYOUTS ==========
 const SiteLayout = lazy(() => import("./layouts/SiteLayout"));
@@ -207,6 +208,7 @@ const App = () => (
             >
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="my-day" element={<MyDay />} />
               <Route path="clinician" element={<ClinicianDashboard />} />
               <Route path="director" element={<DirectorDashboard />} />
               <Route path="leads" element={<AdminLeads />} />
