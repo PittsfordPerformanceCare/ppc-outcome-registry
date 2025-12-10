@@ -96,6 +96,12 @@ const SiteHeader = () => {
           >
             Contact
           </Link>
+          <Link
+            to="/staff-login"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Staff Login
+          </Link>
 
           <Button asChild className="ml-4">
             <Link to="/patient/concierge">Schedule Evaluation</Link>
@@ -160,6 +166,13 @@ const SiteHeader = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Contact
+            </Link>
+            <Link
+              to="/staff-login"
+              className="py-2 text-sm font-medium hover:text-primary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Staff Login
             </Link>
             <Button asChild className="mt-2">
               <Link to="/patient/concierge" onClick={() => setMobileMenuOpen(false)}>
