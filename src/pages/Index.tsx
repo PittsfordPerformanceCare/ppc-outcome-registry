@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import SiteHeader from "@/components/site/SiteHeader";
+import SiteFooter from "@/components/site/SiteFooter";
 import SiteHome from "./site/SiteHome";
 
 const Index = () => {
@@ -33,9 +35,17 @@ const Index = () => {
     );
   }
 
-  // Show Hub Home for unauthenticated users
+  // Show Hub Home with header and footer for unauthenticated users
   if (!isAuthenticated) {
-    return <SiteHome />;
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <SiteHeader />
+        <main className="flex-1">
+          <SiteHome />
+        </main>
+        <SiteFooter />
+      </div>
+    );
   }
 
   return null;
