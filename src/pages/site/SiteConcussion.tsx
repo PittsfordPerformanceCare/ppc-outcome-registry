@@ -246,15 +246,15 @@ const SiteConcussion = () => {
       {/* Energy Crisis */}
       <section className="py-24 relative overflow-hidden" id="energy-crisis">
         {/* Decorative background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-background to-red-500/5" />
-        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-orange-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-red-500/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-background to-primary/5" />
+        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         
         <div className="container mx-auto px-4 relative">
           <div className="max-w-6xl mx-auto">
             {/* Section Header */}
             <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/20 to-red-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-primary/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 mb-6">
                 <Battery className="h-4 w-4" />
                 <span className="text-sm font-semibold tracking-wide">Understanding Fatigue</span>
               </div>
@@ -270,11 +270,11 @@ const SiteConcussion = () => {
             <div className="grid lg:grid-cols-2 gap-10 items-stretch">
               {/* Left: What's Happening */}
               <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-orange-500/30 to-red-500/30 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/30 to-primary/30 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
                 <div className="relative h-full p-8 rounded-2xl bg-card border border-border/60 backdrop-blur-sm space-y-6">
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500/20 to-red-500/10 flex items-center justify-center">
-                      <Zap className="h-6 w-6 text-orange-500" />
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-primary/10 flex items-center justify-center">
+                      <Zap className="h-6 w-6 text-blue-500" />
                     </div>
                     <h3 className="text-xl font-bold">What's Happening</h3>
                   </div>
@@ -287,18 +287,21 @@ const SiteConcussion = () => {
                   
                   <div className="space-y-4 pt-2">
                     {[
-                      { text: "Reduced mitochondrial efficiency in affected areas", icon: "🔋" },
-                      { text: "Increased metabolic demand for routine tasks", icon: "📈" },
-                      { text: "Threshold symptoms when energy reserves deplete", icon: "⚡" }
-                    ].map((item, index) => (
-                      <div 
-                        key={index}
-                        className="flex items-start gap-3 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors duration-300"
-                      >
-                        <span className="text-lg">{item.icon}</span>
-                        <span className="text-sm font-medium">{item.text}</span>
-                      </div>
-                    ))}
+                      { text: "Reduced mitochondrial efficiency in affected areas", icon: Battery },
+                      { text: "Increased metabolic demand for routine tasks", icon: Zap },
+                      { text: "Threshold symptoms when energy reserves deplete", icon: Brain }
+                    ].map((item, index) => {
+                      const IconComponent = item.icon;
+                      return (
+                        <div 
+                          key={index}
+                          className="flex items-start gap-3 p-3 rounded-xl bg-blue-500/5 hover:bg-blue-500/10 transition-colors duration-300"
+                        >
+                          <IconComponent className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                          <span className="text-sm font-medium">{item.text}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                   
                   <p className="text-sm text-muted-foreground pt-2 border-t border-border/50">
@@ -311,20 +314,20 @@ const SiteConcussion = () => {
               {/* Right: Signs Grid */}
               <div className="space-y-6">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-red-500/20 to-orange-500/10 flex items-center justify-center">
-                    <HeartPulse className="h-6 w-6 text-red-500" />
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-blue-500/10 flex items-center justify-center">
+                    <HeartPulse className="h-6 w-6 text-primary" />
                   </div>
                   <h3 className="text-xl font-bold">Common Energy Crisis Signs</h3>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
-                    { sign: "Worse symptoms later in the day", color: "from-orange-500/20 to-orange-500/5", borderColor: "hover:border-orange-500/40" },
-                    { sign: "Crashes after cognitive or physical exertion", color: "from-red-500/20 to-red-500/5", borderColor: "hover:border-red-500/40" },
-                    { sign: "Need for frequent rest breaks", color: "from-amber-500/20 to-amber-500/5", borderColor: "hover:border-amber-500/40" },
-                    { sign: "Inability to return to normal activity levels", color: "from-rose-500/20 to-rose-500/5", borderColor: "hover:border-rose-500/40" },
-                    { sign: "Sleep doesn't fully restore energy", color: "from-pink-500/20 to-pink-500/5", borderColor: "hover:border-pink-500/40" },
-                    { sign: "Mental exhaustion from simple tasks", color: "from-orange-500/20 to-orange-500/5", borderColor: "hover:border-orange-500/40" }
+                    { sign: "Worse symptoms later in the day", color: "from-blue-500/20 to-blue-500/5", borderColor: "hover:border-blue-500/40" },
+                    { sign: "Crashes after cognitive or physical exertion", color: "from-sky-500/20 to-sky-500/5", borderColor: "hover:border-sky-500/40" },
+                    { sign: "Need for frequent rest breaks", color: "from-cyan-500/20 to-cyan-500/5", borderColor: "hover:border-cyan-500/40" },
+                    { sign: "Inability to return to normal activity levels", color: "from-teal-500/20 to-teal-500/5", borderColor: "hover:border-teal-500/40" },
+                    { sign: "Sleep doesn't fully restore energy", color: "from-primary/20 to-primary/5", borderColor: "hover:border-primary/40" },
+                    { sign: "Mental exhaustion from simple tasks", color: "from-indigo-500/20 to-indigo-500/5", borderColor: "hover:border-indigo-500/40" }
                   ].map((item, index) => (
                     <div 
                       key={index}
@@ -333,7 +336,7 @@ const SiteConcussion = () => {
                     >
                       <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                       <div className="relative flex items-start gap-3">
-                        <div className="h-2 w-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 mt-2 shrink-0" />
+                        <div className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-500 to-primary mt-2 shrink-0" />
                         <span className="text-sm font-medium leading-relaxed">{item.sign}</span>
                       </div>
                     </div>
@@ -344,7 +347,7 @@ const SiteConcussion = () => {
                 <div className="pt-4">
                   <Link 
                     to="/site/articles/concussion/concussion-energy-crisis-and-recovery"
-                    className="group inline-flex items-center gap-2 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+                    className="group inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                   >
                     Learn more about the energy crisis
                     <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
