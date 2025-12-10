@@ -358,43 +358,108 @@ const SiteConcussion = () => {
       </section>
 
       {/* Related Articles */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold mb-8">Learn More About Concussion Recovery</h2>
+      <section className="py-20 bg-gradient-to-b from-muted/20 via-background to-muted/30 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-5xl mx-auto">
+            {/* Section header */}
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary mb-6">
+                <ArrowRight className="h-4 w-4" />
+                <span className="text-sm font-semibold tracking-wide">Deep Dive Resources</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text">
+                Learn More About Concussion Recovery
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Explore our in-depth guides on specific post-concussion challenges and recovery strategies.
+              </p>
+            </div>
+            
+            {/* Article cards */}
             <div className="grid md:grid-cols-3 gap-6">
+              {[
+                {
+                  title: "Visual-Vestibular Mismatch",
+                  description: "Why your eyes and inner ear aren't working together—and what to do about it",
+                  href: "/site/articles/concussion/visual-vestibular-mismatch",
+                  icon: Eye,
+                  color: "from-blue-500/20 to-purple-500/10",
+                  iconBg: "bg-blue-500/10",
+                  iconColor: "text-blue-500",
+                  borderHover: "group-hover:border-blue-500/50"
+                },
+                {
+                  title: "Autonomic Nervous System Flow",
+                  description: "How ANS dysregulation causes fatigue, anxiety, and exercise intolerance",
+                  href: "/site/articles/concussion/autonomic-nervous-system-flow",
+                  icon: Heart,
+                  color: "from-rose-500/20 to-orange-500/10",
+                  iconBg: "bg-rose-500/10",
+                  iconColor: "text-rose-500",
+                  borderHover: "group-hover:border-rose-500/50"
+                },
+                {
+                  title: "Cerebellar Timing & Coordination",
+                  description: "When your brain's master clock is disrupted and recovery feels impossible",
+                  href: "/site/articles/concussion/cerebellar-timing-and-coordination",
+                  icon: Brain,
+                  color: "from-emerald-500/20 to-teal-500/10",
+                  iconBg: "bg-emerald-500/10",
+                  iconColor: "text-emerald-500",
+                  borderHover: "group-hover:border-emerald-500/50"
+                }
+              ].map((article, index) => {
+                const IconComponent = article.icon;
+                return (
+                  <Link 
+                    key={index}
+                    to={article.href}
+                    className={`group relative p-6 rounded-2xl border border-border/60 bg-card/80 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 ${article.borderHover} animate-fade-in`}
+                    style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
+                  >
+                    {/* Gradient background on hover */}
+                    <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${article.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                    
+                    {/* Icon with float animation */}
+                    <div className={`relative mb-5 h-14 w-14 rounded-xl ${article.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                      <IconComponent className={`h-7 w-7 ${article.iconColor}`} />
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="relative space-y-3">
+                      <h3 className="font-semibold text-lg group-hover:text-primary transition-colors duration-300 flex items-center gap-2">
+                        {article.title}
+                        <ArrowRight className="h-4 w-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {article.description}
+                      </p>
+                    </div>
+                    
+                    {/* Read more indicator */}
+                    <div className="relative mt-5 pt-4 border-t border-border/50">
+                      <span className="text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-1">
+                        Read full article
+                        <ArrowRight className="h-3 w-3" />
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            
+            {/* Browse all link */}
+            <div className="flex justify-center mt-10">
               <Link 
-                to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="p-6 rounded-lg border hover:border-primary/50 transition-colors group"
+                to="/site/articles" 
+                className="group inline-flex items-center gap-2 px-6 py-3 rounded-full bg-muted/50 border border-border hover:border-primary/50 hover:bg-primary/5 transition-all duration-300"
               >
-                <h3 className="font-semibold group-hover:text-primary transition-colors">
-                  Visual-Vestibular Mismatch
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Why your eyes and inner ear aren't working together
-                </p>
-              </Link>
-              <Link 
-                to="/site/articles/concussion/autonomic-dysfunction"
-                className="p-6 rounded-lg border hover:border-primary/50 transition-colors group"
-              >
-                <h3 className="font-semibold group-hover:text-primary transition-colors">
-                  Autonomic Dysfunction
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  How ANS dysregulation causes fatigue and anxiety
-                </p>
-              </Link>
-              <Link 
-                to="/site/articles/concussion/return-to-activity"
-                className="p-6 rounded-lg border hover:border-primary/50 transition-colors group"
-              >
-                <h3 className="font-semibold group-hover:text-primary transition-colors">
-                  Return to Activity
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2">
-                  Safe progression back to work, school, and sport
-                </p>
+                <span className="text-sm font-medium">Browse All Resources</span>
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
           </div>
