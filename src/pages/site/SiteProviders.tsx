@@ -6,28 +6,16 @@ import {
   Award,
   ArrowRight
 } from "lucide-react";
+import drMichaelFink from "@/assets/providers/dr-michael-fink.jpg";
 
 const providers = [
   {
-    name: "Dr. Sarah Mitchell",
+    name: "Dr. Michael Fink",
     title: "Clinical Director",
-    credentials: "DC, DACNB, FACFN",
+    credentials: "DC, DACNB",
     specialties: ["Functional Neurology", "Concussion Management", "Vestibular Rehabilitation"],
-    bio: "Dr. Mitchell is a board-certified chiropractic neurologist with over 15 years of experience in functional neurology. She specializes in complex concussion cases and vestibular disorders."
-  },
-  {
-    name: "Dr. Michael Chen",
-    title: "Neurologic Specialist",
-    credentials: "DC, CCSP, DABCN",
-    specialties: ["Sports Neurology", "Motor Control", "Performance Optimization"],
-    bio: "Dr. Chen focuses on neuromuscular performance and sports-related neurologic conditions. He works with athletes from youth to professional levels."
-  },
-  {
-    name: "Dr. Emily Roberts",
-    title: "Rehabilitation Specialist",
-    credentials: "DPT, NCS",
-    specialties: ["Neurologic Physical Therapy", "Balance Disorders", "Gait Analysis"],
-    bio: "Dr. Roberts is a neurologic clinical specialist in physical therapy. She leads our vestibular and balance rehabilitation programs."
+    bio: "Dr. Fink is a board-certified chiropractic neurologist and the founder of Pittsford Performance Care. He specializes in functional neurology, concussion management, and complex neurologic cases.",
+    image: drMichaelFink
   }
 ];
 
@@ -55,12 +43,20 @@ const SiteProviders = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {providers.map((provider, index) => (
               <Card key={index} className="overflow-hidden">
-                <div className="h-48 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                  <div className="h-24 w-24 rounded-full bg-primary/20 flex items-center justify-center">
-                    <span className="text-3xl font-bold text-primary">
-                      {provider.name.split(' ').map(n => n[0]).join('')}
-                    </span>
-                  </div>
+                <div className="h-64 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center overflow-hidden">
+                  {provider.image ? (
+                    <img 
+                      src={provider.image} 
+                      alt={provider.name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  ) : (
+                    <div className="h-24 w-24 rounded-full bg-primary/20 flex items-center justify-center">
+                      <span className="text-3xl font-bold text-primary">
+                        {provider.name.split(' ').map(n => n[0]).join('')}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <CardHeader>
                   <CardTitle className="text-xl">{provider.name}</CardTitle>
