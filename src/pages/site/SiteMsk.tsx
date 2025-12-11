@@ -14,6 +14,35 @@ import {
   HeartPulse
 } from "lucide-react";
 
+// Athlete images
+import athleteResilient from "@/assets/athletes/resilient.jpg";
+import athleteFierce from "@/assets/athletes/fierce.jpg";
+import athleteGifted from "@/assets/athletes/gifted.jpg";
+import athleteGrit from "@/assets/athletes/grit.jpg";
+
+const athleteCards = [
+  {
+    image: athleteResilient,
+    word: "resilient",
+    definition: "[of a person] able to withstand or recover quickly from difficult conditions."
+  },
+  {
+    image: athleteFierce,
+    word: "fierce",
+    definition: "[as in intense] extreme in degree, power, or effect."
+  },
+  {
+    image: athleteGifted,
+    word: "gifted",
+    definition: "having exceptional talent or natural ability."
+  },
+  {
+    image: athleteGrit,
+    word: "grit",
+    definition: "courage and resolve; strength of character."
+  }
+];
+
 const SiteMsk = () => {
   return (
     <div className="flex flex-col">
@@ -47,6 +76,51 @@ const SiteMsk = () => {
                 <Link to="/patient/self-tests/msk">Take Self-Assessment</Link>
               </Button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Athlete Gallery Section */}
+      <section className="py-16 bg-slate-900 dark:bg-slate-950 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              We Help Athletes Like You
+            </h2>
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+              From weekend warriors to elite competitors, we restore the neuromuscular 
+              function that makes peak performance possible.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {athleteCards.map((card, index) => (
+              <div 
+                key={index}
+                className="group relative aspect-square overflow-hidden rounded-xl shadow-2xl animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'backwards' }}
+              >
+                {/* Image with grayscale/sepia effect */}
+                <img 
+                  src={card.image} 
+                  alt={`Athlete demonstrating ${card.word}`}
+                  className="absolute inset-0 w-full h-full object-cover grayscale-[50%] sepia-[20%] group-hover:grayscale-0 group-hover:sepia-0 transition-all duration-500"
+                />
+                
+                {/* Gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                
+                {/* Text content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center">
+                  <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#e63946] tracking-tight mb-2 drop-shadow-lg">
+                    {card.word}
+                  </h3>
+                  <p className="text-xs md:text-sm text-white/90 max-w-[200px] leading-relaxed drop-shadow-md">
+                    {card.definition}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
