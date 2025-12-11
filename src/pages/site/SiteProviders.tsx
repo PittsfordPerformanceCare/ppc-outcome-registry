@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import drMichaelFink from "@/assets/providers/dr-michael-fink.jpg";
 import drJamesGaffney from "@/assets/providers/dr-james-gaffney.jpg";
+import drRobertLuckey from "@/assets/providers/dr-robert-luckey.jpg";
 
 const providers = [
   {
@@ -25,6 +26,14 @@ const providers = [
     specialties: ["Chiropractic Care", "Rehabilitation", "Sports Performance"],
     bio: "Dr. Gaffney provides comprehensive chiropractic care and rehabilitation services at Pittsford Performance Care, working closely with patients to support their recovery and performance goals.",
     image: drJamesGaffney
+  },
+  {
+    name: "Dr. C. Robert Luckey",
+    title: "Performance Specialist",
+    credentials: "DC",
+    specialties: ["Sports Performance", "Athletic Training", "Movement Analysis"],
+    bio: "Dr. Luckey specializes in athletic performance and movement optimization at Pittsford Performance Care, helping athletes reach their full potential through targeted assessment and training.",
+    image: drRobertLuckey
   }
 ];
 
