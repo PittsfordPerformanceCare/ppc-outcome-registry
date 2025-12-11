@@ -68,6 +68,7 @@ const NeurologicIntakeForm = lazy(() => import("./pages/NeurologicIntakeForm"));
 const LeadAnalytics = lazy(() => import("./pages/LeadAnalytics"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminLeads = lazy(() => import("./pages/AdminLeads"));
+const AdminClinicianQueues = lazy(() => import("./pages/AdminClinicianQueues"));
 const EpisodeIntegrity = lazy(() => import("./pages/EpisodeIntegrity"));
 const DirectorDashboard = lazy(() => import("./pages/DirectorDashboard"));
 const WeeklyCleanup = lazy(() => import("./pages/WeeklyCleanup"));
@@ -211,6 +212,7 @@ const App = () => (
               <Route path="my-day" element={<MyDay />} />
               <Route path="director" element={<DirectorDashboard />} />
               <Route path="leads" element={<AdminLeads />} />
+              <Route path="clinician-queues" element={<AdminClinicianQueues />} />
               <Route path="episode-integrity" element={<EpisodeIntegrity />} />
               <Route path="weekly-cleanup" element={<WeeklyCleanup />} />
               <Route path="utm-health" element={<UTMHealth />} />
