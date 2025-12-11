@@ -209,7 +209,6 @@ const App = () => (
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="my-day" element={<MyDay />} />
-              <Route path="clinician" element={<ClinicianDashboard />} />
               <Route path="director" element={<DirectorDashboard />} />
               <Route path="leads" element={<AdminLeads />} />
               <Route path="episode-integrity" element={<EpisodeIntegrity />} />
@@ -217,6 +216,18 @@ const App = () => (
               <Route path="utm-health" element={<UTMHealth />} />
               <Route path="special-situations" element={<SpecialSituations />} />
             </Route>
+
+            {/* ========== CLINICIAN DASHBOARD ROUTE ========== */}
+            <Route
+              path="/clinician/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ClinicianDashboard />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
             
             <Route
               path="/*"
