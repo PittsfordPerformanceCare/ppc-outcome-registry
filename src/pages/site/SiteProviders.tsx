@@ -16,7 +16,7 @@ const providers = [
     title: "Senior Lead Clinician",
     credentials: "DC",
     specialties: ["Pediatric Care", "Sports Rehabilitation", "Injury Prevention", "Performance Optimization"],
-    bio: "Dr. Fink joined PPC in 2013 and coordinates musculoskeletal care operations. He earned his undergraduate degree from Houghton College (2009) and Doctorate from Northeastern College of Health Sciences (2012). Currently pursuing post-doctoral training in Functional Neurology, he is active in bridging professional gaps in care for the pediatric athlete through evidence-based education and collaboration.",
+    bio: "Dr. Fink joined PPC in 2013 and coordinates musculoskeletal care operations. He earned his undergraduate degree from Houghton University (2009) and Doctorate from Northeastern College of Health Sciences (2012). Currently pursuing post-doctoral training in Functional Neurology, he is active in bridging professional gaps in care for the pediatric athlete through evidence-based education and collaboration.",
     image: drMichaelFink
   },
   {
