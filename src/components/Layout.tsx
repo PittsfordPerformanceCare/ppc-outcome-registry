@@ -11,6 +11,7 @@ import { IntakeNotificationsPanel } from "./IntakeNotificationsPanel";
 import { FloatingActionButton } from "./FloatingActionButton";
 import { BottomTabNavigation } from "./BottomTabNavigation";
 import { PageTransition } from "./PageTransition";
+import { TeamChatPanel } from "./TeamChatPanel";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -435,6 +436,9 @@ export function Layout({ children }: LayoutProps) {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-2">
+            {/* Team Chat */}
+            <TeamChatPanel />
+            
             {/* Intake Notifications */}
             <IntakeNotificationsPanel />
             

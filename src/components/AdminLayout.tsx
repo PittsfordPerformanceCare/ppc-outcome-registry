@@ -2,12 +2,14 @@ import { Link, useLocation, Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
+import { TeamChatPanel } from "@/components/TeamChatPanel";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: Home },
   { href: "/admin/my-day", label: "My Day", icon: Sun },
   { href: "/admin/clinician", label: "My Schedule", icon: Calendar },
   { href: "/admin/director", label: "Director View", icon: TrendingUp },
+  { href: "/admin/clinician-queues", label: "Clinician Queues", icon: ClipboardList },
   { href: "/admin/weekly-cleanup", label: "Weekly Cleanup", icon: ClipboardList },
   { href: "/admin/special-situations", label: "Special Situations", icon: Flag },
   { href: "/admin/utm-health", label: "UTM Health", icon: Link2 },
@@ -31,7 +33,10 @@ export function AdminLayout() {
             <h2 className="text-lg font-semibold">Admin Panel</h2>
             <p className="text-sm text-muted-foreground">Manage leads & analytics</p>
           </div>
-          <NotificationBell />
+          <div className="flex items-center gap-1">
+            <TeamChatPanel />
+            <NotificationBell />
+          </div>
         </div>
         <nav className="space-y-1">
           {navItems.map((item) => {
