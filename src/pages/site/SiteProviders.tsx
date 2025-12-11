@@ -7,6 +7,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import drMichaelFink from "@/assets/providers/dr-michael-fink.jpg";
+import drJamesGaffney from "@/assets/providers/dr-james-gaffney.jpg";
 
 const providers = [
   {
@@ -16,6 +17,14 @@ const providers = [
     specialties: ["Functional Neurology", "Concussion Management", "Vestibular Rehabilitation"],
     bio: "Dr. Fink is a board-certified chiropractic neurologist and the founder of Pittsford Performance Care. He specializes in functional neurology, concussion management, and complex neurologic cases.",
     image: drMichaelFink
+  },
+  {
+    name: "Dr. James Gaffney",
+    title: "Associate Clinician",
+    credentials: "DC",
+    specialties: ["Chiropractic Care", "Rehabilitation", "Sports Performance"],
+    bio: "Dr. Gaffney provides comprehensive chiropractic care and rehabilitation services at Pittsford Performance Care, working closely with patients to support their recovery and performance goals.",
+    image: drJamesGaffney
   }
 ];
 
