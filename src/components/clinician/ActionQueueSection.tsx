@@ -23,6 +23,7 @@ import {
 import { format, isPast, isToday } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { AddTaskDialog } from "./AddTaskDialog";
+import { PatientMessageDialog } from "./PatientMessageDialog";
 
 type QuickFilter = "all" | "overdue" | "today" | "week";
 type TypeFilter = "all" | TaskType;
@@ -70,6 +71,8 @@ export function ActionQueueSection() {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>("all");
   const [showCompleted, setShowCompleted] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [messageDialogOpen, setMessageDialogOpen] = useState(false);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
   // Apply filters
   const getFilteredTasks = () => {
@@ -114,11 +117,22 @@ export function ActionQueueSection() {
   };
 
   const handleOpenTask = (task: typeof openTasks[0]) => {
+    // For patient messages, open the message dialog
+    if (task.type === "PATIENT_MESSAGE" && task.patient_message_id) {
+      setSelectedMessageId(task.patient_message_id);
+      setMessageDialogOpen(true);
+      return;
+    }
+    
+    // For other tasks with an episode, navigate to episode summary
     if (task.episode_id) {
       navigate(`/episode-summary?id=${task.episode_id}`);
-    } else if (task.type === "PATIENT_MESSAGE" && task.patient_message_id) {
-      navigate("/clinician-inbox");
     }
+  };
+
+  const handleMessageHandled = () => {
+    // Refetch tasks when a message is handled
+    // The task completion will be handled separately
   };
 
   const getEpisodeBadge = (task: typeof openTasks[0]) => {
@@ -380,6 +394,13 @@ export function ActionQueueSection() {
       </CardContent>
 
       <AddTaskDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} source="CLINICIAN" />
+      
+      <PatientMessageDialog 
+        open={messageDialogOpen} 
+        onOpenChange={setMessageDialogOpen}
+        messageId={selectedMessageId}
+        onMessageHandled={handleMessageHandled}
+      />
     </Card>
   );
 }

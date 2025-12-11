@@ -539,10 +539,15 @@ export default function PatientDashboard() {
         )}
 
         {/* Care Team Access */}
-        {activeEpisodes.length > 0 && (
+        {activeEpisodes.length > 0 && patientAccountId && (
           <CareTeamAccess 
-            patientId={user?.id || ''} 
+            patientId={patientAccountId} 
             episodeId={firstActiveEpisode?.id}
+            episodes={activeEpisodes.map(e => ({
+              id: e.id,
+              region: e.region,
+              clinician: e.clinician
+            }))}
           />
         )}
 
