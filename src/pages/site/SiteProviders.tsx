@@ -29,10 +29,10 @@ const providers = [
   },
   {
     name: "Dr. C. Robert Luckey",
-    title: "Founder / Clinic Director / Owner",
-    credentials: "DC",
-    specialties: ["Sports Performance", "Athletic Training", "Movement Analysis"],
-    bio: "Dr. Luckey specializes in athletic performance and movement optimization at Pittsford Performance Care, helping athletes reach their full potential through targeted assessment and training.",
+    title: "Clinic Director, Pittsford Performance Care",
+    credentials: "DC, Board-Eligible in Clinical Neuroscience & Functional Neurology",
+    specialties: ["Concussion & Post-Concussion Syndrome", "Visual-Vestibular & Balance Disorders", "Chronic Migraine & Headache", "Performance Readiness"],
+    bio: "Dr. Luckey leads a neurology-driven approach to concussion recovery, complex musculoskeletal care, and performance readiness. With 20+ years treating over 20,000 patients—including 1,500+ neurologic cases—he integrates applied neuroscience, movement science, and data-driven outcome tracking. He is the inventor or co-inventor on 30+ patent claims across clinical neuroscience and data analytics.",
     image: drRobertLuckey
   }
 ];
