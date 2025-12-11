@@ -21,10 +21,10 @@ const providers = [
   },
   {
     name: "Dr. James Gaffney",
-    title: "Associate Clinician",
+    title: "Primary Clinician, Neurological Care",
     credentials: "DC",
-    specialties: ["Chiropractic Care", "Rehabilitation", "Sports Performance"],
-    bio: "Dr. Gaffney provides comprehensive chiropractic care and rehabilitation services at Pittsford Performance Care, working closely with patients to support their recovery and performance goals.",
+    specialties: ["mTBI & Concussion Care", "Athlete Performance", "Functional Neurology", "Brain Injury Recovery"],
+    bio: "Dr. Gaffney earned his undergraduate degree from Nazareth while playing Division II Soccer and Lacrosse (2013) and his Doctorate from Northeastern College of Health Sciences (2018). He joined PPC in 2018 and swiftly advanced to become a primary clinician alongside Dr. Luckey for neurological cases. Currently pursuing post-doctoral training in Functional Neurology, he focuses on mTBI and its impact on athlete performance.",
     image: drJamesGaffney
   },
   {
