@@ -29,7 +29,7 @@ const providers = [
   },
   {
     name: "Dr. C. Robert Luckey",
-    title: "Performance Specialist",
+    title: "Founder / Clinic Director / Owner",
     credentials: "DC",
     specialties: ["Sports Performance", "Athletic Training", "Movement Analysis"],
     bio: "Dr. Luckey specializes in athletic performance and movement optimization at Pittsford Performance Care, helping athletes reach their full potential through targeted assessment and training.",
