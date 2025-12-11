@@ -9,15 +9,27 @@ import {
   QuickLinksSection
 } from "@/components/admin-dashboard";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Stethoscope } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
   const { data, loading, refetch } = useAdminDashboard();
 
   return (
     <div className="space-y-12 pb-12">
-      {/* Header with refresh */}
-      <div className="flex items-center justify-end">
+      {/* Header with navigation and refresh */}
+      <div className="flex items-center justify-between">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          asChild
+          className="gap-2"
+        >
+          <Link to="/clinician/dashboard">
+            <Stethoscope className="h-4 w-4" />
+            My Clinician Dashboard
+          </Link>
+        </Button>
         <Button 
           variant="ghost" 
           size="sm" 
