@@ -91,6 +91,7 @@ const SiteArticles = lazy(() => import("./pages/site/SiteArticles"));
 const SiteArticleDetail = lazy(() => import("./pages/site/SiteArticleDetail"));
 const SiteCta = lazy(() => import("./pages/site/SiteCta"));
 const SiteAbout = lazy(() => import("./pages/site/SiteAbout"));
+const SiteRegistry = lazy(() => import("./pages/site/SiteRegistry"));
 const SiteProviders = lazy(() => import("./pages/site/SiteProviders"));
 const SiteContact = lazy(() => import("./pages/site/SiteContact"));
 
@@ -144,6 +145,7 @@ const App = () => (
               <Route path="articles/:category/:slug" element={<SiteArticleDetail />} />
               <Route path="cta" element={<SiteCta />} />
               <Route path="about" element={<SiteAbout />} />
+              <Route path="registry" element={<SiteRegistry />} />
               <Route path="providers" element={<SiteProviders />} />
               <Route path="contact" element={<SiteContact />} />
             </Route>
