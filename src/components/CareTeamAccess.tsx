@@ -4,22 +4,31 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { MessageSquare, Phone, Send, Loader2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+interface Episode {
+  id: string;
+  region: string;
+  clinician?: string | null;
+}
+
 interface CareTeamAccessProps {
   patientId: string;
   episodeId?: string;
+  episodes?: Episode[];
 }
 
-export default function CareTeamAccess({ patientId, episodeId }: CareTeamAccessProps) {
+export default function CareTeamAccess({ patientId, episodeId, episodes = [] }: CareTeamAccessProps) {
   const { toast } = useToast();
   const [messageSubject, setMessageSubject] = useState("");
   const [messageText, setMessageText] = useState("");
   const [callbackMessage, setCallbackMessage] = useState("");
   const [sending, setSending] = useState(false);
+  const [selectedEpisodeId, setSelectedEpisodeId] = useState(episodeId || "");
 
   const handleSendMessage = async () => {
     if (!messageText.trim()) {
@@ -31,13 +40,22 @@ export default function CareTeamAccess({ patientId, episodeId }: CareTeamAccessP
       return;
     }
 
+    if (!patientId) {
+      toast({
+        title: "Error",
+        description: "Patient ID is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSending(true);
     try {
       const { error } = await supabase
         .from("patient_messages")
         .insert({
           patient_id: patientId,
-          episode_id: episodeId,
+          episode_id: selectedEpisodeId || episodeId || null,
           message_type: "message",
           subject: messageSubject.trim() || "Message from patient",
           message: messageText.trim(),
@@ -73,13 +91,22 @@ export default function CareTeamAccess({ patientId, episodeId }: CareTeamAccessP
       return;
     }
 
+    if (!patientId) {
+      toast({
+        title: "Error",
+        description: "Patient ID is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSending(true);
     try {
       const { error } = await supabase
         .from("patient_messages")
         .insert({
           patient_id: patientId,
-          episode_id: episodeId,
+          episode_id: selectedEpisodeId || episodeId || null,
           message_type: "callback_request",
           subject: "Callback Request",
           message: callbackMessage.trim(),
@@ -104,6 +131,8 @@ export default function CareTeamAccess({ patientId, episodeId }: CareTeamAccessP
     }
   };
 
+  const showEpisodeSelector = episodes.length > 1;
+
   return (
     <Card>
       <CardHeader>
@@ -116,6 +145,28 @@ export default function CareTeamAccess({ patientId, episodeId }: CareTeamAccessP
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Episode Selector - only show if multiple episodes */}
+        {showEpisodeSelector && (
+          <div className="mb-4">
+            <Label htmlFor="episode-select">Select Episode</Label>
+            <Select 
+              value={selectedEpisodeId} 
+              onValueChange={setSelectedEpisodeId}
+            >
+              <SelectTrigger id="episode-select">
+                <SelectValue placeholder="Choose which episode this is about" />
+              </SelectTrigger>
+              <SelectContent>
+                {episodes.map((ep) => (
+                  <SelectItem key={ep.id} value={ep.id}>
+                    {ep.region} {ep.clinician ? `- ${ep.clinician}` : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         <Tabs defaultValue="message" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="message" className="gap-2">
