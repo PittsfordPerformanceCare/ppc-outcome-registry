@@ -6,7 +6,8 @@ import {
   EpisodePivotSection,
   CommunicationsSection,
   FinanceSnapshot,
-  QuickLinksSection
+  QuickLinksSection,
+  ClinicianQueuesOverview
 } from "@/components/admin-dashboard";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Stethoscope } from "lucide-react";
@@ -44,6 +45,9 @@ const AdminDashboard = () => {
 
       {/* Section 0: Today at a Glance */}
       <TodayAtAGlance stats={data.today} loading={loading} />
+
+      {/* Section: Clinician Queues Overview */}
+      <ClinicianQueuesOverview />
 
       {/* Section 1: Lead Management */}
       <LeadManagementSection stats={data.leads} loading={loading} />
