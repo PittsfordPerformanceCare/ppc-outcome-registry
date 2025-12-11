@@ -13,10 +13,10 @@ import drRobertLuckey from "@/assets/providers/dr-robert-luckey.jpg";
 const providers = [
   {
     name: "Dr. Michael Fink",
-    title: "Clinical Director",
-    credentials: "DC, DACNB",
-    specialties: ["Functional Neurology", "Concussion Management", "Vestibular Rehabilitation"],
-    bio: "Dr. Fink is a board-certified chiropractic neurologist and the founder of Pittsford Performance Care. He specializes in functional neurology, concussion management, and complex neurologic cases.",
+    title: "Senior Lead Clinician",
+    credentials: "DC",
+    specialties: ["Pediatric Care", "Sports Rehabilitation", "Injury Prevention", "Performance Optimization"],
+    bio: "Dr. Fink joined PPC in 2013 and coordinates musculoskeletal care operations. He earned his undergraduate degree from Houghton College (2009) and Doctorate from Northeastern College of Health Sciences (2012). Currently pursuing post-doctoral training in Functional Neurology, he is active in bridging professional gaps in care for the pediatric athlete through evidence-based education and collaboration.",
     image: drMichaelFink
   },
   {
