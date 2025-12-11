@@ -252,7 +252,7 @@ Deno.serve(async (req) => {
 
     const displayName = patientName || "there";
     const appUrl = Deno.env.get("APP_URL") || "https://pittsfordperformancecare.com";
-    const intakeFormUrl = `${appUrl}/begin-intake`;
+    const intakeFormUrl = `${appUrl}/patient-intake`;
 
     // Select the appropriate template
     const { subject, html } = templateType === "neuro" 
