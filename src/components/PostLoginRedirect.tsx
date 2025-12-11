@@ -6,7 +6,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 export function PostLoginRedirect() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { isAdmin, isClinician, loading: roleLoading } = useUserRole();
+  const { isAdmin, isClinician, isOwner, loading: roleLoading } = useUserRole();
   const [hasRedirected, setHasRedirected] = useState(false);
 
   const loading = authLoading || roleLoading;
@@ -22,7 +22,8 @@ export function PostLoginRedirect() {
     }
 
     // User is logged in, route based on role
-    if (isAdmin) {
+    // Owner and Admin both go to admin dashboard
+    if (isAdmin || isOwner) {
       navigate("/admin/dashboard", { replace: true });
     } else if (isClinician) {
       navigate("/clinician/dashboard", { replace: true });
@@ -31,7 +32,7 @@ export function PostLoginRedirect() {
       navigate("/site/home", { replace: true });
     }
     setHasRedirected(true);
-  }, [user, isAdmin, isClinician, loading, navigate, hasRedirected]);
+  }, [user, isAdmin, isClinician, isOwner, loading, navigate, hasRedirected]);
 
   if (loading) {
     return (
