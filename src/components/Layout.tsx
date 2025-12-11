@@ -532,6 +532,9 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Floating Action Button */}
       <FloatingActionButton />
+
+      {/* Team Chat Panel */}
+      <TeamChatPanel />
     </div>
   );
 }
