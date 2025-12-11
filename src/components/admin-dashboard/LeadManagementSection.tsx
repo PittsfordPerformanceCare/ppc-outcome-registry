@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, Clock, RefreshCw, UserPlus, ArrowRight, ExternalLink, Inbox, Pause, Flame } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { AddToClinicianQueueButton } from "@/components/admin/AddToClinicianQueueButton";
 
 interface LeadStats {
   newUncontacted: number;
@@ -198,8 +199,12 @@ export function LeadManagementSection({ stats, loading }: LeadManagementSectionP
                       {lead.source || "Direct"} • {format(new Date(lead.created_at), 'MMM d, h:mm a')}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3 ml-4">
+                  <div className="flex items-center gap-2 ml-4">
                     {getStatusBadge(lead.lead_status || "new")}
+                    <AddToClinicianQueueButton
+                      patientName={lead.name}
+                      patientId={lead.id}
+                    />
                     <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
                       <Link to="/admin/leads">
                         <ExternalLink className="h-3.5 w-3.5" />

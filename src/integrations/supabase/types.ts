@@ -334,6 +334,84 @@ export type Database = {
         }
         Relationships: []
       }
+      communication_tasks: {
+        Row: {
+          assigned_clinician_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          due_at: string
+          episode_id: string | null
+          id: string
+          letter_file_url: string | null
+          letter_subtype: string | null
+          patient_id: string | null
+          patient_message_id: string | null
+          patient_name: string | null
+          priority: Database["public"]["Enums"]["task_priority"]
+          source: Database["public"]["Enums"]["task_source"]
+          status: string
+          type: Database["public"]["Enums"]["task_type"]
+          updated_at: string
+        }
+        Insert: {
+          assigned_clinician_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          due_at?: string
+          episode_id?: string | null
+          id?: string
+          letter_file_url?: string | null
+          letter_subtype?: string | null
+          patient_id?: string | null
+          patient_message_id?: string | null
+          patient_name?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          source: Database["public"]["Enums"]["task_source"]
+          status?: string
+          type: Database["public"]["Enums"]["task_type"]
+          updated_at?: string
+        }
+        Update: {
+          assigned_clinician_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          due_at?: string
+          episode_id?: string | null
+          id?: string
+          letter_file_url?: string | null
+          letter_subtype?: string | null
+          patient_id?: string | null
+          patient_message_id?: string | null
+          patient_name?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          source?: Database["public"]["Enums"]["task_source"]
+          status?: string
+          type?: Database["public"]["Enums"]["task_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "communication_tasks_assigned_clinician_id_fkey"
+            columns: ["assigned_clinician_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "communication_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comparison_report_clicks: {
         Row: {
           clicked_at: string
@@ -4449,7 +4527,16 @@ export type Database = {
         | "PENDING_RETURN_TO_PPC"
         | "FINAL_PPC_ASSESSMENT_COMPLETED"
         | "EPISODE_CLOSED"
+      task_priority: "HIGH" | "NORMAL"
+      task_source: "ADMIN" | "CLINICIAN" | "PATIENT_PORTAL"
       task_status: "Open" | "Done"
+      task_type:
+        | "CALL_BACK"
+        | "EMAIL_REPLY"
+        | "IMAGING_REPORT"
+        | "PATIENT_MESSAGE"
+        | "LETTER"
+        | "OTHER_ACTION"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4589,7 +4676,17 @@ export const Constants = {
         "FINAL_PPC_ASSESSMENT_COMPLETED",
         "EPISODE_CLOSED",
       ],
+      task_priority: ["HIGH", "NORMAL"],
+      task_source: ["ADMIN", "CLINICIAN", "PATIENT_PORTAL"],
       task_status: ["Open", "Done"],
+      task_type: [
+        "CALL_BACK",
+        "EMAIL_REPLY",
+        "IMAGING_REPORT",
+        "PATIENT_MESSAGE",
+        "LETTER",
+        "OTHER_ACTION",
+      ],
     },
   },
 } as const

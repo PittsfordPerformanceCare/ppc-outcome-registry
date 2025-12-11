@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useClinicianAppointments, ClinicianAppointment } from "@/hooks/useClinicianAppointments";
 import { CasePreviewPanel } from "@/components/CasePreviewPanel";
+import { ActionQueueSection } from "@/components/clinician/ActionQueueSection";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -191,8 +192,8 @@ const ClinicianDashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">My Schedule</h1>
-          <p className="text-muted-foreground">Upcoming New Patient Exams</p>
+          <h1 className="text-2xl font-bold">Clinician Dashboard</h1>
+          <p className="text-muted-foreground">Your schedule and action queue</p>
         </div>
         <Button 
           variant="outline" 
@@ -204,6 +205,9 @@ const ClinicianDashboard = () => {
           Refresh
         </Button>
       </div>
+
+      {/* Action Queue Section - Primary Focus */}
+      <ActionQueueSection />
 
       {/* Filters */}
       <Card>
