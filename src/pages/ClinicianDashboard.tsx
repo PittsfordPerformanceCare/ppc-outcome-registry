@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useClinicianAppointments, ClinicianAppointment } from "@/hooks/useClinicianAppointments";
+import { useUserRole } from "@/hooks/useUserRole";
 import { CasePreviewPanel } from "@/components/CasePreviewPanel";
 import { ActionQueueSection } from "@/components/clinician/ActionQueueSection";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -17,7 +19,8 @@ import {
   ChevronRight,
   Activity,
   Stethoscope,
-  Baby
+  Baby,
+  LayoutDashboard
 } from "lucide-react";
 import { format, parseISO, isToday, isTomorrow, addDays } from "date-fns";
 
@@ -28,6 +31,7 @@ const ClinicianDashboard = () => {
     loading, 
     refetch 
   } = useClinicianAppointments();
+  const { isAdmin } = useUserRole();
   
   const [selectedAppointment, setSelectedAppointment] = useState<ClinicianAppointment | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -195,15 +199,29 @@ const ClinicianDashboard = () => {
           <h1 className="text-2xl font-bold">Clinician Dashboard</h1>
           <p className="text-muted-foreground">Your schedule and action queue</p>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleRefresh}
-          disabled={refreshing}
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              asChild
+            >
+              <Link to="/admin/dashboard">
+                <LayoutDashboard className="h-4 w-4 mr-2" />
+                Admin Dashboard
+              </Link>
+            </Button>
+          )}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            disabled={refreshing}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Action Queue Section - Primary Focus */}
