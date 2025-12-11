@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export type AppRole = 'admin' | 'clinician' | 'patient';
+export type AppRole = 'admin' | 'clinician' | 'patient' | 'owner';
 
 interface UseUserRoleReturn {
   roles: AppRole[];
   isAdmin: boolean;
   isClinician: boolean;
   isPatient: boolean;
+  isOwner: boolean;
   loading: boolean;
   hasRole: (role: AppRole) => boolean;
   refetch: () => Promise<void>;
@@ -87,6 +88,7 @@ export function useUserRole(): UseUserRoleReturn {
     isAdmin: hasRole('admin'),
     isClinician: hasRole('clinician'),
     isPatient: hasRole('patient'),
+    isOwner: hasRole('owner'),
     loading,
     hasRole,
     refetch: fetchRoles,
