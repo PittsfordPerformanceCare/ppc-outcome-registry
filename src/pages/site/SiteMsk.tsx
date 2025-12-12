@@ -26,6 +26,8 @@ import athleteSpark from "@/assets/athletes/spark.jpg";
 import athletePhenom from "@/assets/athletes/phenom.jpg";
 import athleteImpact from "@/assets/athletes/impact.jpg";
 import athleteDynamic from "@/assets/athletes/dynamic.jpg";
+import athletePoised from "@/assets/athletes/poised.jpg";
+import athleteFocus from "@/assets/athletes/focus.jpg";
 
 const athleteCards = [
   {
@@ -82,6 +84,16 @@ const athleteCards = [
     image: athleteDynamic,
     word: "dynamic",
     definition: "a force that stimulates change or progress within a system or process"
+  },
+  {
+    image: athletePoised,
+    word: "poised",
+    definition: "[having poise]; marked by balance or equilibrium"
+  },
+  {
+    image: athleteFocus,
+    word: "focus",
+    definition: "A singular point of concentration."
   }
 ];
 
