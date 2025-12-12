@@ -3,61 +3,64 @@
   <url>
     <loc>https://muse-meadow-app.lovable.app/site/concussion</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://muse-meadow-app.lovable.app/patient/self-tests/concussion</loc>
     <lastmod>2025-12-12</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
   </url>
+  <!-- Concussion Cluster Articles -->
   <url>
     <loc>https://muse-meadow-app.lovable.app/site/articles/concussion/post-concussion-performance-decline</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://muse-meadow-app.lovable.app/site/articles/concussion/visual-vestibular-mismatch</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://muse-meadow-app.lovable.app/site/articles/concussion/cerebellar-timing-and-coordination</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://muse-meadow-app.lovable.app/site/articles/concussion/autonomic-nervous-system-flow</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://muse-meadow-app.lovable.app/site/articles/concussion/frontal-system-fog-after-concussion</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://muse-meadow-app.lovable.app/site/articles/concussion/concussion-energy-crisis-and-recovery</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
+  <!-- Pediatric Concussion Article -->
   <url>
     <loc>https://muse-meadow-app.lovable.app/site/articles/pediatric/pediatric-concussion-care</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
+  <!-- Athlete Concussion Article -->
   <url>
     <loc>https://muse-meadow-app.lovable.app/site/articles/athlete/neuro-athlete-recovery</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
 </urlset>
