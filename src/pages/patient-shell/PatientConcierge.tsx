@@ -1,6 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { User, Users, Stethoscope, ChevronRight } from "lucide-react";
+import { User, Users, Stethoscope, ChevronRight, Shield } from "lucide-react";
 import { useEffect } from "react";
 
 const PatientConcierge = () => {
@@ -36,7 +35,7 @@ const PatientConcierge = () => {
       label: "I am the patient",
       sublabel: "Adult seeking care for myself",
       icon: User,
-      route: "/patient/intake/adult",
+    route: "/patient/intake/adult",
     },
     {
       id: "pediatric",
@@ -55,43 +54,57 @@ const PatientConcierge = () => {
   ];
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-md py-10 lg:py-14">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 bg-gradient-to-b from-background via-background to-muted/20">
+      <div className="w-full max-w-md py-10 lg:py-14 animate-fade-in">
         {/* Simple header */}
-        <div className="text-center mb-8">
-          <p className="text-sm text-muted-foreground mb-2">Getting Started</p>
-          <h1 className="text-2xl md:text-3xl font-semibold mb-3">
+        <div className="text-center mb-10">
+          <p className="text-sm font-medium text-primary/70 mb-3 tracking-wide uppercase">
+            Getting Started
+          </p>
+          <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-4">
             Let's Get You Started
           </h1>
-          <p className="text-base text-muted-foreground">
+          <p className="text-base text-muted-foreground leading-relaxed">
             Select who you are so we can guide you to the right intake form.
           </p>
         </div>
 
-        {/* Simple pathway selection - no cards */}
-        <div className="space-y-3 mb-8">
-          {pathways.map((pathway) => (
+        {/* Pathway selection */}
+        <div className="space-y-3 mb-10">
+          {pathways.map((pathway, index) => (
             <button
               key={pathway.id}
               onClick={() => navigate(getRouteWithParams(pathway.route))}
-              className="w-full flex items-center gap-4 p-4 rounded-lg border border-border/60 bg-background hover:border-primary/40 hover:bg-muted/30 transition-colors text-left group"
+              className="w-full flex items-center gap-4 p-5 rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:bg-card hover:shadow-md transition-all duration-300 text-left group"
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="flex-shrink-0 h-10 w-10 rounded-lg bg-muted/50 flex items-center justify-center">
-                <pathway.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+              <div className="flex-shrink-0 h-12 w-12 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center group-hover:from-primary/20 group-hover:to-primary/10 transition-all duration-300">
+                <pathway.icon className="h-5 w-5 text-primary/70 group-hover:text-primary transition-colors duration-300" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground">{pathway.label}</p>
-                <p className="text-sm text-muted-foreground">{pathway.sublabel}</p>
+                <p className="font-medium text-foreground group-hover:text-primary transition-colors duration-300">
+                  {pathway.label}
+                </p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  {pathway.sublabel}
+                </p>
               </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-primary transition-colors" />
+              <ChevronRight className="h-5 w-5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 transition-all duration-300" />
             </button>
           ))}
         </div>
 
         {/* Reassurance */}
-        <p className="text-center text-sm text-muted-foreground">
-          Takes just a few minutes · Your information is secure
-        </p>
+        <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary/40" />
+            Takes just a few minutes
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Shield className="h-3.5 w-3.5 text-primary/50" />
+            Secure & private
+          </span>
+        </div>
       </div>
     </div>
   );
