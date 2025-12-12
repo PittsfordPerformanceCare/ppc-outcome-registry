@@ -17,7 +17,12 @@ const providers = [
     credentials: "DC",
     specialties: ["Pediatric Care", "Sports Rehabilitation", "Injury Prevention", "Performance Optimization"],
     bio: "Dr. Fink joined PPC in 2013 and coordinates musculoskeletal care operations. He earned his undergraduate degree from Houghton University (2009) and Doctorate from Northeastern College of Health Sciences (2012). Currently pursuing post-doctoral training in Functional Neurology, he is active in bridging professional gaps in care for the pediatric athlete through evidence-based education and collaboration.",
-    image: drMichaelFink
+    image: drMichaelFink,
+    clinicalFocus: [
+      { title: "Pediatric Concussion Care", slug: "/site/articles/pediatric/pediatric-concussion-care" },
+      { title: "Autonomic Nervous System Flow", slug: "/site/articles/concussion/autonomic-nervous-system-flow" },
+      { title: "Return to Learn After Concussion", slug: "/site/articles/pediatric/return-to-learn" }
+    ]
   },
   {
     name: "Dr. James Gaffney",
@@ -25,7 +30,12 @@ const providers = [
     credentials: "DC",
     specialties: ["mTBI & Concussion Care", "Athlete Performance", "Functional Neurology", "Brain Injury Recovery"],
     bio: "Dr. Gaffney earned his undergraduate degree from Nazareth while playing Division II Soccer and Lacrosse (2013) and his Doctorate from Northeastern College of Health Sciences (2018). He joined PPC in 2018 and swiftly advanced to become a primary clinician alongside Dr. Luckey for neurological cases. Currently pursuing post-doctoral training in Functional Neurology, he focuses on mTBI and its impact on athlete performance.",
-    image: drJamesGaffney
+    image: drJamesGaffney,
+    clinicalFocus: [
+      { title: "Post-Concussion Performance Decline", slug: "/site/articles/athlete/post-concussion-performance-decline" },
+      { title: "Visual-Vestibular Mismatch", slug: "/site/articles/concussion/visual-vestibular-mismatch" },
+      { title: "Cerebellar Timing & Coordination", slug: "/site/articles/concussion/cerebellar-timing-coordination" }
+    ]
   },
   {
     name: "Dr. C. Robert Luckey",
@@ -33,7 +43,12 @@ const providers = [
     credentials: "DC, Board-Eligible in Clinical Neuroscience & Functional Neurology",
     specialties: ["Concussion & Post-Concussion Syndrome", "Visual-Vestibular & Balance Disorders", "Chronic Migraine & Headache", "Performance Readiness"],
     bio: "Dr. Luckey leads a neurology-driven approach to concussion recovery, complex musculoskeletal care, and performance readiness. With 20+ years treating over 20,000 patients—including 1,500+ neurologic cases—he integrates applied neuroscience, movement science, and data-driven outcome tracking. He is the inventor or co-inventor on 30+ patent claims across clinical neuroscience and data analytics.",
-    image: drRobertLuckey
+    image: drRobertLuckey,
+    clinicalFocus: [
+      { title: "Visual-Vestibular Mismatch", slug: "/site/articles/concussion/visual-vestibular-mismatch" },
+      { title: "Autonomic Nervous System Flow", slug: "/site/articles/concussion/autonomic-nervous-system-flow" },
+      { title: "Post-Concussion Performance Decline", slug: "/site/articles/athlete/post-concussion-performance-decline" }
+    ]
   }
 ];
 
@@ -100,6 +115,27 @@ const SiteProviders = () => {
                       ))}
                     </div>
                   </div>
+                  
+                  {/* Clinical Focus & Related Reading */}
+                  {provider.clinicalFocus && provider.clinicalFocus.length > 0 && (
+                    <div className="space-y-2 pt-2 border-t border-border/50">
+                      <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                        Clinical Focus & Related Reading
+                      </h4>
+                      <ul className="space-y-1">
+                        {provider.clinicalFocus.map((article, idx) => (
+                          <li key={idx}>
+                            <Link 
+                              to={article.slug}
+                              className="text-sm text-primary hover:text-primary/80 hover:underline transition-colors"
+                            >
+                              {article.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
