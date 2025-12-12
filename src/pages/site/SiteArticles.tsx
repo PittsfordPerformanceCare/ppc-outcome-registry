@@ -9,7 +9,8 @@ import {
   Search,
   Users,
   Trophy,
-  ArrowRight
+  ArrowRight,
+  Sparkles
 } from "lucide-react";
 import { useState } from "react";
 import { articleCategories, ArticleData } from "@/data/siteArticles";
@@ -41,29 +42,32 @@ const SiteArticles = () => {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-28 bg-gradient-to-b from-primary/5 to-background">
+      <section className="relative py-28 lg:py-36 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
               <BookOpen className="h-4 w-4" />
-              Resources
+              Educational Resources
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
               Learn About Your Condition
             </h1>
-            <p className="text-xl text-muted-foreground">
+            
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
               In-depth articles on concussion recovery, movement dysfunction, 
-              and the neurologic systems driving your symptoms.
+              and the neurologic systems driving your symptoms. Written by our clinical team 
+              to help you understand what's happening and what comes next.
             </p>
 
             {/* Search */}
             <div className="relative max-w-md mx-auto pt-4">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 mt-2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 mt-2 h-5 w-5 text-muted-foreground" />
               <Input 
-                placeholder="Search articles..."
+                placeholder="Search articles by topic or keyword..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-12 h-12 text-base rounded-xl border-border/60 bg-card/50 backdrop-blur-sm"
               />
             </div>
           </div>
@@ -71,55 +75,60 @@ const SiteArticles = () => {
       </section>
 
       {/* Categories and Articles */}
-      <section className="py-20 bg-background">
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto space-y-16">
+          <div className="max-w-6xl mx-auto space-y-20">
             {filteredCategories.map((category) => {
               const CategoryIcon = categoryIcons[category.slug] || Brain;
               
               return (
                 <div key={category.slug}>
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <CategoryIcon className="h-6 w-6 text-primary" />
+                  {/* Category Header */}
+                  <div className="flex items-start gap-5 mb-10">
+                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <CategoryIcon className="h-7 w-7 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold">{category.name}</h2>
-                      <p className="text-muted-foreground">{category.description}</p>
+                      <h2 className="text-3xl md:text-4xl font-bold mb-2">{category.name}</h2>
+                      <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
+                        {category.description}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Articles Grid */}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {category.articles.map((article) => (
                       <Link 
                         key={article.slug}
                         to={`/site/articles/${category.slug}/${article.slug}`}
                         className="group"
                       >
-                        <Card className={`h-full hover:border-primary/50 transition-colors ${isPlaceholder(article) ? 'opacity-60' : ''}`}>
-                          <CardHeader>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs text-muted-foreground">
-                                {article.readTime}
+                        <Card className={`h-full p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300 ${isPlaceholder(article) ? 'opacity-60' : ''}`}>
+                          <div className="flex items-center justify-between mb-4">
+                            <span className="text-sm text-muted-foreground">
+                              {article.readTime}
+                            </span>
+                            {isPlaceholder(article) && (
+                              <span className="text-xs px-3 py-1 rounded-full bg-muted text-muted-foreground font-medium">
+                                Coming Soon
                               </span>
-                              {isPlaceholder(article) && (
-                                <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground">
-                                  Coming Soon
-                                </span>
-                              )}
-                            </div>
-                            <CardTitle className="text-base group-hover:text-primary transition-colors line-clamp-2">
-                              {article.title}
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                              {article.excerpt}
-                            </p>
-                            <p className="text-sm text-primary mt-3 flex items-center gap-1 group-hover:gap-2 transition-all">
-                              Read more <ArrowRight className="h-3 w-3" />
-                            </p>
-                          </CardContent>
+                            )}
+                          </div>
+                          
+                          <h3 className="text-lg font-bold mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                            {article.title}
+                          </h3>
+                          
+                          <p className="text-muted-foreground leading-relaxed line-clamp-3 mb-4">
+                            {article.excerpt}
+                          </p>
+                          
+                          <div className="pt-4 border-t border-border/40">
+                            <span className="text-sm font-medium text-primary flex items-center gap-2 group-hover:gap-3 transition-all">
+                              Read Article <ArrowRight className="h-4 w-4" />
+                            </span>
+                          </div>
                         </Card>
                       </Link>
                     ))}
@@ -129,9 +138,15 @@ const SiteArticles = () => {
             })}
 
             {filteredCategories.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">
+              <div className="text-center py-16">
+                <div className="h-14 w-14 rounded-xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-7 w-7 text-muted-foreground" />
+                </div>
+                <p className="text-lg text-muted-foreground">
                   No articles found matching "{searchQuery}"
+                </p>
+                <p className="text-muted-foreground mt-2">
+                  Try adjusting your search terms or browse all categories below.
                 </p>
               </div>
             )}
@@ -140,46 +155,65 @@ const SiteArticles = () => {
       </section>
 
       {/* Pillar Navigation */}
-      <section className="py-12 bg-muted/20">
+      <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-xl font-bold text-center mb-8">Explore Our Care Pillars</h3>
-            <div className="grid md:grid-cols-2 gap-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Sparkles className="h-4 w-4" />
+                Explore Further
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Explore Our Care Pillars</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Dive deeper into the specialized areas of care we offer, each grounded in 
+                neurologic evaluation and measurable outcomes.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-8">
               <Link to="/site/concussion" className="group">
-                <Card className="hover:border-primary/50 transition-colors">
-                  <CardContent className="p-6 flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Brain className="h-6 w-6 text-primary" />
+                <Card className="h-full p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-start gap-5">
+                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <Brain className="h-7 w-7 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-bold group-hover:text-primary transition-colors">
+                      <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
                         Concussion Care
-                      </h4>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">
                         Comprehensive neurologic evaluation and treatment for persistent 
-                        post-concussion symptoms.
+                        post-concussion symptoms. We identify which systems are affected 
+                        and target treatment accordingly.
                       </p>
+                      <span className="inline-flex items-center gap-2 text-sm font-medium text-primary mt-4 group-hover:gap-3 transition-all">
+                        Learn More <ArrowRight className="h-4 w-4" />
+                      </span>
                     </div>
-                  </CardContent>
+                  </div>
                 </Card>
               </Link>
               
               <Link to="/site/msk" className="group">
-                <Card className="hover:border-primary/50 transition-colors">
-                  <CardContent className="p-6 flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Activity className="h-6 w-6 text-primary" />
+                <Card className="h-full p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-start gap-5">
+                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <Activity className="h-7 w-7 text-primary" />
                     </div>
                     <div>
-                      <h4 className="font-bold group-hover:text-primary transition-colors">
+                      <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
                         MSK Care
-                      </h4>
-                      <p className="text-sm text-muted-foreground mt-1">
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">
                         Neuromuscular assessment and treatment for chronic pain and 
-                        movement dysfunction.
+                        movement dysfunction. We evaluate the neurologic drivers behind 
+                        persistent musculoskeletal issues.
                       </p>
+                      <span className="inline-flex items-center gap-2 text-sm font-medium text-primary mt-4 group-hover:gap-3 transition-all">
+                        Learn More <ArrowRight className="h-4 w-4" />
+                      </span>
                     </div>
-                  </CardContent>
+                  </div>
                 </Card>
               </Link>
             </div>
@@ -188,19 +222,31 @@ const SiteArticles = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-b from-background to-muted/30">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-4">Can't Find What You're Looking For?</h2>
-          <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-            Our clinical team is happy to answer your questions directly. 
-            Schedule a consultation to discuss your specific situation.
-          </p>
-          <Button asChild size="lg">
-            <Link to="/patient/concierge">
-              Schedule a Consultation
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+              <BookOpen className="h-4 w-4" />
+              Get Personalized Guidance
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              Can't Find What You're Looking For?
+            </h2>
+            
+            <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
+              Our clinical team is happy to answer your questions directly. 
+              Schedule a consultation to discuss your specific situation and learn 
+              how our approach might help you recover.
+            </p>
+            
+            <Button asChild size="lg" className="h-12 px-8 text-base rounded-xl">
+              <Link to="/patient/concierge">
+                Schedule a Consultation
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>
