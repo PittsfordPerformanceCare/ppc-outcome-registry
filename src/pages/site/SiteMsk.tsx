@@ -20,6 +20,9 @@ import athleteFierce from "@/assets/athletes/fierce.jpg";
 import athleteGifted from "@/assets/athletes/gifted.jpg";
 import athleteGrit from "@/assets/athletes/grit.jpg";
 import athleteDiscipline from "@/assets/athletes/discipline.jpg";
+import athleteUnderrated from "@/assets/athletes/underrated.jpg";
+import athletePower from "@/assets/athletes/power.jpg";
+import athleteSpark from "@/assets/athletes/spark.jpg";
 
 const athleteCards = [
   {
@@ -46,6 +49,21 @@ const athleteCards = [
     image: athleteDiscipline,
     word: "discipline",
     definition: "to bring under control; to impose order upon."
+  },
+  {
+    image: athleteUnderrated,
+    word: "underrated",
+    definition: "[not rated or valued highly enough.]"
+  },
+  {
+    image: athletePower,
+    word: "power",
+    definition: "the capacity or ability to direct or influence the behavior of others or the course of events."
+  },
+  {
+    image: athleteSpark,
+    word: "spark",
+    definition: "[to cause the start of something]"
   }
 ];
 
