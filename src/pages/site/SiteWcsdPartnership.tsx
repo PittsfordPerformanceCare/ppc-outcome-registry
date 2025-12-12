@@ -46,8 +46,8 @@ const SiteWcsdPartnership = () => {
               <p className="text-muted-foreground leading-relaxed">
                 Webster Central School District has long been recognized as a district that 
                 prioritizes innovation, student success, and responsible stewardship. It is 
-                within this spirit of inquiry and care that a new collaboration has taken shape—
-                one grounded in community, informed by research, and guided by the belief that 
+                within this spirit of inquiry and care that a new collaboration has taken shape. 
+                This partnership is grounded in community, informed by research, and guided by the belief that 
                 meaningful insight must be earned through rigorous, ethical work.
               </p>
             </div>
@@ -65,14 +65,14 @@ const SiteWcsdPartnership = () => {
                 <p className="text-muted-foreground leading-relaxed">
                   Webster Central School District has demonstrated consistent leadership in 
                   exploring how responsible innovation can support student outcomes. This 
-                  commitment reflects a deeper belief: that the whole learner—cognitive, 
-                  emotional, and physical—deserves thoughtful attention.
+                  commitment reflects a deeper belief: that the whole learner, including cognitive, 
+                  emotional, and physical dimensions, deserves thoughtful attention.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   Bringing new forms of insight into the educational environment requires more 
                   than interest. It requires caution, collaboration, and respect for the 
                   complexity of child development. The district's willingness to explore this 
-                  work carefully—without rushing toward conclusions—reflects the kind of 
+                  work carefully, without rushing toward conclusions, reflects the kind of 
                   leadership that protects students while opening doors to meaningful progress.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
@@ -92,7 +92,7 @@ const SiteWcsdPartnership = () => {
               </h2>
               <div className="prose prose-lg dark:prose-invert">
                 <p className="text-muted-foreground leading-relaxed">
-                  For years, applied neuroscience has informed clinical care—helping providers 
+                  For years, applied neuroscience has informed clinical care, helping providers 
                   understand the neurologic systems that influence function, recovery, and 
                   development. Pittsford Performance Care has built its practice on this 
                   foundation, supporting patients through structured evaluation and validated 
@@ -105,8 +105,8 @@ const SiteWcsdPartnership = () => {
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   Translation is not experimentation. It is the careful work of adapting what 
-                  has been learned in one context—the clinic—and determining whether it can 
-                  responsibly inform another—the classroom. This work must be educator-friendly, 
+                  has been learned in one context, the clinic, and determining whether it can 
+                  responsibly inform another, the classroom. This work must be educator-friendly, 
                   ethically applied, and grounded in scientific rigor.
                 </p>
               </div>
@@ -125,14 +125,14 @@ const SiteWcsdPartnership = () => {
                 <p className="text-muted-foreground leading-relaxed">
                   This initiative is not a pilot program or an experiment. It is a multi-phase, 
                   validation-focused effort designed to meet high scientific standards while 
-                  protecting all participants—students, educators, and families.
+                  protecting all participants, including students, educators, and families.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   The work is embedded within real classrooms, not laboratories, because 
                   authenticity matters. Findings must reflect the conditions educators and 
                   students actually experience. And yet, the same rigor expected in clinical 
                   research applies here: structured methodology, transparent processes, and a 
-                  commitment to honest reporting of results—whatever they may be.
+                  commitment to honest reporting of results, whatever they may be.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   At the heart of this effort is a patented school-based screening tool currently 
@@ -160,13 +160,13 @@ const SiteWcsdPartnership = () => {
                   their classroom every day.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  This initiative is designed to support—never override—educator judgment. 
+                  This initiative is designed to support, and never override, educator judgment. 
                   The goal is to offer additional clarity when uncertainty exists, not to 
                   impose conclusions or replace professional insight with clinical directive.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   The focus is readiness, not diagnosis. Clarity, not labeling. The aim is to 
-                  help educators and families understand what a child may need—so that the 
+                  help educators and families understand what a child may need, so that the 
                   right support can be offered at the right time.
                 </p>
               </div>
@@ -191,11 +191,11 @@ const SiteWcsdPartnership = () => {
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   Equity is embedded in this vision. Earlier understanding should not be a 
-                  privilege. When insight is accessible to all students—regardless of background 
-                  or resources—entire communities become stronger.
+                  privilege. When insight is accessible to all students, regardless of background 
+                  or resources, entire communities become stronger.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  If this work proves valid, it may responsibly inform future collaborations—
+                  If this work proves valid, it may responsibly inform future collaborations, 
                   not through promotional claims, but through demonstrated value and earned trust.
                 </p>
               </div>
@@ -218,14 +218,14 @@ const SiteWcsdPartnership = () => {
                 <p className="text-muted-foreground leading-relaxed">
                   Transparency guides the work. Processes are documented. Questions are welcomed. 
                   And the commitment to scientific integrity means that findings will be reported 
-                  honestly—whether they confirm expectations or challenge them.
+                  honestly, whether they confirm expectations or challenge them.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   Above all, student wellbeing remains central. Every decision is weighed against 
                   a simple question: does this serve the child?
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  This is not promotion. It is stewardship—of children, of community trust, and 
+                  This is not promotion. It is stewardship: of children, of community trust, and 
                   of the careful work required to bring meaningful insight into education.
                 </p>
               </div>
