@@ -328,7 +328,7 @@ const ClinicianGuideMotorTiming = () => {
             </section>
 
             {/* References & Further Reading */}
-            <section className="mb-6">
+            <section className="mb-12">
               <h2 className="text-lg font-semibold text-slate-900 mb-1 pb-3 border-b border-slate-200">
                 References & Further Reading
               </h2>
@@ -344,6 +344,34 @@ const ClinicianGuideMotorTiming = () => {
                     View the PPC Works Cited resource →
                   </Link>
                 </p>
+              </div>
+            </section>
+
+            {/* For Referring Clinicians CTA */}
+            <section className="mt-16 pt-10 border-t border-slate-200">
+              <div className="bg-white border border-slate-200 rounded-lg p-6 lg:p-8">
+                <h2 className="text-base font-semibold text-slate-900 mb-4">
+                  For Referring Clinicians
+                </h2>
+                <div className="space-y-4 text-slate-600 leading-relaxed text-sm">
+                  <p>
+                    If you are managing patients with persistent musculoskeletal pain, recurrent injury, or unexplained performance decline—and this clinical framework aligns with how you think—we welcome collaborative referral conversations.
+                  </p>
+                  <p>
+                    Pittsford Performance Care works alongside physicians, physical therapists, athletic trainers, and school-based clinicians to support complex cases where neurologic control, timing, and readiness may be limiting recovery.
+                  </p>
+                </div>
+                <div className="mt-6">
+                  <Link
+                    to="/patient/physician-referral"
+                    className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 border border-slate-300 rounded-md hover:bg-slate-200 hover:border-slate-400 transition-colors"
+                  >
+                    Request Physician Referral Information
+                  </Link>
+                  <p className="mt-3 text-xs text-slate-500">
+                    No obligation. No disruption of existing care. Shared clinical context encouraged.
+                  </p>
+                </div>
               </div>
             </section>
 
