@@ -1392,6 +1392,190 @@ export const mskArticles: ArticleData[] = [
       label: "Take MSK Self-Assessment",
       route: "/patient/self-tests/msk"
     }
+  },
+  {
+    slug: "asymmetric-loading",
+    title: "Asymmetric Loading: When One Side Absorbs More Than Its Share",
+    category: "msk",
+    readTime: "6 min read",
+    excerpt: "Asymmetric loading occurs when one side of the body consistently absorbs more force than the other—often without pain at first. Over time, this imbalance can drive chronic pain, fatigue, and recurring injury.",
+    heroContent: "You may not notice it in the mirror, but your body might be loading one side more than the other with every step, lift, or landing. Over time, that quiet imbalance can wear tissues down and limit performance.",
+    sections: [
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Your body will always choose the path of least resistance. If one side feels more stable or predictable, it will quietly do more work."
+      },
+      { type: "heading", content: "What Is Asymmetric Loading?" },
+      {
+        type: "paragraph",
+        content: "Asymmetric loading refers to a pattern where force is distributed unevenly between the left and right sides of the body. This often develops after injury, pain, or prolonged compensation—even when strength appears equal on basic testing."
+      },
+      {
+        type: "paragraph",
+        content: "The nervous system prioritizes stability and predictability. If one side feels safer, it will be favored during movement, causing the other side to contribute less over time."
+      },
+      { type: "heading", content: "Common Signs" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Asymmetric loading often shows up as recurring pain or fatigue on the same side of the body."
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Recurring pain on one side (hip, knee, ankle, shoulder, or back)",
+          "One leg or arm fatigues faster during workouts",
+          "Feeling stronger or more stable on one side",
+          "Shoes wearing unevenly over time",
+          "Discomfort that appears after longer activity, not immediately",
+          "Recurrent overuse injuries without a clear cause"
+        ]
+      },
+      {
+        type: "inline-cta",
+        content: "If one side always seems to take the hit, a targeted evaluation can identify why your body keeps choosing that strategy."
+      },
+      { type: "heading", content: "Why Standard Care Misses It" },
+      {
+        type: "paragraph",
+        content: "Many assessments focus on strength or range of motion in isolation. But asymmetric loading is a coordination and control issue—how force is managed dynamically during movement. These patterns often only appear during functional or fatigue-based testing."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "You can be strong on both sides and still load one side far more during real movement."
+      },
+      { type: "heading", content: "How We Evaluate" },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Side-to-side force absorption during functional tasks",
+          "Single-leg and unilateral loading assessments",
+          "Dynamic balance and stability testing",
+          "Movement sequencing under progressive demand",
+          "Outcome measures to track symmetry over time"
+        ]
+      },
+      { type: "heading", content: "Treatment Approach" },
+      {
+        type: "paragraph",
+        content: "Treatment focuses on restoring balanced force distribution by improving control, confidence, and timing on the underperforming side. As symmetry improves, tissues are no longer overloaded—and pain and fatigue often decrease."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Balanced loading reduces wear and tear—not by forcing symmetry, but by restoring trust in both sides."
+      }
+    ],
+    relatedArticles: [
+      "movement-asymmetry",
+      "motor-timing-deficits",
+      "post-injury-performance-loss"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Identify whether asymmetric loading is driving recurring pain, fatigue, or overuse injury."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
+  },
+  {
+    slug: "movement-heaviness-early-fatigue",
+    title: "Movement Heaviness & Early Fatigue: When Simple Tasks Feel Harder Than They Should",
+    category: "msk",
+    readTime: "7 min read",
+    excerpt: "Feeling heavy or fatigued early during activity is often a control and efficiency issue—not a conditioning problem. When timing and load management break down, effort skyrockets.",
+    heroContent: "If everyday movement feels heavier than it used to—stairs, walking, light workouts—you may be dealing with a neurologic efficiency problem rather than weakness or poor fitness.",
+    sections: [
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Fatigue isn't always about endurance. Sometimes it's about how efficiently your nervous system coordinates movement."
+      },
+      { type: "heading", content: "What Causes Movement Heaviness?" },
+      {
+        type: "paragraph",
+        content: "Movement heaviness often reflects inefficiency in how force is generated, absorbed, and transferred. When timing is off or stabilization is delayed, muscles work harder than necessary to complete simple tasks."
+      },
+      {
+        type: "paragraph",
+        content: "This can develop after injury, prolonged pain, or periods of reduced activity—and it often persists even when strength and conditioning return."
+      },
+      { type: "heading", content: "Common Signs" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Heaviness and early fatigue usually appear first during sustained or repetitive activity."
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Legs or arms feel heavy early during walks or workouts",
+          "Needing frequent breaks during simple tasks",
+          "Fatigue that doesn't match your fitness level",
+          "Movement feels effortful rather than smooth",
+          "Symptoms worsen with speed or repetition",
+          "Recovery takes longer than expected after activity"
+        ]
+      },
+      {
+        type: "inline-cta",
+        content: "When effort feels disproportionate to activity, a neurologic MSK evaluation can reveal where efficiency is being lost."
+      },
+      { type: "heading", content: "Why Standard Care Misses It" },
+      {
+        type: "paragraph",
+        content: "Heaviness and fatigue are often attributed to deconditioning, age, or motivation. But if the nervous system is coordinating movement inefficiently, endurance training alone can reinforce fatigue rather than resolve it."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Improving efficiency often reduces fatigue faster than simply trying to 'get in better shape.'"
+      },
+      { type: "heading", content: "How We Evaluate" },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Movement efficiency and sequencing assessments",
+          "Stability testing under sustained demand",
+          "Fatigue-based movement screens",
+          "Side-to-side contribution analysis",
+          "Validated outcome measures to track functional endurance"
+        ]
+      },
+      { type: "heading", content: "Treatment Approach" },
+      {
+        type: "paragraph",
+        content: "Treatment targets efficiency first—improving timing, coordination, and load sharing—before layering endurance. As movement becomes more economical, fatigue often decreases and confidence returns."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "When movement costs less energy, endurance improves without forcing volume."
+      }
+    ],
+    relatedArticles: [
+      "motor-timing-deficits",
+      "movement-asymmetry",
+      "chronic-pain-without-structural-damage"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Determine whether neurologic efficiency—not conditioning—is limiting your endurance and recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
   }
 ];
 
