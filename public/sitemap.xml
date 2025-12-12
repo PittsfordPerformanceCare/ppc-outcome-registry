@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://muse-meadow-app.lovable.app/sitemap-hub.xml</loc>
+    <lastmod>2025-12-12</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://muse-meadow-app.lovable.app/sitemap-concussion.xml</loc>
+    <lastmod>2025-12-12</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://muse-meadow-app.lovable.app/sitemap-msk.xml</loc>
+    <lastmod>2025-12-12</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://muse-meadow-app.lovable.app/sitemap-articles.xml</loc>
+    <lastmod>2025-12-12</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://muse-meadow-app.lovable.app/sitemap-clinical.xml</loc>
+    <lastmod>2025-12-12</lastmod>
+  </sitemap>
+</sitemapindex>
