@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   GraduationCap, 
-  Award,
-  ArrowRight
+  ArrowRight,
+  BookOpen
 } from "lucide-react";
 import drMichaelFink from "@/assets/providers/dr-michael-fink.jpg";
 import drJamesGaffney from "@/assets/providers/dr-james-gaffney.jpg";
@@ -12,11 +12,15 @@ import drRobertLuckey from "@/assets/providers/dr-robert-luckey.jpg";
 
 const providers = [
   {
-    name: "Dr. Michael Fink",
+    name: "Dr. Michael Fink, DC",
     title: "Senior Lead Clinician",
-    credentials: "DC",
-    specialties: ["Pediatric Care", "Sports Rehabilitation", "Injury Prevention", "Performance Optimization"],
-    bio: "Dr. Fink joined PPC in 2013 and coordinates musculoskeletal care operations. He earned his undergraduate degree from Houghton University (2009) and Doctorate from Northeastern College of Health Sciences (2012). Currently pursuing post-doctoral training in Functional Neurology, he is active in bridging professional gaps in care for the pediatric athlete through evidence-based education and collaboration.",
+    specialties: [
+      "Concussion & mTBI Care",
+      "Pediatric & Athlete Performance Care",
+      "Neuromuscular Rehabilitation",
+      "Injury Prevention"
+    ],
+    bio: "Dr. Fink earned his undergraduate degree from Houghton University (2009) and Doctor of Chiropractic from Northeastern College of Health Sciences (2012). Since joining PPC in 2013, he has completed extensive post-doctoral coursework in clinical neuroscience and is currently pursuing advanced training in Functional Neurology. Dr. Fink coordinates musculoskeletal care operations and actively bridges professional gaps in pediatric athlete care through evidence-based education and interdisciplinary collaboration.",
     image: drMichaelFink,
     clinicalFocus: [
       { title: "Pediatric Concussion Care", slug: "/site/articles/pediatric/pediatric-concussion-care" },
@@ -25,11 +29,15 @@ const providers = [
     ]
   },
   {
-    name: "Dr. James Gaffney",
+    name: "Dr. James Gaffney, DC",
     title: "Primary Clinician, Neurological Care",
-    credentials: "DC",
-    specialties: ["mTBI & Concussion Care", "Athlete Performance", "Functional Neurology", "Brain Injury Recovery"],
-    bio: "Dr. Gaffney earned his undergraduate degree from Nazareth while playing Division II Soccer and Lacrosse (2013) and his Doctorate from Northeastern College of Health Sciences (2018). He joined PPC in 2018 and swiftly advanced to become a primary clinician alongside Dr. Luckey for neurological cases. Currently pursuing post-doctoral training in Functional Neurology, he focuses on mTBI and its impact on athlete performance.",
+    specialties: [
+      "Concussion & mTBI Care",
+      "Functional Neurology-Based Rehabilitation",
+      "Visual-Vestibular Integration",
+      "Athlete Performance Care"
+    ],
+    bio: "Dr. Gaffney earned his undergraduate degree from Nazareth University while playing Division II Soccer and Lacrosse (2013) and his Doctor of Chiropractic from Northeastern College of Health Sciences (2018). He has completed extensive post-doctoral education in clinical neuroscience with a focus on concussion and neurologic contributors to athletic performance. As a primary clinician for neurological cases alongside Dr. Luckey, Dr. Gaffney applies neurology-driven principles to mTBI recovery and performance restoration.",
     image: drJamesGaffney,
     clinicalFocus: [
       { title: "Post-Concussion Performance Decline", slug: "/site/articles/athlete/post-concussion-performance-decline" },
@@ -38,11 +46,16 @@ const providers = [
     ]
   },
   {
-    name: "Dr. C. Robert Luckey",
-    title: "Clinic Director, Pittsford Performance Care",
-    credentials: "DC, Board-Eligible in Clinical Neuroscience & Functional Neurology",
-    specialties: ["Concussion & Post-Concussion Syndrome", "Visual-Vestibular & Balance Disorders", "Chronic Migraine & Headache", "Performance Readiness"],
-    bio: "Dr. Luckey leads a neurology-driven approach to concussion recovery, complex musculoskeletal care, and performance readiness. With 20+ years treating over 20,000 patients—including 1,500+ neurologic cases—he integrates applied neuroscience, movement science, and data-driven outcome tracking. He is the inventor or co-inventor on 30+ patent claims across clinical neuroscience and data analytics.",
+    name: "Dr. C. Robert Luckey, DC",
+    title: "Clinic Director",
+    credentialNote: "Board-Eligible in Functional Neurology",
+    specialties: [
+      "Concussion & Post-Concussion Syndrome",
+      "Visual-Vestibular & Balance Disorders",
+      "Chronic Migraine & Headache",
+      "Performance Readiness Assessment"
+    ],
+    bio: "Dr. Luckey leads PPC's neurology-driven approach to concussion recovery, complex musculoskeletal care, and performance readiness. With 20+ years treating over 20,000 patients—including 1,500+ neurologic cases—he integrates applied neuroscience, movement science, and data-driven outcome tracking into clinical practice. Dr. Luckey is the inventor or co-inventor on 30+ patent claims spanning clinical neuroscience and healthcare data analytics, and he developed PPC's proprietary outcome registry to track patient trajectories and inform care decisions.",
     image: drRobertLuckey,
     clinicalFocus: [
       { title: "Visual-Vestibular Mismatch", slug: "/site/articles/concussion/visual-vestibular-mismatch" },
@@ -63,8 +76,8 @@ const SiteProviders = () => {
               Our Providers
             </h1>
             <p className="text-xl text-muted-foreground">
-              Board-certified specialists in functional neurology, concussion management, 
-              and neuromuscular rehabilitation.
+              Doctoral-level clinicians with advanced post-doctoral training in clinical neuroscience, 
+              concussion care, and neuromuscular rehabilitation.
             </p>
           </div>
         </div>
@@ -80,13 +93,13 @@ const SiteProviders = () => {
                   {provider.image ? (
                     <img 
                       src={provider.image} 
-                      alt={provider.name}
+                      alt={`${provider.name} - ${provider.title} at Pittsford Performance Care`}
                       className="w-full h-full object-cover object-top"
                     />
                   ) : (
                     <div className="h-24 w-24 rounded-full bg-primary/20 flex items-center justify-center">
                       <span className="text-3xl font-bold text-primary">
-                        {provider.name.split(' ').map(n => n[0]).join('')}
+                        {provider.name.split(' ').filter(n => !n.includes(',')).map(n => n[0]).join('')}
                       </span>
                     </div>
                   )}
@@ -95,11 +108,17 @@ const SiteProviders = () => {
                   <CardTitle className="text-xl">{provider.name}</CardTitle>
                   <div className="space-y-1">
                     <p className="text-sm text-primary font-medium">{provider.title}</p>
-                    <p className="text-sm text-muted-foreground">{provider.credentials}</p>
+                    {'credentialNote' in provider && provider.credentialNote && (
+                      <p className="text-sm text-muted-foreground font-medium">
+                        {provider.credentialNote}
+                      </p>
+                    )}
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">{provider.bio}</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{provider.bio}</p>
+                  
+                  {/* Specialties */}
                   <div className="space-y-2">
                     <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       Specialties
@@ -119,7 +138,8 @@ const SiteProviders = () => {
                   {/* Clinical Focus & Related Reading */}
                   {provider.clinicalFocus && provider.clinicalFocus.length > 0 && (
                     <div className="space-y-2 pt-2 border-t border-border/50">
-                      <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      <h4 className="text-xs font-medium uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                        <BookOpen className="h-3 w-3" />
                         Clinical Focus & Related Reading
                       </h4>
                       <ul className="space-y-1">
@@ -143,43 +163,53 @@ const SiteProviders = () => {
         </div>
       </section>
 
-      {/* Credentials Section */}
+      {/* Advanced Training & Professional Education Section */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Our Credentials</h2>
+            <h2 className="text-3xl font-bold mb-4">Advanced Training & Professional Education</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Advanced training and board certifications in neurologic specialties
+              Our clinicians have completed extensive post-doctoral education and advanced clinical training 
+              in neurologically informed care models.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div className="flex items-start gap-4 p-6 rounded-lg bg-background border">
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <Award className="h-6 w-6 text-primary" />
+                <GraduationCap className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold">Board Certifications</h3>
+                <h3 className="font-semibold">Post-Doctoral Education</h3>
                 <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                  <li>Diplomate, American Chiropractic Neurology Board (DACNB)</li>
-                  <li>Fellow, American College of Functional Neurology (FACFN)</li>
-                  <li>Neurologic Clinical Specialist (NCS)</li>
+                  <li>Clinical Neuroscience & Functional Neurology coursework</li>
+                  <li>Advanced concussion and mTBI care training</li>
+                  <li>Vestibular and balance rehabilitation education</li>
+                  <li>Neuromuscular rehabilitation methodologies</li>
                 </ul>
               </div>
             </div>
             <div className="flex items-start gap-4 p-6 rounded-lg bg-background border">
               <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <GraduationCap className="h-6 w-6 text-primary" />
+                <BookOpen className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold">Advanced Training</h3>
+                <h3 className="font-semibold">Clinical Training Focus</h3>
                 <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                  <li>Post-doctoral functional neurology residency</li>
-                  <li>Vestibular rehabilitation certification</li>
-                  <li>Concussion management specialist training</li>
+                  <li>Neurology-driven rehabilitation principles</li>
+                  <li>Visual-vestibular integration assessment</li>
+                  <li>Performance-based care models</li>
+                  <li>Data-driven outcome tracking systems</li>
                 </ul>
               </div>
             </div>
+          </div>
+
+          {/* Disclaimer */}
+          <div className="mt-8 text-center">
+            <p className="text-xs text-muted-foreground italic max-w-2xl mx-auto">
+              Board certification status varies by provider and is identified within individual profiles.
+            </p>
           </div>
         </div>
       </section>
@@ -189,7 +219,7 @@ const SiteProviders = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold mb-4">Schedule With Our Team</h2>
           <p className="mb-6 opacity-90 max-w-xl mx-auto">
-            Our providers are ready to help you find answers and start your recovery.
+            Our providers are ready to help you find answers and guide your recovery.
           </p>
           <Button size="lg" variant="secondary" asChild>
             <Link to="/patient/concierge">
