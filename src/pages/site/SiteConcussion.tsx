@@ -318,57 +318,39 @@ const SiteConcussion = () => {
                 to="/site/articles/concussion/visual-vestibular-mismatch"
                 className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
               >
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center mb-6">
-                  <Eye className="h-7 w-7 text-blue-500" />
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Eye className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4 group-hover:text-primary transition-colors">
-                  Visual-Vestibular Mismatch
-                </h3>
-                <p className="text-muted-foreground leading-relaxed mb-6">
+                <h3 className="text-xl font-semibold mb-4">Visual-Vestibular Mismatch</h3>
+                <p className="text-muted-foreground leading-relaxed">
                   Understanding why your eyes and inner ear aren't working together—and what targeted treatment looks like.
                 </p>
-                <div className="flex items-center gap-2 text-sm font-medium text-primary">
-                  Read Article
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
               </Link>
               
               <Link 
                 to="/site/articles/concussion/autonomic-nervous-system-flow"
                 className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
               >
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-teal-500/20 to-teal-500/5 flex items-center justify-center mb-6">
-                  <Heart className="h-7 w-7 text-teal-500" />
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Heart className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4 group-hover:text-primary transition-colors">
-                  Autonomic Nervous System
-                </h3>
-                <p className="text-muted-foreground leading-relaxed mb-6">
+                <h3 className="text-xl font-semibold mb-4">Autonomic Nervous System</h3>
+                <p className="text-muted-foreground leading-relaxed">
                   How ANS dysregulation causes fatigue, anxiety, and exercise intolerance after concussion.
                 </p>
-                <div className="flex items-center gap-2 text-sm font-medium text-primary">
-                  Read Article
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
               </Link>
               
               <Link 
                 to="/site/articles/concussion/cerebellar-timing-and-coordination"
                 className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
               >
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-indigo-500/20 to-indigo-500/5 flex items-center justify-center mb-6">
-                  <Brain className="h-7 w-7 text-indigo-500" />
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Brain className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4 group-hover:text-primary transition-colors">
-                  Cerebellar Timing
-                </h3>
-                <p className="text-muted-foreground leading-relaxed mb-6">
+                <h3 className="text-xl font-semibold mb-4">Cerebellar Timing</h3>
+                <p className="text-muted-foreground leading-relaxed">
                   When your brain's master clock is disrupted and recovery feels impossible to achieve.
                 </p>
-                <div className="flex items-center gap-2 text-sm font-medium text-primary">
-                  Read Article
-                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
               </Link>
             </div>
             
