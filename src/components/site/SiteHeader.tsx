@@ -175,9 +175,12 @@ const SiteHeader = () => {
           
           <NavLink to="/staff-login">Staff Login</NavLink>
 
-          <Button asChild size="default" className="ml-2 px-6 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02]">
-            <Link to="/patient/concierge">Schedule Evaluation</Link>
-          </Button>
+          <div className="flex items-center gap-4 ml-2">
+            <NavLink to="/patient/intake/referral">Physician Referral</NavLink>
+            <Button asChild size="default" className="px-6 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02]">
+              <Link to="/patient/concierge">Schedule Evaluation</Link>
+            </Button>
+          </div>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -281,6 +284,13 @@ const SiteHeader = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Staff Login
+            </Link>
+            <Link
+              to="/patient/intake/referral"
+              className="block py-2.5 px-4 text-sm font-medium text-muted-foreground rounded-md transition-colors hover:bg-accent hover:text-primary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Physician Referral
             </Link>
             <Button asChild className="w-full shadow-sm">
               <Link to="/patient/concierge" onClick={() => setMobileMenuOpen(false)}>
