@@ -11,7 +11,14 @@ import {
   Heart,
   GraduationCap,
   BarChart3,
-  Sparkles
+  Sparkles,
+  ClipboardList,
+  TrendingUp,
+  Activity,
+  Clock,
+  Brain,
+  FileCheck,
+  MessageSquare
 } from "lucide-react";
 
 const SiteRegistry = () => {
@@ -65,8 +72,213 @@ const SiteRegistry = () => {
         </div>
       </section>
 
-      {/* Section 2 — Why We Built the Registry */}
+      {/* NEW: Why an Outcome Registry Matters in Neurologic Care */}
       <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+              <Brain className="h-4 w-4" />
+              Neurologic Context
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">Why an Outcome Registry Matters in Neurologic Care</h2>
+            
+            <div className="space-y-8">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                In concussion recovery and neurologic musculoskeletal care, symptoms alone 
+                do not tell the full story. A patient may report feeling better while underlying 
+                neurologic function remains compromised. Conversely, residual symptoms may 
+                persist even after meaningful functional recovery has occurred. Relying 
+                solely on how someone feels can lead to premature clearance or unnecessarily 
+                prolonged restriction.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                An outcome registry addresses this gap by capturing objective, validated 
+                measures of function over time. It allows clinicians to observe patterns 
+                that extend beyond the surface—tracking neurologic readiness rather than 
+                symptom resolution alone. This longitudinal perspective is essential for 
+                making informed decisions about return to activity, school, sport, or work.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                For patients recovering from concussion or complex neurologic conditions, 
+                the registry is not a convenience. It is a clinical necessity—a structured 
+                framework that ensures recovery is observed with the depth and rigor these 
+                conditions require.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: How the PPC Outcome Registry Works */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <ClipboardList className="h-4 w-4" />
+                How It Works
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">How the PPC Outcome Registry Works</h2>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+                The registry operates within our episode-based care model, capturing 
+                structured data at key clinical moments to build a complete picture of 
+                each patient's recovery.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300 relative">
+                <div className="absolute -top-3 -left-3 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                  1
+                </div>
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4 mt-2">
+                  <Clock className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-base font-bold mb-2">Baseline Capture</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  At the start of each episode, validated outcome measures establish 
+                  a clear starting point for comparison.
+                </p>
+              </Card>
+              
+              <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300 relative">
+                <div className="absolute -top-3 -left-3 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                  2
+                </div>
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4 mt-2">
+                  <Activity className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-base font-bold mb-2">Interval Monitoring</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Throughout care, periodic reassessments track functional change 
+                  and identify when adjustments are needed.
+                </p>
+              </Card>
+              
+              <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300 relative">
+                <div className="absolute -top-3 -left-3 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                  3
+                </div>
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4 mt-2">
+                  <TrendingUp className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-base font-bold mb-2">Trend Analysis</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Data is reviewed to identify patterns, guiding clinical decisions 
+                  based on trajectory rather than isolated snapshots.
+                </p>
+              </Card>
+              
+              <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300 relative">
+                <div className="absolute -top-3 -left-3 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
+                  4
+                </div>
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4 mt-2">
+                  <FileCheck className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-base font-bold mb-2">Discharge Summary</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  At episode close, final outcomes document the complete recovery 
+                  journey and inform future care if needed.
+                </p>
+              </Card>
+            </div>
+            
+            <div className="mt-12 p-6 rounded-2xl bg-primary/5 border border-primary/10">
+              <p className="text-muted-foreground leading-relaxed text-center">
+                <span className="font-semibold text-foreground">Episode-based care</span> means 
+                every condition is tracked as a distinct clinical episode—with a defined beginning, 
+                structured observation, and documented resolution. This approach ensures continuity 
+                and prevents gaps in the recovery record.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: What Makes the PPC Outcome Registry Different */}
+      <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+              <Target className="h-4 w-4" />
+              Operational Difference
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">What Makes the PPC Outcome Registry Different</h2>
+            
+            <div className="space-y-8">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Many clinics collect outcome data. Fewer actually use it. The difference 
+                at Pittsford Performance Care is that registry data is operationalized—meaning 
+                it directly informs clinical decisions in real time, not just at discharge 
+                or for retrospective review.
+              </p>
+              
+              <div className="grid gap-6">
+                <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <Activity className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold mb-2">Real-Time Clinical Adjustment</h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        When progress stalls or trends in an unexpected direction, treatment 
+                        is adjusted promptly. Data drives action, not just documentation.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+                
+                <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <Shield className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold mb-2">Support for Safe Return Decisions</h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Return-to-learn, return-to-play, and return-to-performance decisions 
+                        are grounded in objective functional data—not symptom reports alone.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+                
+                <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm">
+                  <div className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold mb-2">Consistency Across Providers</h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Every clinician follows the same structured observation framework, 
+                        ensuring patients receive consistent care regardless of who they see.
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                This operational approach transforms the registry from a passive record 
+                into an active clinical tool—one that shapes care as it unfolds, rather 
+                than simply summarizing it afterward.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section — Why We Built the Registry (Original) */}
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
@@ -100,8 +312,8 @@ const SiteRegistry = () => {
         </div>
       </section>
 
-      {/* Section 3 — What the Registry Represents */}
-      <section className="py-20 lg:py-28 bg-background">
+      {/* Section — What the Registry Represents (Original) */}
+      <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
@@ -191,8 +403,8 @@ const SiteRegistry = () => {
         </div>
       </section>
 
-      {/* Section 4 — How the Registry Brings Clarity to Recovery */}
-      <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Section — How the Registry Brings Clarity to Recovery (Original) */}
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
@@ -227,7 +439,93 @@ const SiteRegistry = () => {
         </div>
       </section>
 
-      {/* Section 5 — A Foundation for Clinical Excellence and Research */}
+      {/* NEW: Clinical & Research Foundations */}
+      <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+              <GraduationCap className="h-4 w-4" />
+              Evidence Base
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">Clinical & Research Foundations</h2>
+            
+            <div className="space-y-8">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Evidence-based practice is not simply a phrase—it is a commitment to 
+                grounding clinical decisions in the best available science. The PPC 
+                Outcome Registry is built on principles recognized across neurologic 
+                rehabilitation, concussion management, and musculoskeletal care.
+              </p>
+              
+              <Card className="p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm">
+                <h3 className="text-xl font-bold mb-6">Foundational Principles</h3>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold">Validated Outcome Measures</span>
+                      <p className="text-muted-foreground mt-1">
+                        We use standardized, peer-reviewed assessment tools that have been 
+                        tested for reliability and validity in clinical populations.
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold">Minimal Clinically Important Difference (MCID)</span>
+                      <p className="text-muted-foreground mt-1">
+                        Change is evaluated against established thresholds that distinguish 
+                        meaningful improvement from statistical noise or measurement error.
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold">Longitudinal Tracking</span>
+                      <p className="text-muted-foreground mt-1">
+                        Recovery is observed over time, recognizing that neurologic and 
+                        functional improvement often unfolds across weeks or months.
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold">Symptom Resolution ≠ Neurologic Recovery</span>
+                      <p className="text-muted-foreground mt-1">
+                        Consensus guidelines in concussion and neurologic care emphasize 
+                        that feeling better does not guarantee the brain or nervous system 
+                        has fully recovered. Objective measures help bridge this gap.
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold">Return-to-Activity Frameworks</span>
+                      <p className="text-muted-foreground mt-1">
+                        Decisions around return-to-learn, return-to-play, and return-to-performance 
+                        are guided by stepwise protocols aligned with international consensus statements.
+                      </p>
+                    </div>
+                  </li>
+                </ul>
+              </Card>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                These principles inform every aspect of how the registry functions—ensuring 
+                that our clinical observations are not only consistent but also aligned with 
+                the standards of care recognized by the broader medical community.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section — A Foundation for Clinical Excellence and Research (Original) */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -265,7 +563,7 @@ const SiteRegistry = () => {
         </div>
       </section>
 
-      {/* Section 6 — Why It Matters */}
+      {/* Section — Why It Matters (Original) */}
       <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
@@ -347,8 +645,80 @@ const SiteRegistry = () => {
         </div>
       </section>
 
-      {/* Section 7 — Closing + CTA */}
+      {/* NEW: What This Enables for Our Patients */}
       <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+              <MessageSquare className="h-4 w-4" />
+              Patient Benefits
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-8">What This Enables for Our Patients</h2>
+            
+            <div className="space-y-8">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                The registry is not an abstraction. It translates directly into tangible 
+                benefits for the patients and families who trust us with their care.
+              </p>
+              
+              <div className="grid gap-6 sm:grid-cols-2">
+                <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                    <Eye className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-bold mb-2">Transparency in Every Conversation</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Patients and families can see the data that informs their care—no 
+                    hidden judgments, no unexplained decisions.
+                  </p>
+                </Card>
+                
+                <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                    <Shield className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-bold mb-2">Safer Return-to-Activity Decisions</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Whether returning to school, sport, or work, decisions are grounded 
+                    in documented recovery rather than subjective readiness.
+                  </p>
+                </Card>
+                
+                <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                    <Users className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-bold mb-2">Clearer Communication</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    When schools, coaches, or employers need updates, families have 
+                    objective information to share—not just reassurance.
+                  </p>
+                </Card>
+                
+                <Card className="p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-bold mb-2">Accountability You Can Trust</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    The registry holds us accountable to the outcomes we promise. 
+                    If progress stalls, we adjust—and the data proves it.
+                  </p>
+                </Card>
+              </div>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                This is what outcome-driven care looks like in practice: not claims, 
+                but structure. Not promises, but documentation. Not hope, but clarity.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section — Closing + CTA */}
+      <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
