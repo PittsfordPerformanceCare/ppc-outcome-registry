@@ -55,7 +55,7 @@ const SiteHeader = () => {
                   Conditions
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[420px] gap-4 p-6 md:w-[520px] md:grid-cols-2">
+                  <ul className="grid w-[420px] gap-4 p-6 md:w-[560px] md:grid-cols-2">
                     <li>
                       <NavigationMenuLink asChild>
                         <Link
@@ -82,6 +82,21 @@ const SiteHeader = () => {
                           </div>
                           <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
                             Neuromuscular-driven approach to chronic pain and movement dysfunction
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                    <li className="md:col-span-2">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/site/performance"
+                          className="group block select-none space-y-2 rounded-lg p-4 leading-none no-underline outline-none transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:shadow-sm focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-semibold leading-none tracking-tight group-hover:text-primary transition-colors">
+                            Performance & Athletic Care
+                          </div>
+                          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+                            Neurologic readiness, recovery, and confident return-to-play for athletes
                           </p>
                         </Link>
                       </NavigationMenuLink>
@@ -204,6 +219,13 @@ const SiteHeader = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Musculoskeletal Care
+            </Link>
+            <Link
+              to="/site/performance"
+              className="block pl-4 py-2.5 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-primary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Performance & Athletic Care
             </Link>
           </div>
           
