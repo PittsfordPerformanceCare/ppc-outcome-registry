@@ -268,6 +268,57 @@ const SiteAbout = () => {
         </div>
       </section>
 
+      {/* Clinical & Research Foundations */}
+      <section className="py-20 lg:py-28 bg-background border-t border-border/40">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-2xl md:text-3xl font-bold mb-6">
+              Clinical & Research Foundations
+            </h3>
+            
+            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+              PPC's clinical methodology is informed by consensus guidelines, peer-reviewed 
+              research, and established best practices in neurologic rehabilitation. Our 
+              systems-based approach reflects the current understanding of how the brain 
+              and nervous system recover from injury and dysfunction.
+            </p>
+            
+            <ul className="space-y-4">
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Berlin Consensus Statement on Concussion in Sport
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Evidence describing autonomic nervous system dysfunction following mild traumatic brain injury
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Research demonstrating persistent metabolic and cerebral blood-flow disruption after concussion
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Clinical literature supporting graded aerobic exercise as an active component of concussion recovery
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Validated outcome measures and MCID thresholds for tracking meaningful clinical improvement
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
