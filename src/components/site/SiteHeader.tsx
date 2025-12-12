@@ -132,6 +132,21 @@ const SiteHeader = () => {
                         </Link>
                       </NavigationMenuLink>
                     </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/site/wcsd-partnership"
+                          className="group block select-none space-y-1 rounded-lg p-3 leading-none no-underline outline-none transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:shadow-sm focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-semibold leading-none tracking-tight group-hover:text-primary transition-colors">
+                            WCSD Partnership
+                          </div>
+                          <p className="text-sm leading-relaxed text-muted-foreground">
+                            Clinic to classroom collaboration
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -213,6 +228,13 @@ const SiteHeader = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Outcome Registry
+            </Link>
+            <Link
+              to="/site/wcsd-partnership"
+              className="block py-2.5 px-4 text-sm font-medium rounded-md transition-colors hover:bg-accent hover:text-primary"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              WCSD Partnership
             </Link>
             <Link
               to="/site/providers"
