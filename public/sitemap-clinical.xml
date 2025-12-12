@@ -1,33 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://muse-meadow-app.lovable.app/resources/clinician-guides</loc>
+    <loc>https://muse-meadow-app.lovable.app/site/about</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://muse-meadow-app.lovable.app/resources/clinician-guides/clinical-considerations-motor-timing-deficits</loc>
+    <loc>https://muse-meadow-app.lovable.app/site/providers</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
   </url>
   <url>
-    <loc>https://muse-meadow-app.lovable.app/resources/professional-outcomes</loc>
+    <loc>https://muse-meadow-app.lovable.app/site/contact</loc>
     <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://muse-meadow-app.lovable.app/resources/professional-outcomes/conditions/concussion-post-concussion</loc>
-    <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://muse-meadow-app.lovable.app/resources/professional-outcomes/conditions/neurologic-msk</loc>
-    <lastmod>2025-12-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
 </urlset>
