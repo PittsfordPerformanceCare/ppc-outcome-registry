@@ -121,6 +121,7 @@ const SiteHeader = () => {
                       <div className="grid gap-1">
                         {[
                           { to: "/site/articles", title: "Articles & Guides", desc: "Educational content and recovery insights" },
+                          { to: "/resources/clinician-guides", title: "Clinician Guides", desc: "Professional clinical resources" },
                           { to: "/site/works-cited", title: "Works Cited", desc: "Clinical and research references" },
                         ].map((item) => (
                           <NavigationMenuLink key={item.to} asChild>
@@ -275,6 +276,7 @@ const SiteHeader = () => {
           <div className="pb-4 mb-3 border-b border-border/20">
             {[
               { to: "/site/articles", label: "Articles & Guides" },
+              { to: "/resources/clinician-guides", label: "Clinician Guides" },
               { to: "/site/works-cited", label: "Works Cited" },
               { to: "/site/about", label: "About PPC" },
               { to: "/site/registry", label: "Outcome Registry" },

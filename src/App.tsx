@@ -97,6 +97,8 @@ const SiteContact = lazy(() => import("./pages/site/SiteContact"));
 const SiteWcsdPartnership = lazy(() => import("./pages/site/SiteWcsdPartnership"));
 const SitePerformance = lazy(() => import("./pages/site/SitePerformance"));
 const SiteWorksCited = lazy(() => import("./pages/site/SiteWorksCited"));
+const ClinicianGuidesIndex = lazy(() => import("./pages/site/ClinicianGuidesIndex"));
+const ClinicianGuideMotorTiming = lazy(() => import("./pages/site/ClinicianGuideMotorTiming"));
 
 // ========== PHASE 1 SHELL: /patient PAGES ==========
 const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
@@ -154,6 +156,12 @@ const App = () => (
               <Route path="wcsd-partnership" element={<SiteWcsdPartnership />} />
               <Route path="performance" element={<SitePerformance />} />
               <Route path="works-cited" element={<SiteWorksCited />} />
+            </Route>
+
+            {/* ========== RESOURCES: CLINICIAN GUIDES (PUBLIC) ========== */}
+            <Route path="/resources/clinician-guides" element={<SiteLayout />}>
+              <Route index element={<ClinicianGuidesIndex />} />
+              <Route path="clinical-considerations-motor-timing-deficits" element={<ClinicianGuideMotorTiming />} />
             </Route>
 
             {/* ========== PHASE 1 SHELL: /patient ROUTES (PUBLIC) ========== */}
