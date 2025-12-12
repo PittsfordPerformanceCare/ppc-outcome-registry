@@ -1017,64 +1017,380 @@ export const athleteArticles: ArticleData[] = [
 ];
 
 // ============================================
-// MSK CLUSTER ARTICLES (PLACEHOLDERS)
+// MSK CLUSTER ARTICLES
 // ============================================
 
 export const mskArticles: ArticleData[] = [
   {
-    slug: "chronic-msk-severity-check",
-    title: "Chronic MSK Pain Severity Check: When Structure Doesn't Explain Symptoms",
+    slug: "motor-timing-deficits",
+    title: "Motor Timing Deficits: When Your Body Can't Fire in the Right Sequence",
     category: "msk",
-    readTime: "Coming soon",
-    excerpt: "Understanding why imaging can be normal but pain and dysfunction persist.",
-    heroContent: "PLACEHOLDER: This is the placeholder for the MSK cluster article on chronic MSK severity check.",
-    sections: [],
-    relatedArticles: [],
+    readTime: "7 min read",
+    excerpt: "Pain can persist even when imaging looks normal—because the issue may be timing. When muscles fire late or out of sequence, joints and tissues absorb load they were never designed to handle.",
+    heroContent: "If you've been told \"everything looks fine,\" but your body still feels off—weak, unstable, or painful with movement—you're not alone. In many persistent MSK cases, the real problem isn't damage. It's timing.",
+    sections: [
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Pain isn't always a sign of damage. Sometimes it's a sign your nervous system is struggling to coordinate movement under real-world load."
+      },
+      { type: "heading", content: "What Is a Motor Timing Deficit?" },
+      {
+        type: "paragraph",
+        content: "A motor timing deficit occurs when the nervous system fails to activate the right muscles at the right time. Even small timing delays can change how force is distributed across a joint—creating overload, compensations, and repeated flare-ups."
+      },
+      {
+        type: "paragraph",
+        content: "This often shows up after injury, after prolonged pain, or when your body has learned protective movement strategies. The result can be a pattern where movement is technically possible, but inefficient—like a car that drives with misfiring cylinders."
+      },
+      { type: "heading", content: "Recognizing the Signs" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Motor timing issues often feel like instability, fatigue, or inconsistency—especially under speed, load, or endurance demand."
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Pain that flares with activity but calms with rest—then returns",
+          "Feeling \"unstable\" or \"not supported\" in a joint (knee, hip, shoulder, back)",
+          "Early fatigue with simple tasks (stairs, jogging, lifting, prolonged standing)",
+          "Muscles that feel tight or overworked after small amounts of movement",
+          "A sense that your body \"can't find the groove\" or moves differently day to day",
+          "Recurring strains or \"tweaks\" without a clear new injury"
+        ]
+      },
+      {
+        type: "inline-cta",
+        content: "If this pattern feels familiar, an evaluation focused on motor control and timing can identify what standard imaging and exams often miss."
+      },
+      { type: "heading", content: "Why Standard Care Misses It" },
+      {
+        type: "paragraph",
+        content: "Standard MSK care often focuses on structure: joints, tissues, and imaging findings. But timing deficits live in the control system—how your brain and nervous system coordinate force, sequencing, and stabilization. A normal MRI can coexist with a very real movement-control problem."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "When the control system is the bottleneck, strengthening alone may not solve it—because strength without timing can reinforce compensation."
+      },
+      { type: "heading", content: "How We Evaluate" },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Movement sequencing screens (how you coordinate multi-joint tasks)",
+          "Single-leg and dynamic stability testing (force absorption and control)",
+          "Reaction-time and rapid stabilization demands (when appropriate)",
+          "Fatigue-based testing to reveal breakdown patterns",
+          "Outcome measures to track functional change over time"
+        ]
+      },
+      { type: "heading", content: "Treatment Approach" },
+      {
+        type: "paragraph",
+        content: "Treatment focuses on restoring efficient sequencing and stabilization—not just reducing pain. That may include targeted neuromuscular training, graded load exposure, and precision drills that rebuild timing under realistic movement demands."
+      },
+      {
+        type: "paragraph",
+        content: "As timing improves, load distribution normalizes. Many patients notice fewer flare-ups, better endurance, and a more stable, confident movement pattern."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The goal isn't to \"push through\" pain. The goal is to restore control so the same activity no longer creates overload."
+      }
+    ],
+    relatedArticles: [
+      "movement-asymmetry",
+      "chronic-pain-without-structural-damage",
+      "post-injury-performance-loss"
+    ],
     primaryCTA: {
       label: "Schedule MSK Evaluation",
-      route: "/patient/concierge"
+      route: "/patient/concierge",
+      description: "Identify whether motor timing and sequencing are driving your pain, instability, or recurring flare-ups."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
     }
   },
   {
-    slug: "movement-heaviness",
-    title: "Movement Heaviness: Why Everything Feels Harder Than It Should",
+    slug: "movement-asymmetry",
+    title: "Movement Asymmetry: When One Side Quietly Does More Work",
     category: "msk",
-    readTime: "Coming soon",
-    excerpt: "Exploring the neuromuscular drivers of excessive effort and early fatigue.",
-    heroContent: "PLACEHOLDER: This is the placeholder for the MSK cluster article on movement heaviness.",
-    sections: [],
-    relatedArticles: [],
+    readTime: "6 min read",
+    excerpt: "Asymmetry isn't just a strength issue—it's often a control issue. When one side compensates, tissues overload and performance drops even if imaging looks normal.",
+    heroContent: "You may not feel weak—but you might feel uneven. Many people with chronic pain or recurring injury develop a subtle shift where one side carries more load, stabilizes more, and tires faster.",
+    sections: [
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Your body is brilliant at adapting. The problem is that long-term compensation can become the reason pain persists."
+      },
+      { type: "heading", content: "What Is Movement Asymmetry?" },
+      {
+        type: "paragraph",
+        content: "Movement asymmetry means the left and right sides are not sharing load equally during tasks like walking, squatting, running, lifting, or even standing. This can develop after injury, surgery, repeated strains, or long periods of pain-driven guarding."
+      },
+      {
+        type: "paragraph",
+        content: "Over time, the stronger or more stable side becomes the default. The compensating side may feel tight, sore, or overworked—while the under-contributing side becomes less coordinated and less reliable."
+      },
+      { type: "heading", content: "Common Signs" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Asymmetry often shows up as 'one-sided fatigue' or recurring discomfort that seems to move around."
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "One hip, knee, shoulder, or low back side always feels tighter",
+          "Pain that alternates locations depending on activity",
+          "You shift weight to one side without realizing it",
+          "One leg feels weaker during stairs, lunges, or running",
+          "Recurrent strains on the same side (hamstring, calf, groin, shoulder)",
+          "You feel 'crooked' after workouts or long days"
+        ]
+      },
+      {
+        type: "inline-cta",
+        content: "A targeted evaluation can identify where asymmetry is coming from—and which system is driving the compensation."
+      },
+      { type: "heading", content: "Why Standard Care Misses It" },
+      {
+        type: "paragraph",
+        content: "Many exams assess a body part in isolation. But asymmetry is a systems problem—coordination, timing, balance, and load tolerance. If the root issue is neurologic control, treating only the painful area can provide short-term relief without restoring symmetry."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "If the nervous system trusts one side more, it will keep choosing that side—until we retrain stability and control on the other."
+      },
+      { type: "heading", content: "How We Evaluate" },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Side-to-side comparisons during functional tasks (squat, hinge, step-down)",
+          "Single-leg stability and force absorption testing",
+          "Balance and coordination screens under fatigue",
+          "Movement efficiency and sequencing checks",
+          "Outcome measures to track progress objectively over time"
+        ]
+      },
+      { type: "heading", content: "Treatment Approach" },
+      {
+        type: "paragraph",
+        content: "Treatment targets the driver of compensation and rebuilds symmetry through precision loading, neuromuscular retraining, and graded exposure. The goal is to restore trust and capacity on the under-performing side—so the body doesn't have to cheat."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "When symmetry returns, many people notice pain becomes less 'random,' endurance improves, and movement feels smoother and more confident."
+      }
+    ],
+    relatedArticles: [
+      "motor-timing-deficits",
+      "chronic-pain-without-structural-damage",
+      "post-injury-performance-loss"
+    ],
     primaryCTA: {
       label: "Schedule MSK Evaluation",
-      route: "/patient/concierge"
+      route: "/patient/concierge",
+      description: "Find out whether asymmetry and compensation are overloading your joints and limiting recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
     }
   },
   {
-    slug: "asymmetric-loading",
-    title: "Asymmetric Loading: The Hidden Driver of Chronic Pain",
+    slug: "chronic-pain-without-structural-damage",
+    title: "Chronic Pain Without Structural Damage: When Imaging Is Normal but Pain Isn't",
     category: "msk",
-    readTime: "Coming soon",
-    excerpt: "How side-to-side differences in motor control create overload patterns.",
-    heroContent: "PLACEHOLDER: This is the placeholder for the MSK cluster article on asymmetric loading.",
-    sections: [],
-    relatedArticles: [],
+    readTime: "8 min read",
+    excerpt: "Normal imaging doesn't mean normal function. Chronic pain can persist when the nervous system remains protective—altering timing, load tolerance, and sensitivity.",
+    heroContent: "It can be deeply frustrating to hear, \"Your MRI looks fine,\" when pain is still limiting your life. The good news is that this pattern is common—and it often points toward a functional problem in how your nervous system is regulating movement and sensitivity.",
+    sections: [
+      {
+        type: "callout",
+        variant: "insight",
+        content: "You don't need a scary scan to have real pain. Pain is a protective output—and protection can stay on long after tissues have healed."
+      },
+      { type: "heading", content: "What Does 'Normal Imaging' Actually Mean?" },
+      {
+        type: "paragraph",
+        content: "Imaging can be extremely helpful for identifying fractures, tears, severe degeneration, or other structural problems. But many pain conditions are driven by factors that don't show up on scans—like timing deficits, load intolerance, persistent guarding, altered coordination, or heightened sensitivity in the nervous system."
+      },
+      {
+        type: "paragraph",
+        content: "In other words: structure can look fine while function is still impaired."
+      },
+      { type: "heading", content: "Common Signs" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "These patterns often suggest a protective nervous system state rather than a new injury."
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Pain that changes location or quality without a new injury",
+          "Pain that spikes with stress, poor sleep, or fatigue",
+          "A sense of stiffness, guarding, or 'bracing' during movement",
+          "Flare-ups after activity that used to be easy",
+          "Sensitivity to load, impact, or prolonged positions",
+          "Feeling weaker or less coordinated than expected"
+        ]
+      },
+      {
+        type: "inline-cta",
+        content: "If your scans are normal but your function isn't, the next step is a functional evaluation—not more guessing."
+      },
+      { type: "heading", content: "Why Standard Care Misses It" },
+      {
+        type: "paragraph",
+        content: "When imaging is reassuring, care can drift toward rest, generic strengthening, or symptom management. Those can help—but if the primary limiter is the nervous system's control and tolerance, the plan must address movement coordination, load progression, and sensitivity patterns in a structured way."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Pain relief isn't the only goal. Restoring trust, tolerance, and control is what makes relief hold."
+      },
+      { type: "heading", content: "How We Evaluate" },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Functional movement assessment under realistic load",
+          "Motor control and sequencing screens",
+          "Balance and stability testing when appropriate",
+          "Fatigue-based testing to reveal breakdown patterns",
+          "Validated outcome measures to track meaningful change over time"
+        ]
+      },
+      { type: "heading", content: "Treatment Approach" },
+      {
+        type: "paragraph",
+        content: "Treatment focuses on restoring function progressively: improving movement efficiency, rebuilding load tolerance, and reducing protective guarding through graded exposure and precision training. The goal is to help the nervous system re-learn that movement is safe and controllable."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Many patients improve when care shifts from 'find the damage' to 'rebuild the system that controls movement.'"
+      }
+    ],
+    relatedArticles: [
+      "motor-timing-deficits",
+      "movement-asymmetry",
+      "post-injury-performance-loss"
+    ],
     primaryCTA: {
       label: "Schedule MSK Evaluation",
-      route: "/patient/concierge"
+      route: "/patient/concierge",
+      description: "Get a functional, neurologic MSK assessment when imaging doesn't match your lived experience."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
     }
   },
   {
     slug: "post-injury-performance-loss",
-    title: "Post-Injury Performance Loss: When Healing Doesn't Mean Recovery",
+    title: "Post-Injury Performance Loss: When You're 'Healed' but Not the Same",
     category: "msk",
-    readTime: "Coming soon",
-    excerpt: "Why the tissue healed but function didn't return to baseline.",
-    heroContent: "PLACEHOLDER: This is the placeholder for the MSK cluster article on post-injury performance loss.",
-    sections: [],
-    relatedArticles: [],
+    readTime: "7 min read",
+    excerpt: "You can be cleared and still underperform. Post-injury performance loss often reflects timing delays, compensation, and reduced load tolerance—especially under speed, fatigue, and sport demand.",
+    heroContent: "Many athletes and active adults reach a confusing stage after injury: you're cleared, your scans are fine, and you can train—but you don't feel like yourself. Speed, confidence, endurance, and explosiveness don't return the way you expected.",
+    sections: [
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Being 'cleared' usually means you're safe from major structural risk. It does not always mean your system is ready for full performance demands."
+      },
+      { type: "heading", content: "What Is Post-Injury Performance Loss?" },
+      {
+        type: "paragraph",
+        content: "Post-injury performance loss describes a persistent gap between what your body can technically do and what it can do efficiently under real intensity. This often stems from compensation patterns, delayed stabilization, reduced force absorption, or fatigue-driven breakdown."
+      },
+      {
+        type: "paragraph",
+        content: "The body may protect the previously injured area by shifting load elsewhere. Over time, that can limit speed and power—and increase the risk of secondary issues."
+      },
+      { type: "heading", content: "Recognizing the Signs" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Performance loss is often revealed under speed, fatigue, reaction, and complexity—not during basic strength tests."
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "You can train, but you can't reach your previous intensity or pace",
+          "You fatigue earlier than expected or feel 'heavy' during movement",
+          "Confidence is low during cutting, landing, sprinting, or lifting",
+          "You avoid certain positions without realizing it",
+          "New aches appear in other areas (hip, back, opposite knee/ankle)",
+          "Performance drops most under fatigue or high-speed demands"
+        ]
+      },
+      {
+        type: "inline-cta",
+        content: "If you feel 'cleared but not ready,' the next step is testing that matches real performance demand—not just basic strength."
+      },
+      { type: "heading", content: "Why Standard Care Misses It" },
+      {
+        type: "paragraph",
+        content: "Traditional rehab often focuses on pain reduction and basic strength milestones. Those matter—but performance requires timing, sequencing, and force absorption under reactive conditions. If those aren't tested, the gap can persist even when the injury is healed."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Performance is a coordination problem as much as a strength problem—especially under fatigue and speed."
+      },
+      { type: "heading", content: "How We Evaluate" },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Force absorption and landing mechanics under progressive demand",
+          "Side-to-side symmetry during sport-relevant tasks",
+          "Sequencing and stabilization timing screens",
+          "Fatigue-based testing to reveal performance breakdown",
+          "Outcome measures to quantify return-to-function progress"
+        ]
+      },
+      { type: "heading", content: "Treatment Approach" },
+      {
+        type: "paragraph",
+        content: "Treatment is built around restoring readiness: improving timing, symmetry, and force control under progressive load. This often includes precision neuromuscular drills, graded exposure to speed and impact, and structured progressions that rebuild confidence through measurable milestones."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The goal is not just to return to activity—it's to return to performance with stability, endurance, and trust in your body."
+      }
+    ],
+    relatedArticles: [
+      "motor-timing-deficits",
+      "movement-asymmetry",
+      "chronic-pain-without-structural-damage"
+    ],
     primaryCTA: {
       label: "Schedule MSK Evaluation",
-      route: "/patient/concierge"
+      route: "/patient/concierge",
+      description: "Identify the performance limiter—timing, symmetry, force absorption, or fatigue breakdown—and build a clear return plan."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
     }
   }
 ];
