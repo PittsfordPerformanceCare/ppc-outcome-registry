@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,8 +9,19 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getAllConditions } from "@/data/professionalOutcomes";
+import { useProfessionalAccess } from "@/hooks/useProfessionalAccess";
+import { ChevronRight, Lock, AlertCircle } from "lucide-react";
 
 const ProfessionalOutcomesPortal = () => {
+  const location = useLocation();
+  const { isVerifiedProfessional, isAuthenticated, loading } = useProfessionalAccess();
+  const conditions = getAllConditions();
+
+  // Check if user was redirected due to access denial
+  const accessDenied = location.state?.accessDenied;
+
   return (
     <>
       <Helmet>
@@ -60,6 +71,16 @@ const ProfessionalOutcomesPortal = () => {
         {/* Content */}
         <div className="container mx-auto px-4 py-10 lg:px-8 lg:py-14">
           <div className="max-w-3xl mx-auto">
+            {/* Access Denied Alert */}
+            {accessDenied && (
+              <Alert className="mb-8 border-amber-200 bg-amber-50">
+                <AlertCircle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800">
+                  Access restricted to verified professionals. Please request access below to view condition-specific outcome data.
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* Opening Section */}
             <section className="mb-12">
               <p className="text-slate-700 leading-relaxed">
@@ -68,6 +89,56 @@ const ProfessionalOutcomesPortal = () => {
               <p className="text-slate-700 leading-relaxed mt-4">
                 These data are presented descriptively and with clinical context to support shared decision-making, referral confidence, and professional collaboration.
               </p>
+            </section>
+
+            <Separator className="my-10" />
+
+            {/* Condition Views Section */}
+            <section className="mb-12">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                Condition-Specific Outcomes
+              </h2>
+              <p className="text-slate-700 leading-relaxed mb-6">
+                Select a condition to view aggregate outcomes, recovery trajectories, and clinical interpretation guidance.
+              </p>
+              
+              <div className="space-y-3">
+                {conditions.map((condition) => {
+                  const canAccess = isVerifiedProfessional && isAuthenticated;
+                  
+                  return canAccess ? (
+                    <Link
+                      key={condition.slug}
+                      to={`/resources/professional-outcomes/conditions/${condition.slug}`}
+                      className="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-slate-300 hover:bg-slate-50/50 transition-colors group"
+                    >
+                      <span className="text-sm font-medium text-slate-800 group-hover:text-slate-900">
+                        {condition.name}
+                      </span>
+                      <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-slate-600" />
+                    </Link>
+                  ) : (
+                    <div
+                      key={condition.slug}
+                      className="flex items-center justify-between p-4 border border-slate-200 border-dashed rounded-lg bg-slate-50/30"
+                    >
+                      <span className="text-sm font-medium text-slate-500">
+                        {condition.name}
+                      </span>
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <Lock className="h-3.5 w-3.5" />
+                        <span className="text-xs">Requires verification</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {!isVerifiedProfessional && !loading && (
+                <p className="text-xs text-slate-500 mt-4">
+                  Condition views require professional verification. Request access below.
+                </p>
+              )}
             </section>
 
             <Separator className="my-10" />
