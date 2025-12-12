@@ -239,8 +239,7 @@ const SiteWcsdPartnership = () => {
             <div className="max-w-3xl mx-auto text-center">
               <div className="prose prose-lg dark:prose-invert mx-auto">
                 <p className="text-lg text-muted-foreground leading-relaxed italic">
-                  Translation over innovation hype. Responsibility over speed. 
-                  Students over systems. Community over commercialization.
+                  "Academic readiness is neurologic before it's academic."
                 </p>
               </div>
             </div>
