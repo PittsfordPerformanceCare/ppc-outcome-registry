@@ -479,6 +479,82 @@ const SiteMsk = () => {
         </div>
       </section>
 
+      {/* Clinical & Research Foundations */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-2xl md:text-3xl font-bold mb-10 text-center">
+              Clinical & Research Foundations
+            </h3>
+            
+            <div className="space-y-6 mb-10">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                PPC's approach to musculoskeletal care is informed by established research in 
+                clinical neuroscience, motor control, and rehabilitation medicine. Our methodology 
+                focuses on identifying neurologic drivers of pain and dysfunction rather than 
+                relying solely on structural findings — grounded in the understanding that persistent 
+                pain and performance loss often reflect deficits in timing, coordination, load 
+                tolerance, or central regulation.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Validated outcome measures and functional indicators are integrated throughout 
+                our musculoskeletal care. Treatment progression is guided by objective change over 
+                time — not pain reports alone. Care adapts based on how the nervous system responds 
+                to load, movement demand, and fatigue, ensuring that clinical decisions reflect 
+                measured neurologic and functional response across longitudinal recovery.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Pittsford Performance Care actively engages in translational neuroscience research 
+                relevant to musculoskeletal and performance-related conditions. This work is conducted 
+                under Institutional Review Board (IRB) oversight, with the goal of improving how 
+                neuromuscular dysfunction, recovery readiness, and injury risk are identified and 
+                monitored in real-world clinical and athletic environments — contributing responsibly 
+                to broader understanding while maintaining the highest standards of patient care.
+              </p>
+            </div>
+            
+            <ul className="space-y-4 mb-10">
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Research demonstrating neural control deficits as drivers of chronic musculoskeletal pain
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Evidence describing motor timing and sequencing dysfunction in recurrent injury
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Clinical literature on cerebellar contributions to movement precision and coordination
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Validated outcome measures for tracking functional improvement and recovery readiness
+                </span>
+              </li>
+            </ul>
+            
+            <div className="mt-10 pt-8 border-t border-border/40">
+              <p className="text-muted-foreground leading-relaxed">
+                All supporting evidence referenced throughout PPC's musculoskeletal and neurologic 
+                content is maintained in a centralized Works Cited resource. This reference library 
+                is actively curated and continues to evolve as the science of motor control, pain, 
+                and rehabilitation advances — reflecting PPC's commitment to transparency, 
+                accountability, and continuous learning.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-24 lg:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/90 via-primary to-primary/90" />
