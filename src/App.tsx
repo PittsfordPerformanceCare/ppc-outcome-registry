@@ -100,6 +100,7 @@ const SiteWorksCited = lazy(() => import("./pages/site/SiteWorksCited"));
 const ClinicianGuidesIndex = lazy(() => import("./pages/site/ClinicianGuidesIndex"));
 const ClinicianGuideMotorTiming = lazy(() => import("./pages/site/ClinicianGuideMotorTiming"));
 const ProfessionalOutcomesPortal = lazy(() => import("./pages/site/ProfessionalOutcomesPortal"));
+const ProfessionalConditionView = lazy(() => import("./pages/site/ProfessionalConditionView"));
 
 // ========== PHASE 1 SHELL: /patient PAGES ==========
 const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
@@ -165,9 +166,10 @@ const App = () => (
               <Route path="clinical-considerations-motor-timing-deficits" element={<ClinicianGuideMotorTiming />} />
             </Route>
 
-            {/* ========== RESOURCES: PROFESSIONAL OUTCOMES (PUBLIC, NOINDEX) ========== */}
+            {/* ========== RESOURCES: PROFESSIONAL OUTCOMES (GATED) ========== */}
             <Route path="/resources/professional-outcomes" element={<SiteLayout />}>
               <Route index element={<ProfessionalOutcomesPortal />} />
+              <Route path="conditions/:conditionSlug" element={<ProfessionalConditionView />} />
             </Route>
 
             {/* ========== PHASE 1 SHELL: /patient ROUTES (PUBLIC) ========== */}

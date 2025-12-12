@@ -45,12 +45,9 @@ export function useProfessionalAccess(): UseProfessionalAccessReturn {
         return;
       }
 
-      const roles = data?.map(r => r.role) || [];
+      const roles = data?.map(r => String(r.role)) || [];
       const hasAccess = roles.some(role => 
-        role === 'professional_verified' || 
-        role === 'clinician' || 
-        role === 'admin' ||
-        role === 'owner'
+        ['professional_verified', 'clinician', 'admin', 'owner'].includes(role)
       );
 
       setIsVerifiedProfessional(hasAccess);
