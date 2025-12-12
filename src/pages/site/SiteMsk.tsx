@@ -19,6 +19,7 @@ import athleteResilient from "@/assets/athletes/resilient.jpg";
 import athleteFierce from "@/assets/athletes/fierce.jpg";
 import athleteGifted from "@/assets/athletes/gifted.jpg";
 import athleteGrit from "@/assets/athletes/grit.jpg";
+import athleteDiscipline from "@/assets/athletes/discipline.jpg";
 
 const athleteCards = [
   {
@@ -40,6 +41,11 @@ const athleteCards = [
     image: athleteGrit,
     word: "grit",
     definition: "courage and resolve; strength of character."
+  },
+  {
+    image: athleteDiscipline,
+    word: "discipline",
+    definition: "to bring under control; to impose order upon."
   }
 ];
 
