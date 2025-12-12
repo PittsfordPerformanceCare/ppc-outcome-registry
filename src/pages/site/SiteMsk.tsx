@@ -65,7 +65,7 @@ const SiteMsk = () => {
       <section className="py-20 lg:py-28 bg-background relative">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-14">
+            <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
                 <HeartPulse className="h-4 w-4" />
                 Common Experiences
@@ -73,31 +73,25 @@ const SiteMsk = () => {
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Does This Sound Like You?
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                These aren't signs of weakness or aging—they're signs of neuromuscular 
-                dysfunction that needs a different approach.
-              </p>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-4">
-              {[
-                "Pain that doesn't match your imaging results",
-                "Movements feel heavy, slow, or effortful",
-                "One side of your body doesn't work like the other",
-                "Fatigue that limits your activity tolerance",
-                "Strength training doesn't translate to function",
-                "You've 'tried everything' without lasting relief",
-                "Performance declined after injury or illness",
-                "Something feels 'off' but you can't explain it"
-              ].map((symptom, index) => (
-                <div 
-                  key={index} 
-                  className="group flex items-center gap-4 p-5 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
-                >
-                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
-                  <p className="text-foreground font-medium">{symptom}</p>
-                </div>
-              ))}
+            <div className="prose prose-lg dark:prose-invert mx-auto">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Pain that doesn't match your imaging results. Movements that feel heavy, slow, or 
+                effortful. One side of your body that doesn't work like the other. Fatigue that 
+                limits your activity tolerance, even when you're doing everything right.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Strength training that doesn't translate to function. The frustration of having 
+                "tried everything" without lasting relief. Performance that declined after injury 
+                or illness and never fully returned. Something that feels "off" but you can't 
+                quite explain it.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                These aren't signs of weakness or aging. They're signs of neuromuscular dysfunction 
+                that needs a different approach—one that looks beyond structure to understand how 
+                your nervous system controls movement.
+              </p>
             </div>
           </div>
         </div>
