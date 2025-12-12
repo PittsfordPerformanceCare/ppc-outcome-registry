@@ -297,11 +297,11 @@ const SiteConcussion = () => {
       </section>
 
       {/* Related Articles */}
-      <section className="py-20 lg:py-28 bg-background">
+      <section className="py-24 lg:py-32 bg-background">
         <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-14">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
                 <Brain className="h-4 w-4" />
                 Deep Dive Resources
               </div>
@@ -313,13 +313,13 @@ const SiteConcussion = () => {
               </p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-8">
               <Link 
                 to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group p-10 rounded-3xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Eye className="h-7 w-7 text-primary" />
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-8">
+                  <Eye className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Visual-Vestibular Mismatch</h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -329,10 +329,10 @@ const SiteConcussion = () => {
               
               <Link 
                 to="/site/articles/concussion/autonomic-nervous-system-flow"
-                className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group p-10 rounded-3xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Heart className="h-7 w-7 text-primary" />
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-8">
+                  <Heart className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Autonomic Nervous System</h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -342,10 +342,10 @@ const SiteConcussion = () => {
               
               <Link 
                 to="/site/articles/concussion/cerebellar-timing-and-coordination"
-                className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group p-10 rounded-3xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Brain className="h-7 w-7 text-primary" />
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-8">
+                  <Brain className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Cerebellar Timing</h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -354,13 +354,13 @@ const SiteConcussion = () => {
               </Link>
             </div>
             
-            <div className="flex justify-center mt-12">
+            <div className="flex justify-center mt-14">
               <Link 
                 to="/site/articles" 
-                className="group inline-flex items-center gap-3 px-6 py-3 rounded-full border border-border/60 bg-card/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
+                className="group inline-flex items-center gap-3 px-8 py-4 rounded-full border border-border/60 bg-card/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
               >
-                <span className="font-medium">Browse All Resources</span>
-                <ArrowRight className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform duration-300" />
+                <span className="font-semibold">Browse All Resources</span>
+                <ArrowRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
           </div>
