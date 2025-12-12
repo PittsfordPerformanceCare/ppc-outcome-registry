@@ -80,28 +80,9 @@ const ProfessionalOutcomesPortal = () => {
               <p className="text-slate-700 leading-relaxed mb-4">
                 This portal is designed to offer transparency into observed clinical trends across common referral conditions managed at PPC, without marketing overlay or selective reporting.
               </p>
-              <ul className="space-y-2 text-slate-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Aggregate outcomes by condition</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Longitudinal recovery trajectories</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Functional outcome measures interpreted with context</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Clear explanation of how outcomes are measured</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Clinical interpretation guidance for appropriate use</span>
-                </li>
-              </ul>
+              <p className="text-slate-700 leading-relaxed">
+                It includes aggregate outcomes by condition, longitudinal recovery trajectories, and functional outcome measures interpreted with context. You will also find clear explanations of how outcomes are measured, along with clinical interpretation guidance for appropriate use.
+              </p>
             </section>
 
             <Separator className="my-10" />
@@ -111,28 +92,9 @@ const ProfessionalOutcomesPortal = () => {
               <h2 className="text-lg font-semibold text-slate-900 mb-4">
                 What This Portal Is Not
               </h2>
-              <ul className="space-y-2 text-slate-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Not patient-level data</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Not predictive of individual outcomes</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Not testimonials or case highlights</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Not comparative benchmarking against other providers</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Not a substitute for clinical judgment</span>
-                </li>
-              </ul>
+              <p className="text-slate-700 leading-relaxed">
+                This portal does not contain patient-level data and is not predictive of individual outcomes. It does not feature testimonials or case highlights, nor does it provide comparative benchmarking against other providers. It is not a substitute for clinical judgment.
+              </p>
             </section>
 
             <Separator className="my-10" />
@@ -142,29 +104,10 @@ const ProfessionalOutcomesPortal = () => {
               <h2 className="text-lg font-semibold text-slate-900 mb-4">
                 Intended Audience
               </h2>
-              <ul className="space-y-2 text-slate-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Physicians and physician extenders</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Orthopedic and sports medicine specialists</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Physical therapists and rehabilitation professionals</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Athletic trainers and performance clinicians</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-slate-400 mt-1.5">•</span>
-                  <span>School-based clinical teams</span>
-                </li>
-              </ul>
-              <p className="text-slate-600 text-sm mt-4">
+              <p className="text-slate-700 leading-relaxed mb-4">
+                This portal is intended for physicians and physician extenders, orthopedic and sports medicine specialists, physical therapists and rehabilitation professionals, athletic trainers and performance clinicians, and school-based clinical teams.
+              </p>
+              <p className="text-slate-600 text-sm">
                 Access is restricted to verified professionals.
               </p>
             </section>
