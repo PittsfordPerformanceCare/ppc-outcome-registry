@@ -96,6 +96,7 @@ const SiteProviders = lazy(() => import("./pages/site/SiteProviders"));
 const SiteContact = lazy(() => import("./pages/site/SiteContact"));
 const SiteWcsdPartnership = lazy(() => import("./pages/site/SiteWcsdPartnership"));
 const SitePerformance = lazy(() => import("./pages/site/SitePerformance"));
+const SiteWorksCited = lazy(() => import("./pages/site/SiteWorksCited"));
 
 // ========== PHASE 1 SHELL: /patient PAGES ==========
 const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
@@ -152,6 +153,7 @@ const App = () => (
               <Route path="contact" element={<SiteContact />} />
               <Route path="wcsd-partnership" element={<SiteWcsdPartnership />} />
               <Route path="performance" element={<SitePerformance />} />
+              <Route path="works-cited" element={<SiteWorksCited />} />
             </Route>
 
             {/* ========== PHASE 1 SHELL: /patient ROUTES (PUBLIC) ========== */}

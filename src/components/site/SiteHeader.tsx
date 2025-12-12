@@ -110,8 +110,42 @@ const SiteHeader = () => {
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
-
-            <NavLink to="/site/articles">Resources</NavLink>
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="h-10 px-4 bg-transparent text-sm font-medium text-foreground/70 transition-all duration-300 hover:text-foreground hover:bg-accent/50 data-[state=open]:text-foreground data-[state=open]:bg-accent/60 rounded-lg">
+                    Resources
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-[320px] p-2">
+                      <div className="grid gap-1">
+                        {[
+                          { to: "/site/articles", title: "Articles & Guides", desc: "Educational content and recovery insights" },
+                          { to: "/site/works-cited", title: "Works Cited", desc: "Clinical and research references" },
+                        ].map((item) => (
+                          <NavigationMenuLink key={item.to} asChild>
+                            <Link
+                              to={item.to}
+                              className="group block select-none space-y-1 rounded-lg p-3.5 leading-none no-underline outline-none transition-all duration-300 hover:bg-accent/70 focus:bg-accent"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold leading-none tracking-tight group-hover:text-primary transition-colors">
+                                  {item.title}
+                                </span>
+                                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 transition-all duration-300 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0" />
+                              </div>
+                              <p className="text-sm leading-relaxed text-muted-foreground">
+                                {item.desc}
+                              </p>
+                            </Link>
+                          </NavigationMenuLink>
+                        ))}
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
             
             <NavigationMenu>
               <NavigationMenuList>
@@ -240,7 +274,8 @@ const SiteHeader = () => {
           {/* Main Links */}
           <div className="pb-4 mb-3 border-b border-border/20">
             {[
-              { to: "/site/articles", label: "Resources" },
+              { to: "/site/articles", label: "Articles & Guides" },
+              { to: "/site/works-cited", label: "Works Cited" },
               { to: "/site/about", label: "About PPC" },
               { to: "/site/registry", label: "Outcome Registry" },
               { to: "/site/wcsd-partnership", label: "WCSD Partnership" },
