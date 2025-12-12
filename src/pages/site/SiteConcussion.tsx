@@ -391,6 +391,86 @@ const SiteConcussion = () => {
         </div>
       </section>
 
+      {/* Clinical & Research Foundations */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-2xl md:text-3xl font-bold mb-10 text-center">
+              Clinical & Research Foundations
+            </h3>
+            
+            <div className="space-y-6 mb-10">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                PPC's approach to concussion care is informed by established research in clinical 
+                neuroscience and rehabilitation medicine. Our methodology is designed to address 
+                neurologic dysfunction — not symptom suppression — and is grounded in the understanding 
+                that concussion represents a physiologic and metabolic injury requiring targeted, 
+                systems-based intervention.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Validated outcome measures are integrated throughout our concussion care process. 
+                Progression and treatment decisions are guided by objective change over time, not 
+                symptom resolution alone. This approach ensures that clinical decision-making is 
+                based on measured neurologic and functional response — tracking longitudinal 
+                recovery rather than subjective improvement.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Pittsford Performance Care actively engages in translational neuroscience research 
+                conducted under Institutional Review Board (IRB) oversight. The purpose of this 
+                work is to improve how neurologic dysfunction is identified, monitored, and supported 
+                in real-world clinical and educational environments — contributing responsibly to 
+                the broader understanding of concussion recovery while maintaining the highest 
+                standards of patient care and ethical governance.
+              </p>
+            </div>
+            
+            <ul className="space-y-4 mb-10">
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Berlin Consensus Statement on Concussion in Sport
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Evidence describing autonomic nervous system dysfunction following mild traumatic brain injury
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Research demonstrating persistent metabolic and cerebral blood-flow disruption after concussion
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Clinical literature supporting graded aerobic exercise as an active component of concussion recovery
+                </span>
+              </li>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                <span className="text-muted-foreground leading-relaxed">
+                  Validated outcome measures and MCID thresholds for tracking meaningful clinical improvement
+                </span>
+              </li>
+            </ul>
+            
+            <div className="mt-10 pt-8 border-t border-border/40">
+              <p className="text-muted-foreground leading-relaxed">
+                All supporting evidence referenced throughout our concussion content is maintained 
+                in a centralized Works Cited resource. This reference library is actively curated 
+                and continues to evolve as the science of concussion recovery advances — reflecting 
+                PPC's commitment to transparency, accountability, and continuous learning.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section - Enhanced */}
       <section className="py-24 lg:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
