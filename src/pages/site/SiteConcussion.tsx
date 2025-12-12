@@ -113,8 +113,8 @@ const SiteConcussion = () => {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center mb-6">
-                  <Eye className="h-7 w-7 text-blue-500" />
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Eye className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Visual System</h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -124,8 +124,8 @@ const SiteConcussion = () => {
               </div>
 
               <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center mb-6">
-                  <Ear className="h-7 w-7 text-purple-500" />
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Ear className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Vestibular System</h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -135,8 +135,8 @@ const SiteConcussion = () => {
               </div>
 
               <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center mb-6">
-                  <Brain className="h-7 w-7 text-green-500" />
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Brain className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Cerebellar System</h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -146,8 +146,8 @@ const SiteConcussion = () => {
               </div>
 
               <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-red-500/20 to-red-500/5 flex items-center justify-center mb-6">
-                  <Heart className="h-7 w-7 text-red-500" />
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Heart className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Autonomic System</h3>
                 <p className="text-muted-foreground leading-relaxed">
@@ -157,8 +157,8 @@ const SiteConcussion = () => {
               </div>
 
               <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/5 flex items-center justify-center mb-6">
-                  <Zap className="h-7 w-7 text-amber-500" />
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Zap className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Cervical System</h3>
                 <p className="text-muted-foreground leading-relaxed">
