@@ -23,6 +23,9 @@ import athleteDiscipline from "@/assets/athletes/discipline.jpg";
 import athleteUnderrated from "@/assets/athletes/underrated.jpg";
 import athletePower from "@/assets/athletes/power.jpg";
 import athleteSpark from "@/assets/athletes/spark.jpg";
+import athletePhenom from "@/assets/athletes/phenom.jpg";
+import athleteImpact from "@/assets/athletes/impact.jpg";
+import athleteDynamic from "@/assets/athletes/dynamic.jpg";
 
 const athleteCards = [
   {
@@ -64,6 +67,21 @@ const athleteCards = [
     image: athleteSpark,
     word: "spark",
     definition: "[to cause the start of something]"
+  },
+  {
+    image: athletePhenom,
+    word: "phenom",
+    definition: "[a person] of phenomenal ability or promise"
+  },
+  {
+    image: athleteImpact,
+    word: "impact",
+    definition: "[verb] have a strong effect on someone or something"
+  },
+  {
+    image: athleteDynamic,
+    word: "dynamic",
+    definition: "a force that stimulates change or progress within a system or process"
   }
 ];
 
