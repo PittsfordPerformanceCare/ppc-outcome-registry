@@ -141,6 +141,27 @@ const SiteHeader = () => {
                             </Link>
                           </NavigationMenuLink>
                         ))}
+                        {/* Gated Professional Portal */}
+                        <div className="mt-1 pt-1 border-t border-border/30">
+                          <NavigationMenuLink asChild>
+                            <Link
+                              to="/resources/professional-outcomes"
+                              className="group block select-none space-y-1 rounded-lg p-3.5 leading-none no-underline outline-none transition-all duration-300 hover:bg-accent/70 focus:bg-accent"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold leading-none tracking-tight group-hover:text-primary transition-colors">
+                                  Professional Outcomes Portal
+                                </span>
+                                <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground/60 bg-muted/50 px-1.5 py-0.5 rounded">
+                                  Request Access
+                                </span>
+                              </div>
+                              <p className="text-sm leading-relaxed text-muted-foreground">
+                                Aggregate clinical outcomes for referring clinicians
+                              </p>
+                            </Link>
+                          </NavigationMenuLink>
+                        </div>
                       </div>
                     </div>
                   </NavigationMenuContent>
