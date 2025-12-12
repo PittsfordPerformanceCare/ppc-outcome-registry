@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { 
   Brain, 
   Activity, 
@@ -9,34 +9,41 @@ import {
   CheckCircle2,
   BarChart3,
   Users,
-  Clock,
-  Zap
+  Sparkles
 } from "lucide-react";
 
 const SiteHub = () => {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative py-20 lg:py-32 bg-gradient-to-b from-primary/5 to-background">
+      <section className="relative py-28 lg:py-36 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
+              <Sparkles className="h-4 w-4" />
+              Systems-Based Care
+            </div>
+            
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
               Neurologic-Driven Care for
               <span className="text-primary block mt-2">Lasting Recovery</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
               At Pittsford Performance Care, we go beyond symptom management. 
               Our advanced neurologic evaluations identify the root causes of 
-              persistent concussion symptoms and movement dysfunction.
+              persistent concussion symptoms and movement dysfunction, then 
+              target treatment to the specific systems involved.
             </p>
+            
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button size="lg" asChild>
+              <Button size="lg" asChild className="h-12 px-8 text-base rounded-xl">
                 <Link to="/patient/concierge">
                   Schedule Your Evaluation
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" asChild className="h-12 px-8 text-base rounded-xl">
                 <Link to="/site/about">Learn Our Approach</Link>
               </Button>
             </div>
@@ -45,155 +52,183 @@ const SiteHub = () => {
       </section>
 
       {/* Two Divisions */}
-      <section className="py-20 bg-background">
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Two Specialized Divisions</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Whether you're recovering from a concussion or dealing with chronic pain, 
-              our neurologic approach addresses the systems driving your symptoms.
-            </p>
-          </div>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Target className="h-4 w-4" />
+                Specialized Care
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">Two Specialized Divisions</h2>
+              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                Whether you're recovering from a concussion or dealing with chronic pain, 
+                our neurologic approach addresses the systems driving your symptoms.
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Concussion Division */}
-            <Card className="relative overflow-hidden border-2 hover:border-primary/50 transition-colors">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-primary/50" />
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Brain className="h-6 w-6 text-primary" />
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Concussion Division */}
+              <Card className="p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Brain className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle className="text-2xl">Concussion Care</CardTitle>
-                <CardDescription>
-                  Persistent post-concussion symptoms require a systems-based approach
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
+                <h3 className="text-2xl font-bold mb-3">Concussion Care</h3>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  Persistent post-concussion symptoms require a systems-based approach. 
+                  We identify which neurologic systems are affected and target treatment accordingly.
+                </p>
+                
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Five-System Concussion Model evaluation</span>
+                    <span className="text-muted-foreground">Five-System Concussion Model evaluation</span>
                   </li>
-                  <li className="flex items-start gap-2">
+                  <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Visual-vestibular mismatch testing</span>
+                    <span className="text-muted-foreground">Visual-vestibular mismatch testing</span>
                   </li>
-                  <li className="flex items-start gap-2">
+                  <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Autonomic nervous system assessment</span>
+                    <span className="text-muted-foreground">Autonomic nervous system assessment</span>
                   </li>
-                  <li className="flex items-start gap-2">
+                  <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Cerebellar timing analysis</span>
+                    <span className="text-muted-foreground">Cerebellar timing analysis</span>
                   </li>
                 </ul>
-                <Button asChild className="w-full mt-4">
+                
+                <Button asChild className="w-full h-12 text-base rounded-xl">
                   <Link to="/site/concussion">
                     Explore Concussion Care
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-              </CardContent>
-            </Card>
+              </Card>
 
-            {/* MSK Division */}
-            <Card className="relative overflow-hidden border-2 hover:border-primary/50 transition-colors">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/50 to-primary" />
-              <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                  <Activity className="h-6 w-6 text-primary" />
+              {/* MSK Division */}
+              <Card className="p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
+                  <Activity className="h-7 w-7 text-primary" />
                 </div>
-                <CardTitle className="text-2xl">Musculoskeletal Care</CardTitle>
-                <CardDescription>
-                  When imaging is normal but function isn't, we find the neural drivers
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <ul className="space-y-2">
-                  <li className="flex items-start gap-2">
+                <h3 className="text-2xl font-bold mb-3">Musculoskeletal Care</h3>
+                <p className="text-muted-foreground leading-relaxed mb-6">
+                  When imaging is normal but function isn't, we find the neural drivers. 
+                  Chronic pain often has neurologic origins that traditional approaches miss.
+                </p>
+                
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Neuromuscular timing assessment</span>
+                    <span className="text-muted-foreground">Neuromuscular timing assessment</span>
                   </li>
-                  <li className="flex items-start gap-2">
+                  <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Motor sequencing evaluation</span>
+                    <span className="text-muted-foreground">Motor sequencing evaluation</span>
                   </li>
-                  <li className="flex items-start gap-2">
+                  <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Asymmetry and compensation mapping</span>
+                    <span className="text-muted-foreground">Asymmetry and compensation mapping</span>
                   </li>
-                  <li className="flex items-start gap-2">
+                  <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Functional movement integration</span>
+                    <span className="text-muted-foreground">Functional movement integration</span>
                   </li>
                 </ul>
-                <Button asChild className="w-full mt-4">
+                
+                <Button asChild className="w-full h-12 text-base rounded-xl">
                   <Link to="/site/msk">
                     Explore MSK Care
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-              </CardContent>
-            </Card>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Outcome Registry Advantage */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-                  <BarChart3 className="h-4 w-4" />
-                  The Registry Advantage
+          <div className="max-w-6xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div className="space-y-8">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                    <BarChart3 className="h-4 w-4" />
+                    The Registry Advantage
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                    Measured Outcomes, Not Just Reported Improvement
+                  </h2>
                 </div>
-                <h2 className="text-3xl font-bold">
-                  Measured Outcomes, Not Just Reported Improvement
-                </h2>
-                <p className="text-muted-foreground">
+                
+                <p className="text-lg text-muted-foreground leading-relaxed">
                   Our PPC Outcome Registry tracks validated clinical measures from intake 
                   through discharge. This means we can prove your progress with objective data—
-                  not just subjective reports.
+                  not just subjective reports. You always know whether treatment is working.
                 </p>
-                <ul className="space-y-3">
-                  <li className="flex items-start gap-3">
-                    <Target className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>MCID-tracked outcomes for every episode</span>
+                
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <Target className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <span className="font-medium">MCID-tracked outcomes</span>
+                      <p className="text-muted-foreground text-sm mt-1">
+                        Every episode measured for clinically meaningful improvement
+                      </p>
+                    </div>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <BarChart3 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Real-time analytics on your recovery trajectory</span>
+                  <li className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <BarChart3 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <span className="font-medium">Real-time analytics</span>
+                      <p className="text-muted-foreground text-sm mt-1">
+                        Track your recovery trajectory with objective data
+                      </p>
+                    </div>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Users className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span>Transparent results shared with your care team</span>
+                  <li className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <span className="font-medium">Transparent results</span>
+                      <p className="text-muted-foreground text-sm mt-1">
+                        Shared with you and your care team for coordinated care
+                      </p>
+                    </div>
                   </li>
                 </ul>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Card className="text-center p-6">
-                  <div className="text-4xl font-bold text-primary">92%</div>
-                  <p className="text-sm text-muted-foreground mt-2">
+              
+              <div className="grid grid-cols-2 gap-6">
+                <Card className="text-center p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  <div className="text-4xl font-bold text-primary mb-2">92%</div>
+                  <p className="text-muted-foreground leading-relaxed">
                     Patients achieve meaningful improvement
                   </p>
                 </Card>
-                <Card className="text-center p-6">
-                  <div className="text-4xl font-bold text-primary">6.2</div>
-                  <p className="text-sm text-muted-foreground mt-2">
+                <Card className="text-center p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  <div className="text-4xl font-bold text-primary mb-2">6.2</div>
+                  <p className="text-muted-foreground leading-relaxed">
                     Average visits to resolution
                   </p>
                 </Card>
-                <Card className="text-center p-6">
-                  <div className="text-4xl font-bold text-primary">4.8★</div>
-                  <p className="text-sm text-muted-foreground mt-2">
+                <Card className="text-center p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  <div className="text-4xl font-bold text-primary mb-2">4.8★</div>
+                  <p className="text-muted-foreground leading-relaxed">
                     Patient satisfaction rating
                   </p>
                 </Card>
-                <Card className="text-center p-6">
-                  <div className="text-4xl font-bold text-primary">100%</div>
-                  <p className="text-sm text-muted-foreground mt-2">
+                <Card className="text-center p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  <div className="text-4xl font-bold text-primary mb-2">100%</div>
+                  <p className="text-muted-foreground leading-relaxed">
                     Outcomes transparently tracked
                   </p>
                 </Card>
@@ -204,67 +239,91 @@ const SiteHub = () => {
       </section>
 
       {/* How to Get Started */}
-      <section className="py-20 bg-background">
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">How to Get Started</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Your path to recovery begins with a comprehensive neurologic evaluation
-            </p>
-          </div>
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Sparkles className="h-4 w-4" />
+                Your Journey
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">How to Get Started</h2>
+              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                Your path to recovery begins with a comprehensive neurologic evaluation. 
+                Here's what to expect.
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center space-y-4">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                <span className="text-2xl font-bold text-primary">1</span>
-              </div>
-              <h3 className="font-semibold text-lg">Schedule Online</h3>
-              <p className="text-sm text-muted-foreground">
-                Use our concierge to describe your symptoms and book your evaluation
-              </p>
+            <div className="grid md:grid-cols-3 gap-8">
+              <Card className="p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300 text-center">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
+                  <span className="text-2xl font-bold text-primary">1</span>
+                </div>
+                <h3 className="text-xl font-bold mb-3">Schedule Online</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Use our concierge to describe your symptoms and book your evaluation. 
+                  We'll match you with the right clinician for your needs.
+                </p>
+              </Card>
+              
+              <Card className="p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300 text-center">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
+                  <span className="text-2xl font-bold text-primary">2</span>
+                </div>
+                <h3 className="text-xl font-bold mb-3">Neurologic Evaluation</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Complete intake measures and undergo comprehensive systems assessment. 
+                  We'll identify exactly which systems are affected.
+                </p>
+              </Card>
+              
+              <Card className="p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300 text-center">
+                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
+                  <span className="text-2xl font-bold text-primary">3</span>
+                </div>
+                <h3 className="text-xl font-bold mb-3">Targeted Treatment</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Receive a personalized care plan targeting your specific system deficits. 
+                  Track your progress with validated outcome measures.
+                </p>
+              </Card>
             </div>
-            <div className="text-center space-y-4">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                <span className="text-2xl font-bold text-primary">2</span>
-              </div>
-              <h3 className="font-semibold text-lg">Neurologic Evaluation</h3>
-              <p className="text-sm text-muted-foreground">
-                Complete intake measures and undergo comprehensive systems assessment
-              </p>
-            </div>
-            <div className="text-center space-y-4">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                <span className="text-2xl font-bold text-primary">3</span>
-              </div>
-              <h3 className="font-semibold text-lg">Targeted Treatment</h3>
-              <p className="text-sm text-muted-foreground">
-                Receive a personalized care plan targeting your specific system deficits
-              </p>
-            </div>
-          </div>
 
-          <div className="text-center mt-12">
-            <Button size="lg" asChild>
-              <Link to="/patient/concierge">
-                Start Your Journey
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            <div className="text-center mt-12">
+              <Button size="lg" asChild className="h-12 px-8 text-base rounded-xl">
+                <Link to="/patient/concierge">
+                  Start Your Journey
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Resources CTA */}
-      <section className="py-16 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold mb-4">Learn More About Your Condition</h2>
-          <p className="mb-6 opacity-90 max-w-xl mx-auto">
-            Explore our resource library for in-depth articles on concussion recovery, 
-            movement dysfunction, and the neurologic systems driving your symptoms.
-          </p>
-          <Button size="lg" variant="secondary" asChild>
-            <Link to="/site/articles">Browse Resources</Link>
-          </Button>
+      <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+              <Brain className="h-4 w-4" />
+              Educational Resources
+            </div>
+            
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Learn More About Your Condition</h2>
+            
+            <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
+              Explore our resource library for in-depth articles on concussion recovery, 
+              movement dysfunction, and the neurologic systems driving your symptoms.
+            </p>
+            
+            <Button size="lg" asChild className="h-12 px-8 text-base rounded-xl">
+              <Link to="/site/articles">
+                Browse Resources
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>
