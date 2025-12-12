@@ -363,7 +363,7 @@ const ClinicianGuideMotorTiming = () => {
                 </div>
                 <div className="mt-6">
                   <Link
-                    to="/patient/physician-referral"
+                    to="/patient/intake/referral"
                     className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-slate-700 bg-slate-100 border border-slate-300 rounded-md hover:bg-slate-200 hover:border-slate-400 transition-colors"
                   >
                     Request Physician Referral Information
