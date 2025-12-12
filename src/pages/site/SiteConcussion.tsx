@@ -297,70 +297,94 @@ const SiteConcussion = () => {
       </section>
 
       {/* Related Articles */}
-      <section className="py-24 lg:py-32 bg-background">
+      <section className="py-28 lg:py-36 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-20">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
                 <Brain className="h-4 w-4" />
                 Deep Dive Resources
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              <h2 className="text-3xl md:text-4xl font-bold mb-8">
                 Learn More About Concussion Recovery
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              <p className="text-base text-muted-foreground max-w-xl mx-auto leading-relaxed tracking-wide">
                 Explore our in-depth guides on specific post-concussion challenges and evidence-based recovery strategies.
               </p>
             </div>
             
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-10 lg:gap-12">
               <Link 
                 to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group p-10 rounded-3xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group flex flex-col p-10 lg:p-12 rounded-3xl border border-border/40 bg-card/30 backdrop-blur-sm hover:border-primary/40 hover:bg-card/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
               >
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-8">
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mb-8">
                   <Eye className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Visual-Vestibular Mismatch</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-lg font-semibold mb-5 leading-snug">
+                  Visual-Vestibular Mismatch
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed tracking-wide flex-1">
                   Understanding why your eyes and inner ear aren't working together—and what targeted treatment looks like.
                 </p>
+                <div className="mt-8 pt-6 border-t border-border/30">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all duration-300">
+                    Read Article
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
               </Link>
               
               <Link 
                 to="/site/articles/concussion/autonomic-nervous-system-flow"
-                className="group p-10 rounded-3xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group flex flex-col p-10 lg:p-12 rounded-3xl border border-border/40 bg-card/30 backdrop-blur-sm hover:border-primary/40 hover:bg-card/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
               >
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-8">
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mb-8">
                   <Heart className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Autonomic Nervous System</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-lg font-semibold mb-5 leading-snug">
+                  Autonomic Nervous System
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed tracking-wide flex-1">
                   How ANS dysregulation causes fatigue, anxiety, and exercise intolerance after concussion.
                 </p>
+                <div className="mt-8 pt-6 border-t border-border/30">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all duration-300">
+                    Read Article
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
               </Link>
               
               <Link 
                 to="/site/articles/concussion/cerebellar-timing-and-coordination"
-                className="group p-10 rounded-3xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group flex flex-col p-10 lg:p-12 rounded-3xl border border-border/40 bg-card/30 backdrop-blur-sm hover:border-primary/40 hover:bg-card/60 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
               >
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-8">
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mb-8">
                   <Brain className="h-8 w-8 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Cerebellar Timing</h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <h3 className="text-lg font-semibold mb-5 leading-snug">
+                  Cerebellar Timing
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed tracking-wide flex-1">
                   When your brain's master clock is disrupted and recovery feels impossible to achieve.
                 </p>
+                <div className="mt-8 pt-6 border-t border-border/30">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all duration-300">
+                    Read Article
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </div>
               </Link>
             </div>
             
-            <div className="flex justify-center mt-14">
+            <div className="flex justify-center mt-16">
               <Link 
                 to="/site/articles" 
-                className="group inline-flex items-center gap-3 px-8 py-4 rounded-full border border-border/60 bg-card/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
+                className="group inline-flex items-center gap-3 px-8 py-4 rounded-full border border-border/40 bg-card/30 hover:border-primary/40 hover:bg-card/60 hover:shadow-xl transition-all duration-500"
               >
-                <span className="font-semibold">Browse All Resources</span>
-                <ArrowRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform duration-300" />
+                <span className="text-sm font-semibold tracking-wide">Browse All Resources</span>
+                <ArrowRight className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
           </div>
