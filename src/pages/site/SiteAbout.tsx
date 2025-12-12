@@ -276,14 +276,32 @@ const SiteAbout = () => {
               Clinical & Research Foundations
             </h3>
             
-            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              PPC's clinical methodology is informed by consensus guidelines, peer-reviewed 
-              research, and established best practices in neurologic rehabilitation. Our 
-              systems-based approach reflects the current understanding of how the brain 
-              and nervous system recover from injury and dysfunction.
-            </p>
+            <div className="space-y-6 mb-10">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                At PPC, validated outcome measurements are integrated directly into active care — not 
+                collected retrospectively or for administrative purposes alone. Real-time objective 
+                data informs treatment progression, guides clinical decision-making, and ensures that 
+                patient recovery is tracked against meaningful thresholds rather than symptom reports alone.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Our treatment methodology is grounded in established clinical neuroscience methods 
+                and practice. From visual-vestibular rehabilitation to autonomic reconditioning 
+                and cerebellar timing protocols, each intervention reflects current understanding 
+                of neurologic function and recovery — applied with precision and adapted to 
+                individual patient presentation.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                PPC is actively engaged in translational neuroscience research conducted under 
+                Institutional Review Board (IRB) oversight. This commitment to rigor and 
+                transparency ensures that our clinical observations contribute responsibly to 
+                the broader scientific understanding of neurologic rehabilitation — while 
+                maintaining the highest standards of patient care and ethical governance.
+              </p>
+            </div>
             
-            <ul className="space-y-4">
+            <ul className="space-y-4 mb-10">
               <li className="flex items-start gap-4">
                 <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
                 <span className="text-muted-foreground leading-relaxed">
@@ -315,6 +333,14 @@ const SiteAbout = () => {
                 </span>
               </li>
             </ul>
+            
+            <div className="mt-10 pt-8 border-t border-border/40">
+              <p className="text-muted-foreground leading-relaxed">
+                All supporting evidence referenced throughout this site is accessible through our 
+                centralized Works Cited page. This reference library is actively maintained and 
+                continues to evolve as the clinical literature advances.
+              </p>
+            </div>
           </div>
         </div>
       </section>
