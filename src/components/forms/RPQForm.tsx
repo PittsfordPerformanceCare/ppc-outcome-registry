@@ -41,16 +41,20 @@ export function RPQForm({ onScoreChange, initialScore }: RPQFormProps) {
   const [responses, setResponses] = useState<{ [key: number]: number }>({});
   const [otherDifficulties, setOtherDifficulties] = useState("");
 
+  // Only apply initialScore on mount - not when it changes from user input
+  const [hasInitialized, setHasInitialized] = useState(false);
+  
   useEffect(() => {
-    if (initialScore !== undefined) {
+    if (!hasInitialized && initialScore !== undefined && initialScore > 0) {
       const avgScore = Math.floor(initialScore / RPQ_SYMPTOMS.length);
       const initialResponses: { [key: number]: number } = {};
       RPQ_SYMPTOMS.forEach((_, index) => {
         initialResponses[index] = avgScore;
       });
       setResponses(initialResponses);
+      setHasInitialized(true);
     }
-  }, [initialScore]);
+  }, [initialScore, hasInitialized]);
 
   const handleResponseChange = (questionIndex: number, value: string) => {
     const numValue = parseInt(value);
