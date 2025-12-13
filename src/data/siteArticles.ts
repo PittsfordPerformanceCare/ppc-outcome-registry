@@ -2335,6 +2335,161 @@ export const mskArticles: ArticleData[] = [
       label: "Take MSK Self-Assessment",
       route: "/patient/self-tests/msk"
     }
+  },
+  {
+    slug: "vestibular-dysfunction-and-chronic-pain",
+    title: "Vestibular Dysfunction and Chronic Pain: When the Body Can't Stabilize Itself",
+    category: "msk",
+    readTime: "8 min read",
+    excerpt: "Why pain emerges when balance, orientation, and motion sensing break down — even when imaging looks normal.",
+    heroContent: "Your neck and back are constantly tight. You brace before you move. Certain motions make you uneasy — or exhausted. If this sounds familiar, the issue may not be your joints or muscles. It may be your vestibular system — the part of the brain that tells you where you are in space.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Vestibular",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When vestibular stability is unreliable, secondary compensation often appears in the Cervical and Autonomic domains — increasing stiffness and pain."
+      },
+      { type: "heading", content: "Do Any of These Sound Familiar?" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Vestibular dysfunction often presents as stiffness, bracing, or motion intolerance — not dizziness alone:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Chronic neck or upper back tightness that never fully resolves",
+          "Feeling unstable or 'off' during movement",
+          "Bracing or guarding before transitions (standing, turning, bending)",
+          "Motion intolerance — discomfort in cars, elevators, or crowds",
+          "Postural fatigue — exhaustion from standing or sitting upright",
+          "Pain that worsens with head movement or position changes"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences reflect neurologic instability — not structural damage. They are common, measurable, and addressable."
+      },
+      { type: "heading", content: "What the Vestibular System Controls" },
+      {
+        type: "paragraph",
+        content: "The vestibular system is the brain's balance and orientation center. It senses head position, detects motion, and coordinates postural reflexes — allowing the body to stabilize itself automatically, without conscious effort."
+      },
+      {
+        type: "paragraph",
+        content: "Efficient posture and movement depend on accurate vestibular input. When the vestibular system is impaired, the nervous system loses its anchor — and the body compensates by bracing, guarding, and over-stabilizing."
+      },
+      { type: "heading", content: "What Changes When Vestibular Function Breaks Down" },
+      {
+        type: "paragraph",
+        content: "When vestibular input becomes unreliable, several patterns emerge:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Excessive bracing — muscles lock to create artificial stability",
+          "Motion intolerance — certain movements feel threatening",
+          "Postural fatigue — maintaining upright posture becomes exhausting",
+          "Hypervigilance — the nervous system stays on high alert"
+        ]
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The body compensates for unreliable balance by creating stiffness. That stiffness is protective — but over time, it becomes the source of pain."
+      },
+      { type: "heading", content: "How Vestibular Dysfunction Creates Chronic Pain" },
+      {
+        type: "paragraph",
+        content: "When the vestibular system fails to provide reliable orientation, the body recruits muscles to do the job instead. The cervical spine, upper back, and shoulders become chronically overloaded — not because of injury, but because they are working to stabilize a system that should stabilize itself."
+      },
+      {
+        type: "paragraph",
+        content: "Pain in this context is not a signal of damage. It is a signal of overwork — the consequence of muscles substituting for a vestibular system that can no longer anchor posture and movement."
+      },
+      {
+        type: "inline-cta",
+        content: "If pain concentrates in the neck, upper back, or shoulders — and imaging looks normal — a neurologic MSK evaluation can reveal whether vestibular instability is the missing link."
+      },
+      { type: "heading", content: "Primary vs. Secondary Vestibular Dysfunction" },
+      {
+        type: "paragraph",
+        content: "Vestibular dysfunction may be primary — meaning the vestibular system itself is impaired — or it may emerge secondarily from other neurologic limitations."
+      },
+      {
+        type: "paragraph",
+        content: "Common upstream drivers include brainstem energy constraints and cerebellar timing deficits. When these systems are impaired, vestibular processing degrades — and instability increases as a result."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Treating muscle tightness without restoring vestibular stability often provides temporary relief — but the pattern returns."
+      },
+      { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
+      {
+        type: "paragraph",
+        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But vestibular dysfunction lives in the control system: it affects how the brain orients the body in space and how muscles coordinate to maintain stability."
+      },
+      {
+        type: "paragraph",
+        content: "A normal MRI and strong muscles can coexist with a very real vestibular problem. This is why chronic tightness and pain persist for many people despite reassuring test results."
+      },
+      { type: "heading", content: "How PPC Evaluates Vestibular Involvement" },
+      {
+        type: "paragraph",
+        content: "At PPC, evaluation is domain-based and function-focused:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Assessment of balance, orientation, and postural control",
+          "Evaluation of motion tolerance and vestibular reflexes",
+          "Identification of primary vs. compensatory drivers",
+          "Fatigue-based testing to reveal breakdown patterns",
+          "Validated outcome measures to track meaningful change over time"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to determine whether vestibular instability is driving compensatory bracing and overload — and what needs to be addressed first."
+      },
+      { type: "heading", content: "What This Means for Recovery" },
+      {
+        type: "paragraph",
+        content: "When vestibular function is restored, the body no longer needs to brace for stability. Muscles relax. Posture becomes effortless. And pain often resolves as tissues are no longer chronically overloaded."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Stability returns when the nervous system trusts its orientation. Stiffness releases when bracing is no longer needed."
+      },
+      { type: "heading", content: "Moving Forward" },
+      {
+        type: "paragraph",
+        content: "If pain persists in the neck, upper back, or shoulders — and movement feels guarded, unstable, or exhausting — a clinician-led neurologic and musculoskeletal evaluation can help determine whether vestibular dysfunction is driving the problem, and what to address first."
+      }
+    ],
+    relatedArticles: [
+      "cerebellar-timing-deficits-and-chronic-pain",
+      "movement-asymmetry",
+      "chronic-pain-without-structural-damage"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Determine whether vestibular instability is driving your chronic pain — and build a path to durable recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
   }
 ];
 
