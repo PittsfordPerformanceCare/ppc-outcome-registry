@@ -11,7 +11,6 @@ import {
 import { Brain, Sparkles, Activity, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { BrainLogo } from "./BrainLogo";
 
 const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
   <Link
@@ -47,9 +46,9 @@ const SiteHeader = () => {
             className="group flex items-center gap-3.5 transition-all duration-300"
           >
             <div className="relative">
-              {/* Enhanced brain logo with neural pathways */}
-              <div className="relative rounded-xl bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-0.5 transition-all duration-500 group-hover:from-primary/30 group-hover:via-primary/15 group-hover:shadow-xl group-hover:shadow-primary/20 border border-primary/10 group-hover:border-primary/25">
-                <BrainLogo size="md" animated className="transition-transform duration-500 group-hover:scale-105" />
+              {/* MSK Activity logo */}
+              <div className="relative h-11 w-11 rounded-xl bg-gradient-to-br from-primary/25 via-primary/15 to-primary/5 flex items-center justify-center transition-all duration-500 group-hover:from-primary/35 group-hover:via-primary/20 group-hover:to-primary/10 group-hover:shadow-xl group-hover:shadow-primary/20 border border-primary/10 group-hover:border-primary/25">
+                <Activity className="h-6 w-6 text-primary transition-all duration-500 group-hover:scale-110" />
               </div>
               {/* Pulse glow effect */}
               <div className="absolute inset-0 -z-10 rounded-xl bg-primary/30 blur-2xl scale-150 opacity-0 transition-all duration-500 group-hover:opacity-50" />
