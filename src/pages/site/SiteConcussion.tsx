@@ -133,166 +133,216 @@ const SiteConcussion = () => {
       </section>
 
       {/* Neurologic Domain Map */}
-      <section className="py-20 lg:py-28 bg-background" id="domain-model">
-        <div className="container mx-auto px-4">
+      <section className="py-24 lg:py-32 relative overflow-hidden" id="domain-model">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-background to-slate-50 dark:from-slate-900 dark:via-background dark:to-slate-900" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+        
+        <div className="container mx-auto px-4 relative">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-14">
+            <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
                 <Brain className="h-4 w-4" />
-                Our Approach
+                Domain-Based Evaluation
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                The Neurologic Domains Most Commonly Involved After Concussion
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Neurologic Domains Involved After Concussion
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Recovery requires understanding which domain is primary and which are compensating. 
-                Our evaluation examines all major neurologic domains that can be disrupted by brain injury.
+              <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                Our evaluation identifies which domain is primary and which are compensating.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
               {/* Brainstem Domain */}
               <Link 
                 to="/site/articles/concussion/brainstem-function"
-                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-500/5 flex items-center justify-center shrink-0">
+                    <Zap className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Brainstem</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      Arousal, sensory filtering, baseline energy
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Brainstem Domain</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  Arousal, sensory filtering, and baseline energy. The brainstem gates all 
-                  incoming information and sets the foundation for all other domains.
-                </p>
-                <p className="text-xs text-muted-foreground/80 italic">
-                  Common Signs: Light/sound sensitivity, fatigue, difficulty waking, overwhelm in busy environments.
-                </p>
+                <div className="mt-3 pt-3 border-t border-border/30">
+                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
+                    <span className="font-medium text-foreground/70">Signs:</span> Light sensitivity, fatigue, overwhelm
+                  </p>
+                </div>
+                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Vestibular Domain */}
               <Link 
                 to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
-                  <Ear className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center shrink-0">
+                    <Ear className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Vestibular</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      Balance, spatial orientation, motion tolerance
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Vestibular Domain</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  Balance, spatial orientation, and motion tolerance. This domain stabilizes 
-                  gaze and coordinates with vision and proprioception.
-                </p>
-                <p className="text-xs text-muted-foreground/80 italic">
-                  Common Signs: Dizziness, motion sensitivity, disorientation in crowds, car sickness.
-                </p>
+                <div className="mt-3 pt-3 border-t border-border/30">
+                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
+                    <span className="font-medium text-foreground/70">Signs:</span> Dizziness, motion sensitivity, disorientation
+                  </p>
+                </div>
+                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Proprioceptive Domain */}
               <Link 
                 to="/site/articles/concussion/cervical-proprioception"
-                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
-                  <Hand className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center shrink-0">
+                    <Hand className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Proprioceptive</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      Body awareness, load distribution, asymmetry
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Proprioceptive Domain</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  Body awareness, load distribution, and asymmetry detection. Proprioception 
-                  anchors the body in space and supports postural control.
-                </p>
-                <p className="text-xs text-muted-foreground/80 italic">
-                  Common Signs: Neck tension, clumsiness, asymmetric movement, postural fatigue.
-                </p>
+                <div className="mt-3 pt-3 border-t border-border/30">
+                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
+                    <span className="font-medium text-foreground/70">Signs:</span> Neck tension, clumsiness, postural fatigue
+                  </p>
+                </div>
+                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Cerebellar Domain */}
               <Link 
                 to="/site/articles/concussion/cerebellar-timing-and-coordination"
-                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
-                  <Brain className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center shrink-0">
+                    <Brain className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Cerebellar</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      Timing, coordination, efficiency, automation
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Cerebellar Domain</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  Timing, coordination, efficiency, and automation. The cerebellum is the 
-                  brain's internal clock—when disrupted, everything requires more effort.
-                </p>
-                <p className="text-xs text-muted-foreground/80 italic">
-                  Common Signs: Slowed processing, coordination issues, speech hesitancy, cognitive fatigue.
-                </p>
+                <div className="mt-3 pt-3 border-t border-border/30">
+                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
+                    <span className="font-medium text-foreground/70">Signs:</span> Slowed processing, coordination issues
+                  </p>
+                </div>
+                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Autonomic Domain */}
               <Link 
                 to="/site/articles/concussion/autonomic-nervous-system-flow"
-                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
-                  <Heart className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-rose-500/20 to-rose-500/5 flex items-center justify-center shrink-0">
+                    <Heart className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Autonomic</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      Stress response, endurance, recovery capacity
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Autonomic Domain</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  Stress response, endurance, and recovery. The autonomic nervous system 
-                  regulates heart rate, blood pressure, and energy availability.
-                </p>
-                <p className="text-xs text-muted-foreground/80 italic">
-                  Common Signs: Exercise intolerance, heart racing, poor sleep, temperature dysregulation.
-                </p>
+                <div className="mt-3 pt-3 border-t border-border/30">
+                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
+                    <span className="font-medium text-foreground/70">Signs:</span> Exercise intolerance, poor sleep
+                  </p>
+                </div>
+                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Limbic-Prefrontal Domain */}
               <Link 
                 to="/site/articles/concussion/limbic-prefrontal-regulation"
-                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-500/5 flex items-center justify-center shrink-0">
+                    <Shield className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Limbic–Prefrontal</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      Threat detection, emotional regulation
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Limbic–Prefrontal Domain</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  Threat detection and emotional regulation. This domain governs how we 
-                  interpret risk and modulate emotional responses.
-                </p>
-                <p className="text-xs text-muted-foreground/80 italic">
-                  Common Signs: Anxiety, irritability, emotional lability, heightened startle response.
-                </p>
+                <div className="mt-3 pt-3 border-t border-border/30">
+                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
+                    <span className="font-medium text-foreground/70">Signs:</span> Anxiety, irritability, startle response
+                  </p>
+                </div>
+                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Visual-Oculomotor Domain */}
               <Link 
                 to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
-                  <Eye className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 flex items-center justify-center shrink-0">
+                    <Eye className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Visual–Oculomotor</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      Eye movements, tracking, focus control
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Visual–Oculomotor Domain</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  Eye movements, visual tracking, and focus control. Oculomotor dysfunction 
-                  strains reading, screen use, and spatial navigation.
-                </p>
-                <p className="text-xs text-muted-foreground/80 italic">
-                  Common Signs: Reading difficulty, screen intolerance, blurred vision, eye strain headaches.
-                </p>
+                <div className="mt-3 pt-3 border-t border-border/30">
+                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
+                    <span className="font-medium text-foreground/70">Signs:</span> Screen intolerance, reading difficulty
+                  </p>
+                </div>
+                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Frontal (Executive) Domain */}
               <Link 
                 to="/site/articles/concussion/frontal-executive-function"
-                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
-                  <Gauge className="h-6 w-6 text-primary" />
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500/20 to-indigo-500/5 flex items-center justify-center shrink-0">
+                    <Gauge className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Frontal (Executive)</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      Attention, working memory, mental endurance
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Frontal Domain (Executive)</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  Attention, working memory, and mental endurance. Executive function 
-                  coordinates goal-directed behavior and sustained focus.
-                </p>
-                <p className="text-xs text-muted-foreground/80 italic">
-                  Common Signs: Brain fog, forgetfulness, difficulty multitasking, mental fatigue.
-                </p>
+                <div className="mt-3 pt-3 border-t border-border/30">
+                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
+                    <span className="font-medium text-foreground/70">Signs:</span> Brain fog, difficulty multitasking
+                  </p>
+                </div>
+                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
               </Link>
             </div>
           </div>
