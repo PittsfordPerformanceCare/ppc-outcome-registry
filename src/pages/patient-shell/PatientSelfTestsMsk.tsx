@@ -118,8 +118,10 @@ const PatientSelfTestsMsk = () => {
       const symptomSummary = getSymptomSummary();
       const recommendation = getRecommendation();
 
+      console.log('[MSK Assessment] Starting submission with score:', score);
+
       // Create lead with assessment data
-      await submitLead({
+      const result = await submitLead({
         severity_score: score,
         system_category: 'msk',
         tracking: {
@@ -127,12 +129,14 @@ const PatientSelfTestsMsk = () => {
           origin_page: '/patient/self-tests/msk',
           origin_cta: 'Request MSK Evaluation',
           pillar_origin: 'msk_pillar',
-          utm_source: searchParams.get('utm_source') || '',
-          utm_medium: searchParams.get('utm_medium') || '',
-          utm_campaign: searchParams.get('utm_campaign') || '',
-          utm_content: searchParams.get('utm_content') || '',
+          utm_source: searchParams.get('utm_source') || null,
+          utm_medium: searchParams.get('utm_medium') || null,
+          utm_campaign: searchParams.get('utm_campaign') || null,
+          utm_content: searchParams.get('utm_content') || null,
         },
       });
+
+      console.log('[MSK Assessment] Lead submission result:', result);
 
       // Store assessment data in session for concierge
       sessionStorage.setItem('msk_assessment', JSON.stringify({
@@ -143,23 +147,27 @@ const PatientSelfTestsMsk = () => {
         completedAt: new Date().toISOString(),
       }));
 
-      // Notify clinicians about new assessment lead
-      await supabase.functions.invoke('send-clinician-notification', {
-        body: {
-          messageType: 'new_assessment_lead',
-          assessmentType: 'MSK',
-          severityScore: score,
-          severityLevel: recommendation.level,
-          symptomSummary,
-        },
-      });
+      // Notify clinicians about new assessment lead (non-blocking)
+      try {
+        await supabase.functions.invoke('send-clinician-notification', {
+          body: {
+            messageType: 'new_assessment_lead',
+            assessmentType: 'MSK',
+            severityScore: score,
+            severityLevel: recommendation.level,
+            symptomSummary,
+          },
+        });
+        console.log('[MSK Assessment] Clinician notification sent');
+      } catch (notifyError) {
+        console.error('[MSK Assessment] Notification error (non-blocking):', notifyError);
+      }
 
       // Navigate to concierge with assessment params
       navigate(`/patient/concierge?assessment=msk&score=${score}&level=${recommendation.level}`);
     } catch (error) {
-      console.error('Error submitting lead:', error);
+      console.error('[MSK Assessment] Error submitting lead:', error);
       toast.error('Something went wrong. Please try again.');
-    } finally {
       setIsSubmitting(false);
     }
   };
