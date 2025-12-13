@@ -401,7 +401,7 @@ export default function NewEpisode() {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="episodeType">Episode Type *</Label>
-              <Select value={episodeType} onValueChange={handleEpisodeTypeChange} required>
+              <Select value={episodeType} onValueChange={handleEpisodeTypeChange}>
                 <SelectTrigger id="episodeType">
                   <SelectValue placeholder="Select episode type" />
                 </SelectTrigger>
@@ -427,7 +427,6 @@ export default function NewEpisode() {
                 placeholder="Enter patient name"
                 value={patientName}
                 onChange={(e) => setPatientName(e.target.value)}
-                required
               />
             </div>
 
@@ -435,7 +434,7 @@ export default function NewEpisode() {
               {episodeType === "MSK" && (
                 <div className="space-y-2">
                   <Label htmlFor="region">Anatomical Region *</Label>
-                  <Select value={region} onValueChange={handleRegionChange} required>
+                  <Select value={region} onValueChange={handleRegionChange}>
                     <SelectTrigger id="region">
                       <SelectValue placeholder="Select region" />
                     </SelectTrigger>
@@ -457,7 +456,6 @@ export default function NewEpisode() {
                   type="date"
                   value={dateOfService}
                   onChange={(e) => setDateOfService(e.target.value)}
-                  required
                 />
               </div>
             </div>
@@ -489,7 +487,6 @@ export default function NewEpisode() {
                       type="date"
                       value={dob}
                       onChange={(e) => setDob(e.target.value)}
-                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -540,7 +537,6 @@ export default function NewEpisode() {
                       placeholder="Enter clinician name"
                       value={clinician}
                       onChange={(e) => setClinician(e.target.value)}
-                      required
                     />
                   </div>
                   <div className="space-y-2">
@@ -605,7 +601,6 @@ export default function NewEpisode() {
                       type="date"
                       value={injuryDate}
                       onChange={(e) => setInjuryDate(e.target.value)}
-                      required
                     />
                   </div>
                 </div>
