@@ -866,6 +866,184 @@ export const concussionArticles: ArticleData[] = [
       route: "/patient/self-tests/concussion",
       description: "Get an initial assessment of your energy and fatigue symptoms."
     }
+  },
+  {
+    slug: "limbic-overload-after-concussion",
+    title: "Limbic Overload After Concussion: When the Brain Stays in Threat Mode",
+    category: "concussion",
+    readTime: "9 min read",
+    excerpt: "Understanding why symptoms amplify, tolerance collapses, and recovery feels fragile—even when everything should be better.",
+    heroContent: "You startle easily. Crowds feel threatening. Stress that used to be manageable now overwhelms you. Recovery feels fragile—one bad day and you're back to square one. This isn't anxiety or weakness. It's limbic overload, and it's one of the most misunderstood consequences of concussion.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Limbic–Prefrontal",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When limbic threat regulation becomes overactive after concussion, secondary overload often appears in the Frontal (Executive) and Autonomic domains—which is why stress tolerance collapses and symptoms escalate quickly under pressure."
+      },
+      {
+        type: "heading",
+        content: "Recognizing Limbic Overload"
+      },
+      {
+        type: "callout",
+        content: "Do any of these experiences sound familiar?",
+        variant: "symptom"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Heightened anxiety or sense of dread that appeared after injury",
+          "Feeling 'on edge' or unsafe in environments that used to feel normal",
+          "Symptoms flaring with stress, noise, crowds, or time pressure",
+          "Recovery that feels fragile or unpredictable",
+          "Emotional responses that feel disproportionate to the situation",
+          "Difficulty calming down once activated",
+          "Avoiding situations that might trigger symptoms"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences are common after concussion. They are neurologic, not psychological weakness. And they are treatable once properly understood."
+      },
+      {
+        type: "heading",
+        content: "What the Limbic–Prefrontal System Does"
+      },
+      {
+        type: "paragraph",
+        content: "Your limbic system is the brain's threat detection center. It constantly scans your environment and internal state for danger. When it detects threat, it activates protective responses—increased alertness, heightened vigilance, preparation for action."
+      },
+      {
+        type: "paragraph",
+        content: "Your prefrontal cortex modulates this response. It evaluates whether the threat is real, inhibits overreaction, and helps you return to calm. Together, these systems regulate emotional stability, confidence, and your capacity to tolerate stress."
+      },
+      {
+        type: "heading",
+        content: "What Changes After Concussion"
+      },
+      {
+        type: "paragraph",
+        content: "Concussion can shift this balance. The limbic system becomes sensitized—detecting threat where none exists. The prefrontal cortex loses some of its inhibitory control. The result is a nervous system biased toward protection."
+      },
+      {
+        type: "callout",
+        content: "The brain becomes overly protective. The margin for stress narrows. Normal demands feel risky.",
+        variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "This isn't irrational fear—it's a neurologic shift in how your brain assesses safety. The threshold for triggering protective responses has lowered, and the capacity to calm those responses has diminished."
+      },
+      {
+        type: "heading",
+        content: "How Limbic Overload Amplifies Symptoms"
+      },
+      {
+        type: "paragraph",
+        content: "Limbic dysregulation doesn't create symptoms out of nowhere. It amplifies existing neurologic strain. When other systems are struggling, limbic overload makes everything worse."
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Vestibular instability triggers limbic threat detection, escalating dizziness into panic",
+          "Autonomic strain activates limbic vigilance, amplifying fatigue and reducing endurance",
+          "Cognitive load creates limbic stress, causing frontal shutdown and brain fog",
+          "Visual processing strain feels threatening, making busy environments unbearable"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "Persistent autonomic strain often keeps the limbic system on high alert, reducing stress tolerance and making recovery feel unstable. Similarly, visual processing difficulties can trigger threat responses in environments that should feel safe."
+      },
+      {
+        type: "heading",
+        content: "Primary vs Secondary Limbic Dysfunction"
+      },
+      {
+        type: "paragraph",
+        content: "This distinction is critical: limbic overload is often secondary, not primary. The brain enters threat mode because other neurologic systems are unstable. The limbic system is responding appropriately to a nervous system that genuinely feels unsafe."
+      },
+      {
+        type: "callout",
+        content: "Treating limbic symptoms alone rarely works if upstream neurologic drivers remain unresolved.",
+        variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "When vestibular function is unreliable, when autonomic regulation is unstable, when visual processing is inefficient—the limbic system has good reason to stay vigilant. Calming the limbic response requires stabilizing the systems that are triggering it."
+      },
+      {
+        type: "heading",
+        content: "Why This Is Often Misinterpreted as Anxiety"
+      },
+      {
+        type: "paragraph",
+        content: "The symptoms of limbic overload closely resemble anxiety: heightened vigilance, avoidance, difficulty calming down, sense of dread. It's understandable that these experiences get labeled as psychological."
+      },
+      {
+        type: "paragraph",
+        content: "But this framing is incomplete. Limbic overload after concussion reflects altered neurologic regulation, not a mental health condition. The nervous system has shifted into a protective state because of real physiologic instability—not because of irrational fear or psychological vulnerability."
+      },
+      {
+        type: "inline-cta",
+        content: "Understanding whether your symptoms reflect limbic overload—and what's driving it—requires comprehensive neurologic evaluation."
+      },
+      {
+        type: "heading",
+        content: "How PPC Evaluates Limbic–Prefrontal Involvement"
+      },
+      {
+        type: "paragraph",
+        content: "Our evaluation examines the full neurologic picture. We assess which domains are unstable, which are compensating, and how these cascades are affecting limbic regulation."
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to identify whether limbic overload is primary—or a downstream response to other unresolved dysfunction. This distinction fundamentally changes the treatment approach."
+      },
+      {
+        type: "heading",
+        content: "What This Means for Recovery"
+      },
+      {
+        type: "paragraph",
+        content: "Stability returns when the nervous system regains a sense of safety. This doesn't come from reassurance or willpower—it comes from resolving the neurologic instabilities that are triggering protective responses."
+      },
+      {
+        type: "paragraph",
+        content: "Limbic calm follows integration. When vestibular function stabilizes, when autonomic regulation improves, when visual processing becomes efficient—the limbic system naturally downregulates. Recovery becomes durable once the cascades resolve."
+      },
+      {
+        type: "callout",
+        content: "When the nervous system feels genuinely safe again, the need for constant vigilance dissolves. This is neurologic recovery, not just symptom management.",
+        variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "If recovery feels fragile or symptoms escalate under stress, a clinician-led neurologic evaluation can help clarify whether limbic overload is a primary issue—or a downstream response to other unresolved domains."
+      }
+    ],
+    relatedArticles: [
+      "autonomic-nervous-system-flow",
+      "visual-vestibular-mismatch",
+      "frontal-system-fog-after-concussion",
+      "post-concussion-performance-decline"
+    ],
+    primaryCTA: {
+      label: "Schedule Neurologic Evaluation",
+      route: "/patient/concierge",
+      description: "Understand what's driving your symptoms and create a path to stable recovery."
+    },
+    secondaryCTA: {
+      label: "Take the Concussion Self-Test",
+      route: "/patient/self-tests/concussion",
+      description: "Get an initial assessment of your symptom patterns."
+    }
   }
 ];
 
