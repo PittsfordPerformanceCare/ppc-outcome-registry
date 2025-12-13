@@ -2800,6 +2800,161 @@ export const mskArticles: ArticleData[] = [
       label: "Take MSK Self-Assessment",
       route: "/patient/self-tests/msk"
     }
+  },
+  {
+    slug: "brainstem-dysfunction-and-chronic-pain",
+    title: "Brainstem Dysfunction and Chronic Pain: When the System Can't Settle",
+    category: "msk",
+    readTime: "8 min read",
+    excerpt: "Why pain emerges when the brainstem loses its ability to regulate baseline tone, reflexes, and stress tolerance — even when tissues are intact.",
+    heroContent: "Your nervous system never seems to settle. Muscles stay tight. Reflexes feel heightened. Stress tolerance is gone — and pain seems to spread or amplify without a clear cause. If this sounds familiar, the issue may not be your muscles or joints. It may be your brainstem.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Brainstem",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When brainstem regulation falters, secondary compensation often appears across all MSK control domains — lowering pain thresholds globally."
+      },
+      { type: "heading", content: "Do Any of These Sound Familiar?" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Brainstem dysfunction often presents as heightened sensitivity, poor baseline tone, and low stress tolerance:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Muscles that never fully relax — even at rest",
+          "Heightened reflexes or startle responses",
+          "Low stress tolerance — small demands trigger large responses",
+          "Pain that spreads or migrates without clear injury",
+          "Sensitivity to light, sound, or environmental changes",
+          "Difficulty calming down after exertion or stress"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences reflect neurologic regulation issues — not tissue damage or psychological weakness. They are common, measurable, and addressable."
+      },
+      { type: "heading", content: "What the Brainstem Controls" },
+      {
+        type: "paragraph",
+        content: "The brainstem is the brain's baseline regulator. It controls autonomic functions, modulates reflexes, and sets the tone for the entire nervous system. It determines whether the body operates in a calm, regulated state — or a heightened, protective state."
+      },
+      {
+        type: "paragraph",
+        content: "When the brainstem is functioning well, the nervous system can settle after stress, regulate pain signals appropriately, and maintain stable baseline tone. When it is impaired, the system stays on high alert — and pain thresholds drop globally."
+      },
+      { type: "heading", content: "What Changes When Brainstem Regulation Breaks Down" },
+      {
+        type: "paragraph",
+        content: "When brainstem regulation is impaired, several patterns emerge:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Poor baseline tone — muscles stay tight even without demand",
+          "Heightened reflexes — the nervous system over-responds to stimuli",
+          "Low stress tolerance — small inputs create large outputs",
+          "Global pain amplification — thresholds drop across the entire body"
+        ]
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The nervous system operates as if threat is constant. Pain becomes a baseline state — not a response to specific damage."
+      },
+      { type: "heading", content: "How Brainstem Dysfunction Creates Chronic Pain" },
+      {
+        type: "paragraph",
+        content: "When the brainstem cannot regulate baseline tone, the entire nervous system shifts into a protective state. Pain signals are amplified. Muscles guard without clear reason. Tissues that would normally tolerate load become hypersensitive."
+      },
+      {
+        type: "paragraph",
+        content: "Pain in this context is not a signal of structural damage. It is a signal of dysregulation — the consequence of a nervous system that can no longer settle, modulate, or buffer incoming signals."
+      },
+      {
+        type: "inline-cta",
+        content: "If pain seems global, reflexes feel heightened, and the nervous system never settles — a neurologic MSK evaluation can reveal whether brainstem dysfunction is the missing link."
+      },
+      { type: "heading", content: "Primary vs. Secondary Brainstem Dysfunction" },
+      {
+        type: "paragraph",
+        content: "Brainstem dysfunction may be primary — meaning the brainstem itself is impaired — or it may emerge secondarily from other neurologic limitations."
+      },
+      {
+        type: "paragraph",
+        content: "Common upstream drivers include autonomic dysregulation and vestibular instability. When these systems are impaired, brainstem regulation degrades — and the entire nervous system loses its ability to settle."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Treating local pain without restoring brainstem regulation often provides temporary relief — but the pattern returns."
+      },
+      { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
+      {
+        type: "paragraph",
+        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But brainstem dysfunction lives in the regulation system: it affects how the nervous system modulates tone, processes pain, and responds to stress."
+      },
+      {
+        type: "paragraph",
+        content: "A normal MRI and strong muscles can coexist with a very real brainstem regulation problem. This is why widespread pain, heightened sensitivity, and poor stress tolerance persist for many people despite reassuring test results."
+      },
+      { type: "heading", content: "How PPC Evaluates Brainstem Involvement" },
+      {
+        type: "paragraph",
+        content: "At PPC, evaluation is domain-based and function-focused:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Assessment of baseline tone and reflex modulation",
+          "Evaluation of autonomic regulation and stress response",
+          "Identification of primary vs. compensatory drivers",
+          "Fatigue-based testing to reveal breakdown patterns",
+          "Validated outcome measures to track meaningful change over time"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to determine whether brainstem dysfunction is driving global pain amplification — and what needs to be addressed first."
+      },
+      { type: "heading", content: "What This Means for Recovery" },
+      {
+        type: "paragraph",
+        content: "When brainstem regulation is restored, the nervous system can settle. Baseline tone normalizes. Pain thresholds rise. And the body can respond to stress without amplification."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Pain settles when the nervous system can settle. Tolerance returns when regulation is restored."
+      },
+      { type: "heading", content: "Moving Forward" },
+      {
+        type: "paragraph",
+        content: "If pain seems global, reflexes feel heightened, and the nervous system never settles — a clinician-led neurologic and musculoskeletal evaluation can help determine whether brainstem dysfunction is driving the problem, and what to address first."
+      }
+    ],
+    relatedArticles: [
+      "autonomic-dysfunction-and-chronic-pain",
+      "vestibular-dysfunction-and-chronic-pain",
+      "chronic-pain-without-structural-damage"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Determine whether brainstem dysfunction is driving your chronic pain — and build a path to durable recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
   }
 ];
 
