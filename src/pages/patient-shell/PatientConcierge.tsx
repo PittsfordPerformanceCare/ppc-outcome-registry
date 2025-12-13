@@ -1,5 +1,5 @@
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { User, Users, Stethoscope, ChevronRight, Shield } from "lucide-react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { User, Users, Stethoscope, ChevronRight, Shield, LogIn } from "lucide-react";
 import { useEffect } from "react";
 
 const PatientConcierge = () => {
@@ -94,8 +94,22 @@ const PatientConcierge = () => {
           ))}
         </div>
 
+        {/* Existing patient sign in */}
+        <div className="mt-8 pt-6 border-t border-border/50">
+          <p className="text-center text-sm text-muted-foreground mb-3">
+            Already a patient?
+          </p>
+          <Link
+            to="/patient-auth"
+            className="w-full flex items-center justify-center gap-2 p-4 rounded-xl border border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 text-primary font-medium"
+          >
+            <LogIn className="h-4 w-4" />
+            Sign in to view your care
+          </Link>
+        </div>
+
         {/* Reassurance */}
-        <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+        <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground mt-8">
           <span className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-primary/40" />
             Takes just a few minutes

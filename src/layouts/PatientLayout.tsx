@@ -21,6 +21,12 @@ const PatientLayout = () => {
             
             <div className="flex items-center gap-4">
               <Link 
+                to="/patient-auth" 
+                className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link 
                 to="/site/hub" 
                 className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
               >
