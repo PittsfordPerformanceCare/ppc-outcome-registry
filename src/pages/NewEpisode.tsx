@@ -765,7 +765,7 @@ export default function NewEpisode() {
                   
                   {selectedIndices.includes("NDI") && (
                     <NDIForm
-                      onScoreChange={(score) => handleScoreChange("NDI", score.toString())}
+                      onScoreChange={(score, isComplete) => handleScoreChange("NDI", score.toString(), isComplete)}
                       initialScore={parseFloat(baselineScores["NDI"] || "0")}
                     />
                   )}
@@ -787,7 +787,7 @@ export default function NewEpisode() {
                   
                   {selectedIndices.includes("ODI") && (
                     <ODIForm
-                      onScoreChange={(score) => handleScoreChange("ODI", score.toString())}
+                      onScoreChange={(score, isComplete) => handleScoreChange("ODI", score.toString(), isComplete)}
                       initialScore={parseFloat(baselineScores["ODI"] || "0")}
                     />
                   )}
@@ -809,7 +809,7 @@ export default function NewEpisode() {
                   
                   {selectedIndices.includes("QuickDASH") && (
                     <QuickDASHForm
-                      onScoreChange={(score) => handleScoreChange("QuickDASH", score.toString())}
+                      onScoreChange={(score, isComplete) => handleScoreChange("QuickDASH", score.toString(), isComplete)}
                       initialScore={parseFloat(baselineScores["QuickDASH"] || "0")}
                     />
                   )}
@@ -831,7 +831,7 @@ export default function NewEpisode() {
                   
                   {selectedIndices.includes("LEFS") && (
                     <LEFSForm
-                      onScoreChange={(score) => handleScoreChange("LEFS", score.toString())}
+                      onScoreChange={(score, isComplete) => handleScoreChange("LEFS", score.toString(), isComplete)}
                       initialScore={parseFloat(baselineScores["LEFS"] || "0")}
                     />
                   )}
