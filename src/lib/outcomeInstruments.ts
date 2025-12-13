@@ -438,6 +438,174 @@ export const LEFS_INSTRUMENT: InstrumentDefinition = {
   },
 };
 
+// NDI - Neck Disability Index
+export const NDI_INSTRUMENT: InstrumentDefinition = {
+  code: 'NDI',
+  name: 'NDI',
+  fullName: 'Neck Disability Index',
+  description: 'Measures disability related to neck pain',
+  totalItems: 10,
+  minScore: 0,
+  maxScore: 100,
+  scoreUnit: '% disability',
+  mcid: 7.5,
+  questions: [
+    {
+      number: 1,
+      section: 'Pain Intensity',
+      text: 'Pain Intensity',
+      options: [
+        { value: 0, text: 'I have no pain at the moment.' },
+        { value: 1, text: 'The pain is very mild at the moment.' },
+        { value: 2, text: 'The pain is moderate at the moment.' },
+        { value: 3, text: 'The pain is fairly severe at the moment.' },
+        { value: 4, text: 'The pain is very severe at the moment.' },
+        { value: 5, text: 'The pain is the worst imaginable at the moment.' },
+      ],
+    },
+    {
+      number: 2,
+      section: 'Personal Care',
+      text: 'Personal Care (Washing, Dressing, etc.)',
+      options: [
+        { value: 0, text: 'I can look after myself normally without causing extra pain.' },
+        { value: 1, text: 'I can look after myself normally but it causes extra pain.' },
+        { value: 2, text: 'It is painful to look after myself and I am slow and careful.' },
+        { value: 3, text: 'I need some help but manage most of my personal care.' },
+        { value: 4, text: 'I need help every day in most aspects of self-care.' },
+        { value: 5, text: 'I do not get dressed, wash with difficulty, and stay in bed.' },
+      ],
+    },
+    {
+      number: 3,
+      section: 'Lifting',
+      text: 'Lifting',
+      options: [
+        { value: 0, text: 'I can lift heavy weights without extra pain.' },
+        { value: 1, text: 'I can lift heavy weights but it gives extra pain.' },
+        { value: 2, text: 'Pain prevents me from lifting heavy weights off the floor, but I can manage if they are conveniently positioned.' },
+        { value: 3, text: 'Pain prevents me from lifting heavy weights but I can manage light to medium weights if they are conveniently positioned.' },
+        { value: 4, text: 'I can lift only very light weights.' },
+        { value: 5, text: 'I cannot lift or carry anything.' },
+      ],
+    },
+    {
+      number: 4,
+      section: 'Reading',
+      text: 'Reading',
+      options: [
+        { value: 0, text: 'I can read as much as I want to with no pain in my neck.' },
+        { value: 1, text: 'I can read as much as I want to with slight pain in my neck.' },
+        { value: 2, text: 'I can read as much as I want with moderate pain in my neck.' },
+        { value: 3, text: 'I cannot read as much as I want because of moderate pain in my neck.' },
+        { value: 4, text: 'I cannot read as much as I want because of severe pain in my neck.' },
+        { value: 5, text: 'I cannot read at all.' },
+      ],
+    },
+    {
+      number: 5,
+      section: 'Headaches',
+      text: 'Headaches',
+      options: [
+        { value: 0, text: 'I have no headaches at all.' },
+        { value: 1, text: 'I have slight headaches, which come infrequently.' },
+        { value: 2, text: 'I have moderate headaches, which come infrequently.' },
+        { value: 3, text: 'I have moderate headaches, which come frequently.' },
+        { value: 4, text: 'I have severe headaches, which come frequently.' },
+        { value: 5, text: 'I have headaches almost all the time.' },
+      ],
+    },
+    {
+      number: 6,
+      section: 'Concentration',
+      text: 'Concentration',
+      options: [
+        { value: 0, text: 'I can concentrate fully when I want to with no difficulty.' },
+        { value: 1, text: 'I can concentrate fully when I want to with slight difficulty.' },
+        { value: 2, text: 'I have a fair degree of difficulty in concentrating when I want to.' },
+        { value: 3, text: 'I have a lot of difficulty in concentrating when I want to.' },
+        { value: 4, text: 'I have a great deal of difficulty in concentrating when I want to.' },
+        { value: 5, text: 'I cannot concentrate at all.' },
+      ],
+    },
+    {
+      number: 7,
+      section: 'Work',
+      text: 'Work',
+      options: [
+        { value: 0, text: 'I can do as much work as I want to.' },
+        { value: 1, text: 'I can only do my usual work, but no more.' },
+        { value: 2, text: 'I can do most of my usual work, but no more.' },
+        { value: 3, text: 'I cannot do my usual work.' },
+        { value: 4, text: 'I can hardly do any work at all.' },
+        { value: 5, text: 'I cannot do any work at all.' },
+      ],
+    },
+    {
+      number: 8,
+      section: 'Driving',
+      text: 'Driving',
+      options: [
+        { value: 0, text: 'I can drive my car without any neck pain.' },
+        { value: 1, text: 'I can drive my car as long as I want with slight pain in my neck.' },
+        { value: 2, text: 'I can drive my car as long as I want with moderate pain in my neck.' },
+        { value: 3, text: 'I cannot drive my car as long as I want because of moderate pain in my neck.' },
+        { value: 4, text: 'I can hardly drive at all because of severe pain in my neck.' },
+        { value: 5, text: 'I cannot drive my car at all.' },
+      ],
+    },
+    {
+      number: 9,
+      section: 'Sleeping',
+      text: 'Sleeping',
+      options: [
+        { value: 0, text: 'I have no trouble sleeping.' },
+        { value: 1, text: 'My sleep is slightly disturbed (less than 1 hour sleepless).' },
+        { value: 2, text: 'My sleep is mildly disturbed (1-2 hours sleepless).' },
+        { value: 3, text: 'My sleep is moderately disturbed (2-3 hours sleepless).' },
+        { value: 4, text: 'My sleep is greatly disturbed (3-5 hours sleepless).' },
+        { value: 5, text: 'My sleep is completely disturbed (5-7 hours sleepless).' },
+      ],
+    },
+    {
+      number: 10,
+      section: 'Recreation',
+      text: 'Recreation',
+      options: [
+        { value: 0, text: 'I am able to engage in all my recreation activities with no neck pain at all.' },
+        { value: 1, text: 'I am able to engage in all my recreation activities, with some pain in my neck.' },
+        { value: 2, text: 'I am able to engage in most, but not all of my usual recreation activities because of pain in my neck.' },
+        { value: 3, text: 'I am able to engage in a few of my usual recreation activities because of pain in my neck.' },
+        { value: 4, text: 'I can hardly do any recreation activities because of pain in my neck.' },
+        { value: 5, text: 'I cannot do any recreation activities at all.' },
+      ],
+    },
+  ],
+  calculateScore: (responses) => {
+    let sum = 0;
+    let answeredCount = 0;
+
+    responses.forEach((value) => {
+      if (value !== null && value !== undefined) {
+        sum += value;
+        answeredCount++;
+      }
+    });
+
+    const isValid = answeredCount >= 1;
+    const score = answeredCount > 0 ? (sum / (5 * answeredCount)) * 100 : 0;
+
+    let interpretation = '';
+    if (score <= 8) interpretation = 'No disability';
+    else if (score <= 28) interpretation = 'Mild disability';
+    else if (score <= 48) interpretation = 'Moderate disability';
+    else if (score <= 68) interpretation = 'Severe disability';
+    else interpretation = 'Complete disability';
+
+    return { score: Math.round(score * 10) / 10, isValid, answeredCount, interpretation };
+  },
+};
+
 // Get instrument by code
 export function getInstrument(code: InstrumentCode): InstrumentDefinition | null {
   switch (code) {
@@ -447,6 +615,8 @@ export function getInstrument(code: InstrumentCode): InstrumentDefinition | null
       return QUICKDASH_INSTRUMENT;
     case 'LEFS':
       return LEFS_INSTRUMENT;
+    case 'NDI':
+      return NDI_INSTRUMENT;
     default:
       return null;
   }
@@ -454,5 +624,5 @@ export function getInstrument(code: InstrumentCode): InstrumentDefinition | null
 
 // Get all instruments
 export function getAllInstruments(): InstrumentDefinition[] {
-  return [ODI_INSTRUMENT, QUICKDASH_INSTRUMENT, LEFS_INSTRUMENT];
+  return [NDI_INSTRUMENT, ODI_INSTRUMENT, QUICKDASH_INSTRUMENT, LEFS_INSTRUMENT];
 }

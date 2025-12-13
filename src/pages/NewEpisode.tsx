@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Save } from "lucide-react";
+import { Save, CheckCircle2, AlertCircle } from "lucide-react";
 import { NDIForm } from "@/components/forms/NDIForm";
 import { ODIForm } from "@/components/forms/ODIForm";
 import { QuickDASHForm } from "@/components/forms/QuickDASHForm";
@@ -23,6 +23,8 @@ import { PriorTreatmentSelector, type PriorTreatment } from "@/components/PriorT
 import { TreatmentGoalsSelector, type GoalItem } from "@/components/TreatmentGoalsSelector";
 import { SmartOutcomeMeasureSelector } from "@/components/SmartOutcomeMeasureSelector";
 import { PatientSearch } from "@/components/PatientSearch";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -59,6 +61,8 @@ export default function NewEpisode() {
   const [painPost, setPainPost] = useState<number | null>(null);
   // Track if this episode is being created from an intake form
   const [sourceIntakeFormId, setSourceIntakeFormId] = useState<string | null>(null);
+  // Track form completion status for each index
+  const [formCompletionStatus, setFormCompletionStatus] = useState<Record<string, boolean>>({});
   // Auto-populate clinician from logged-in user
   useEffect(() => {
     const loadClinicianInfo = async () => {
@@ -226,8 +230,35 @@ export default function NewEpisode() {
     }
   };
 
-  const handleScoreChange = (index: string, value: string) => {
+  const handleScoreChange = (index: string, value: string, isComplete?: boolean) => {
     setBaselineScores({ ...baselineScores, [index]: value });
+    if (isComplete !== undefined) {
+      setFormCompletionStatus(prev => ({ ...prev, [index]: isComplete }));
+    }
+  };
+
+  // Check if all selected indices have valid scores
+  const allFormsComplete = selectedIndices.length > 0 && selectedIndices.every(index => {
+    const score = parseFloat(baselineScores[index]);
+    return !isNaN(score) && score >= 0 && formCompletionStatus[index] === true;
+  });
+
+  // Get interpretation for a score
+  const getScoreInterpretation = (index: IndexType, score: number): string => {
+    if (index === "LEFS") {
+      const percentage = (score / 80) * 100;
+      if (percentage >= 80) return "Minimal disability";
+      if (percentage >= 60) return "Mild disability";
+      if (percentage >= 40) return "Moderate disability";
+      if (percentage >= 20) return "Severe disability";
+      return "Very severe disability";
+    }
+    // For disability indices (ODI, NDI, QuickDASH) - lower is better
+    if (score <= 20) return "Minimal disability";
+    if (score <= 40) return "Moderate disability";
+    if (score <= 60) return "Severe disability";
+    if (score <= 80) return "Crippling disability";
+    return "Bed-bound or exaggerating";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -810,13 +841,88 @@ export default function NewEpisode() {
           </>
         )}
 
+        {/* Score Summary Card */}
+        {selectedIndices.length > 0 && (
+          <Card className={`mt-6 ${allFormsComplete ? 'border-green-500 bg-green-50 dark:bg-green-950/20' : 'border-amber-500 bg-amber-50 dark:bg-amber-950/20'}`}>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                {allFormsComplete ? (
+                  <>
+                    <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    <span className="text-green-700 dark:text-green-400">Outcome Measures Complete</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="h-5 w-5 text-amber-600" />
+                    <span className="text-amber-700 dark:text-amber-400">Complete Outcome Measures</span>
+                  </>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {selectedIndices.map((index) => {
+                  const score = parseFloat(baselineScores[index] || "0");
+                  const isComplete = formCompletionStatus[index] === true;
+                  const interpretation = !isNaN(score) && score > 0 ? getScoreInterpretation(index, score) : "Not scored";
+                  
+                  return (
+                    <div
+                      key={index}
+                      className={`rounded-lg border p-3 ${
+                        isComplete 
+                          ? 'border-green-300 bg-white dark:bg-background' 
+                          : 'border-amber-300 bg-white dark:bg-background'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium">{index}</span>
+                        {isComplete ? (
+                          <Badge variant="default" className="bg-green-600 text-xs">Complete</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="text-xs">Pending</Badge>
+                        )}
+                      </div>
+                      {isComplete && !isNaN(score) && (
+                        <>
+                          <p className="text-2xl font-bold">
+                            {index === "LEFS" ? `${score.toFixed(0)}/80` : `${score.toFixed(1)}%`}
+                          </p>
+                          <p className="text-sm text-muted-foreground">{interpretation}</p>
+                        </>
+                      )}
+                      {!isComplete && (
+                        <p className="text-sm text-muted-foreground">Complete the form above</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {allFormsComplete && (
+                <Alert className="mt-4 border-green-300 bg-green-100 dark:bg-green-950/30">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <AlertTitle className="text-green-700 dark:text-green-400">Ready to Create Episode</AlertTitle>
+                  <AlertDescription className="text-green-600 dark:text-green-500">
+                    All outcome measures have been completed. You can now create the episode.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         <div className="mt-6 flex justify-end gap-4">
           <Button type="button" variant="outline" onClick={() => navigate("/dashboard")}>
             Cancel
           </Button>
-          <Button type="submit" className="gap-2">
+          <Button 
+            type="submit" 
+            className="gap-2"
+            disabled={selectedIndices.length > 0 && !allFormsComplete}
+          >
             <Save className="h-4 w-4" />
-            Create Episode
+            {allFormsComplete || selectedIndices.length === 0 ? "Create Episode" : "Complete Forms First"}
           </Button>
         </div>
       </form>
