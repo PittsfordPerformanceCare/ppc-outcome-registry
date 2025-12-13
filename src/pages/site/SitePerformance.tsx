@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet";
 import { 
   Activity, 
   Target,
@@ -8,12 +9,84 @@ import {
   ArrowRight,
   Zap,
   CheckCircle2,
-  Heart
+  Heart,
+  Brain,
+  Eye,
+  Gauge,
+  Timer,
+  Hand,
+  Sparkles,
+  Focus,
+  Battery
 } from "lucide-react";
+
+const performanceDomains = [
+  {
+    name: "Brainstem",
+    icon: Brain,
+    explanation: "Regulates baseline arousal, energy availability, and systemic consistency under demand.",
+    impact: "Inconsistent energy, slow warm-up, variable output across sessions.",
+    link: "/site/hub/brainstem"
+  },
+  {
+    name: "Cerebellar",
+    icon: Timer,
+    explanation: "Controls timing, coordination, and movement efficiency during complex athletic tasks.",
+    impact: "Slower sequencing, reduced power transfer, timing errors under speed.",
+    link: "/site/hub/cerebellar"
+  },
+  {
+    name: "Proprioceptive",
+    icon: Hand,
+    explanation: "Governs force control, symmetry, and load absorption during movement.",
+    impact: "Uneven force output, asymmetric loading, early fatigue or injury risk.",
+    link: "/site/hub/proprioceptive"
+  },
+  {
+    name: "Vestibular",
+    icon: Gauge,
+    explanation: "Maintains balance, spatial orientation, and dynamic stability during athletic movement.",
+    impact: "Unsteadiness at speed, impaired spatial awareness, hesitation on direction changes.",
+    link: "/site/hub/vestibular"
+  },
+  {
+    name: "Autonomic",
+    icon: Battery,
+    explanation: "Regulates endurance capacity, recovery efficiency, and stress tolerance.",
+    impact: "Poor recovery between efforts, inconsistent stamina, reduced stress tolerance.",
+    link: "/site/hub/autonomic"
+  },
+  {
+    name: "Visual",
+    icon: Eye,
+    explanation: "Supports tracking, spatial targeting, and anticipation during dynamic play.",
+    impact: "Delayed reaction, misjudged distances, difficulty tracking fast objects.",
+    link: "/site/hub/visual"
+  },
+  {
+    name: "Limbic–Prefrontal",
+    icon: Sparkles,
+    explanation: "Modulates confidence, threat response, and composure under competitive pressure.",
+    impact: "Hesitation, excessive caution, performance anxiety, loss of competitive edge.",
+    link: "/site/hub/limbic"
+  },
+  {
+    name: "Frontal (Executive)",
+    icon: Focus,
+    explanation: "Controls decision speed, sustained focus, and cognitive endurance during competition.",
+    impact: "Slow decisions, mental fatigue, difficulty maintaining focus late in competition.",
+    link: "/site/hub/frontal"
+  }
+];
 
 const SitePerformance = () => {
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>Performance & Athletic Care | Neurologic Readiness | Pittsford Performance Care</title>
+        <meta name="description" content="Performance care focused on neurologic readiness, timing, and efficiency. Understand why athletes can be cleared but still underperform. Rochester NY." />
+      </Helmet>
+
       {/* Hero Section - Darker, immersive */}
       <section className="relative py-28 lg:py-36 overflow-hidden">
         {/* Dark gradient background */}
@@ -88,7 +161,180 @@ const SitePerformance = () => {
         </div>
       </section>
 
-      {/* Section 3: Unified Clinical Model - Darker section */}
+      {/* NEW: Performance Is a Neurologic Readiness Problem */}
+      <section className="py-20 lg:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Activity className="h-4 w-4" />
+                Understanding Performance
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Performance Is a Neurologic Readiness Problem
+              </h2>
+            </div>
+            
+            <div className="prose prose-lg dark:prose-invert mx-auto">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Performance does not decline because strength disappears or conditioning suddenly fails. 
+                Performance drops when the nervous system cannot time, coordinate, and integrate movement 
+                efficiently under speed, load, and fatigue.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                At PPC, performance evaluation focuses on identifying which neurologic domains are limiting 
+                readiness, and how compensatory patterns reduce output and confidence.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: Neurologic Domains That Drive Performance Readiness */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Brain className="h-4 w-4" />
+                Domain Framework
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Neurologic Domains That Drive Performance Readiness
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Each domain contributes to athletic output. When any domain underperforms, 
+                speed, power, endurance, or confidence can decline.
+              </p>
+            </div>
+            
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {performanceDomains.map((domain) => {
+                const IconComponent = domain.icon;
+                return (
+                  <Link
+                    key={domain.name}
+                    to={domain.link}
+                    className="group p-7 md:p-9 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/40 text-center"
+                  >
+                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <IconComponent className="h-7 w-7 text-primary" />
+                    </div>
+                    <h3 className="text-lg md:text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                      {domain.name}
+                    </h3>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: How Neurologic Inefficiency Limits Performance */}
+      <section className="py-20 lg:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Zap className="h-4 w-4" />
+                Understanding Decline
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                How Neurologic Inefficiency Limits Performance
+              </h2>
+            </div>
+            
+            <div className="prose prose-lg dark:prose-invert mx-auto mb-10">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Performance loss often reflects neurologic inefficiency rather than lack of effort 
+                or conditioning. When domains underperform, cascades develop:
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-4 mb-10">
+              {[
+                "Cerebellar timing delay → slower sequencing → reduced speed and power",
+                "Proprioceptive asymmetry → uneven force output → early fatigue or injury risk",
+                "Autonomic inefficiency → poor recovery → inconsistent performance",
+                "Limbic overactivation → threat response → hesitation and confidence loss"
+              ].map((cascade, index) => (
+                <div 
+                  key={index}
+                  className="flex items-start gap-3 p-5 rounded-xl bg-card border border-border/60"
+                >
+                  <ArrowRight className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">{cascade}</span>
+                </div>
+              ))}
+            </div>
+            
+            <div className="text-center">
+              <p className="text-lg font-medium text-foreground">
+                Training harder does not fix a system that cannot coordinate efficiently.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: Why PPC Evaluates Readiness, Not Just Clearance */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Target className="h-4 w-4" />
+                Our Approach
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Why PPC Evaluates Readiness, Not Just Clearance
+              </h2>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-10">
+              {[
+                {
+                  title: "Readiness Under Demand",
+                  description: "Evaluates neurologic readiness during speed, load, and fatigue—not just at rest."
+                },
+                {
+                  title: "Primary vs Compensatory",
+                  description: "Identifies which domains are primary limitations and which are compensating."
+                },
+                {
+                  title: "Integration & Efficiency",
+                  description: "Progresses athletes based on coordination and efficiency, not just strength."
+                },
+                {
+                  title: "Objective Return Decisions",
+                  description: "Clears return-to-play based on demonstrated readiness, not arbitrary timelines."
+                }
+              ].map((item, index) => (
+                <div 
+                  key={index}
+                  className="p-6 rounded-xl border border-border/60 bg-card/50"
+                >
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
+                    <div>
+                      <h3 className="font-semibold mb-2">{item.title}</h3>
+                      <p className="text-muted-foreground text-sm">{item.description}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section: Unified Clinical Model */}
       <section className="py-20 lg:py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
@@ -126,7 +372,7 @@ const SitePerformance = () => {
         </div>
       </section>
 
-      {/* Section 4: Recovery, Readiness, and Return-to-Play */}
+      {/* Section: Recovery, Readiness, and Return-to-Play */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
@@ -182,7 +428,7 @@ const SitePerformance = () => {
         </div>
       </section>
 
-      {/* Section 5: Who This Is For - Darker immersive */}
+      {/* Section: Who This Is For - Darker immersive */}
       <section className="py-20 lg:py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/15 via-transparent to-transparent" />
@@ -223,7 +469,7 @@ const SitePerformance = () => {
         </div>
       </section>
 
-      {/* Section 6: Supporting Performance Without Losing Perspective */}
+      {/* Section: Supporting Performance Without Losing Perspective */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -257,7 +503,7 @@ const SitePerformance = () => {
         </div>
       </section>
 
-      {/* Section 7: How This Fits Within PPC */}
+      {/* Section: How This Fits Within PPC */}
       <section className="py-20 lg:py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
         
@@ -288,6 +534,33 @@ const SitePerformance = () => {
                 Performance care is not separate. It is an extension of the same commitment to 
                 clarity, precision, and individualized care that defines Pittsford Performance Care.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: Soft Performance-Focused CTA */}
+      <section className="py-16 lg:py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="p-8 md:p-10 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+              <div className="text-center space-y-6">
+                <h3 className="text-2xl md:text-3xl font-bold">
+                  If Performance Feels Inconsistent, Effortful, or "Not the Same"
+                </h3>
+                <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                  A clinician-led neurologic and musculoskeletal evaluation can identify which domain 
+                  is limiting readiness—and what to restore first.
+                </p>
+                <div className="pt-2">
+                  <Button size="lg" asChild>
+                    <Link to="/patient/concierge">
+                      Schedule a Performance Evaluation
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
