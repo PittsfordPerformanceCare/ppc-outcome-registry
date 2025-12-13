@@ -2645,6 +2645,161 @@ export const mskArticles: ArticleData[] = [
       label: "Take MSK Self-Assessment",
       route: "/patient/self-tests/msk"
     }
+  },
+  {
+    slug: "frontal-control-dysfunction-and-chronic-pain",
+    title: "Frontal Control Dysfunction and Chronic Pain: When the Brain Can't Organize Movement",
+    category: "msk",
+    readTime: "8 min read",
+    excerpt: "Why pain emerges when the brain struggles to plan, sequence, and inhibit movement — even when strength and structure are intact.",
+    heroContent: "You try to move efficiently, but everything feels effortful. You over-grip, over-brace, and over-recruit muscles that should stay quiet. Simple tasks require too much concentration. If this sounds familiar, the issue may not be your muscles or joints. It may be frontal motor control.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Frontal (Executive Motor)",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When frontal motor control weakens, secondary compensation often appears in the Cerebellar and Proprioceptive domains — increasing effort and pain."
+      },
+      { type: "heading", content: "Do Any of These Sound Familiar?" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Frontal control dysfunction often presents as over-effort, poor inhibition, and inefficient movement planning:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Over-gripping or over-bracing during simple tasks",
+          "Difficulty 'turning off' muscles that should relax",
+          "Movement feels effortful even when strength is adequate",
+          "Poor motor planning — needing to think through movements that should be automatic",
+          "Fatigue from concentration, not just exertion",
+          "Pain that worsens with complexity or multitasking"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences reflect neurologic control issues — not weakness or structural damage. They are common, measurable, and addressable."
+      },
+      { type: "heading", content: "What Frontal Motor Control Does" },
+      {
+        type: "paragraph",
+        content: "The frontal cortex is the brain's executive motor center. It plans movement, sequences muscle activation, and — critically — inhibits muscles that should stay quiet. Efficient movement depends on knowing what not to do as much as what to do."
+      },
+      {
+        type: "paragraph",
+        content: "When frontal control is functioning well, movement is smooth, automatic, and economical. When it is impaired, the brain loses its ability to organize movement efficiently — and the body compensates with over-effort."
+      },
+      { type: "heading", content: "What Changes When Frontal Control Breaks Down" },
+      {
+        type: "paragraph",
+        content: "When frontal motor control is impaired, several patterns emerge:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Poor inhibition — muscles that should relax stay active",
+          "Over-effort — simple tasks require excessive force and concentration",
+          "Inefficient motor planning — movements feel choppy or disorganized",
+          "Cognitive load — movement requires conscious attention that depletes energy"
+        ]
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The brain compensates for poor planning by recruiting everything at once. That over-recruitment wastes energy and overloads tissues."
+      },
+      { type: "heading", content: "How Frontal Dysfunction Creates Chronic Pain" },
+      {
+        type: "paragraph",
+        content: "When the frontal cortex cannot organize movement efficiently, the body defaults to brute force. Muscles co-contract when they should alternate. Stabilizers fire when they should rest. Tissues absorb load they were never designed to handle — not because of injury, but because of poor motor organization."
+      },
+      {
+        type: "paragraph",
+        content: "Pain in this context is not a signal of damage. It is a signal of inefficiency — the consequence of a control system that can no longer plan, inhibit, and sequence movement effectively."
+      },
+      {
+        type: "inline-cta",
+        content: "If movement feels effortful, over-braced, or mentally exhausting — and imaging looks normal — a neurologic MSK evaluation can reveal whether frontal control is the missing link."
+      },
+      { type: "heading", content: "Primary vs. Secondary Frontal Dysfunction" },
+      {
+        type: "paragraph",
+        content: "Frontal control dysfunction may be primary — meaning the frontal motor system itself is impaired — or it may emerge secondarily from other neurologic limitations."
+      },
+      {
+        type: "paragraph",
+        content: "Common upstream drivers include cerebellar timing deficits and autonomic energy constraints. When these systems are impaired, the frontal cortex loses the resources it needs to plan and inhibit efficiently — and over-effort increases as a result."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Strengthening without restoring motor planning often reinforces over-recruitment — making movement less efficient, not more."
+      },
+      { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
+      {
+        type: "paragraph",
+        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But frontal control dysfunction lives in the planning system: it affects how the brain organizes movement, inhibits unnecessary activation, and sequences muscle firing."
+      },
+      {
+        type: "paragraph",
+        content: "A normal MRI and strong muscles can coexist with a very real frontal control problem. This is why over-effort, fatigue, and pain persist for many people despite reassuring test results."
+      },
+      { type: "heading", content: "How PPC Evaluates Frontal Involvement" },
+      {
+        type: "paragraph",
+        content: "At PPC, evaluation is domain-based and function-focused:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Assessment of motor planning and sequencing",
+          "Evaluation of inhibition and muscle relaxation patterns",
+          "Identification of primary vs. compensatory drivers",
+          "Fatigue-based testing to reveal breakdown patterns",
+          "Validated outcome measures to track meaningful change over time"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to determine whether frontal control dysfunction is driving over-effort and tissue overload — and what needs to be addressed first."
+      },
+      { type: "heading", content: "What This Means for Recovery" },
+      {
+        type: "paragraph",
+        content: "When frontal control is restored, movement becomes organized again. Muscles fire in sequence and relax on cue. Effort decreases. And pain often resolves as tissues are no longer chronically overloaded."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Efficiency returns when the brain can plan. Pain settles when over-effort is no longer necessary."
+      },
+      { type: "heading", content: "Moving Forward" },
+      {
+        type: "paragraph",
+        content: "If movement feels effortful, over-braced, or mentally exhausting — a clinician-led neurologic and musculoskeletal evaluation can help determine whether frontal control dysfunction is driving the problem, and what to address first."
+      }
+    ],
+    relatedArticles: [
+      "motor-timing-deficits",
+      "chronic-pain-without-structural-damage",
+      "cerebellar-timing-deficits-and-chronic-pain"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Determine whether frontal control dysfunction is driving your chronic pain — and build a path to durable recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
   }
 ];
 
