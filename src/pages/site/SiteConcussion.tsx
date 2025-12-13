@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet";
 import { 
   Brain, 
   Eye, 
@@ -11,12 +12,22 @@ import {
   Battery,
   Activity,
   Target,
-  Shield
+  Shield,
+  Gauge,
+  Hand,
+  Sparkles
 } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 const SiteConcussion = () => {
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>Concussion Recovery | Neurologic & Musculoskeletal Care | Pittsford Performance Care</title>
+        <meta name="description" content="Persistent post-concussion symptoms require domain-based neurologic evaluation. PPC identifies which neurologic domains are limiting your recovery." />
+        <link rel="canonical" href="https://pittsfordperformancecare.com/site/concussion" />
+      </Helmet>
+
       {/* Hero Section */}
       <section className="relative py-28 lg:py-36 overflow-hidden">
         {/* Calming light blue gradient */}
@@ -35,7 +46,7 @@ const SiteConcussion = () => {
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
               Persistent post-concussion symptoms aren't just "in your head." They're real 
-              neurologic deficits that require a systems-based evaluation—not just rest and time.
+              neurologic deficits that require a domain-based evaluation—not just rest and time.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild>
@@ -55,7 +66,7 @@ const SiteConcussion = () => {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
       </section>
 
-      {/* Symptoms Section - Converted to flowing text */}
+      {/* Symptoms Section */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -90,101 +101,294 @@ const SiteConcussion = () => {
         </div>
       </section>
 
-      {/* Five-System Model */}
-      <section className="py-20 lg:py-28 relative overflow-hidden" id="five-system-model">
+      {/* NEW: Neurologic Integration Process Section */}
+      <section className="py-20 lg:py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
         
         <div className="container mx-auto px-4 relative">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Sparkles className="h-4 w-4" />
+                Understanding Recovery
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Concussion Recovery Is a Neurologic Integration Process
+              </h2>
+            </div>
+            
+            <div className="prose prose-lg dark:prose-invert mx-auto">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Concussion recovery does not fail randomly. Symptoms persist when one or more 
+                neurologic domains fail to reintegrate after injury—forcing other domains to 
+                compensate. Over time, these compensations fatigue, amplify symptoms, and stall recovery.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                At PPC, concussion evaluation focuses on identifying which neurologic domain is 
+                primary, which domains are compensating, and where the dysfunction cascade is unfolding.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Neurologic Domain Map */}
+      <section className="py-20 lg:py-28 bg-background" id="domain-model">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
                 <Brain className="h-4 w-4" />
                 Our Approach
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                The Five-System Concussion Model
+                The Neurologic Domains Most Commonly Involved After Concussion
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Concussions rarely affect just one system. Our comprehensive evaluation 
-                examines all five neurologic systems that can be disrupted by brain injury.
+                Recovery requires understanding which domain is primary and which are compensating. 
+                Our evaluation examines all major neurologic domains that can be disrupted by brain injury.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Eye className="h-7 w-7 text-primary" />
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Brainstem Domain */}
+              <Link 
+                to="/site/articles/concussion/brainstem-function"
+                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Visual System</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Eye tracking, convergence, accommodation, and visual processing 
-                  deficits that cause reading difficulty and screen intolerance.
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Brainstem Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Arousal, sensory filtering, and baseline energy. The brainstem gates all 
+                  incoming information and sets the foundation for all other domains.
                 </p>
-              </div>
+                <p className="text-xs text-muted-foreground/80 italic">
+                  Common Signs: Light/sound sensitivity, fatigue, difficulty waking, overwhelm in busy environments.
+                </p>
+              </Link>
 
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Ear className="h-7 w-7 text-primary" />
+              {/* Vestibular Domain */}
+              <Link 
+                to="/site/articles/concussion/visual-vestibular-mismatch"
+                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                  <Ear className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Vestibular System</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Balance, spatial orientation, and gaze stability. Dysfunction here 
-                  causes dizziness, motion sensitivity, and disorientation.
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Vestibular Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Balance, spatial orientation, and motion tolerance. This domain stabilizes 
+                  gaze and coordinates with vision and proprioception.
                 </p>
-              </div>
+                <p className="text-xs text-muted-foreground/80 italic">
+                  Common Signs: Dizziness, motion sensitivity, disorientation in crowds, car sickness.
+                </p>
+              </Link>
 
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Brain className="h-7 w-7 text-primary" />
+              {/* Proprioceptive Domain */}
+              <Link 
+                to="/site/articles/concussion/cervical-proprioception"
+                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                  <Hand className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Cerebellar System</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Timing, coordination, and motor sequencing. Cerebellar deficits 
-                  affect movement precision and cognitive processing speed.
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Proprioceptive Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Body awareness, load distribution, and asymmetry detection. Proprioception 
+                  anchors the body in space and supports postural control.
                 </p>
-              </div>
+                <p className="text-xs text-muted-foreground/80 italic">
+                  Common Signs: Neck tension, clumsiness, asymmetric movement, postural fatigue.
+                </p>
+              </Link>
 
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Heart className="h-7 w-7 text-primary" />
+              {/* Cerebellar Domain */}
+              <Link 
+                to="/site/articles/concussion/cerebellar-timing-and-coordination"
+                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                  <Brain className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Autonomic System</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Heart rate variability, blood pressure regulation, and stress response. 
-                  ANS dysfunction causes fatigue, exercise intolerance, and anxiety.
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Cerebellar Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Timing, coordination, efficiency, and automation. The cerebellum is the 
+                  brain's internal clock—when disrupted, everything requires more effort.
                 </p>
-              </div>
+                <p className="text-xs text-muted-foreground/80 italic">
+                  Common Signs: Slowed processing, coordination issues, speech hesitancy, cognitive fatigue.
+                </p>
+              </Link>
 
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Zap className="h-7 w-7 text-primary" />
+              {/* Autonomic Domain */}
+              <Link 
+                to="/site/articles/concussion/autonomic-nervous-system-flow"
+                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                  <Heart className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Cervical System</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Neck proprioception and cervicogenic contributions to headache, 
-                  dizziness, and visual disturbance often overlooked after injury.
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Autonomic Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Stress response, endurance, and recovery. The autonomic nervous system 
+                  regulates heart rate, blood pressure, and energy availability.
                 </p>
-              </div>
+                <p className="text-xs text-muted-foreground/80 italic">
+                  Common Signs: Exercise intolerance, heart racing, poor sleep, temperature dysregulation.
+                </p>
+              </Link>
 
-              <div className="group p-8 rounded-2xl border border-primary/30 bg-primary/5 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Target className="h-7 w-7 text-primary" />
+              {/* Limbic-Prefrontal Domain */}
+              <Link 
+                to="/site/articles/concussion/limbic-prefrontal-regulation"
+                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                  <Shield className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-4">Why It Matters</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Targeting the wrong system wastes time. Our evaluation identifies 
-                  exactly which systems are affected so treatment is precise.
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Limbic–Prefrontal Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Threat detection and emotional regulation. This domain governs how we 
+                  interpret risk and modulate emotional responses.
                 </p>
-              </div>
+                <p className="text-xs text-muted-foreground/80 italic">
+                  Common Signs: Anxiety, irritability, emotional lability, heightened startle response.
+                </p>
+              </Link>
+
+              {/* Visual-Oculomotor Domain */}
+              <Link 
+                to="/site/articles/concussion/visual-vestibular-mismatch"
+                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                  <Eye className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Visual–Oculomotor Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Eye movements, visual tracking, and focus control. Oculomotor dysfunction 
+                  strains reading, screen use, and spatial navigation.
+                </p>
+                <p className="text-xs text-muted-foreground/80 italic">
+                  Common Signs: Reading difficulty, screen intolerance, blurred vision, eye strain headaches.
+                </p>
+              </Link>
+
+              {/* Frontal (Executive) Domain */}
+              <Link 
+                to="/site/articles/concussion/frontal-executive-function"
+                className="group p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
+                  <Gauge className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">Frontal Domain (Executive)</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Attention, working memory, and mental endurance. Executive function 
+                  coordinates goal-directed behavior and sustained focus.
+                </p>
+                <p className="text-xs text-muted-foreground/80 italic">
+                  Common Signs: Brain fog, forgetfulness, difficulty multitasking, mental fatigue.
+                </p>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Energy Crisis - Converted to flowing prose */}
-      <section className="py-20 lg:py-28 bg-background" id="energy-crisis">
+      {/* Domain Cascade Explanation */}
+      <section className="py-20 lg:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                How Domain Dysfunction Cascades After Concussion
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Symptoms often appear downstream from the original disruption. The symptom you 
+                notice may not be the domain where the problem started.
+              </p>
+            </div>
+            
+            <div className="space-y-4 mb-10">
+              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
+                <p className="text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Vestibular instability</span> → 
+                  visual strain → frontal fatigue → headaches
+                </p>
+              </Card>
+              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
+                <p className="text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Cerebellar timing delay</span> → 
+                  proprioceptive overload → asymmetry → pain
+                </p>
+              </Card>
+              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
+                <p className="text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Brainstem inefficiency</span> → 
+                  autonomic dysregulation → exercise intolerance
+                </p>
+              </Card>
+              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
+                <p className="text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Limbic hyperactivation</span> → 
+                  frontal suppression → brain fog → mood changes
+                </p>
+              </Card>
+            </div>
+            
+            <p className="text-lg text-center text-muted-foreground leading-relaxed font-medium">
+              Treating the endpoint of the cascade rarely works. Identifying the primary domain does.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Domain-Based Evaluation Matters */}
+      <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Target className="h-4 w-4" />
+                Clinical Precision
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Why PPC's Domain-Based Evaluation Matters
+              </h2>
+            </div>
+            
+            <div className="prose prose-lg dark:prose-invert mx-auto">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Our clinician-led evaluation is designed to distinguish between primary domain 
+                dysfunction and secondary compensation. This distinction determines the treatment 
+                sequence—because addressing a compensating domain first often makes symptoms worse.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                PPC focuses on neurologic integration, not isolated symptoms. Rather than treating 
+                headaches, dizziness, or fatigue as separate problems, we trace each symptom back 
+                to the domain-level dysfunction driving it.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Progress is measured by readiness—not timelines. We use validated outcome measures 
+                to track meaningful change and determine when each domain is ready for increased 
+                demand, avoiding premature loading that prolongs recovery.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Energy Crisis */}
+      <section className="py-20 lg:py-28 relative overflow-hidden" id="energy-crisis">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+        
+        <div className="container mx-auto px-4 relative">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
@@ -233,10 +437,8 @@ const SiteConcussion = () => {
       </section>
 
       {/* Evaluation Process */}
-      <section className="py-20 lg:py-28 relative overflow-hidden" id="evaluation">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
-        
-        <div className="container mx-auto px-4 relative">
+      <section className="py-20 lg:py-28 bg-background" id="evaluation">
+        <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-14">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
@@ -266,9 +468,9 @@ const SiteConcussion = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6 mx-auto">
                   <span className="text-2xl font-bold text-primary">2</span>
                 </div>
-                <h3 className="text-lg font-semibold mb-3">Systems Exam</h3>
+                <h3 className="text-lg font-semibold mb-3">Domain Exam</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Detailed testing of all five concussion systems to identify deficits
+                  Detailed testing of all neurologic domains to identify primary dysfunction
                 </p>
               </div>
               
@@ -278,7 +480,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Finding Report</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Clear explanation of which systems are affected and why you have symptoms
+                  Clear explanation of which domains are affected and why you have symptoms
                 </p>
               </div>
               
@@ -288,7 +490,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="text-lg font-semibold mb-3">Treatment Plan</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Targeted interventions for your specific system deficits
+                  Targeted interventions for your specific domain deficits
                 </p>
               </div>
             </div>
@@ -297,8 +499,10 @@ const SiteConcussion = () => {
       </section>
 
       {/* Related Articles */}
-      <section className="py-28 lg:py-36 bg-background">
-        <div className="container mx-auto px-4">
+      <section className="py-28 lg:py-36 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+        
+        <div className="container mx-auto px-4 relative">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-20">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8">
@@ -403,16 +607,16 @@ const SiteConcussion = () => {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 PPC's approach to concussion care is informed by established research in clinical 
                 neuroscience and rehabilitation medicine. Our methodology is designed to address 
-                neurologic dysfunction — not symptom suppression — and is grounded in the understanding 
+                neurologic dysfunction—not symptom suppression—and is grounded in the understanding 
                 that concussion represents a physiologic and metabolic injury requiring targeted, 
-                systems-based intervention.
+                domain-based intervention.
               </p>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Validated outcome measures are integrated throughout our concussion care process. 
                 Progression and treatment decisions are guided by objective change over time, not 
                 symptom resolution alone. This approach ensures that clinical decision-making is 
-                based on measured neurologic and functional response — tracking longitudinal 
+                based on measured neurologic and functional response—tracking longitudinal 
                 recovery rather than subjective improvement.
               </p>
               
@@ -420,7 +624,7 @@ const SiteConcussion = () => {
                 Pittsford Performance Care actively engages in translational neuroscience research 
                 conducted under Institutional Review Board (IRB) oversight. The purpose of this 
                 work is to improve how neurologic dysfunction is identified, monitored, and supported 
-                in real-world clinical and educational environments — contributing responsibly to 
+                in real-world clinical and educational environments—contributing responsibly to 
                 the broader understanding of concussion recovery while maintaining the highest 
                 standards of patient care and ethical governance.
               </p>
@@ -463,7 +667,7 @@ const SiteConcussion = () => {
               <p className="text-muted-foreground leading-relaxed">
                 All supporting evidence referenced throughout our concussion content is maintained 
                 in a centralized Works Cited resource. This reference library is actively curated 
-                and continues to evolve as the science of concussion recovery advances — reflecting 
+                and continues to evolve as the science of concussion recovery advances—reflecting 
                 PPC's commitment to transparency, accountability, and continuous learning.
               </p>
             </div>
@@ -471,7 +675,30 @@ const SiteConcussion = () => {
         </div>
       </section>
 
-      {/* CTA Section - Enhanced */}
+      {/* Soft Diagnostic CTA */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <Card className="p-10 md:p-14 rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-transparent text-center">
+              <h3 className="text-2xl md:text-3xl font-bold mb-6">
+                Not Sure Which Neurologic Domain Is Limiting Your Recovery?
+              </h3>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
+                A clinician-led neurologic and musculoskeletal evaluation can help identify 
+                where the cascade began—and what to address first.
+              </p>
+              <Button size="lg" asChild>
+                <Link to="/patient/concierge">
+                  Schedule a Concussion Evaluation
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
       <section className="py-24 lg:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary/90" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
