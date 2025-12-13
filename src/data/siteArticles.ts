@@ -161,6 +161,15 @@ export const concussionArticles: ArticleData[] = [
     heroContent: "Grocery stores are overwhelming. Scrolling on your phone makes you nauseous. Being a passenger in a car feels wrong. This isn't anxiety—it's visual-vestibular mismatch, one of the most common and treatable causes of persistent post-concussion symptoms.",
     sections: [
       {
+        type: "callout",
+        content: "Primary Neurologic Domain: Visual–Oculomotor",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When visual–oculomotor processing becomes inefficient after concussion, secondary compensation often appears in the Vestibular and Frontal domains—which is why busy environments, reading, and sustained focus become exhausting."
+      },
+      {
         type: "heading",
         content: "What Is Visual-Vestibular Mismatch?"
       },
@@ -213,6 +222,14 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "heading",
+        content: "How Visual Strain Cascades Into Other Domains"
+      },
+      {
+        type: "paragraph",
+        content: "When the visual–oculomotor system is inefficient, other neurologic domains compensate. The Frontal system works harder to maintain focus and suppress distractions, leading to cognitive fatigue and brain fog. Meanwhile, the Autonomic system may become dysregulated from chronic sensory conflict—contributing to headaches, nausea, and exercise intolerance."
+      },
+      {
+        type: "heading",
         content: "How We Evaluate Visual-Vestibular Integration"
       },
       {
@@ -247,12 +264,17 @@ export const concussionArticles: ArticleData[] = [
         type: "callout",
         content: "You don't have to avoid the activities that trigger symptoms. With proper treatment, your brain can relearn how to handle these situations normally.",
         variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "At PPC, determining whether visual–oculomotor dysfunction is primary—or compensatory—helps guide what to address first in concussion recovery."
       }
     ],
     relatedArticles: [
+      "frontal-system-fog",
+      "autonomic-nervous-system-flow",
       "post-concussion-performance-decline",
-      "cerebellar-timing-and-coordination",
-      "autonomic-nervous-system-flow"
+      "cerebellar-timing-and-coordination"
     ],
     primaryCTA: {
       label: "Schedule Neurologic Evaluation",
