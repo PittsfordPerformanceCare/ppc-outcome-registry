@@ -345,6 +345,34 @@ const SiteAbout = () => {
         </div>
       </section>
 
+      {/* Why Not Physical Therapy Link */}
+      <section className="py-16 lg:py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <Card className="p-8 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 transition-all duration-300">
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                  <Brain className="h-7 w-7 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-2">Is PPC the Same as Physical Therapy?</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Understand the distinction between our neurologic & musculoskeletal care model 
+                    and traditional approaches—and why this difference matters for your outcomes.
+                  </p>
+                </div>
+                <Button asChild className="rounded-full shrink-0">
+                  <Link to="/site/why-not-physical-therapy">
+                    Learn More
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
