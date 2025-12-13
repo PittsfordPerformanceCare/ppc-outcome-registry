@@ -3110,6 +3110,161 @@ export const mskArticles: ArticleData[] = [
       label: "Take MSK Self-Assessment",
       route: "/patient/self-tests/msk"
     }
+  },
+  {
+    slug: "limbic-modulation-and-chronic-pain",
+    title: "Limbic Modulation and Chronic Pain: When the System Stays on Guard",
+    category: "msk",
+    readTime: "8 min read",
+    excerpt: "Why pain persists when the brain's threat-detection system remains elevated — even after tissues have healed.",
+    heroContent: "The injury healed. The imaging is clear. But the pain persists — and it flares with stress, fatigue, or unpredictability. If this sounds familiar, the issue may not be your tissues. It may be your limbic system — the part of the brain that decides whether you are safe or under threat.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Limbic–Prefrontal",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When limbic modulation remains elevated, secondary compensation often appears in the Autonomic and Motor Control domains — sustaining pain despite healing."
+      },
+      { type: "heading", content: "Do Any of These Sound Familiar?" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Limbic involvement in chronic pain often presents as protective tension, threat perception, and pain that persists beyond expected healing:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Pain that persists despite healing",
+          "Symptoms that flare with stress, fatigue, or uncertainty",
+          "Protective tension — muscles guard even at rest",
+          "Hypervigilance — constantly monitoring for pain or threat",
+          "Avoidance of movement or activities that once felt normal",
+          "A sense that the body is fragile or unpredictable"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences reflect neurologic protective amplification — not psychological weakness or imagined symptoms. They are common, measurable, and addressable."
+      },
+      { type: "heading", content: "What the Limbic System Controls" },
+      {
+        type: "paragraph",
+        content: "The limbic system is the brain's threat-detection center. It evaluates whether the environment — and the body — is safe or under threat. When it perceives danger, it amplifies protective responses: muscle tension, pain sensitivity, and avoidance."
+      },
+      {
+        type: "paragraph",
+        content: "When limbic modulation is functioning well, the system accurately distinguishes between real threat and normal sensation. When it is dysregulated, the system stays on guard — and pain persists as a protective signal, even when tissues have healed."
+      },
+      { type: "heading", content: "What Changes When Limbic Modulation Stays Elevated" },
+      {
+        type: "paragraph",
+        content: "When the limbic system remains in a protective state, several patterns emerge:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Threat perception — normal sensations are interpreted as dangerous",
+          "Protective tension — muscles guard against movement",
+          "Pain persistence — pain continues beyond tissue healing timelines",
+          "Avoidance — activities are restricted to prevent anticipated pain"
+        ]
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The brain amplifies pain not because tissues are damaged, but because the system has not yet received the signal that it is safe. Pain becomes a protective brake — not a damage signal."
+      },
+      { type: "heading", content: "How Limbic Dysregulation Creates Chronic Pain" },
+      {
+        type: "paragraph",
+        content: "When the limbic system perceives ongoing threat, it keeps the nervous system in a protective mode. Pain thresholds drop. Muscles stay tense. Movement becomes guarded. And the body operates as if injury is ongoing — even when it is not."
+      },
+      {
+        type: "paragraph",
+        content: "Pain in this context is not a signal of structural damage. It is a signal of protective amplification — the consequence of a nervous system that has not yet downregulated its threat response."
+      },
+      {
+        type: "inline-cta",
+        content: "If pain persists despite healing, and symptoms flare with stress or unpredictability — a neurologic MSK evaluation can reveal whether limbic modulation is the missing link."
+      },
+      { type: "heading", content: "Primary vs. Secondary Limbic Involvement" },
+      {
+        type: "paragraph",
+        content: "Limbic dysregulation may be primary — meaning the limbic system itself is driving the protective response — or it may emerge secondarily from other neurologic limitations."
+      },
+      {
+        type: "paragraph",
+        content: "Common upstream drivers include autonomic dysregulation and brainstem dysfunction. When these systems are impaired, the limbic system receives signals that reinforce threat perception — and protective amplification continues."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Reassurance alone rarely resolves limbic-driven pain. The system needs evidence of safety — through graded exposure and neurologic integration — not just words."
+      },
+      { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
+      {
+        type: "paragraph",
+        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But limbic modulation lives in the threat-detection system: it affects how the brain interprets sensation and whether protective responses remain elevated."
+      },
+      {
+        type: "paragraph",
+        content: "A normal MRI and strong muscles can coexist with a very real limbic regulation problem. This is why pain persists for many people despite reassuring test results and completed healing timelines."
+      },
+      { type: "heading", content: "How PPC Evaluates Limbic Involvement" },
+      {
+        type: "paragraph",
+        content: "At PPC, evaluation is domain-based and function-focused:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Assessment of protective responses and pain behavior patterns",
+          "Evaluation of autonomic and stress regulation",
+          "Identification of primary vs. compensatory drivers",
+          "Graded exposure testing to assess threat tolerance",
+          "Validated outcome measures to track meaningful change over time"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to determine whether limbic modulation is sustaining protective pain — and what needs to be addressed first."
+      },
+      { type: "heading", content: "What This Means for Recovery" },
+      {
+        type: "paragraph",
+        content: "When limbic modulation is restored, the nervous system receives the signal that it is safe. Protective tension releases. Pain thresholds normalize. And movement becomes possible again without triggering amplification."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Pain settles when the system feels safe. Recovery accelerates when protection is no longer needed."
+      },
+      { type: "heading", content: "Moving Forward" },
+      {
+        type: "paragraph",
+        content: "If pain persists despite healing, and symptoms flare with stress, fatigue, or unpredictability — a clinician-led neurologic and musculoskeletal evaluation can help determine whether limbic modulation is sustaining the problem, and what to address first."
+      }
+    ],
+    relatedArticles: [
+      "autonomic-dysfunction-and-chronic-pain",
+      "chronic-pain-without-structural-damage",
+      "brainstem-dysfunction-and-chronic-pain"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Determine whether limbic modulation is sustaining your chronic pain — and build a path to durable recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
   }
 ];
 
