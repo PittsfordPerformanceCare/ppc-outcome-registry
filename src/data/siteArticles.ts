@@ -707,6 +707,15 @@ export const concussionArticles: ArticleData[] = [
     heroContent: "You sleep eight hours and wake up exhausted. Simple tasks drain you. By afternoon, your brain feels like it's running on empty. This isn't depression or laziness—it's the metabolic energy crisis that follows concussion, and understanding it is the first step to recovery.",
     sections: [
       {
+        type: "callout",
+        content: "Primary Neurologic Domain: Brainstem",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When brainstem regulation becomes inefficient after concussion, secondary compensation often appears in the Autonomic and Frontal (Executive) domains—which is why energy availability drops, recovery slows, and even simple physical or cognitive tasks feel disproportionately exhausting."
+      },
+      {
         type: "heading",
         content: "The Brain's Energy Demands"
       },
@@ -741,6 +750,10 @@ export const concussionArticles: ArticleData[] = [
       {
         type: "paragraph",
         content: "The brain compensates by limiting activity—which is why rest helps initially. But the metabolic dysfunction can persist long after the acute phase resolves."
+      },
+      {
+        type: "paragraph",
+        content: "When the brainstem cannot regulate baseline energy efficiently, autonomic stability often breaks down, limiting endurance and recovery capacity. As energy availability drops, the frontal system fatigues quickly, making thinking and focus feel effortful even early in the day."
       },
       {
         type: "heading",
@@ -832,6 +845,10 @@ export const concussionArticles: ArticleData[] = [
         type: "callout",
         content: "The energy crisis resolves when metabolic systems recover—but this requires intentional rehabilitation, not just time.",
         variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "At PPC, restoring energy availability begins with identifying whether brainstem regulation is the primary driver—rather than pushing conditioning or rest alone."
       }
     ],
     relatedArticles: [
