@@ -301,7 +301,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When cerebellar timing becomes inefficient after concussion, secondary compensation often appears in the Vestibular and Visual–Oculomotor domains—which is why balance, coordination, and smooth eye movements become effortful."
+        content: "When cerebellar timing and coordination are disrupted after concussion, secondary compensation often appears in the Proprioceptive and Autonomic domains—which is why movement feels inefficient, effort escalates quickly, and fatigue sets in early."
       },
       {
         type: "heading",
@@ -346,16 +346,12 @@ export const concussionArticles: ArticleData[] = [
         content: "The cerebellum is particularly vulnerable to concussive forces because of its position at the back of the brain and its high metabolic demands. Even mild concussions can affect cerebellar timing—and because standard neurologic exams don't test cerebellar precision, these deficits often go undetected."
       },
       {
+        type: "paragraph",
+        content: "This timing inefficiency often overlaps with motor sequencing delays, increasing effort and reducing movement efficiency. As effort increases, autonomic load rises, further limiting endurance and recovery."
+      },
+      {
         type: "inline-cta",
         content: "Specialized testing can reveal cerebellar timing deficits that standard exams miss."
-      },
-      {
-        type: "heading",
-        content: "How Cerebellar Dysfunction Cascades Into Other Domains"
-      },
-      {
-        type: "paragraph",
-        content: "When the cerebellum cannot maintain timing precision, the Vestibular system must work harder to stabilize gaze and posture. The Visual–Oculomotor system compensates for imprecise eye movements, leading to fatigue during reading or tracking tasks. Over time, this compensatory load can contribute to autonomic dysregulation and cognitive fatigue."
       },
       {
         type: "heading",
@@ -395,7 +391,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "At PPC, determining whether cerebellar dysfunction is primary—or compensatory—helps guide what to address first in concussion recovery."
+        content: "At PPC, identifying cerebellar timing as a primary driver—rather than a downstream compensation—helps determine what to address first in recovery."
       }
     ],
     relatedArticles: [
