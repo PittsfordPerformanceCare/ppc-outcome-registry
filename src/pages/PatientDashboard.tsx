@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy, Settings, HeartPulse, BookOpen } from "lucide-react";
@@ -129,8 +128,6 @@ export default function PatientDashboard() {
   const [loading, setLoading] = useState(true);
   const [episodes, setEpisodes] = useState<PatientEpisode[]>([]);
   const [rewards, setRewards] = useState<any[]>([]);
-  const [accessCode, setAccessCode] = useState("");
-  const [claimingCode, setClaimingCode] = useState(false);
   const [hasAwardedWelcome, setHasAwardedWelcome] = useState(false);
   const [patientAccount, setPatientAccount] = useState<any>(null);
   const [latestScore, setLatestScore] = useState<any>(null);
@@ -212,6 +209,12 @@ export default function PatientDashboard() {
 
       if (accountData) {
         setPatientAccount(accountData);
+        
+        // Auto-link episodes based on email (in case new episodes were added)
+        await supabase.rpc('auto_link_patient_episodes', {
+          p_patient_account_id: accountData.id,
+          p_email: userEmail
+        });
       }
 
       // Load clinic settings
@@ -339,82 +342,6 @@ export default function PatientDashboard() {
     }
   }, [user, success]);
 
-  const handleClaimCode = useCallback(async () => {
-    if (!accessCode || accessCode.length !== 8) {
-      toast({
-        title: "Invalid Code",
-        description: "Access code must be 8 characters",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setClaimingCode(true);
-    try {
-      const { data: accessRecord, error: findError } = await supabase
-        .from("patient_episode_access")
-        .select("*, patient_accounts!inner(email)")
-        .eq("invitation_code", accessCode.toUpperCase())
-        .maybeSingle();
-
-      if (findError) throw findError;
-
-      if (!accessRecord) {
-        throw new Error("Invalid access code");
-      }
-
-      if (accessRecord.code_used_at) {
-        throw new Error("This code has already been used");
-      }
-
-      const patientEmail = accessRecord.patient_accounts.email;
-      if (patientEmail !== user?.email) {
-        throw new Error(`This code was issued for ${patientEmail}`);
-      }
-
-      // Get the episode to extract the patient name
-      const { data: episodeData } = await supabase
-        .from("episodes")
-        .select("patient_name")
-        .eq("id", accessRecord.episode_id)
-        .single();
-
-      const { error: updateError } = await supabase
-        .from("patient_episode_access")
-        .update({ 
-          code_used_at: new Date().toISOString() 
-        })
-        .eq("id", accessRecord.id);
-
-      if (updateError) throw updateError;
-
-      // Update patient account with correct name from episode
-      if (episodeData?.patient_name && patientAccountId) {
-        await supabase
-          .from("patient_accounts")
-          .update({ 
-            full_name: episodeData.patient_name
-          })
-          .eq("id", patientAccountId);
-      }
-
-      toast({
-        title: "Success!",
-        description: "Episode access granted",
-      });
-
-      setAccessCode("");
-      if (user) await loadPatientData(user.id);
-    } catch (error: any) {
-      toast({
-        title: "Failed to Claim Code",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setClaimingCode(false);
-    }
-  }, [accessCode, user, patientAccountId, toast, loadPatientData]);
 
   // Memoize computed values
   const activeEpisodes = useMemo(() => 
@@ -551,36 +478,6 @@ export default function PatientDashboard() {
           />
         )}
 
-        {/* Claim Access Code */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Add Episode Access</CardTitle>
-            <CardDescription>
-              Enter an access code from your clinician to view more episodes
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter 8-character code"
-                value={accessCode}
-                onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
-                maxLength={8}
-                className="font-mono tracking-wider"
-              />
-              <Button 
-                onClick={handleClaimCode} 
-                disabled={claimingCode || accessCode.length !== 8}
-              >
-                {claimingCode ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Claim Access"
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-3">
