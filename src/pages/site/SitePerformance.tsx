@@ -64,7 +64,7 @@ const performanceDomains = [
     link: "/site/hub/visual"
   },
   {
-    name: "Limbic–Prefrontal",
+    name: "Limbic and Prefrontal",
     icon: Sparkles,
     explanation: "Modulates confidence, threat response, and composure under competitive pressure.",
     impact: "Hesitation, excessive caution, performance anxiety, loss of competitive edge.",
@@ -106,7 +106,7 @@ const SitePerformance = () => {
               Performance & Athletic Care
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1]">
-              Neurologic Readiness, Recovery, and Confident Return-to-Play
+              Neurologic Readiness, Recovery, and Confident Return to Play
             </h1>
             <p className="text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto">
               Athletic performance places unique demands on the nervous system. Recovery and readiness 
@@ -144,7 +144,7 @@ const SitePerformance = () => {
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Speed, balance, coordination, timing, and reaction all depend on neurologic readiness. 
-                These are not simply physical traits—they emerge from the integration of sensory, motor, 
+                These are not simply physical traits. They emerge from the integration of sensory, motor, 
                 and cognitive systems operating in concert.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
@@ -153,7 +153,7 @@ const SitePerformance = () => {
                 whose demands exceed the threshold of everyday function.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Performance care requires understanding the neurologic substrate of athletic capacity—and 
+                Performance care requires understanding the neurologic substrate of athletic capacity, and 
                 addressing the systems that govern it.
               </p>
             </div>
@@ -301,19 +301,19 @@ const SitePerformance = () => {
               {[
                 {
                   title: "Readiness Under Demand",
-                  description: "Evaluates neurologic readiness during speed, load, and fatigue—not just at rest."
+                  description: "Evaluates neurologic readiness during speed, load, and fatigue, not just at rest."
                 },
                 {
                   title: "Primary vs Compensatory",
                   description: "Identifies which domains are primary limitations and which are compensating."
                 },
                 {
-                  title: "Integration & Efficiency",
+                  title: "Integration and Efficiency",
                   description: "Progresses athletes based on coordination and efficiency, not just strength."
                 },
                 {
                   title: "Objective Return Decisions",
-                  description: "Clears return-to-play based on demonstrated readiness, not arbitrary timelines."
+                  description: "Clears return to play based on demonstrated readiness, not arbitrary timelines."
                 }
               ].map((item, index) => (
                 <div 
@@ -353,8 +353,8 @@ const SitePerformance = () => {
             
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Athletes at Pittsford Performance Care receive the same neurologic, outcome-driven care 
-                as all patients. There is no separate tier or exclusive program—only an application of 
+                Athletes at Pittsford Performance Care receive the same neurologic, outcome driven care 
+                as all patients. There is no separate tier or exclusive program. Only an application of 
                 the same clinical principles to the unique demands of sport and performance.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
@@ -364,7 +364,7 @@ const SitePerformance = () => {
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 The PPC Outcome Registry provides a longitudinal framework for understanding recovery and 
-                readiness—giving both clinician and athlete visibility into what is changing and what 
+                readiness, giving both clinician and athlete visibility into what is changing and what 
                 remains to be addressed.
               </p>
             </div>
@@ -382,11 +382,11 @@ const SitePerformance = () => {
                 The Process
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Recovery, Readiness, and Return-to-Play
+                Recovery, Readiness, and Return to Play
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Timelines alone are insufficient for safe return-to-play. Readiness is not defined 
-                by the calendar—it is demonstrated through capacity.
+                Timelines alone are insufficient for safe return to play. Readiness is not defined 
+                by the calendar. It is demonstrated through capacity.
               </p>
             </div>
             
@@ -408,8 +408,8 @@ const SitePerformance = () => {
                 </div>
                 <h3 className="text-xl font-semibold mb-4">Confidence in Decisions</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Both athlete and care team need clarity. Return-to-play decisions should be made 
-                  with confidence—not guesswork—based on observable, measurable progress.
+                  Both athlete and care team need clarity. Return to play decisions should be made 
+                  with confidence, not guesswork, based on observable, measurable progress.
                 </p>
               </div>
               
@@ -444,7 +444,7 @@ const SitePerformance = () => {
             </h2>
             <p className="text-lg text-slate-300 leading-relaxed mb-12 max-w-2xl mx-auto">
               Performance care is not exclusive to one level of competition. It applies wherever 
-              neurologic readiness matters—from youth development to adult recreation.
+              neurologic readiness matters, from youth development to adult recreation.
             </p>
             
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-3xl mx-auto">
@@ -486,13 +486,13 @@ const SitePerformance = () => {
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Performance care must prioritize health, longevity, and neurologic integrity. 
-                Speed is never a substitute for safety. Pressure to return—whether internal or 
-                external—cannot override sound clinical judgment.
+                Speed is never a substitute for safety. Pressure to return, whether internal or 
+                external, cannot override sound clinical judgment.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Our decisions are grounded in readiness. This means being honest about what 
                 the data shows, what the athlete is experiencing, and what is genuinely safe. 
-                The goal is not a rushed return—it is a confident one.
+                The goal is not a rushed return. It is a confident one.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Athletes and their families can trust that recommendations are made with their 
@@ -522,7 +522,7 @@ const SitePerformance = () => {
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 This page represents one application of Pittsford Performance Care's broader clinical 
-                philosophy. The same neurologic, outcome-driven principles that guide concussion care 
+                philosophy. The same neurologic, outcome driven principles that guide concussion care 
                 and musculoskeletal care also guide performance readiness.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
@@ -550,7 +550,7 @@ const SitePerformance = () => {
                 </h3>
                 <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
                   A clinician-led neurologic and musculoskeletal evaluation can identify which domain 
-                  is limiting readiness—and what to restore first.
+                  is limiting readiness, and what to restore first.
                 </p>
                 <div className="pt-2">
                   <Button size="lg" asChild>
@@ -577,7 +577,7 @@ const SitePerformance = () => {
               Readiness. Confidence. Clarity.
             </h2>
             <p className="text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto">
-              Neurologically informed, outcome-driven care tailored to the athlete's needs. 
+              Neurologically informed, outcome driven care tailored to the athlete's needs. 
               No hype. No shortcuts. Just the foundation for confident return.
             </p>
             <div className="pt-4">
