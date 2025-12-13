@@ -133,102 +133,182 @@ const SiteMsk = () => {
         </div>
       </section>
 
-      {/* Neurologic Domain Map for MSK */}
+      {/* Neurologic Domain Map for Musculoskeletal Pain */}
       <section className="py-24 lg:py-32 relative" id="domain-model">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950" />
         
         <div className="container mx-auto px-4 relative">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-14">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Neurologic Domains That Drive MSK Pain
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Neurologic Domain Map for Musculoskeletal Pain
               </h2>
-              <p className="text-muted-foreground max-w-lg mx-auto">
-                Each domain governs a different aspect of movement control and load management.
-              </p>
+              <div className="prose prose-lg dark:prose-invert mx-auto max-w-3xl">
+                <p className="text-muted-foreground leading-relaxed">
+                  Musculoskeletal pain does not arise from a single structure or tissue. It reflects 
+                  how multiple neurologic control systems manage load, timing, stability, energy, 
+                  and perception during movement.
+                </p>
+                <p className="text-muted-foreground leading-relaxed">
+                  At Pittsford Performance Care, chronic and recurrent MSK pain is evaluated through 
+                  a domain-based neurologic model. Each domain below represents a specific control 
+                  system that can independently — or collectively — contribute to pain, inefficiency, 
+                  and compensation when function is disrupted.
+                </p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
               <Link 
-                to="/site/articles/concussion/concussion-energy-crisis-and-recovery"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                to="/site/articles/msk/proprioceptive-dysfunction-and-chronic-pain"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Zap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Hand className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="font-bold text-base group-hover:text-blue-600 transition-colors">Proprioceptive Domain</h3>
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Brainstem</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Controls the brain's awareness of joint position, force grading, and load distribution during movement.
+                </p>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium group-hover:underline mt-auto">
+                  → Proprioceptive Dysfunction and Chronic Pain
+                </span>
               </Link>
 
               <Link 
-                to="/site/articles/concussion/proprioceptive-dysfunction-after-concussion"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                to="/site/articles/msk/cerebellar-timing-deficits-and-chronic-pain"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Hand className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Brain className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="font-bold text-base group-hover:text-blue-600 transition-colors">Cerebellar Domain</h3>
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Proprioceptive</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Coordinates timing, sequencing, and prediction of movement to reduce effort and prevent overload.
+                </p>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium group-hover:underline mt-auto">
+                  → Cerebellar Timing Deficits and Chronic Pain
+                </span>
               </Link>
 
               <Link 
-                to="/site/articles/concussion/cerebellar-timing-and-coordination"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                to="/site/articles/msk/vestibular-dysfunction-and-chronic-pain"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Brain className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Ear className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="font-bold text-base group-hover:text-blue-600 transition-colors">Vestibular Domain</h3>
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Cerebellar</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Stabilizes posture and movement by regulating balance, orientation, and motion sensing.
+                </p>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium group-hover:underline mt-auto">
+                  → Vestibular Dysfunction and Chronic Pain
+                </span>
               </Link>
 
               <Link 
-                to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                to="/site/articles/msk/autonomic-dysfunction-and-chronic-pain"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Ear className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Heart className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="font-bold text-base group-hover:text-blue-600 transition-colors">Autonomic Domain</h3>
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Vestibular</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Regulates energy availability, recovery capacity, and stress response during physical demand.
+                </p>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium group-hover:underline mt-auto">
+                  → Autonomic Dysfunction and Chronic Pain
+                </span>
               </Link>
 
               <Link 
-                to="/site/articles/concussion/autonomic-nervous-system-flow"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                to="/site/articles/msk/frontal-control-dysfunction-and-chronic-pain"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Heart className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Gauge className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="font-bold text-base group-hover:text-blue-600 transition-colors">Frontal / Executive Domain</h3>
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Autonomic</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Organizes motor planning, inhibition, and efficiency of voluntary movement.
+                </p>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium group-hover:underline mt-auto">
+                  → Frontal Control Dysfunction and Chronic Pain
+                </span>
               </Link>
 
               <Link 
-                to="/site/articles/concussion/limbic-overload-after-concussion"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                to="/site/articles/msk/brainstem-dysfunction-and-chronic-pain"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="font-bold text-base group-hover:text-blue-600 transition-colors">Brainstem Domain</h3>
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Limbic</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Establishes baseline tone, reflex stability, and nervous system readiness for movement.
+                </p>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium group-hover:underline mt-auto">
+                  → Brainstem Dysfunction and Chronic Pain
+                </span>
               </Link>
 
               <Link 
-                to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                to="/site/articles/msk/visual-processing-dysfunction-and-chronic-pain"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Eye className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Eye className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="font-bold text-base group-hover:text-blue-600 transition-colors">Visual Domain</h3>
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Visual</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Provides spatial accuracy and movement guidance through visual-motor integration.
+                </p>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium group-hover:underline mt-auto">
+                  → Visual Processing Dysfunction and Chronic Pain
+                </span>
               </Link>
 
               <Link 
-                to="/site/articles/concussion/frontal-system-fog-after-concussion"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                to="/site/articles/msk/limbic-modulation-and-chronic-pain"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Gauge className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                    <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="font-bold text-base group-hover:text-blue-600 transition-colors">Limbic Domain</h3>
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Executive</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
+                  Modulates threat perception, protection responses, and pain amplification over time.
+                </p>
+                <span className="text-xs text-blue-600 dark:text-blue-400 font-medium group-hover:underline mt-auto">
+                  → Limbic Modulation and Chronic Pain
+                </span>
               </Link>
             </div>
+
+            <p className="text-center text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+              Pain often reflects interaction between multiple domains rather than a single failing 
+              structure. Identifying which control systems are primary — and which are compensating — 
+              is essential for restoring efficient movement and resolving persistent symptoms.
+            </p>
           </div>
         </div>
       </section>
