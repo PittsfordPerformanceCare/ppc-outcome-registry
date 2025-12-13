@@ -558,6 +558,15 @@ export const concussionArticles: ArticleData[] = [
     sections: [
       {
         type: "callout",
+        content: "Primary Neurologic Domain: Frontal (Executive)",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When frontal executive systems become overloaded after concussion, secondary compensation often reflects unresolved dysfunction in the Visual–Oculomotor, Autonomic, or Cerebellar domains—which is why thinking feels effortful, focus fades quickly, and mental endurance collapses later in the day."
+      },
+      {
+        type: "callout",
         content: "If you feel like you're thinking through fog—slower, less sharp, more effortful—your frontal systems may not have fully recovered from concussion.",
         variant: "insight"
       },
@@ -623,6 +632,10 @@ export const concussionArticles: ArticleData[] = [
         content: "Frontal lobe function is metabolically expensive. These brain regions consume enormous amounts of energy. After concussion, when the brain's energy systems are compromised, the frontal lobes often bear the brunt. This is why cognitive fog is typically worse later in the day, after sustained mental effort, or when you're already fatigued."
       },
       {
+        type: "paragraph",
+        content: "Persistent visual processing strain often drives frontal system fatigue, making sustained thinking and focus difficult. As autonomic regulation becomes inefficient, mental stamina drops even faster under stress or cognitive demand."
+      },
+      {
         type: "heading",
         content: "How We Assess Frontal Function"
       },
@@ -662,12 +675,17 @@ export const concussionArticles: ArticleData[] = [
         type: "callout",
         content: "Cognitive fog doesn't have to be permanent. With targeted intervention, frontal function can be rebuilt—even months or years after injury.",
         variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "At PPC, frontal fog is rarely treated in isolation—identifying which lower-level domains are overloading the executive system helps determine what to address first."
       }
     ],
     relatedArticles: [
+      "visual-vestibular-mismatch",
+      "autonomic-nervous-system-flow",
       "post-concussion-performance-decline",
-      "concussion-energy-crisis-and-recovery",
-      "autonomic-nervous-system-flow"
+      "concussion-energy-crisis-and-recovery"
     ],
     primaryCTA: {
       label: "Schedule Neurologic Evaluation",
