@@ -419,6 +419,15 @@ export const concussionArticles: ArticleData[] = [
     heroContent: "Your autonomic nervous system controls everything your body does automatically—heart rate, blood pressure, digestion, temperature, and energy regulation. After concussion, this \"autopilot\" system often malfunctions, creating symptoms that seem unrelated to a brain injury.",
     sections: [
       {
+        type: "callout",
+        content: "Primary Neurologic Domain: Autonomic",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When autonomic regulation becomes inefficient after concussion, secondary compensation often appears in the Brainstem and Limbic–Prefrontal domains—which is why exercise tolerance drops, recovery slows, and symptoms amplify under stress."
+      },
+      {
         type: "heading",
         content: "What Is Autonomic Dysregulation?"
       },
@@ -452,6 +461,10 @@ export const concussionArticles: ArticleData[] = [
       {
         type: "paragraph",
         content: "These symptoms are often dismissed as \"anxiety\" or \"deconditioning,\" but they reflect real physiologic dysfunction in how your autonomic system regulates your body."
+      },
+      {
+        type: "paragraph",
+        content: "Autonomic inefficiency often overlaps with an underlying energy regulation problem, making even light activity feel disproportionately exhausting. Persistent autonomic strain can also increase limbic reactivity, amplifying symptoms and reducing stress tolerance."
       },
       {
         type: "inline-cta",
@@ -513,9 +526,14 @@ export const concussionArticles: ArticleData[] = [
       {
         type: "paragraph",
         content: "The goal is to restore your body's ability to smoothly shift between sympathetic and parasympathetic states as demands change."
+      },
+      {
+        type: "paragraph",
+        content: "At PPC, identifying autonomic dysfunction as a primary driver—rather than a downstream stress response—helps determine what to address first in concussion recovery."
       }
     ],
     relatedArticles: [
+      "frontal-system-fog",
       "post-concussion-performance-decline",
       "visual-vestibular-mismatch",
       "cerebellar-timing-and-coordination"
