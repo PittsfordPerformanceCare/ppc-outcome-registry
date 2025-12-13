@@ -132,101 +132,165 @@ const SiteConcussion = () => {
         </div>
       </section>
 
-      {/* Neurologic Domain Map */}
+      {/* Neurologic Domain Map in Concussion Recovery */}
       <section className="py-24 lg:py-32 relative" id="domain-model">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950" />
         
         <div className="container mx-auto px-4 relative">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-14">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                The Neurologic Domains
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Neurologic Domain Map in Concussion Recovery
               </h2>
-              <p className="text-muted-foreground max-w-lg mx-auto">
-                Identifying the primary domain—and which are compensating—is the foundation of recovery.
-              </p>
+              <div className="max-w-3xl mx-auto space-y-4">
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  A concussion does not injure a single part of the brain. It disrupts how multiple 
+                  neurologic systems integrate sensory input, regulate energy, and coordinate response to demand.
+                </p>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  At Pittsford Performance Care, concussion recovery is approached through the same 
+                  domain-based neurologic framework used across all conditions — with emphasis on 
+                  restoring tolerance, integration, and efficiency across systems rather than chasing isolated symptoms.
+                </p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
               <Link 
-                to="/site/articles/concussion/concussion-energy-crisis-and-recovery"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                to="/site/articles/concussion/visual-vestibular-mismatch"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Zap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                  <Eye className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Brainstem</h3>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Visual Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Processes visual motion, focus, and spatial accuracy — commonly contributing to headaches, dizziness, and screen intolerance after concussion.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Visual Dysfunction After Concussion →
+                </span>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Ear className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                  <Ear className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Vestibular</h3>
-              </Link>
-
-              <Link 
-                to="/site/articles/concussion/proprioceptive-dysfunction-after-concussion"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Hand className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Proprioceptive</h3>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Vestibular Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Regulates balance, orientation, and motion sensing — often driving dizziness, nausea, and movement sensitivity.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Vestibular Dysfunction After Concussion →
+                </span>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/cerebellar-timing-and-coordination"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Brain className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                  <Brain className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Cerebellar</h3>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Cerebellar Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Coordinates timing, sequencing, and motor prediction — contributing to clumsiness, slowed performance, and exertional fatigue.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Cerebellar Timing Deficits After Concussion →
+                </span>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/autonomic-nervous-system-flow"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Heart className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                  <Heart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Autonomic</h3>
-              </Link>
-
-              <Link 
-                to="/site/articles/concussion/limbic-overload-after-concussion"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Limbic</h3>
-              </Link>
-
-              <Link 
-                to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Eye className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Oculomotor</h3>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Autonomic Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Controls energy regulation, heart rate, and recovery capacity — commonly underlying exercise intolerance and symptom flares.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Autonomic Dysfunction After Concussion →
+                </span>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/frontal-system-fog-after-concussion"
-                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
-                  <Gauge className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                  <Gauge className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Executive</h3>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Frontal / Executive Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Supports attention, inhibition, and cognitive-motor control — often involved in brain fog, overwhelm, and decision fatigue.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Executive Dysfunction After Concussion →
+                </span>
               </Link>
+
+              <Link 
+                to="/site/articles/concussion/concussion-energy-crisis-and-recovery"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Brainstem Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Establishes baseline regulation and sensory gating — influencing sleep, light sensitivity, and symptom volatility.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Brainstem Dysfunction After Concussion →
+                </span>
+              </Link>
+
+              <Link 
+                to="/site/articles/concussion/proprioceptive-dysfunction-after-concussion"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                  <Hand className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Proprioceptive Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Integrates body position and movement feedback — contributing to disorientation, clumsiness, and movement insecurity.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Proprioceptive Dysfunction After Concussion →
+                </span>
+              </Link>
+
+              <Link 
+                to="/site/articles/concussion/limbic-overload-after-concussion"
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                  <Shield className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Limbic Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Modulates threat perception and protective responses — influencing symptom persistence, anxiety, and pain amplification.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Limbic Dysregulation After Concussion →
+                </span>
+              </Link>
+            </div>
+
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Concussion symptoms often reflect interaction between multiple domains rather than a single deficit. 
+                Identifying which systems are primary — and which are compensating — is essential for restoring 
+                tolerance, integration, and meaningful recovery.
+              </p>
             </div>
           </div>
         </div>
