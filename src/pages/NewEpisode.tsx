@@ -741,40 +741,71 @@ export default function NewEpisode() {
                 </>
               )}
 
-              {episodeType === "MSK" && (["ODI", "QuickDASH", "LEFS"] as IndexType[]).map((index) => (
-                <div key={index}>
-                  <div className="flex items-start space-x-4 rounded-lg border p-4">
+              {episodeType === "MSK" && (
+                <>
+                  <div className="flex items-center space-x-2">
                     <Checkbox
-                      id={index}
-                      checked={selectedIndices.includes(index)}
-                      onCheckedChange={(checked) => handleIndexToggle(index, checked as boolean)}
+                      id="ODI"
+                      checked={selectedIndices.includes("ODI")}
+                      onCheckedChange={(checked) => handleIndexToggle("ODI", checked as boolean)}
                     />
-                    <div className="flex-1 space-y-2">
-                      <Label htmlFor={index} className="text-base font-medium">
-                        {index}
-                      </Label>
-                      {selectedIndices.includes(index) && (
-                        <div className="flex items-center gap-2">
-                          <Input
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.1"
-                            placeholder="Enter baseline score"
-                            value={baselineScores[index] || ""}
-                            onChange={(e) => handleScoreChange(index, e.target.value)}
-                            className="max-w-xs"
-                            required
-                          />
-                          <span className="text-sm text-muted-foreground">
-                            MCID: {PPC_CONFIG.mcid[index]}
-                          </span>
-                        </div>
-                      )}
-                    </div>
+                    <Label htmlFor="ODI" className="text-lg font-semibold cursor-pointer">
+                      Complete Oswestry Disability Index (ODI)
+                    </Label>
                   </div>
-                </div>
-              ))}
+                  
+                  {selectedIndices.includes("ODI") && (
+                    <ODIForm
+                      onScoreChange={(score) => handleScoreChange("ODI", score.toString())}
+                      initialScore={parseFloat(baselineScores["ODI"] || "0")}
+                    />
+                  )}
+                </>
+              )}
+
+              {episodeType === "MSK" && (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="QuickDASH"
+                      checked={selectedIndices.includes("QuickDASH")}
+                      onCheckedChange={(checked) => handleIndexToggle("QuickDASH", checked as boolean)}
+                    />
+                    <Label htmlFor="QuickDASH" className="text-lg font-semibold cursor-pointer">
+                      Complete QuickDASH Assessment
+                    </Label>
+                  </div>
+                  
+                  {selectedIndices.includes("QuickDASH") && (
+                    <QuickDASHForm
+                      onScoreChange={(score) => handleScoreChange("QuickDASH", score.toString())}
+                      initialScore={parseFloat(baselineScores["QuickDASH"] || "0")}
+                    />
+                  )}
+                </>
+              )}
+
+              {episodeType === "MSK" && (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="LEFS"
+                      checked={selectedIndices.includes("LEFS")}
+                      onCheckedChange={(checked) => handleIndexToggle("LEFS", checked as boolean)}
+                    />
+                    <Label htmlFor="LEFS" className="text-lg font-semibold cursor-pointer">
+                      Complete Lower Extremity Functional Scale (LEFS)
+                    </Label>
+                  </div>
+                  
+                  {selectedIndices.includes("LEFS") && (
+                    <LEFSForm
+                      onScoreChange={(score) => handleScoreChange("LEFS", score.toString())}
+                      initialScore={parseFloat(baselineScores["LEFS"] || "0")}
+                    />
+                  )}
+                </>
+              )}
             </div>
           </>
         )}
