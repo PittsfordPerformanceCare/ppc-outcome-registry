@@ -2023,6 +2023,162 @@ export const mskArticles: ArticleData[] = [
       label: "Take MSK Self-Assessment",
       route: "/patient/self-tests/msk"
     }
+  },
+  {
+    slug: "proprioceptive-dysfunction-and-chronic-pain",
+    title: "Proprioceptive Dysfunction and Chronic Pain: When the Body Loses Load Awareness",
+    category: "msk",
+    readTime: "8 min read",
+    excerpt: "Understanding why pain persists, movement feels heavy or asymmetrical, and imaging often looks normal — even when strength is intact.",
+    heroContent: "You've tried rest. You've tried strengthening. Your imaging came back normal. But the pain keeps returning — or never quite leaves. If this sounds familiar, the issue may not be structural damage. It may be proprioceptive dysfunction — when the nervous system loses its ability to sense and manage load accurately.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Proprioceptive",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When proprioceptive feedback becomes unreliable, secondary compensation often appears in the Cerebellar and Autonomic domains — which is why effort rises, fatigue escalates, and pain persists despite adequate strength."
+      },
+      { type: "heading", content: "Do Any of These Sound Familiar?" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Proprioceptive dysfunction often presents as persistent discomfort that doesn't match imaging findings:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Pain that persists despite normal imaging",
+          "One side 'doing more work' than the other",
+          "Feeling heavy, stiff, or unreliable during movement",
+          "Early fatigue or irritation with simple tasks",
+          "'I'm strong, but my body doesn't feel coordinated'",
+          "Recurring strains or flare-ups without clear injury"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences are common. They reflect neurologic control issues — not signs of structural damage."
+      },
+      { type: "heading", content: "What the Proprioceptive Domain Controls" },
+      {
+        type: "paragraph",
+        content: "Proprioception is the brain's internal system for body position, force grading, and load awareness. It tells the nervous system how much force to apply, where load is being absorbed, and how to distribute stress across joints and tissues."
+      },
+      {
+        type: "paragraph",
+        content: "Efficient, pain-free movement depends on accurate proprioceptive feedback. When that feedback becomes unreliable, the nervous system starts guessing — and those guesses often lead to uneven loading, compensation, and tissue overload."
+      },
+      { type: "heading", content: "What Changes When Proprioceptive Control Breaks Down" },
+      {
+        type: "paragraph",
+        content: "When the body loses accurate load awareness, several patterns emerge:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Late or poorly graded muscle activation",
+          "Over-reliance on certain joints or tissues",
+          "Guarding, stiffness, or excessive co-contraction",
+          "Increased effort for basic movement"
+        ]
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The nervous system guesses instead of senses. Load concentrates instead of distributing. Tissues absorb stress they weren't designed to handle."
+      },
+      { type: "heading", content: "How Proprioceptive Dysfunction Creates Chronic Pain" },
+      {
+        type: "paragraph",
+        content: "Chronic pain emerges when load is unevenly distributed, compensation becomes habitual, and tissues are repeatedly overloaded despite normal structure. Pain in this context is the result — not the cause."
+      },
+      {
+        type: "paragraph",
+        content: "Examples include hip dominance shifting stress to the low back, one leg absorbing more force during running, or shoulder irritation from poor joint position awareness. In each case, the tissue experiencing pain isn't necessarily damaged — it's overloaded."
+      },
+      {
+        type: "inline-cta",
+        content: "If pain persists despite normal imaging and adequate strength, a neurologic MSK evaluation can determine whether proprioceptive dysfunction is the missing link."
+      },
+      { type: "heading", content: "Primary vs. Secondary Proprioceptive Dysfunction" },
+      {
+        type: "paragraph",
+        content: "Proprioceptive dysfunction may be primary — meaning the proprioceptive system itself is impaired — or it may be compensatory, emerging downstream from other neurologic drivers."
+      },
+      {
+        type: "paragraph",
+        content: "Common upstream drivers include cerebellar timing deficits, vestibular instability, and brainstem energy limitation. When these systems are impaired, the body loses access to accurate sensory integration — and proprioception suffers as a result."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Treating strength without restoring proprioceptive awareness often reinforces compensation rather than resolving pain."
+      },
+      { type: "heading", content: "Why Imaging and Strength Tests Can Look Normal" },
+      {
+        type: "paragraph",
+        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But proprioceptive deficits live between structure and strength: they affect control, coordination, and load management."
+      },
+      {
+        type: "paragraph",
+        content: "A normal MRI and strong muscles can coexist with a very real proprioceptive control problem. This is why pain persists for many people despite reassuring test results."
+      },
+      { type: "heading", content: "How PPC Evaluates Proprioceptive Involvement" },
+      {
+        type: "paragraph",
+        content: "At PPC, evaluation is domain-based and function-focused:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Assessment of symmetry, timing, and load control during real movement",
+          "Identification of primary vs. compensatory drivers",
+          "Functional movement screening under progressive demand",
+          "Fatigue-based testing to reveal breakdown patterns",
+          "Validated outcome measures to track meaningful change over time"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to determine whether proprioceptive dysfunction is driving load imbalance — and what needs to be addressed first."
+      },
+      { type: "heading", content: "What This Means for Recovery" },
+      {
+        type: "paragraph",
+        content: "When proprioceptive control is restored, load redistributes properly. Pain resolves as tissues are no longer chronically overloaded. Movement becomes lighter before it becomes stronger. Efficiency improves before intensity increases."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Confidence returns with integration — not force. When the nervous system can sense load accurately, it can manage load safely."
+      },
+      { type: "heading", content: "Moving Forward" },
+      {
+        type: "paragraph",
+        content: "If pain persists despite rest, strengthening, or normal imaging, a clinician-led neurologic and musculoskeletal evaluation can help determine whether proprioceptive dysfunction is driving load imbalance — and what to address first."
+      }
+    ],
+    relatedArticles: [
+      "cerebellar-timing-and-coordination",
+      "motor-timing-deficits",
+      "movement-asymmetry",
+      "chronic-pain-without-structural-damage"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Determine whether proprioceptive dysfunction is driving your chronic pain — and build a path to durable recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
   }
 ];
 
