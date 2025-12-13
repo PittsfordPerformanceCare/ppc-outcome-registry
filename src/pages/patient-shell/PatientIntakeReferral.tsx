@@ -243,7 +243,7 @@ const PatientIntakeReferral = () => {
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground/70">Phone</p>
-                  <p className="text-foreground font-medium">(585) 203-1323</p>
+                  <p className="text-foreground font-medium">(585) 203-1050</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
