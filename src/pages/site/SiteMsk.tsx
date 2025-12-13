@@ -150,7 +150,7 @@ const SiteMsk = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
               <Link 
-                to="/site/articles/msk/brainstem-regulation"
+                to="/site/articles/concussion/concussion-energy-crisis-and-recovery"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -160,7 +160,7 @@ const SiteMsk = () => {
               </Link>
 
               <Link 
-                to="/site/articles/msk/proprioception"
+                to="/site/articles/concussion/proprioceptive-dysfunction-after-concussion"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -170,7 +170,7 @@ const SiteMsk = () => {
               </Link>
 
               <Link 
-                to="/site/articles/msk/cerebellar-timing"
+                to="/site/articles/concussion/cerebellar-timing-and-coordination"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -180,7 +180,7 @@ const SiteMsk = () => {
               </Link>
 
               <Link 
-                to="/site/articles/msk/vestibular-postural"
+                to="/site/articles/concussion/visual-vestibular-mismatch"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -190,7 +190,7 @@ const SiteMsk = () => {
               </Link>
 
               <Link 
-                to="/site/articles/msk/autonomic-recovery"
+                to="/site/articles/concussion/autonomic-nervous-system-flow"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -200,7 +200,7 @@ const SiteMsk = () => {
               </Link>
 
               <Link 
-                to="/site/articles/msk/limbic-pain"
+                to="/site/articles/concussion/limbic-overload-after-concussion"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -210,7 +210,7 @@ const SiteMsk = () => {
               </Link>
 
               <Link 
-                to="/site/articles/msk/visual-motor"
+                to="/site/articles/concussion/visual-vestibular-mismatch"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -220,7 +220,7 @@ const SiteMsk = () => {
               </Link>
 
               <Link 
-                to="/site/articles/msk/executive-control"
+                to="/site/articles/concussion/frontal-system-fog-after-concussion"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">

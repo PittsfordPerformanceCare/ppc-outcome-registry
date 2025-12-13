@@ -26,56 +26,56 @@ const performanceDomains = [
     icon: Brain,
     explanation: "Regulates baseline arousal, energy availability, and systemic consistency under demand.",
     impact: "Inconsistent energy, slow warm-up, variable output across sessions.",
-    link: "/site/hub/brainstem"
+    link: "/site/articles/concussion/concussion-energy-crisis-and-recovery"
   },
   {
     name: "Cerebellar",
     icon: Timer,
     explanation: "Controls timing, coordination, and movement efficiency during complex athletic tasks.",
     impact: "Slower sequencing, reduced power transfer, timing errors under speed.",
-    link: "/site/hub/cerebellar"
+    link: "/site/articles/concussion/cerebellar-timing-and-coordination"
   },
   {
     name: "Proprioceptive",
     icon: Hand,
     explanation: "Governs force control, symmetry, and load absorption during movement.",
     impact: "Uneven force output, asymmetric loading, early fatigue or injury risk.",
-    link: "/site/hub/proprioceptive"
+    link: "/site/articles/concussion/proprioceptive-dysfunction-after-concussion"
   },
   {
     name: "Vestibular",
     icon: Gauge,
     explanation: "Maintains balance, spatial orientation, and dynamic stability during athletic movement.",
     impact: "Unsteadiness at speed, impaired spatial awareness, hesitation on direction changes.",
-    link: "/site/hub/vestibular"
+    link: "/site/articles/concussion/visual-vestibular-mismatch"
   },
   {
     name: "Autonomic",
     icon: Battery,
     explanation: "Regulates endurance capacity, recovery efficiency, and stress tolerance.",
     impact: "Poor recovery between efforts, inconsistent stamina, reduced stress tolerance.",
-    link: "/site/hub/autonomic"
+    link: "/site/articles/concussion/autonomic-nervous-system-flow"
   },
   {
     name: "Visual",
     icon: Eye,
     explanation: "Supports tracking, spatial targeting, and anticipation during dynamic play.",
     impact: "Delayed reaction, misjudged distances, difficulty tracking fast objects.",
-    link: "/site/hub/visual"
+    link: "/site/articles/concussion/visual-vestibular-mismatch"
   },
   {
     name: "Limbic and Prefrontal",
     icon: Sparkles,
     explanation: "Modulates confidence, threat response, and composure under competitive pressure.",
     impact: "Hesitation, excessive caution, performance anxiety, loss of competitive edge.",
-    link: "/site/hub/limbic"
+    link: "/site/articles/concussion/limbic-overload-after-concussion"
   },
   {
     name: "Frontal (Executive)",
     icon: Focus,
     explanation: "Controls decision speed, sustained focus, and cognitive endurance during competition.",
     impact: "Slow decisions, mental fatigue, difficulty maintaining focus late in competition.",
-    link: "/site/hub/frontal"
+    link: "/site/articles/concussion/frontal-system-fog-after-concussion"
   }
 ];
 
