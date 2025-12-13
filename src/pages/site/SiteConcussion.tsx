@@ -149,7 +149,7 @@ const SiteConcussion = () => {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
               <Link 
-                to="/site/articles/concussion/brainstem-function"
+                to="/site/articles/concussion/concussion-energy-crisis-and-recovery"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -169,7 +169,7 @@ const SiteConcussion = () => {
               </Link>
 
               <Link 
-                to="/site/articles/concussion/cervical-proprioception"
+                to="/site/articles/concussion/proprioceptive-dysfunction-after-concussion"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -199,7 +199,7 @@ const SiteConcussion = () => {
               </Link>
 
               <Link 
-                to="/site/articles/concussion/limbic-prefrontal-regulation"
+                to="/site/articles/concussion/limbic-overload-after-concussion"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
@@ -219,7 +219,7 @@ const SiteConcussion = () => {
               </Link>
 
               <Link 
-                to="/site/articles/concussion/frontal-executive-function"
+                to="/site/articles/concussion/frontal-system-fog-after-concussion"
                 className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
