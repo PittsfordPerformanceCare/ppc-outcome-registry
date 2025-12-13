@@ -97,6 +97,7 @@ const SiteContact = lazy(() => import("./pages/site/SiteContact"));
 const SiteWcsdPartnership = lazy(() => import("./pages/site/SiteWcsdPartnership"));
 const SitePerformance = lazy(() => import("./pages/site/SitePerformance"));
 const SiteWorksCited = lazy(() => import("./pages/site/SiteWorksCited"));
+const SiteWhyNotPhysicalTherapy = lazy(() => import("./pages/site/SiteWhyNotPhysicalTherapy"));
 const ClinicianGuidesIndex = lazy(() => import("./pages/site/ClinicianGuidesIndex"));
 const ClinicianGuideMotorTiming = lazy(() => import("./pages/site/ClinicianGuideMotorTiming"));
 const ProfessionalOutcomesPortal = lazy(() => import("./pages/site/ProfessionalOutcomesPortal"));
@@ -158,6 +159,7 @@ const App = () => (
               <Route path="wcsd-partnership" element={<SiteWcsdPartnership />} />
               <Route path="performance" element={<SitePerformance />} />
               <Route path="works-cited" element={<SiteWorksCited />} />
+              <Route path="why-not-physical-therapy" element={<SiteWhyNotPhysicalTherapy />} />
             </Route>
 
             {/* ========== RESOURCES: CLINICIAN GUIDES (PUBLIC) ========== */}
