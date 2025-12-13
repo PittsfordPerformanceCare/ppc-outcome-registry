@@ -263,7 +263,7 @@ const PatientSelfTestsMsk = () => {
             </h3>
             
             <RadioGroup
-              value={currentAnswer}
+              value={currentAnswer || ""}
               onValueChange={handleAnswer}
               className="space-y-3"
             >
