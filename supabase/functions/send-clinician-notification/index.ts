@@ -75,20 +75,48 @@ const handler = async (req: Request): Promise<Response> => {
       const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const supabase = createClient(supabaseUrl, supabaseKey);
 
-      // Get all clinician emails with notification preferences
-      const { data: clinicians, error: cliniciansError } = await supabase
+      // Get all clinician notification preferences
+      const { data: prefs, error: prefsError } = await supabase
         .from("clinician_notification_preferences")
-        .select("notification_email, profiles!inner(email, full_name)")
+        .select("user_id, notification_email")
         .eq("email_enabled", true);
 
-      if (cliniciansError) {
-        console.error("Error fetching clinicians:", cliniciansError);
-        throw new Error("Failed to fetch clinician list");
+      if (prefsError) {
+        console.error("Error fetching preferences:", prefsError);
+        throw new Error("Failed to fetch clinician preferences");
       }
 
-      const emailPromises = (clinicians || []).map(async (clinician: any) => {
-        const email = clinician.notification_email || clinician.profiles.email;
-        const name = clinician.profiles.full_name || "Clinician";
+      if (!prefs || prefs.length === 0) {
+        console.log("No clinicians with email notifications enabled");
+        return new Response(
+          JSON.stringify({ success: true, recipients: 0, message: "No recipients" }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      // Get profile info for these clinicians
+      const userIds = prefs.map(p => p.user_id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .in("id", userIds);
+
+      if (profilesError) {
+        console.error("Error fetching profiles:", profilesError);
+        throw new Error("Failed to fetch clinician profiles");
+      }
+
+      // Merge the data
+      const clinicians = prefs.map(pref => {
+        const profile = profiles?.find(p => p.id === pref.user_id);
+        return {
+          email: pref.notification_email || profile?.email,
+          name: profile?.full_name || "Clinician"
+        };
+      }).filter(c => c.email);
+
+      const emailPromises = clinicians.map(async (clinician) => {
+        const { email, name } = clinician;
 
         const prospectEmailHtml = `
           <!DOCTYPE html>
@@ -283,23 +311,51 @@ const handler = async (req: Request): Promise<Response> => {
       const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
       const supabase = createClient(supabaseUrl, supabaseKey);
 
-      // Get all clinician emails with notification preferences
-      const { data: clinicians, error: cliniciansError } = await supabase
+      // Get all clinician notification preferences
+      const { data: prefs, error: prefsError } = await supabase
         .from("clinician_notification_preferences")
-        .select("notification_email, profiles!inner(email, full_name)")
+        .select("user_id, notification_email")
         .eq("email_enabled", true);
 
-      if (cliniciansError) {
-        console.error("Error fetching clinicians:", cliniciansError);
-        throw new Error("Failed to fetch clinician list");
+      if (prefsError) {
+        console.error("Error fetching preferences:", prefsError);
+        throw new Error("Failed to fetch clinician preferences");
       }
+
+      if (!prefs || prefs.length === 0) {
+        console.log("No clinicians with email notifications enabled");
+        return new Response(
+          JSON.stringify({ success: true, recipients: 0, message: "No recipients" }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      // Get profile info for these clinicians
+      const userIds = prefs.map(p => p.user_id);
+      const { data: profiles, error: profilesError } = await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .in("id", userIds);
+
+      if (profilesError) {
+        console.error("Error fetching profiles:", profilesError);
+        throw new Error("Failed to fetch clinician profiles");
+      }
+
+      // Merge the data
+      const clinicians = prefs.map(pref => {
+        const profile = profiles?.find(p => p.id === pref.user_id);
+        return {
+          email: pref.notification_email || profile?.email,
+          name: profile?.full_name || "Clinician"
+        };
+      }).filter(c => c.email);
 
       const severityColor = severityLevel === "high" ? "#dc2626" : severityLevel === "moderate" ? "#f59e0b" : "#10b981";
       const severityBg = severityLevel === "high" ? "#fef2f2" : severityLevel === "moderate" ? "#fffbeb" : "#f0fdf4";
 
-      const emailPromises = (clinicians || []).map(async (clinician: any) => {
-        const email = clinician.notification_email || clinician.profiles.email;
-        const name = clinician.profiles.full_name || "Clinician";
+      const emailPromises = clinicians.map(async (clinician) => {
+        const { email, name } = clinician;
 
         const assessmentEmailHtml = `
           <!DOCTYPE html>
