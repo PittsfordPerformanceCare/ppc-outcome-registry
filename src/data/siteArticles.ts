@@ -1044,6 +1044,182 @@ export const concussionArticles: ArticleData[] = [
       route: "/patient/self-tests/concussion",
       description: "Get an initial assessment of your symptom patterns."
     }
+  },
+  {
+    slug: "proprioceptive-dysfunction-after-concussion",
+    title: "Proprioceptive Dysfunction After Concussion: When the Body Loses Its Map",
+    category: "concussion",
+    readTime: "8 min read",
+    excerpt: "Understanding why movement feels heavy, coordination feels off, and pain can persist even when imaging looks normal.",
+    heroContent: "Your body doesn't feel connected. Simple movements feel heavy or clumsy. You're strong on paper, but something feels asymmetrical. Joints ache without injury. Fatigue sets in early. This isn't weakness or damage—it's proprioceptive dysfunction, and it's far more common after concussion than most people realize.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Proprioceptive",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When proprioceptive feedback becomes unreliable after concussion, secondary compensation often appears in the Cerebellar and Autonomic domains—which is why movement efficiency drops and fatigue escalates quickly."
+      },
+      {
+        type: "heading",
+        content: "Recognizing Proprioceptive Dysfunction"
+      },
+      {
+        type: "callout",
+        content: "Do any of these experiences sound familiar?",
+        variant: "symptom"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Your body doesn't feel connected or coordinated",
+          "Movement feels heavy or requires more effort than it should",
+          "You feel asymmetrical despite being strong",
+          "Joints ache or fatigue early without clear injury",
+          "You don't trust your movement the way you used to",
+          "Balance feels off even when vestibular tests are normal",
+          "You grip harder or move stiffer than necessary"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences are common after concussion. They are neurologic—reflecting how the brain maps and controls the body—not structural damage or weakness. And they are treatable once properly understood."
+      },
+      {
+        type: "heading",
+        content: "What the Proprioceptive Domain Does"
+      },
+      {
+        type: "paragraph",
+        content: "Proprioception is your brain's internal body map. Sensors in your joints, muscles, and connective tissues constantly send information about position, movement, and load. This allows your brain to coordinate movement without conscious effort."
+      },
+      {
+        type: "paragraph",
+        content: "When proprioception works well, you know where your body is in space, how much force to apply, and how to distribute load efficiently. Movement feels automatic, fluid, and reliable."
+      },
+      {
+        type: "heading",
+        content: "What Changes After Concussion"
+      },
+      {
+        type: "paragraph",
+        content: "Concussion can disrupt the sensory feedback from joints and muscles. The brain receives less accurate information about body position, force, and movement. Instead of sensing precisely, it begins to guess."
+      },
+      {
+        type: "callout",
+        content: "The body map becomes blurry. Movements that used to be automatic now require conscious effort. The system becomes inefficient.",
+        variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "This isn't about muscle strength—it's about the brain's ability to sense and coordinate. The hardware is intact, but the software has degraded."
+      },
+      {
+        type: "heading",
+        content: "How Proprioceptive Dysfunction Drives Symptoms"
+      },
+      {
+        type: "paragraph",
+        content: "When the brain can't accurately sense body position and load, it compensates in ways that create secondary problems:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Uneven load absorption leads to joint irritation and overuse",
+          "Late muscle firing creates inefficient movement patterns",
+          "Guarding and stiffness emerge as protective strategies",
+          "Asymmetry causes chronic overload on one side",
+          "Increased effort depletes energy and triggers autonomic fatigue",
+          "Pain appears without tissue damage because load distribution is wrong"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "This explains why some people develop persistent pain, joint problems, or movement difficulties after concussion—even when imaging shows no structural damage."
+      },
+      {
+        type: "heading",
+        content: "Primary vs Secondary Proprioceptive Dysfunction"
+      },
+      {
+        type: "paragraph",
+        content: "Proprioceptive dysfunction is often secondary to other domain failures. Common upstream drivers include cerebellar timing deficits that affect coordination, vestibular instability that disrupts spatial orientation, and brainstem energy limitations that reduce sensory processing capacity."
+      },
+      {
+        type: "callout",
+        content: "Treating strength without restoring body awareness often reinforces compensation rather than resolving it.",
+        variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "This is why strengthening programs sometimes fail or even worsen symptoms. The brain is layering force on top of faulty sensing, which amplifies rather than corrects the underlying problem."
+      },
+      {
+        type: "heading",
+        content: "Why Imaging and Strength Tests Look Normal"
+      },
+      {
+        type: "paragraph",
+        content: "Imaging assesses structure—bones, discs, ligaments. Strength tests measure output—how much force you can generate. Neither captures proprioceptive function, which lives in the space between structure and strength."
+      },
+      {
+        type: "paragraph",
+        content: "You can have normal imaging, pass strength tests, and still have significant proprioceptive dysfunction. The problem isn't what you can do—it's how efficiently and accurately you can do it."
+      },
+      {
+        type: "inline-cta",
+        content: "If movement feels off despite normal tests, specialized evaluation of body awareness and motor control can reveal what's actually happening."
+      },
+      {
+        type: "heading",
+        content: "How PPC Evaluates Proprioceptive Involvement"
+      },
+      {
+        type: "paragraph",
+        content: "Our evaluation examines how the brain maps and controls the body. We assess symmetry, timing, load distribution, and coordination—not just strength or range of motion."
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to identify whether proprioceptive dysfunction is primary, or whether it reflects compensation for cerebellar, vestibular, or brainstem issues. This distinction determines where treatment should focus first."
+      },
+      {
+        type: "heading",
+        content: "What This Means for Recovery and Performance"
+      },
+      {
+        type: "paragraph",
+        content: "Movement confidence returns when the brain can accurately sense and coordinate the body again. Pain often resolves when load redistributes properly across joints and tissues. Efficiency improves before intensity needs to increase."
+      },
+      {
+        type: "callout",
+        content: "Recovery is about integration, not force. When the body map becomes clear again, movement becomes automatic, efficient, and reliable.",
+        variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "If movement feels heavy, asymmetrical, or unreliable after concussion, a clinician-led neurologic evaluation can help determine whether proprioceptive dysfunction is primary—or compensatory—and what to address first."
+      }
+    ],
+    relatedArticles: [
+      "cerebellar-timing-and-coordination",
+      "visual-vestibular-mismatch",
+      "autonomic-nervous-system-flow",
+      "post-concussion-performance-decline"
+    ],
+    primaryCTA: {
+      label: "Schedule Neurologic Evaluation",
+      route: "/patient/concierge",
+      description: "Understand why movement feels off and create a path to efficient, confident function."
+    },
+    secondaryCTA: {
+      label: "Take the Concussion Self-Test",
+      route: "/patient/self-tests/concussion",
+      description: "Get an initial assessment of your symptom patterns."
+    }
   }
 ];
 
