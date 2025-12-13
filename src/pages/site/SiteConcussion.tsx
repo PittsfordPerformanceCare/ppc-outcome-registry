@@ -134,13 +134,13 @@ const SiteConcussion = () => {
 
       {/* Neurologic Domain Map */}
       <section className="py-24 lg:py-32 relative overflow-hidden" id="domain-model">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 via-background to-slate-50 dark:from-slate-900 dark:via-background dark:to-slate-900" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-50/50 via-background to-slate-50/30 dark:from-slate-900 dark:via-background dark:to-slate-900" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-100/40 via-transparent to-transparent dark:from-blue-900/20" />
         
         <div className="container mx-auto px-4 relative">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+            <div className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 text-sm font-medium mb-6">
                 <Brain className="h-4 w-4" />
                 Domain-Based Evaluation
               </div>
@@ -152,197 +152,165 @@ const SiteConcussion = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Brainstem Domain */}
               <Link 
                 to="/site/articles/concussion/brainstem-function"
-                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group relative p-5 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5"
               >
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-500/5 flex items-center justify-center shrink-0">
-                    <Zap className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500/15 to-blue-600/5 flex items-center justify-center">
+                    <Zap className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Brainstem</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      Arousal, sensory filtering, baseline energy
-                    </p>
-                  </div>
+                  <h3 className="font-semibold text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Brainstem</h3>
                 </div>
-                <div className="mt-3 pt-3 border-t border-border/30">
-                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-                    <span className="font-medium text-foreground/70">Signs:</span> Light sensitivity, fatigue, overwhelm
-                  </p>
-                </div>
-                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+                  Arousal, sensory filtering, baseline energy
+                </p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                  Light sensitivity · Fatigue · Overwhelm
+                </p>
+                <ArrowRight className="absolute bottom-5 right-4 h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Vestibular Domain */}
               <Link 
                 to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group relative p-5 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5"
               >
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center shrink-0">
-                    <Ear className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500/15 to-blue-600/5 flex items-center justify-center">
+                    <Ear className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Vestibular</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      Balance, spatial orientation, motion tolerance
-                    </p>
-                  </div>
+                  <h3 className="font-semibold text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Vestibular</h3>
                 </div>
-                <div className="mt-3 pt-3 border-t border-border/30">
-                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-                    <span className="font-medium text-foreground/70">Signs:</span> Dizziness, motion sensitivity, disorientation
-                  </p>
-                </div>
-                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+                  Balance, spatial orientation, motion tolerance
+                </p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                  Dizziness · Motion sensitivity · Disorientation
+                </p>
+                <ArrowRight className="absolute bottom-5 right-4 h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Proprioceptive Domain */}
               <Link 
                 to="/site/articles/concussion/cervical-proprioception"
-                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group relative p-5 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5"
               >
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center shrink-0">
-                    <Hand className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500/15 to-blue-600/5 flex items-center justify-center">
+                    <Hand className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Proprioceptive</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      Body awareness, load distribution, asymmetry
-                    </p>
-                  </div>
+                  <h3 className="font-semibold text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Proprioceptive</h3>
                 </div>
-                <div className="mt-3 pt-3 border-t border-border/30">
-                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-                    <span className="font-medium text-foreground/70">Signs:</span> Neck tension, clumsiness, postural fatigue
-                  </p>
-                </div>
-                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+                  Body awareness, load distribution, asymmetry
+                </p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                  Neck tension · Clumsiness · Postural fatigue
+                </p>
+                <ArrowRight className="absolute bottom-5 right-4 h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Cerebellar Domain */}
               <Link 
                 to="/site/articles/concussion/cerebellar-timing-and-coordination"
-                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group relative p-5 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5"
               >
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-purple-500/20 to-purple-500/5 flex items-center justify-center shrink-0">
-                    <Brain className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500/15 to-blue-600/5 flex items-center justify-center">
+                    <Brain className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Cerebellar</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      Timing, coordination, efficiency, automation
-                    </p>
-                  </div>
+                  <h3 className="font-semibold text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Cerebellar</h3>
                 </div>
-                <div className="mt-3 pt-3 border-t border-border/30">
-                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-                    <span className="font-medium text-foreground/70">Signs:</span> Slowed processing, coordination issues
-                  </p>
-                </div>
-                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+                  Timing, coordination, efficiency, automation
+                </p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                  Slowed processing · Coordination issues
+                </p>
+                <ArrowRight className="absolute bottom-5 right-4 h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Autonomic Domain */}
               <Link 
                 to="/site/articles/concussion/autonomic-nervous-system-flow"
-                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group relative p-5 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5"
               >
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-rose-500/20 to-rose-500/5 flex items-center justify-center shrink-0">
-                    <Heart className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500/15 to-blue-600/5 flex items-center justify-center">
+                    <Heart className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Autonomic</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      Stress response, endurance, recovery capacity
-                    </p>
-                  </div>
+                  <h3 className="font-semibold text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Autonomic</h3>
                 </div>
-                <div className="mt-3 pt-3 border-t border-border/30">
-                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-                    <span className="font-medium text-foreground/70">Signs:</span> Exercise intolerance, poor sleep
-                  </p>
-                </div>
-                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+                  Stress response, endurance, recovery capacity
+                </p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                  Exercise intolerance · Poor sleep
+                </p>
+                <ArrowRight className="absolute bottom-5 right-4 h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Limbic-Prefrontal Domain */}
               <Link 
                 to="/site/articles/concussion/limbic-prefrontal-regulation"
-                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group relative p-5 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5"
               >
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-500/5 flex items-center justify-center shrink-0">
-                    <Shield className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500/15 to-blue-600/5 flex items-center justify-center">
+                    <Shield className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Limbic–Prefrontal</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      Threat detection, emotional regulation
-                    </p>
-                  </div>
+                  <h3 className="font-semibold text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Limbic–Prefrontal</h3>
                 </div>
-                <div className="mt-3 pt-3 border-t border-border/30">
-                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-                    <span className="font-medium text-foreground/70">Signs:</span> Anxiety, irritability, startle response
-                  </p>
-                </div>
-                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+                  Threat detection, emotional regulation
+                </p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                  Anxiety · Irritability · Startle response
+                </p>
+                <ArrowRight className="absolute bottom-5 right-4 h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Visual-Oculomotor Domain */}
               <Link 
                 to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group relative p-5 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5"
               >
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-cyan-500/5 flex items-center justify-center shrink-0">
-                    <Eye className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500/15 to-blue-600/5 flex items-center justify-center">
+                    <Eye className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Visual–Oculomotor</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      Eye movements, tracking, focus control
-                    </p>
-                  </div>
+                  <h3 className="font-semibold text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Visual–Oculomotor</h3>
                 </div>
-                <div className="mt-3 pt-3 border-t border-border/30">
-                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-                    <span className="font-medium text-foreground/70">Signs:</span> Screen intolerance, reading difficulty
-                  </p>
-                </div>
-                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+                  Eye movements, tracking, focus control
+                </p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                  Screen intolerance · Reading difficulty
+                </p>
+                <ArrowRight className="absolute bottom-5 right-4 h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
               </Link>
 
               {/* Frontal (Executive) Domain */}
               <Link 
                 to="/site/articles/concussion/frontal-executive-function"
-                className="group relative p-5 rounded-xl border border-border/40 bg-card hover:bg-card/80 hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="group relative p-5 rounded-2xl bg-white dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5"
               >
-                <div className="flex items-start gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500/20 to-indigo-500/5 flex items-center justify-center shrink-0">
-                    <Gauge className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-blue-500/15 to-blue-600/5 flex items-center justify-center">
+                    <Gauge className="h-4.5 w-4.5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">Frontal (Executive)</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                      Attention, working memory, mental endurance
-                    </p>
-                  </div>
+                  <h3 className="font-semibold text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Frontal (Executive)</h3>
                 </div>
-                <div className="mt-3 pt-3 border-t border-border/30">
-                  <p className="text-[11px] text-muted-foreground/70 leading-relaxed">
-                    <span className="font-medium text-foreground/70">Signs:</span> Brain fog, difficulty multitasking
-                  </p>
-                </div>
-                <ArrowRight className="absolute top-5 right-4 h-4 w-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+                <p className="text-xs text-muted-foreground leading-relaxed mb-2">
+                  Attention, working memory, mental endurance
+                </p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">
+                  Brain fog · Difficulty multitasking
+                </p>
+                <ArrowRight className="absolute bottom-5 right-4 h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
               </Link>
             </div>
           </div>
