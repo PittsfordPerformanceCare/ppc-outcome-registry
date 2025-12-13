@@ -12,6 +12,7 @@ import {
   Heart,
   Brain,
   Eye,
+  Ear,
   Gauge,
   Timer,
   Hand,
@@ -193,42 +194,164 @@ const SitePerformance = () => {
         </div>
       </section>
 
-      {/* NEW: Neurologic Domains That Drive Performance Readiness */}
-      <section className="py-20 lg:py-28 bg-background">
+      {/* Neurologic Domain Map for Human Performance */}
+      <section className="py-24 lg:py-32 bg-background" id="domain-model">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-14">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
-                <Brain className="h-4 w-4" />
-                Domain Framework
-              </div>
+            <div className="text-center mb-10">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Neurologic Domains That Drive Performance Readiness
+                Neurologic Domain Map for Human Performance
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Each domain contributes to athletic output. When any domain underperforms, 
-                speed, power, endurance, or confidence can decline.
-              </p>
+              <div className="max-w-3xl mx-auto space-y-4">
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  Peak performance is not defined by strength, conditioning, or effort alone. It reflects 
+                  how efficiently the nervous system integrates sensory input, regulates energy, coordinates 
+                  movement, and maintains precision under increasing demand.
+                </p>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  At Pittsford Performance Care, performance is evaluated through the same domain-based 
+                  neurologic framework used in injury recovery and concussion care — with emphasis on 
+                  readiness, efficiency, and resilience rather than symptom resolution.
+                </p>
+              </div>
             </div>
-            
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {performanceDomains.map((domain) => {
-                const IconComponent = domain.icon;
-                return (
-                  <Link
-                    key={domain.name}
-                    to={domain.link}
-                    className="group p-7 md:p-9 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/40 text-center"
-                  >
-                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                      <IconComponent className="h-7 w-7 text-primary" />
-                    </div>
-                    <h3 className="text-lg md:text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                      {domain.name}
-                    </h3>
-                  </Link>
-                );
-              })}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+              <Link 
+                to="/site/articles/concussion/proprioceptive-dysfunction-after-concussion"
+                className="group flex flex-col p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Hand className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Proprioceptive Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Supports accurate force grading, joint awareness, and load distribution required for efficient and repeatable movement.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Proprioceptive Control and Performance Efficiency →
+                </span>
+              </Link>
+
+              <Link 
+                to="/site/articles/concussion/cerebellar-timing-and-coordination"
+                className="group flex flex-col p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Brain className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Cerebellar Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Optimizes timing, sequencing, and motor prediction to reduce effort and increase precision at speed.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Cerebellar Timing and Athletic Performance →
+                </span>
+              </Link>
+
+              <Link 
+                to="/site/articles/concussion/visual-vestibular-mismatch"
+                className="group flex flex-col p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Ear className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Vestibular Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Stabilizes posture, gaze, and movement during acceleration, deceleration, and directional change.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Vestibular Stability and Performance Readiness →
+                </span>
+              </Link>
+
+              <Link 
+                to="/site/articles/concussion/autonomic-nervous-system-flow"
+                className="group flex flex-col p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Heart className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Autonomic Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Regulates energy availability, recovery capacity, and physiologic resilience under training and competition demand.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Autonomic Regulation and Performance Endurance →
+                </span>
+              </Link>
+
+              <Link 
+                to="/site/articles/concussion/frontal-system-fog-after-concussion"
+                className="group flex flex-col p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Focus className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Frontal / Executive Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Coordinates focus, inhibition, and decision-making efficiency under pressure and fatigue.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Executive Control and Competitive Performance →
+                </span>
+              </Link>
+
+              <Link 
+                to="/site/articles/concussion/concussion-energy-crisis-and-recovery"
+                className="group flex flex-col p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Brainstem Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Establishes baseline neurologic readiness, tone, and reflex stability necessary for consistent output.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Brainstem Readiness and Performance Consistency →
+                </span>
+              </Link>
+
+              <Link 
+                to="/site/articles/concussion/visual-vestibular-mismatch"
+                className="group flex flex-col p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Eye className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Visual Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Provides spatial accuracy, motion tracking, and visual-motor integration essential for precision and reaction.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Visual Processing and Performance Accuracy →
+                </span>
+              </Link>
+
+              <Link 
+                to="/site/articles/concussion/limbic-overload-after-concussion"
+                className="group flex flex-col p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                  <Shield className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">Limbic Domain</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
+                  Modulates arousal, threat response, and confidence to support calm, adaptive performance under stress.
+                </p>
+                <span className="text-sm text-primary font-medium group-hover:underline">
+                  Limbic Regulation and Performance Under Pressure →
+                </span>
+              </Link>
+            </div>
+
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Performance limitations often reflect inefficiencies across multiple neurologic domains 
+                rather than a single weakness. Identifying which systems are limiting output — and which 
+                are compensating — allows performance gains to occur through integration and efficiency, not increased strain.
+              </p>
             </div>
           </div>
         </div>
