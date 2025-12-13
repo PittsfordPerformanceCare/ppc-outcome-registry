@@ -268,6 +268,55 @@ const SiteAbout = () => {
         </div>
       </section>
 
+      {/* How PPC Thinks About Recovery, Pain, and Performance */}
+      <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Brain className="h-4 w-4" />
+                Our Model
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                How PPC Thinks About Recovery, Pain, and Performance
+              </h2>
+            </div>
+            
+            <div className="space-y-6">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                At Pittsford Performance Care, recovery, pain, performance, and learning are guided 
+                by a unified neurologic model.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Rather than treating symptoms in isolation, PPC evaluates how key neurologic domains 
+                integrate, compensate, and cascade. Sustainable outcomes depend on integration, not 
+                isolated strength, rest, or time passed.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                When a foundational domain fails to integrate, other domains compensate. Over time, 
+                those compensations fatigue and become symptoms. This explains why recovery can stall, 
+                pain can persist despite normal imaging, performance can decline after clearance, and 
+                learning can struggle even with support.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                PPC's clinician led evaluations identify which domain is primary, which domains are 
+                compensating, and where intervention restores efficiency, regulation, and readiness.
+              </p>
+              
+              <div className="mt-10 pt-8 border-t border-border/40">
+                <p className="text-lg text-foreground font-medium leading-relaxed">
+                  This same neurologic framework is applied consistently across concussion recovery, 
+                  musculoskeletal care, athletic performance, and pediatric development.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Clinical & Research Foundations */}
       <section className="py-20 lg:py-28 bg-background border-t border-border/40">
         <div className="container mx-auto px-4">
