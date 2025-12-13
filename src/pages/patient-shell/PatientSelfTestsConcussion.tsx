@@ -188,18 +188,27 @@ const PatientSelfTestsConcussion = () => {
               onValueChange={handleAnswer}
               className="space-y-3"
             >
-              <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer">
+              <Label
+                htmlFor={`${questions[currentQuestion].id}-yes`}
+                className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
+              >
                 <RadioGroupItem value="yes" id={`${questions[currentQuestion].id}-yes`} />
-                <Label htmlFor={`${questions[currentQuestion].id}-yes`} className="flex-1 cursor-pointer">Yes</Label>
-              </div>
-              <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer">
+                <span className="flex-1">Yes</span>
+              </Label>
+              <Label
+                htmlFor={`${questions[currentQuestion].id}-sometimes`}
+                className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
+              >
                 <RadioGroupItem value="sometimes" id={`${questions[currentQuestion].id}-sometimes`} />
-                <Label htmlFor={`${questions[currentQuestion].id}-sometimes`} className="flex-1 cursor-pointer">Sometimes</Label>
-              </div>
-              <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer">
+                <span className="flex-1">Sometimes</span>
+              </Label>
+              <Label
+                htmlFor={`${questions[currentQuestion].id}-no`}
+                className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
+              >
                 <RadioGroupItem value="no" id={`${questions[currentQuestion].id}-no`} />
-                <Label htmlFor={`${questions[currentQuestion].id}-no`} className="flex-1 cursor-pointer">No</Label>
-              </div>
+                <span className="flex-1">No</span>
+              </Label>
             </RadioGroup>
           </div>
 
