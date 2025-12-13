@@ -8,7 +8,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Brain, Sparkles, Activity, ChevronRight } from "lucide-react";
+import { Brain, Sparkles, Activity, ChevronRight, User } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -214,6 +214,14 @@ const SiteHeader = () => {
             <div className="mx-3 h-6 w-px bg-gradient-to-b from-transparent via-border to-transparent" />
             
             <Link
+              to="/patient-auth"
+              className="flex items-center gap-1.5 text-sm font-medium text-primary/80 transition-all duration-300 hover:text-primary px-2"
+            >
+              <User className="h-4 w-4" />
+              Patient Portal
+            </Link>
+            
+            <Link
               to="/staff-login"
               className="text-sm font-medium text-muted-foreground/50 transition-all duration-300 hover:text-foreground px-2"
             >
@@ -319,6 +327,14 @@ const SiteHeader = () => {
           
           {/* Actions */}
           <div className="space-y-3 pt-2">
+            {/* Patient Portal Button - Prominent for mobile */}
+            <Button asChild variant="outline" className="w-full h-12 rounded-lg border-primary/30 text-primary hover:bg-primary/10">
+              <Link to="/patient-auth" onClick={() => setMobileMenuOpen(false)}>
+                <User className="mr-2 h-4 w-4" />
+                Patient Portal
+              </Link>
+            </Button>
+            
             <div className="flex gap-2.5">
               <Link
                 to="/staff-login"
