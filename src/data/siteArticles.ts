@@ -2490,6 +2490,161 @@ export const mskArticles: ArticleData[] = [
       label: "Take MSK Self-Assessment",
       route: "/patient/self-tests/msk"
     }
+  },
+  {
+    slug: "autonomic-dysfunction-and-chronic-pain",
+    title: "Autonomic Dysfunction and Chronic Pain: When the System Runs Out of Capacity",
+    category: "msk",
+    readTime: "8 min read",
+    excerpt: "Why pain emerges when the nervous system loses its ability to regulate energy, recovery, and load tolerance — even when tissues are intact.",
+    heroContent: "You rest, but you never fully recover. Activity flares symptoms for days. Your endurance is gone — and pain seems to amplify out of proportion to what you actually did. If this sounds familiar, the issue may not be your muscles or joints. It may be your autonomic nervous system.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Autonomic",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When autonomic regulation falters, secondary compensation often appears in the Proprioceptive and Limbic domains — increasing pain sensitivity and fatigue."
+      },
+      { type: "heading", content: "Do Any of These Sound Familiar?" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Autonomic dysfunction often presents as low endurance, flare cycles, and pain that seems disproportionate to activity:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Low endurance — even light activity wipes you out",
+          "Flare cycles — symptoms spike after exertion and take days to settle",
+          "Delayed recovery — rest doesn't restore energy the way it used to",
+          "Pain amplification — symptoms seem out of proportion to what you did",
+          "Sleep that doesn't refresh — waking tired despite adequate hours",
+          "Sensitivity to temperature, light, or sound"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences reflect neurologic regulation issues — not tissue damage or deconditioning. They are common, measurable, and addressable."
+      },
+      { type: "heading", content: "What the Autonomic System Controls" },
+      {
+        type: "paragraph",
+        content: "The autonomic nervous system regulates everything that happens automatically — heart rate, blood pressure, digestion, temperature, and recovery. It determines how much capacity you have to meet physical and cognitive demands, and how quickly you recover after exertion."
+      },
+      {
+        type: "paragraph",
+        content: "When the autonomic system is functioning well, you can push, recover, and adapt. When it is impaired, the system runs in a constant energy deficit — and pain often emerges as a warning signal that capacity has been exceeded."
+      },
+      { type: "heading", content: "What Changes When Autonomic Regulation Breaks Down" },
+      {
+        type: "paragraph",
+        content: "When autonomic regulation is impaired, several patterns emerge:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Energy deficit — the body cannot meet basic demands without strain",
+          "Flare-crash cycles — overexertion leads to prolonged symptom spikes",
+          "Pain amplification — the nervous system becomes hypersensitive",
+          "Poor recovery — rest fails to restore baseline function"
+        ]
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The body protects itself by amplifying pain when capacity is exceeded. Pain becomes a brake — not a signal of damage, but a warning that the system is running on empty."
+      },
+      { type: "heading", content: "How Autonomic Dysfunction Creates Chronic Pain" },
+      {
+        type: "paragraph",
+        content: "When the autonomic system cannot regulate energy and recovery, the nervous system enters a protective state. Pain thresholds drop. Inflammation increases. Tissues that would normally tolerate load become irritable and hypersensitive."
+      },
+      {
+        type: "paragraph",
+        content: "Pain in this context is not a signal of structural damage. It is a signal of system overload — the consequence of a nervous system that can no longer buffer demands or recover from exertion."
+      },
+      {
+        type: "inline-cta",
+        content: "If pain flares after activity, recovery takes too long, and endurance has collapsed — a neurologic MSK evaluation can reveal whether autonomic dysfunction is the missing link."
+      },
+      { type: "heading", content: "Primary vs. Secondary Autonomic Dysfunction" },
+      {
+        type: "paragraph",
+        content: "Autonomic dysfunction may be primary — meaning the autonomic system itself is impaired — or it may emerge secondarily from other neurologic limitations."
+      },
+      {
+        type: "paragraph",
+        content: "Common upstream drivers include brainstem energy constraints, vestibular instability, and cerebellar timing deficits. When these systems are impaired, autonomic regulation degrades — and capacity collapses as a result."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Pushing through fatigue without restoring autonomic regulation often deepens the deficit — making recovery longer and symptoms worse."
+      },
+      { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
+      {
+        type: "paragraph",
+        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But autonomic dysfunction lives in the regulation system: it affects how the body manages energy, recovers from exertion, and modulates pain sensitivity."
+      },
+      {
+        type: "paragraph",
+        content: "A normal MRI and strong muscles can coexist with a very real autonomic problem. This is why fatigue, flare cycles, and amplified pain persist for many people despite reassuring test results."
+      },
+      { type: "heading", content: "How PPC Evaluates Autonomic Involvement" },
+      {
+        type: "paragraph",
+        content: "At PPC, evaluation is domain-based and function-focused:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Assessment of heart rate variability and autonomic tone",
+          "Evaluation of exertion tolerance and recovery patterns",
+          "Identification of primary vs. compensatory drivers",
+          "Fatigue-based testing to reveal breakdown patterns",
+          "Validated outcome measures to track meaningful change over time"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to determine whether autonomic dysfunction is driving pain amplification and energy collapse — and what needs to be addressed first."
+      },
+      { type: "heading", content: "What This Means for Recovery" },
+      {
+        type: "paragraph",
+        content: "When autonomic regulation is restored, capacity returns. The body can tolerate exertion without crashing. Pain thresholds normalize. And recovery becomes predictable again."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Endurance returns when the nervous system can regulate energy. Pain settles when the system is no longer in survival mode."
+      },
+      { type: "heading", content: "Moving Forward" },
+      {
+        type: "paragraph",
+        content: "If pain flares after activity, recovery takes too long, and endurance has collapsed — a clinician-led neurologic and musculoskeletal evaluation can help determine whether autonomic dysfunction is driving the problem, and what to address first."
+      }
+    ],
+    relatedArticles: [
+      "concussion-energy-crisis-and-recovery",
+      "proprioceptive-dysfunction-and-chronic-pain",
+      "chronic-pain-without-structural-damage"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Determine whether autonomic dysfunction is driving your chronic pain — and build a path to durable recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
   }
 ];
 
