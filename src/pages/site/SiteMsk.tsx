@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet";
 import { 
   Activity, 
   Zap, 
@@ -12,12 +13,25 @@ import {
   Dumbbell,
   HeartPulse,
   Users,
-  Shield
+  Shield,
+  Brain,
+  Eye,
+  Ear,
+  Heart,
+  Hand,
+  Gauge
 } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 const SiteMsk = () => {
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>Musculoskeletal Care | Neurologic & MSK Care | Pittsford Performance Care</title>
+        <meta name="description" content="Chronic pain with normal imaging? MSK dysfunction is often a control and load problem. PPC identifies which neurologic domains are failing to manage movement." />
+        <link rel="canonical" href="https://pittsfordperformancecare.com/site/msk" />
+      </Helmet>
+
       {/* Hero Section */}
       <section className="relative py-28 lg:py-36 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-slate-50 to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
@@ -84,15 +98,227 @@ const SiteMsk = () => {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 These aren't signs of weakness or aging. They're not in your head. They're signs 
                 of neuromuscular dysfunction—problems with how your nervous system controls movement 
-                that require a different approach. One that looks beyond structure to understand the 
-                neural control systems that govern how you move.
+                that require a different approach.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Section 3: Why Imaging Misses It */}
+      {/* NEW: Control and Load Problem Section */}
+      <section className="py-20 lg:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Musculoskeletal Pain Is Often a Control and Load Problem
+              </h2>
+            </div>
+            
+            <div className="prose prose-lg dark:prose-invert mx-auto">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Musculoskeletal pain does not always reflect tissue damage. Pain often persists 
+                when the nervous system cannot properly time, coordinate, or distribute load—even 
+                when strength and imaging appear normal.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                At PPC, musculoskeletal evaluation focuses on identifying which neurologic domains 
+                are failing to control movement and load, and how compensatory patterns are driving 
+                pain or performance decline.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Neurologic Domain Map for MSK */}
+      <section className="py-24 lg:py-32 relative" id="domain-model">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Neurologic Domains That Drive MSK Pain
+              </h2>
+              <p className="text-muted-foreground max-w-lg mx-auto">
+                Each domain governs a different aspect of movement control and load management.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+              <Link 
+                to="/site/articles/msk/brainstem-regulation"
+                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Zap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Brainstem</h3>
+              </Link>
+
+              <Link 
+                to="/site/articles/msk/proprioception"
+                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Hand className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Proprioceptive</h3>
+              </Link>
+
+              <Link 
+                to="/site/articles/msk/cerebellar-timing"
+                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Brain className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Cerebellar</h3>
+              </Link>
+
+              <Link 
+                to="/site/articles/msk/vestibular-postural"
+                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Ear className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Vestibular</h3>
+              </Link>
+
+              <Link 
+                to="/site/articles/msk/autonomic-recovery"
+                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Heart className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Autonomic</h3>
+              </Link>
+
+              <Link 
+                to="/site/articles/msk/limbic-pain"
+                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Limbic</h3>
+              </Link>
+
+              <Link 
+                to="/site/articles/msk/visual-motor"
+                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Eye className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Visual</h3>
+              </Link>
+
+              <Link 
+                to="/site/articles/msk/executive-control"
+                className="group flex flex-col items-center text-center p-8 md:p-10 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="h-16 w-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Gauge className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-lg md:text-xl group-hover:text-blue-600 transition-colors">Executive</h3>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Load & Compensation Cascade Section */}
+      <section className="py-20 lg:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                How Neurologic Dysfunction Creates Pain Cascades
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Pain often develops downstream from control failure. The location of your pain 
+                may not be where the problem started.
+              </p>
+            </div>
+            
+            <div className="space-y-4 mb-10">
+              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
+                <p className="text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Cerebellar timing delay</span> → 
+                  late muscle firing → joint overload → chronic pain
+                </p>
+              </Card>
+              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
+                <p className="text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Proprioceptive asymmetry</span> → 
+                  uneven force absorption → tissue irritation
+                </p>
+              </Card>
+              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
+                <p className="text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Brainstem/autonomic inefficiency</span> → 
+                  poor recovery → reduced tissue tolerance
+                </p>
+              </Card>
+              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
+                <p className="text-muted-foreground leading-relaxed">
+                  <span className="font-semibold text-foreground">Limbic overactivation</span> → 
+                  guarding → altered movement → persistent pain
+                </p>
+              </Card>
+            </div>
+            
+            <p className="text-lg text-center text-muted-foreground leading-relaxed font-medium">
+              Treating pain at the tissue level alone rarely resolves the underlying control problem.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Why PPC's Neurologic MSK Model Matters */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Target className="h-4 w-4" />
+                Clinical Precision
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Why PPC's Neurologic MSK Model Matters
+              </h2>
+            </div>
+            
+            <div className="prose prose-lg dark:prose-invert mx-auto">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Our clinician-led evaluation focuses on how movement is controlled—not just where 
+                pain is felt. This distinction determines treatment sequence, because addressing 
+                compensatory patterns before primary dysfunction often makes symptoms worse.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                PPC identifies primary versus compensatory domain involvement. We restore timing, 
+                load distribution, and movement efficiency—not just strength or flexibility. Care 
+                progresses based on readiness, not symptom suppression alone.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                We use validated outcome measures to track meaningful change across each episode 
+                of care, ensuring treatment adapts to how your nervous system actually responds 
+                to increasing demand.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section: Why Imaging Misses It */}
       <section className="py-20 lg:py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
@@ -120,155 +346,19 @@ const SiteMsk = () => {
                 This is why so many people receive imaging that looks relatively normal despite 
                 significant symptoms. The problem isn't structural—it's functional. Sequencing 
                 errors don't show up on scans. Neural control deficits require dynamic assessment, 
-                not static pictures. And until someone evaluates how your nervous system actually 
-                controls movement, the real drivers of your symptoms remain hidden.
+                not static pictures.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Our evaluation focuses on what imaging misses: motor speed and reaction timing, 
                 movement sequencing and coordination, left/right asymmetry under load, cerebellar 
-                timing and output, and proprioceptive accuracy and integration. These are the 
-                systems that determine how well you move—and whether movement causes pain.
+                timing and output, and proprioceptive accuracy and integration.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Section 4: Neuromuscular Drivers */}
-      <section className="py-20 lg:py-28 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-14">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
-                <Activity className="h-4 w-4" />
-                Our Approach
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                The Neuromuscular Drivers of Pain
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Chronic pain often comes from neural control problems—not damaged tissue. 
-                Here's what we look for.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Timer className="h-7 w-7 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Timing Deficits</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  When muscles fire too slow or in the wrong order, joints take excessive 
-                  load. This causes pain without structural damage.
-                </p>
-              </div>
-
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Scale className="h-7 w-7 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Asymmetry</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Side-to-side differences in strength, speed, or control create 
-                  compensatory patterns that lead to overload injuries.
-                </p>
-              </div>
-
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <RotateCcw className="h-7 w-7 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Sequencing Errors</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Complex movements require muscles to fire in precise order. Disrupted 
-                  sequencing makes movement inefficient and painful.
-                </p>
-              </div>
-
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Activity className="h-7 w-7 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Fatigue Patterns</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Abnormal fatigue curves reveal neural efficiency problems that cause 
-                  early exhaustion and performance decline.
-                </p>
-              </div>
-
-              <div className="group p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                  <Zap className="h-7 w-7 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Cerebellar Output</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  The cerebellum coordinates movement precision. Deficits here affect 
-                  all motor control downstream.
-                </p>
-              </div>
-
-              <div className="group p-8 rounded-2xl border border-primary/30 bg-primary/5 backdrop-blur-sm hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
-                <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center mb-6">
-                  <Target className="h-7 w-7 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold mb-4">Targeted Treatment</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Once we identify which neural control systems are affected, treatment 
-                  becomes precise—not just generic "strengthening."
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 5: Movement Dysfunction */}
-      <section className="py-20 lg:py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
-        
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
-                <HeartPulse className="h-4 w-4" />
-                Understanding Dysfunction
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                The Hidden Cost of Movement Dysfunction
-              </h2>
-            </div>
-            
-            <div className="prose prose-lg dark:prose-invert mx-auto">
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                When your nervous system can't properly control movement, every activity costs 
-                more energy and causes more wear on your joints. Neural control problems don't 
-                always cause immediate pain—but they create inefficiency that accumulates over 
-                time, leading to chronic symptoms that seem to appear "out of nowhere."
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Compensatory patterns overload specific tissues while others remain underutilized. 
-                Inefficient movement depletes your energy reserves faster than it should. Protective 
-                guarding—your body's attempt to avoid pain—limits natural motion and creates new 
-                problems elsewhere in the kinetic chain.
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                You might notice activities that used to be easy now feel hard. Pain that moves 
-                around or changes location. Stiffness that doesn't respond to stretching. Favoring 
-                one side without even realizing it. Muscles that fatigue faster than expected. 
-                Feeling uncoordinated or clumsy in ways you never did before.
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Our approach addresses the root neural control issues, not just the symptoms 
-                they create. By restoring proper timing, sequencing, and coordination, we help 
-                your nervous system work efficiently again—reducing pain and restoring function.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 6: Evaluation Process */}
+      {/* Section: Evaluation Process */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
@@ -281,7 +371,7 @@ const SiteMsk = () => {
                 Our MSK Evaluation
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                A neuromuscular assessment that reveals what imaging can't show
+                A neurologic and musculoskeletal assessment that reveals what imaging can't show
               </p>
             </div>
 
@@ -300,9 +390,9 @@ const SiteMsk = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
                   <span className="text-2xl font-bold text-primary">2</span>
                 </div>
-                <h3 className="font-semibold text-lg mb-3">Motor Testing</h3>
+                <h3 className="font-semibold text-lg mb-3">Domain Exam</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Speed, timing, and asymmetry assessment across movement patterns
+                  Testing across neurologic domains to identify control deficits
                 </p>
               </div>
               
@@ -312,7 +402,7 @@ const SiteMsk = () => {
                 </div>
                 <h3 className="font-semibold text-lg mb-3">Driver Identification</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Pinpoint which neural control systems are contributing to your symptoms
+                  Pinpoint which domains are primary versus compensating
                 </p>
               </div>
               
@@ -330,7 +420,7 @@ const SiteMsk = () => {
         </div>
       </section>
 
-      {/* Section 7: Who This Helps */}
+      {/* Section: Who This Helps */}
       <section className="py-20 lg:py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
@@ -350,15 +440,8 @@ const SiteMsk = () => {
             <div className="prose prose-lg dark:prose-invert mx-auto mb-12">
               <p className="text-lg text-muted-foreground leading-relaxed text-center">
                 Neuromuscular dysfunction doesn't discriminate. It affects active adults dealing 
-                with chronic pain that hasn't responded to conventional treatment. Athletes 
-                recovering from injury who can't seem to get back to their previous level. 
-                Post-surgical patients whose outcomes haven't matched expectations.
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed text-center">
-                It affects those with "normal" imaging but ongoing symptoms that no one can 
-                explain. People who've tried physical therapy, chiropractic, injections, and 
-                more without lasting relief. Anyone seeking better movement quality—whether 
-                for sport, work, or simply living without pain.
+                with chronic pain, athletes recovering from injury, and anyone whose outcomes 
+                haven't matched expectations despite doing everything right.
               </p>
             </div>
             
@@ -384,7 +467,7 @@ const SiteMsk = () => {
         </div>
       </section>
 
-      {/* Section 8: Related Articles */}
+      {/* Section: Related Articles */}
       <section className="py-28 lg:py-36 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
@@ -492,7 +575,7 @@ const SiteMsk = () => {
                 PPC's approach to musculoskeletal care is informed by established research in 
                 clinical neuroscience, motor control, and rehabilitation medicine. Our methodology 
                 focuses on identifying neurologic drivers of pain and dysfunction rather than 
-                relying solely on structural findings — grounded in the understanding that persistent 
+                relying solely on structural findings—grounded in the understanding that persistent 
                 pain and performance loss often reflect deficits in timing, coordination, load 
                 tolerance, or central regulation.
               </p>
@@ -500,18 +583,15 @@ const SiteMsk = () => {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Validated outcome measures and functional indicators are integrated throughout 
                 our musculoskeletal care. Treatment progression is guided by objective change over 
-                time — not pain reports alone. Care adapts based on how the nervous system responds 
-                to load, movement demand, and fatigue, ensuring that clinical decisions reflect 
-                measured neurologic and functional response across longitudinal recovery.
+                time—not pain reports alone. Care adapts based on how the nervous system responds 
+                to load, movement demand, and fatigue.
               </p>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Pittsford Performance Care actively engages in translational neuroscience research 
-                relevant to musculoskeletal and performance-related conditions. This work is conducted 
-                under Institutional Review Board (IRB) oversight, with the goal of improving how 
-                neuromuscular dysfunction, recovery readiness, and injury risk are identified and 
-                monitored in real-world clinical and athletic environments — contributing responsibly 
-                to broader understanding while maintaining the highest standards of patient care.
+                relevant to musculoskeletal and performance-related conditions under Institutional 
+                Review Board (IRB) oversight—contributing responsibly to broader understanding 
+                while maintaining the highest standards of patient care.
               </p>
             </div>
             
@@ -544,13 +624,34 @@ const SiteMsk = () => {
             
             <div className="mt-10 pt-8 border-t border-border/40">
               <p className="text-muted-foreground leading-relaxed">
-                All supporting evidence referenced throughout PPC's musculoskeletal and neurologic 
-                content is maintained in a centralized Works Cited resource. This reference library 
-                is actively curated and continues to evolve as the science of motor control, pain, 
-                and rehabilitation advances — reflecting PPC's commitment to transparency, 
-                accountability, and continuous learning.
+                All supporting evidence is maintained in a centralized Works Cited resource, 
+                actively curated as the science of motor control, pain, and rehabilitation 
+                advances—reflecting PPC's commitment to transparency and continuous learning.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Soft Diagnostic CTA */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <Card className="p-10 md:p-14 rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-transparent text-center">
+              <h3 className="text-2xl md:text-3xl font-bold mb-6">
+                If Pain Persists Despite Rest, Strength Work, or Normal Imaging
+              </h3>
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
+                A clinician-led neurologic and musculoskeletal evaluation can identify which 
+                domain is failing to manage load—and what to address first.
+              </p>
+              <Button size="lg" asChild>
+                <Link to="/patient/concierge">
+                  Schedule an MSK Evaluation
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </Card>
           </div>
         </div>
       </section>
@@ -566,8 +667,8 @@ const SiteMsk = () => {
               Ready for a Different Approach?
             </h2>
             <p className="text-xl text-primary-foreground/90 leading-relaxed max-w-2xl mx-auto">
-              Stop chasing symptoms. Schedule your neuromuscular evaluation and 
-              discover what's really driving your pain.
+              Stop chasing symptoms. Schedule your neurologic and musculoskeletal evaluation 
+              and discover what's really driving your pain.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" variant="secondary" asChild className="shadow-xl">
