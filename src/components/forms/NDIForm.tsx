@@ -14,8 +14,8 @@ interface NDIFormProps {
 }
 
 export function NDIForm({ onScoreChange, onComplete, readOnly }: NDIFormProps) {
-  const handleScoreChange = (score: number) => {
-    onScoreChange(score);
+  const handleScoreChange = (score: number, isComplete?: boolean) => {
+    onScoreChange(score, isComplete);
   };
 
   const handleComplete = (data: {

@@ -14,11 +14,8 @@ interface LEFSFormProps {
 }
 
 export function LEFSForm({ onScoreChange, onComplete, readOnly }: LEFSFormProps) {
-  const handleScoreChange = (score: number) => {
-    // For LEFS, we need to track if the form is complete (all 20 questions answered)
-    // The score is the raw total (0-80), form is complete when we get a non-zero score
-    // Actually, we should check completion status from the form itself
-    onScoreChange(score);
+  const handleScoreChange = (score: number, isComplete?: boolean) => {
+    onScoreChange(score, isComplete);
   };
 
   const handleComplete = (data: {

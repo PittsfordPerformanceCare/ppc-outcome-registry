@@ -14,8 +14,8 @@ interface ODIFormProps {
 }
 
 export function ODIForm({ onScoreChange, onComplete, readOnly }: ODIFormProps) {
-  const handleScoreChange = (score: number) => {
-    onScoreChange(score);
+  const handleScoreChange = (score: number, isComplete?: boolean) => {
+    onScoreChange(score, isComplete);
   };
 
   const handleComplete = (data: {
