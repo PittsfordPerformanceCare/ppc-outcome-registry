@@ -295,6 +295,15 @@ export const concussionArticles: ArticleData[] = [
     heroContent: "The cerebellum is your brain's timing center. It coordinates movement, calibrates sensory input, and ensures that everything happens in the right sequence at the right speed. After concussion, cerebellar function often suffers—even when traditional testing looks normal.",
     sections: [
       {
+        type: "callout",
+        content: "Primary Neurologic Domain: Cerebellar",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When cerebellar timing becomes inefficient after concussion, secondary compensation often appears in the Vestibular and Visual–Oculomotor domains—which is why balance, coordination, and smooth eye movements become effortful."
+      },
+      {
         type: "heading",
         content: "What the Cerebellum Does"
       },
@@ -342,6 +351,14 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "heading",
+        content: "How Cerebellar Dysfunction Cascades Into Other Domains"
+      },
+      {
+        type: "paragraph",
+        content: "When the cerebellum cannot maintain timing precision, the Vestibular system must work harder to stabilize gaze and posture. The Visual–Oculomotor system compensates for imprecise eye movements, leading to fatigue during reading or tracking tasks. Over time, this compensatory load can contribute to autonomic dysregulation and cognitive fatigue."
+      },
+      {
+        type: "heading",
         content: "How We Assess Cerebellar Function"
       },
       {
@@ -375,12 +392,17 @@ export const concussionArticles: ArticleData[] = [
         type: "callout",
         content: "The cerebellum is highly plastic. With targeted training, timing precision can be restored even months or years after injury.",
         variant: "insight"
+      },
+      {
+        type: "paragraph",
+        content: "At PPC, determining whether cerebellar dysfunction is primary—or compensatory—helps guide what to address first in concussion recovery."
       }
     ],
     relatedArticles: [
       "visual-vestibular-mismatch",
-      "post-concussion-performance-decline",
-      "autonomic-nervous-system-flow"
+      "autonomic-nervous-system-flow",
+      "frontal-system-fog",
+      "post-concussion-performance-decline"
     ],
     primaryCTA: {
       label: "Schedule Neurologic Evaluation",
