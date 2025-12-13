@@ -5,7 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Activity, ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import { Activity, ArrowLeft, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
+import { submitLead } from "@/lib/leadTracking";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Question {
   id: string;
@@ -32,6 +35,7 @@ const PatientSelfTestsMsk = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isComplete, setIsComplete] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const getRouteWithParams = (basePath: string) => {
     const params = searchParams.toString();
@@ -65,6 +69,19 @@ const PatientSelfTestsMsk = () => {
     return yesCount * 2 + sometimesCount;
   };
 
+  const getSymptomSummary = () => {
+    const symptoms: string[] = [];
+    Object.entries(answers).forEach(([id, answer]) => {
+      if (answer === "yes" || answer === "sometimes") {
+        const question = questions.find(q => q.id === id);
+        if (question) {
+          symptoms.push(question.text.replace(/Do you |Have you |Does /gi, '').replace(/\?/g, ''));
+        }
+      }
+    });
+    return symptoms.slice(0, 5).join('; ');
+  };
+
   const getRecommendation = () => {
     const score = calculateScore();
     if (score >= 12) {
@@ -91,6 +108,59 @@ const PatientSelfTestsMsk = () => {
         color: "text-green-600",
         bgColor: "bg-green-50 dark:bg-green-950/30",
       };
+    }
+  };
+
+  const handleRequestEvaluation = async () => {
+    setIsSubmitting(true);
+    try {
+      const score = calculateScore();
+      const symptomSummary = getSymptomSummary();
+      const recommendation = getRecommendation();
+
+      // Create lead with assessment data
+      await submitLead({
+        severity_score: score,
+        system_category: 'msk',
+        tracking: {
+          funnel_stage: 'schedule-eval',
+          origin_page: '/patient/self-tests/msk',
+          origin_cta: 'Request MSK Evaluation',
+          pillar_origin: 'msk_pillar',
+          utm_source: searchParams.get('utm_source') || '',
+          utm_medium: searchParams.get('utm_medium') || '',
+          utm_campaign: searchParams.get('utm_campaign') || '',
+          utm_content: searchParams.get('utm_content') || '',
+        },
+      });
+
+      // Store assessment data in session for concierge
+      sessionStorage.setItem('msk_assessment', JSON.stringify({
+        score,
+        level: recommendation.level,
+        symptomSummary,
+        answers,
+        completedAt: new Date().toISOString(),
+      }));
+
+      // Notify clinicians about new assessment lead
+      await supabase.functions.invoke('send-clinician-notification', {
+        body: {
+          messageType: 'new_assessment_lead',
+          assessmentType: 'MSK',
+          severityScore: score,
+          severityLevel: recommendation.level,
+          symptomSummary,
+        },
+      });
+
+      // Navigate to concierge with assessment params
+      navigate(`/patient/concierge?assessment=msk&score=${score}&level=${recommendation.level}`);
+    } catch (error) {
+      console.error('Error submitting lead:', error);
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -134,10 +204,20 @@ const PatientSelfTestsMsk = () => {
               <Button 
                 size="lg" 
                 className="w-full"
-                onClick={() => navigate(getRouteWithParams("/patient/concierge"))}
+                onClick={handleRequestEvaluation}
+                disabled={isSubmitting}
               >
-                Schedule MSK Evaluation
-                <ArrowRight className="ml-2 h-4 w-4" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    Request Evaluation
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
               </Button>
               <Button variant="outline" asChild>
                 <Link to="/patient/self-tests">
