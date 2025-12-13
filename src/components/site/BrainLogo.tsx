@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface BrainLogoProps {
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   animated?: boolean;
 }
 
@@ -11,147 +11,186 @@ export const BrainLogo = ({ className, size = "md", animated = true }: BrainLogo
     sm: "h-8 w-8",
     md: "h-11 w-11",
     lg: "h-16 w-16",
+    xl: "h-24 w-24",
   };
 
   return (
     <div className={cn("relative", sizeClasses[size], className)}>
       <svg
-        viewBox="0 0 64 64"
+        viewBox="0 0 80 80"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="h-full w-full"
       >
         <defs>
-          {/* Main gradient for brain */}
-          <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="1" />
-            <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.7" />
+          {/* Bold primary gradient */}
+          <linearGradient id="boldBrainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="hsl(var(--primary))" />
+            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.75" />
           </linearGradient>
           
-          {/* Highlight gradient */}
-          <linearGradient id="highlightGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          {/* Accent gradient for neural pathways */}
+          <linearGradient id="neuralAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.6" />
+            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.2" />
+          </linearGradient>
+
+          {/* Core glow */}
+          <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.1" />
-          </linearGradient>
-          
-          {/* Neural pulse gradient */}
-          <linearGradient id="pulseGradient" x1="0%" y1="50%" x2="100%" y2="50%">
-            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-            <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity="0.8" />
             <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
-          </linearGradient>
-
-          {/* Glow filter */}
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-
-          {/* Soft shadow */}
-          <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="hsl(var(--primary))" floodOpacity="0.3" />
-          </filter>
+          </radialGradient>
         </defs>
 
-        {/* Background circle with subtle gradient */}
-        <circle
-          cx="32"
-          cy="32"
-          r="30"
-          fill="url(#highlightGradient)"
-          className="opacity-50"
-        />
+        {/* Subtle background glow */}
+        <circle cx="40" cy="38" r="28" fill="url(#coreGlow)" />
 
-        {/* Left hemisphere */}
-        <g filter="url(#softShadow)">
+        {/* LEFT HEMISPHERE - Bold, clean strokes */}
+        <g>
+          {/* Main left hemisphere shape */}
           <path
-            d="M32 12C24 12 18 16 16 22C14 28 14 34 16 40C18 46 22 50 28 52C30 52.5 31 52.5 32 52.5"
-            stroke="url(#brainGradient)"
+            d="M40 14
+               C32 14 26 17 22 22
+               C18 27 16 33 16 40
+               C16 47 18 53 22 58
+               C26 63 32 66 40 66"
+            stroke="url(#boldBrainGradient)"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          
+          {/* Left frontal lobe fold */}
+          <path
+            d="M24 26 C28 23 34 23 38 26"
+            stroke="url(#boldBrainGradient)"
             strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
-            className={cn(animated && "animate-[pulse_3s_ease-in-out_infinite]")}
           />
           
-          {/* Left gyri (brain folds) */}
+          {/* Left parietal fold */}
           <path
-            d="M20 24C22 22 25 22 27 24M18 32C21 30 25 30 28 32M20 40C23 38 26 38 29 40"
-            stroke="url(#brainGradient)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            fill="none"
-            opacity="0.9"
-          />
-        </g>
-
-        {/* Right hemisphere */}
-        <g filter="url(#softShadow)">
-          <path
-            d="M32 12C40 12 46 16 48 22C50 28 50 34 48 40C46 46 42 50 36 52C34 52.5 33 52.5 32 52.5"
-            stroke="url(#brainGradient)"
+            d="M20 40 C26 36 34 36 40 40"
+            stroke="url(#boldBrainGradient)"
             strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
-            className={cn(animated && "animate-[pulse_3s_ease-in-out_infinite_0.5s]")}
           />
           
-          {/* Right gyri (brain folds) */}
+          {/* Left temporal fold */}
           <path
-            d="M44 24C42 22 39 22 37 24M46 32C43 30 39 30 36 32M44 40C41 38 38 38 35 40"
-            stroke="url(#brainGradient)"
-            strokeWidth="2"
+            d="M24 54 C28 50 34 50 38 54"
+            stroke="url(#boldBrainGradient)"
+            strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
-            opacity="0.9"
           />
         </g>
 
-        {/* Central fissure (corpus callosum connection) */}
+        {/* RIGHT HEMISPHERE - Mirror of left */}
+        <g>
+          {/* Main right hemisphere shape */}
+          <path
+            d="M40 14
+               C48 14 54 17 58 22
+               C62 27 64 33 64 40
+               C64 47 62 53 58 58
+               C54 63 48 66 40 66"
+            stroke="url(#boldBrainGradient)"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          
+          {/* Right frontal lobe fold */}
+          <path
+            d="M56 26 C52 23 46 23 42 26"
+            stroke="url(#boldBrainGradient)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          
+          {/* Right parietal fold */}
+          <path
+            d="M60 40 C54 36 46 36 40 40"
+            stroke="url(#boldBrainGradient)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          
+          {/* Right temporal fold */}
+          <path
+            d="M56 54 C52 50 46 50 42 54"
+            stroke="url(#boldBrainGradient)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+        </g>
+
+        {/* NEURAL NETWORK - Central connectivity */}
+        <g className={cn(animated && "opacity-80")}>
+          {/* Central vertical axis */}
+          <line
+            x1="40" y1="18" x2="40" y2="62"
+            stroke="url(#neuralAccent)"
+            strokeWidth="1.5"
+            strokeDasharray="3 4"
+          />
+          
+          {/* Cross connections */}
+          <path
+            d="M26 33 L40 40 L54 33"
+            stroke="url(#neuralAccent)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M26 47 L40 40 L54 47"
+            stroke="url(#neuralAccent)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            fill="none"
+          />
+        </g>
+
+        {/* NEURAL NODES - Key activation points */}
+        <g>
+          {/* Central processing node - largest */}
+          <circle
+            cx="40"
+            cy="40"
+            r="4"
+            fill="url(#boldBrainGradient)"
+            className={cn(animated && "animate-pulse")}
+          />
+          
+          {/* Left hemisphere nodes */}
+          <circle cx="26" cy="33" r="2.5" fill="url(#boldBrainGradient)" opacity="0.9" />
+          <circle cx="26" cy="47" r="2.5" fill="url(#boldBrainGradient)" opacity="0.9" />
+          
+          {/* Right hemisphere nodes */}
+          <circle cx="54" cy="33" r="2.5" fill="url(#boldBrainGradient)" opacity="0.9" />
+          <circle cx="54" cy="47" r="2.5" fill="url(#boldBrainGradient)" opacity="0.9" />
+        </g>
+
+        {/* BRAINSTEM - Clean, bold connection */}
         <path
-          d="M32 16V48"
-          stroke="url(#brainGradient)"
-          strokeWidth="1.5"
+          d="M36 66 
+             C36 70 38 74 40 74 
+             C42 74 44 70 44 66"
+          stroke="url(#boldBrainGradient)"
+          strokeWidth="3"
           strokeLinecap="round"
-          strokeDasharray="4 3"
-          opacity="0.6"
+          fill="none"
         />
-
-        {/* Neural connection nodes */}
-        <g filter="url(#glow)">
-          {/* Left nodes */}
-          <circle cx="19" cy="28" r="2" fill="url(#brainGradient)" className={cn(animated && "animate-[ping_2s_ease-in-out_infinite]")} opacity="0.8" />
-          <circle cx="22" cy="36" r="1.5" fill="url(#brainGradient)" className={cn(animated && "animate-[ping_2s_ease-in-out_infinite_0.3s]")} opacity="0.7" />
-          <circle cx="26" cy="44" r="2" fill="url(#brainGradient)" className={cn(animated && "animate-[ping_2s_ease-in-out_infinite_0.6s]")} opacity="0.8" />
-          
-          {/* Right nodes */}
-          <circle cx="45" cy="28" r="2" fill="url(#brainGradient)" className={cn(animated && "animate-[ping_2s_ease-in-out_infinite_0.4s]")} opacity="0.8" />
-          <circle cx="42" cy="36" r="1.5" fill="url(#brainGradient)" className={cn(animated && "animate-[ping_2s_ease-in-out_infinite_0.7s]")} opacity="0.7" />
-          <circle cx="38" cy="44" r="2" fill="url(#brainGradient)" className={cn(animated && "animate-[ping_2s_ease-in-out_infinite_1s]")} opacity="0.8" />
-          
-          {/* Center node */}
-          <circle cx="32" cy="32" r="2.5" fill="url(#brainGradient)" className={cn(animated && "animate-[pulse_1.5s_ease-in-out_infinite]")} />
-        </g>
-
-        {/* Neural pathways - connecting lines */}
-        <g opacity="0.5">
-          <path d="M19 28L32 32" stroke="url(#pulseGradient)" strokeWidth="1" />
-          <path d="M45 28L32 32" stroke="url(#pulseGradient)" strokeWidth="1" />
-          <path d="M22 36L32 32" stroke="url(#pulseGradient)" strokeWidth="1" />
-          <path d="M42 36L32 32" stroke="url(#pulseGradient)" strokeWidth="1" />
-          <path d="M26 44L32 32" stroke="url(#pulseGradient)" strokeWidth="1" />
-          <path d="M38 44L32 32" stroke="url(#pulseGradient)" strokeWidth="1" />
-        </g>
-
-        {/* Brainstem */}
-        <path
-          d="M32 52.5C32 52.5 30 56 30 58C30 60 31 62 32 62C33 62 34 60 34 58C34 56 32 52.5 32 52.5Z"
-          fill="url(#brainGradient)"
-          opacity="0.8"
-        />
+        
+        {/* Brainstem detail */}
+        <circle cx="40" cy="70" r="1.5" fill="url(#boldBrainGradient)" opacity="0.7" />
       </svg>
     </div>
   );
