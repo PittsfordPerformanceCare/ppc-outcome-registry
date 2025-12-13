@@ -4451,6 +4451,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auto_link_patient_episodes: {
+        Args: { p_email: string; p_patient_account_id: string }
+        Returns: undefined
+      }
       award_on_time_bonus: { Args: never; Returns: undefined }
       award_patient_points: {
         Args: {
