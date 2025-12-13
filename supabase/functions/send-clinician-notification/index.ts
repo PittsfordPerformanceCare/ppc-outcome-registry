@@ -13,7 +13,7 @@ interface ClinicianNotificationRequest {
   clinicianName?: string;
   clinicianEmail?: string;
   messageId?: string;
-  messageType: "message" | "callback_request" | "new_prospect";
+  messageType: "message" | "callback_request" | "new_prospect" | "new_assessment_lead";
   patientName?: string;
   subject: string;
   message?: string;
@@ -26,6 +26,11 @@ interface ClinicianNotificationRequest {
   referralSource?: string;
   inquiryId?: string;
   clinicName?: string;
+  // Assessment lead specific fields
+  assessmentType?: string;
+  severityScore?: number;
+  severityLevel?: string;
+  symptomSummary?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -51,6 +56,10 @@ const handler = async (req: Request): Promise<Response> => {
       referralSource,
       inquiryId,
       clinicName,
+      assessmentType,
+      severityScore,
+      severityLevel,
+      symptomSummary,
     } = requestData;
 
     console.log("Sending clinician notification:", {
@@ -251,6 +260,206 @@ const handler = async (req: Request): Promise<Response> => {
       await Promise.all(emailPromises);
 
       console.log(`Prospect notification sent to ${emailPromises.length} clinicians`);
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          recipients: emailPromises.length 
+        }),
+        {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
+    }
+
+    // Handle new assessment lead notifications - send to all clinicians
+    if (messageType === "new_assessment_lead") {
+      const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      // Get all clinician emails with notification preferences
+      const { data: clinicians, error: cliniciansError } = await supabase
+        .from("clinician_notification_preferences")
+        .select("notification_email, profiles!inner(email, full_name)")
+        .eq("email_enabled", true);
+
+      if (cliniciansError) {
+        console.error("Error fetching clinicians:", cliniciansError);
+        throw new Error("Failed to fetch clinician list");
+      }
+
+      const severityColor = severityLevel === "high" ? "#dc2626" : severityLevel === "moderate" ? "#f59e0b" : "#10b981";
+      const severityBg = severityLevel === "high" ? "#fef2f2" : severityLevel === "moderate" ? "#fffbeb" : "#f0fdf4";
+
+      const emailPromises = (clinicians || []).map(async (clinician: any) => {
+        const email = clinician.notification_email || clinician.profiles.email;
+        const name = clinician.profiles.full_name || "Clinician";
+
+        const assessmentEmailHtml = `
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <style>
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+                  line-height: 1.6;
+                  color: #333;
+                  max-width: 600px;
+                  margin: 0 auto;
+                  padding: 20px;
+                }
+                .header {
+                  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                  color: white;
+                  padding: 30px;
+                  border-radius: 10px 10px 0 0;
+                  text-align: center;
+                }
+                .header h1 {
+                  margin: 0;
+                  font-size: 24px;
+                }
+                .content {
+                  background: #f8f9fa;
+                  padding: 30px;
+                  border-radius: 0 0 10px 10px;
+                }
+                .severity-badge {
+                  display: inline-block;
+                  padding: 8px 16px;
+                  border-radius: 20px;
+                  font-size: 14px;
+                  font-weight: 700;
+                  background: ${severityBg};
+                  color: ${severityColor};
+                  margin-bottom: 20px;
+                  text-transform: uppercase;
+                }
+                .assessment-box {
+                  background: white;
+                  border-left: 4px solid #3b82f6;
+                  padding: 20px;
+                  margin: 20px 0;
+                  border-radius: 5px;
+                }
+                .info-row {
+                  display: flex;
+                  justify-content: space-between;
+                  margin: 12px 0;
+                  padding: 12px;
+                  background: #f9fafb;
+                  border-radius: 5px;
+                }
+                .info-label {
+                  font-weight: 600;
+                  color: #6b7280;
+                }
+                .info-value {
+                  color: #111827;
+                  font-weight: 500;
+                }
+                .symptoms-box {
+                  background: #fef3c7;
+                  border-left: 4px solid #f59e0b;
+                  padding: 15px;
+                  margin: 15px 0;
+                  border-radius: 5px;
+                }
+                .button {
+                  display: inline-block;
+                  padding: 14px 32px;
+                  background: #3b82f6;
+                  color: white;
+                  text-decoration: none;
+                  border-radius: 6px;
+                  font-weight: 600;
+                  margin-top: 20px;
+                }
+                .footer {
+                  text-align: center;
+                  margin-top: 30px;
+                  padding-top: 20px;
+                  border-top: 1px solid #ddd;
+                  color: #666;
+                  font-size: 12px;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <h1>🧠 New ${assessmentType?.charAt(0).toUpperCase()}${assessmentType?.slice(1) || 'Self'} Assessment</h1>
+              </div>
+              <div class="content">
+                <p>Hi ${name},</p>
+                
+                <span class="severity-badge">${severityLevel} Severity - Score: ${severityScore}/20</span>
+                
+                <p style="font-size: 16px; color: #1d4ed8; font-weight: 600;">
+                  A patient has completed a self-assessment and requested an evaluation.
+                </p>
+                
+                <div class="assessment-box">
+                  <div class="info-row">
+                    <span class="info-label">Assessment Type:</span>
+                    <span class="info-value">${assessmentType?.charAt(0).toUpperCase()}${assessmentType?.slice(1) || 'Concussion'}</span>
+                  </div>
+                  
+                  <div class="info-row">
+                    <span class="info-label">Severity Score:</span>
+                    <span class="info-value" style="color: ${severityColor}; font-weight: 700;">${severityScore}/20</span>
+                  </div>
+                  
+                  <div class="info-row">
+                    <span class="info-label">Classification:</span>
+                    <span class="info-value" style="color: ${severityColor};">${severityLevel?.charAt(0).toUpperCase()}${severityLevel?.slice(1) || ''}</span>
+                  </div>
+                </div>
+                
+                ${symptomSummary ? `
+                <div class="symptoms-box">
+                  <strong style="color: #92400e;">Symptom Summary:</strong>
+                  <p style="margin: 8px 0 0 0; color: #78350f;">${symptomSummary}</p>
+                </div>
+                ` : ""}
+                
+                <p style="margin-top: 20px; color: #374151;">
+                  <strong>What This Means:</strong><br>
+                  The patient completed a self-assessment indicating ${severityLevel} severity symptoms.
+                  They have requested an evaluation and will be prompted to complete an intake form.
+                </p>
+                
+                <a href="${Deno.env.get("APP_URL") || "https://app.example.com"}/admin/leads" class="button">
+                  View in Lead Management →
+                </a>
+                
+                <div class="footer">
+                  <p>This assessment lead is now tracked in your PPC Outcome Registry.</p>
+                  <p>The patient will be guided through the intake process.</p>
+                </div>
+              </div>
+            </body>
+          </html>
+        `;
+
+        return resend.emails.send({
+          from: "PPC Outcome Registry <notifications@resend.dev>",
+          to: [email],
+          subject: `🧠 New ${assessmentType?.charAt(0).toUpperCase()}${assessmentType?.slice(1) || 'Self'} Assessment - ${severityLevel?.toUpperCase()} Severity`,
+          html: assessmentEmailHtml,
+        });
+      });
+
+      await Promise.all(emailPromises);
+
+      console.log(`Assessment lead notification sent to ${emailPromises.length} clinicians`);
 
       return new Response(
         JSON.stringify({ 

@@ -6,6 +6,9 @@ import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Brain, ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import { submitLead } from "@/lib/leadTracking";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Question {
   id: string;
@@ -65,6 +68,16 @@ const PatientSelfTestsConcussion = () => {
     return yesCount * 2 + sometimesCount;
   };
 
+  const getSymptomSummary = () => {
+    const yesSymptoms = questions
+      .filter(q => answers[q.id] === "yes")
+      .map(q => q.id);
+    const sometimesSymptoms = questions
+      .filter(q => answers[q.id] === "sometimes")
+      .map(q => q.id);
+    return { yesSymptoms, sometimesSymptoms };
+  };
+
   const getRecommendation = () => {
     const score = calculateScore();
     if (score >= 12) {
@@ -92,6 +105,66 @@ const PatientSelfTestsConcussion = () => {
         bgColor: "bg-green-50 dark:bg-green-950/30",
       };
     }
+  };
+
+  const handleRequestEvaluation = async () => {
+    const score = calculateScore();
+    const { yesSymptoms, sometimesSymptoms } = getSymptomSummary();
+    const symptomSummary = [
+      yesSymptoms.length > 0 ? `Persistent: ${yesSymptoms.join(", ")}` : "",
+      sometimesSymptoms.length > 0 ? `Intermittent: ${sometimesSymptoms.join(", ")}` : ""
+    ].filter(Boolean).join("; ");
+
+    // Create lead with assessment data
+    const result = await submitLead({
+      severity_score: score,
+      system_category: "concussion",
+      tracking: {
+        utm_source: searchParams.get('utm_source'),
+        utm_medium: searchParams.get('utm_medium'),
+        utm_campaign: searchParams.get('utm_campaign'),
+        utm_content: searchParams.get('utm_content'),
+        origin_page: "/patient/self-tests/concussion",
+        origin_cta: "Schedule Neurologic Evaluation",
+        funnel_stage: "schedule-eval",
+        pillar_origin: "concussion_pillar",
+      },
+    });
+
+    if (result.success && result.leadId) {
+      // Store assessment data for the intake form
+      sessionStorage.setItem('concussion_assessment', JSON.stringify({
+        leadId: result.leadId,
+        score,
+        symptomSummary,
+        level: getRecommendation().level,
+        completedAt: new Date().toISOString(),
+      }));
+
+      // Notify clinicians about the new assessment lead
+      try {
+        await supabase.functions.invoke('send-clinician-notification', {
+          body: {
+            messageType: 'new_assessment_lead',
+            subject: 'New Concussion Assessment - Evaluation Requested',
+            assessmentType: 'concussion',
+            severityScore: score,
+            severityLevel: getRecommendation().level,
+            symptomSummary,
+          }
+        });
+      } catch (err) {
+        console.error("Failed to send clinician notification:", err);
+      }
+
+      toast.success("Your assessment has been submitted. Let's get your contact information.");
+    }
+
+    // Navigate to concierge with assessment context
+    const params = new URLSearchParams(searchParams);
+    params.set('assessment', 'concussion');
+    params.set('score', score.toString());
+    navigate(`/patient/concierge?${params.toString()}`);
   };
 
   const progress = ((currentQuestion + 1) / questions.length) * 100;
@@ -134,9 +207,9 @@ const PatientSelfTestsConcussion = () => {
               <Button 
                 size="lg" 
                 className="w-full"
-                onClick={() => navigate(getRouteWithParams("/patient/concierge"))}
+                onClick={handleRequestEvaluation}
               >
-                Schedule Neurologic Evaluation
+                Request Evaluation
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               <Button variant="outline" asChild>
