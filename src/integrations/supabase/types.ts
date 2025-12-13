@@ -2650,6 +2650,66 @@ export type Database = {
         }
         Relationships: []
       }
+      outcome_measure_responses: {
+        Row: {
+          clinic_id: string | null
+          created_at: string
+          episode_id: string
+          id: string
+          instrument_code: string
+          is_skipped: boolean | null
+          outcome_score_id: string
+          question_number: number
+          question_text: string
+          response_text: string | null
+          response_value: number | null
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          created_at?: string
+          episode_id: string
+          id?: string
+          instrument_code: string
+          is_skipped?: boolean | null
+          outcome_score_id: string
+          question_number: number
+          question_text: string
+          response_text?: string | null
+          response_value?: number | null
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          created_at?: string
+          episode_id?: string
+          id?: string
+          instrument_code?: string
+          is_skipped?: boolean | null
+          outcome_score_id?: string
+          question_number?: number
+          question_text?: string
+          response_text?: string | null
+          response_value?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outcome_measure_responses_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outcome_measure_responses_outcome_score_id_fkey"
+            columns: ["outcome_score_id"]
+            isOneToOne: false
+            referencedRelation: "outcome_scores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       outcome_reminder_report_deliveries: {
         Row: {
           clinic_id: string | null
