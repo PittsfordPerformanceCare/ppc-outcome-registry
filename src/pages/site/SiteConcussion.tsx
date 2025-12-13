@@ -133,91 +133,107 @@ const SiteConcussion = () => {
       </section>
 
       {/* Neurologic Domain Map */}
-      <section className="py-20 lg:py-28 relative" id="domain-model">
+      <section className="py-24 lg:py-32 relative" id="domain-model">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950" />
         
         <div className="container mx-auto px-4 relative">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-2xl md:text-3xl font-bold mb-3">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 The Neurologic Domains
               </h2>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto">
+              <p className="text-muted-foreground max-w-lg mx-auto">
                 Identifying the primary domain—and which are compensating—is the foundation of recovery.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 md:gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
               <Link 
                 to="/site/articles/concussion/brainstem-function"
-                className="group p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 hover:border-blue-200 dark:hover:border-blue-600/50 hover:shadow-md transition-all"
+                className="group p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <Zap className="h-5 w-5 text-blue-500 mb-2.5" />
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-blue-600 transition-colors">Brainstem</h3>
-                <p className="text-[11px] text-muted-foreground leading-snug">Arousal & sensory filtering</p>
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Zap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-base md:text-lg mb-2 group-hover:text-blue-600 transition-colors">Brainstem</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Arousal & sensory filtering</p>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 hover:border-blue-200 dark:hover:border-blue-600/50 hover:shadow-md transition-all"
+                className="group p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <Ear className="h-5 w-5 text-blue-500 mb-2.5" />
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-blue-600 transition-colors">Vestibular</h3>
-                <p className="text-[11px] text-muted-foreground leading-snug">Balance & spatial orientation</p>
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Ear className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-base md:text-lg mb-2 group-hover:text-blue-600 transition-colors">Vestibular</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Balance & spatial orientation</p>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/cervical-proprioception"
-                className="group p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 hover:border-blue-200 dark:hover:border-blue-600/50 hover:shadow-md transition-all"
+                className="group p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <Hand className="h-5 w-5 text-blue-500 mb-2.5" />
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-blue-600 transition-colors">Proprioceptive</h3>
-                <p className="text-[11px] text-muted-foreground leading-snug">Body awareness & posture</p>
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Hand className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-base md:text-lg mb-2 group-hover:text-blue-600 transition-colors">Proprioceptive</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Body awareness & posture</p>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/cerebellar-timing-and-coordination"
-                className="group p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 hover:border-blue-200 dark:hover:border-blue-600/50 hover:shadow-md transition-all"
+                className="group p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <Brain className="h-5 w-5 text-blue-500 mb-2.5" />
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-blue-600 transition-colors">Cerebellar</h3>
-                <p className="text-[11px] text-muted-foreground leading-snug">Timing & coordination</p>
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Brain className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-base md:text-lg mb-2 group-hover:text-blue-600 transition-colors">Cerebellar</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Timing & coordination</p>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/autonomic-nervous-system-flow"
-                className="group p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 hover:border-blue-200 dark:hover:border-blue-600/50 hover:shadow-md transition-all"
+                className="group p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <Heart className="h-5 w-5 text-blue-500 mb-2.5" />
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-blue-600 transition-colors">Autonomic</h3>
-                <p className="text-[11px] text-muted-foreground leading-snug">Stress response & recovery</p>
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Heart className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-base md:text-lg mb-2 group-hover:text-blue-600 transition-colors">Autonomic</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Stress response & recovery</p>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/limbic-prefrontal-regulation"
-                className="group p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 hover:border-blue-200 dark:hover:border-blue-600/50 hover:shadow-md transition-all"
+                className="group p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <Shield className="h-5 w-5 text-blue-500 mb-2.5" />
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-blue-600 transition-colors">Limbic</h3>
-                <p className="text-[11px] text-muted-foreground leading-snug">Emotional regulation</p>
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Shield className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-base md:text-lg mb-2 group-hover:text-blue-600 transition-colors">Limbic</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Emotional regulation</p>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/visual-vestibular-mismatch"
-                className="group p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 hover:border-blue-200 dark:hover:border-blue-600/50 hover:shadow-md transition-all"
+                className="group p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <Eye className="h-5 w-5 text-blue-500 mb-2.5" />
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-blue-600 transition-colors">Oculomotor</h3>
-                <p className="text-[11px] text-muted-foreground leading-snug">Eye movements & tracking</p>
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Eye className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-base md:text-lg mb-2 group-hover:text-blue-600 transition-colors">Oculomotor</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Eye movements & tracking</p>
               </Link>
 
               <Link 
                 to="/site/articles/concussion/frontal-executive-function"
-                className="group p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/50 hover:border-blue-200 dark:hover:border-blue-600/50 hover:shadow-md transition-all"
+                className="group p-6 md:p-8 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <Gauge className="h-5 w-5 text-blue-500 mb-2.5" />
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-blue-600 transition-colors">Executive</h3>
-                <p className="text-[11px] text-muted-foreground leading-snug">Attention & mental endurance</p>
+                <div className="h-12 w-12 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-5">
+                  <Gauge className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-bold text-base md:text-lg mb-2 group-hover:text-blue-600 transition-colors">Executive</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">Attention & mental endurance</p>
               </Link>
             </div>
           </div>
