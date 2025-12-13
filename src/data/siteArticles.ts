@@ -2955,6 +2955,161 @@ export const mskArticles: ArticleData[] = [
       label: "Take MSK Self-Assessment",
       route: "/patient/self-tests/msk"
     }
+  },
+  {
+    slug: "visual-processing-dysfunction-and-chronic-pain",
+    title: "Visual Processing Dysfunction and Chronic Pain: When the Brain Misjudges Space and Load",
+    category: "msk",
+    readTime: "8 min read",
+    excerpt: "Why pain emerges when the brain miscalculates distance, depth, and movement — leading to over-bracing and tissue overload.",
+    heroContent: "You misjudge distances. You bump into things. Movement feels uncertain — and your neck, shoulders, or back are constantly tight. If this sounds familiar, the issue may not be your muscles or joints. It may be your visual processing system.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Visual–Oculomotor",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When visual input is unreliable, secondary compensation often appears in the Cervical and Proprioceptive domains — increasing strain and pain."
+      },
+      { type: "heading", content: "Do Any of These Sound Familiar?" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Visual processing dysfunction often presents as spatial uncertainty, over-bracing, and visual-motor mismatch:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Misjudging distances or bumping into objects",
+          "Difficulty navigating crowds or complex environments",
+          "Over-bracing in the neck, shoulders, or upper back",
+          "Visual fatigue — eyes tire quickly during tasks",
+          "Discomfort with screens, scrolling, or busy visual fields",
+          "Movement feels uncertain or hesitant"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences reflect neurologic processing issues — not eye problems or structural damage. They are common, measurable, and addressable."
+      },
+      { type: "heading", content: "What Visual Processing Controls" },
+      {
+        type: "paragraph",
+        content: "The visual system does more than see — it calculates space, depth, and motion. It tells the brain where objects are, how fast they are moving, and where the body is relative to the environment. Efficient movement depends on accurate visual-spatial processing."
+      },
+      {
+        type: "paragraph",
+        content: "When visual processing is functioning well, movement through space is automatic and confident. When it is impaired, the brain loses its spatial anchor — and the body compensates by bracing, guarding, and over-stabilizing."
+      },
+      { type: "heading", content: "What Changes When Visual Processing Breaks Down" },
+      {
+        type: "paragraph",
+        content: "When visual input becomes unreliable, several patterns emerge:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Poor spatial accuracy — distances and depths are miscalculated",
+          "Visual-motor mismatch — movements don't match visual expectations",
+          "Over-bracing — the body guards against spatial uncertainty",
+          "Cervical strain — the neck works overtime to stabilize the head and eyes"
+        ]
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The body compensates for unreliable vision by creating stiffness. That stiffness protects against spatial miscalculation — but over time, it becomes the source of pain."
+      },
+      { type: "heading", content: "How Visual Dysfunction Creates Chronic Pain" },
+      {
+        type: "paragraph",
+        content: "When the visual system fails to provide reliable spatial information, the body recruits muscles to compensate. The cervical spine, shoulders, and upper back become chronically overloaded — not because of injury, but because they are working to stabilize a system that should stabilize itself."
+      },
+      {
+        type: "paragraph",
+        content: "Pain in this context is not a signal of damage. It is a signal of overwork — the consequence of muscles substituting for a visual system that can no longer anchor movement in space."
+      },
+      {
+        type: "inline-cta",
+        content: "If pain concentrates in the neck, shoulders, or upper back — and imaging looks normal — a neurologic MSK evaluation can reveal whether visual processing dysfunction is the missing link."
+      },
+      { type: "heading", content: "Primary vs. Secondary Visual Dysfunction" },
+      {
+        type: "paragraph",
+        content: "Visual processing dysfunction may be primary — meaning the visual system itself is impaired — or it may emerge secondarily from other neurologic limitations."
+      },
+      {
+        type: "paragraph",
+        content: "Common upstream drivers include vestibular instability and cerebellar timing deficits. When these systems are impaired, visual processing degrades — and spatial accuracy suffers as a result."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Treating muscle tightness without restoring visual processing often provides temporary relief — but the pattern returns."
+      },
+      { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
+      {
+        type: "paragraph",
+        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But visual processing dysfunction lives in the spatial calculation system: it affects how the brain maps the environment and coordinates movement through space."
+      },
+      {
+        type: "paragraph",
+        content: "A normal MRI and strong muscles can coexist with a very real visual processing problem. This is why chronic neck and shoulder pain persists for many people despite reassuring test results."
+      },
+      { type: "heading", content: "How PPC Evaluates Visual Involvement" },
+      {
+        type: "paragraph",
+        content: "At PPC, evaluation is domain-based and function-focused:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Assessment of visual-spatial processing and depth perception",
+          "Evaluation of eye movement control and visual-motor integration",
+          "Identification of primary vs. compensatory drivers",
+          "Fatigue-based testing to reveal breakdown patterns",
+          "Validated outcome measures to track meaningful change over time"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to determine whether visual processing dysfunction is driving compensatory bracing and overload — and what needs to be addressed first."
+      },
+      { type: "heading", content: "What This Means for Recovery" },
+      {
+        type: "paragraph",
+        content: "When visual processing is restored, the body no longer needs to brace for spatial uncertainty. Muscles relax. Movement becomes confident. And pain often resolves as tissues are no longer chronically overloaded."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Confidence returns when the brain trusts its spatial map. Stiffness releases when bracing is no longer needed."
+      },
+      { type: "heading", content: "Moving Forward" },
+      {
+        type: "paragraph",
+        content: "If pain concentrates in the neck, shoulders, or upper back — and movement feels uncertain or visually demanding — a clinician-led neurologic and musculoskeletal evaluation can help determine whether visual processing dysfunction is driving the problem, and what to address first."
+      }
+    ],
+    relatedArticles: [
+      "visual-vestibular-mismatch",
+      "proprioceptive-dysfunction-and-chronic-pain",
+      "chronic-pain-without-structural-damage"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Determine whether visual processing dysfunction is driving your chronic pain — and build a path to durable recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
   }
 ];
 
