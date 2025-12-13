@@ -271,6 +271,52 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
       }
     }
 
+    // Navigate to NewEpisode page with intake data pre-filled
+    // This ensures the clinician completes the full episode form
+    const intakeDataForNewEpisode = {
+      intake_form_id: intakeForm.id,
+      patient_name: intakeForm.patient_name,
+      date_of_birth: intakeForm.date_of_birth,
+      phone: intakeForm.phone,
+      email: intakeForm.email,
+      insurance_provider: intakeForm.insurance_provider,
+      insurance_id: intakeForm.insurance_id,
+      emergency_contact_name: intakeForm.emergency_contact_name,
+      emergency_contact_phone: intakeForm.emergency_contact_phone,
+      primary_care_physician: intakeForm.primary_care_physician,
+      referring_physician: intakeForm.referring_physician,
+      current_medications: intakeForm.current_medications,
+      allergies: intakeForm.allergies,
+      medical_history: intakeForm.medical_history,
+      surgery_history: intakeForm.surgery_history,
+      hospitalization_history: intakeForm.hospitalization_history,
+      specialist_seen: intakeForm.specialist_seen,
+      chief_complaint: intakeForm.chief_complaint,
+      injury_date: intakeForm.injury_date,
+      injury_mechanism: intakeForm.injury_mechanism,
+      pain_level: intakeForm.pain_level,
+      symptoms: intakeForm.symptoms,
+      complaints: intakeForm.complaints,
+      review_of_systems: intakeForm.review_of_systems,
+      // Pre-selected region from the dialog
+      selected_region: selectedRegion,
+      selected_diagnosis: selectedDiagnosis,
+      functional_limitations: preview?.functionalLimitations || [],
+      prior_treatments: preview?.priorTreatments || [],
+    };
+
+    // Store intake data for NewEpisode to pick up
+    sessionStorage.setItem("intakeData", JSON.stringify(intakeDataForNewEpisode));
+
+    toast.success("Opening episode form with intake data...");
+    onClose();
+    
+    // Navigate to NewEpisode page
+    navigate("/new-episode");
+  };
+
+  const handleConvertDirect = async () => {
+    // This is the original direct conversion for backward compatibility or quick conversion
     setConverting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();

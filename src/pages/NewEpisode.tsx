@@ -57,7 +57,8 @@ export default function NewEpisode() {
   const [cisPost, setCisPost] = useState<number | null>(null);
   const [painPre, setPainPre] = useState<number | null>(null);
   const [painPost, setPainPost] = useState<number | null>(null);
-
+  // Track if this episode is being created from an intake form
+  const [sourceIntakeFormId, setSourceIntakeFormId] = useState<string | null>(null);
   // Auto-populate clinician from logged-in user
   useEffect(() => {
     const loadClinicianInfo = async () => {
@@ -106,6 +107,11 @@ export default function NewEpisode() {
       try {
         const intakeData = JSON.parse(intakeDataStr);
         
+        // Store source intake form ID for linking after creation
+        if (intakeData.intake_form_id) {
+          setSourceIntakeFormId(intakeData.intake_form_id);
+        }
+        
         // Populate form fields from intake data
         setPatientName(intakeData.patient_name || "");
         setDob(intakeData.date_of_birth || "");
@@ -114,10 +120,61 @@ export default function NewEpisode() {
         setEmergencyPhone(intakeData.emergency_contact_phone || "");
         setReferringPhysician(intakeData.referring_physician || "");
         setMedications(intakeData.current_medications || "");
-        setMedicalHistory(intakeData.medical_history || "");
         setInjuryDate(intakeData.injury_date || "");
         setInjuryMechanism(intakeData.injury_mechanism || "");
         setPainPre(intakeData.pain_level || null);
+        
+        // Build comprehensive medical history from intake form
+        const medicalHistoryParts: string[] = [];
+        if (intakeData.medical_history) {
+          medicalHistoryParts.push(`Medical History: ${intakeData.medical_history}`);
+        }
+        if (intakeData.allergies) {
+          medicalHistoryParts.push(`Allergies: ${intakeData.allergies}`);
+        }
+        if (intakeData.surgery_history) {
+          medicalHistoryParts.push(`Surgery History: ${intakeData.surgery_history}`);
+        }
+        if (intakeData.hospitalization_history) {
+          medicalHistoryParts.push(`Hospitalization History: ${intakeData.hospitalization_history}`);
+        }
+        if (intakeData.specialist_seen) {
+          medicalHistoryParts.push(`Specialists Seen: ${intakeData.specialist_seen}`);
+        }
+        if (intakeData.primary_care_physician) {
+          medicalHistoryParts.push(`Primary Care Physician: ${intakeData.primary_care_physician}`);
+        }
+        setMedicalHistory(medicalHistoryParts.join('\n\n'));
+        
+        // Pre-select region if provided
+        if (intakeData.selected_region) {
+          setRegion(intakeData.selected_region);
+          // Trigger outcome index selection based on region
+          const recommendedIndices = PPC_CONFIG.regionToIndices(intakeData.selected_region, "MSK") as IndexType[];
+          setSelectedIndices(recommendedIndices);
+          const scores: Record<string, string> = {};
+          recommendedIndices.forEach((index) => {
+            scores[index] = "";
+          });
+          setBaselineScores(scores);
+        }
+        
+        // Pre-fill diagnosis if provided
+        if (intakeData.selected_diagnosis) {
+          setDiagnosis(intakeData.selected_diagnosis);
+        } else if (intakeData.chief_complaint) {
+          setDiagnosis(intakeData.chief_complaint);
+        }
+        
+        // Pre-fill functional limitations if provided
+        if (intakeData.functional_limitations && Array.isArray(intakeData.functional_limitations)) {
+          setFunctionalLimitationsArray(intakeData.functional_limitations);
+        }
+        
+        // Pre-fill prior treatments if provided
+        if (intakeData.prior_treatments && Array.isArray(intakeData.prior_treatments)) {
+          setPriorTreatmentsData(intakeData.prior_treatments);
+        }
         
         // Clear the sessionStorage after loading
         sessionStorage.removeItem("intakeData");
@@ -263,11 +320,26 @@ export default function NewEpisode() {
         pain_pre: painPre ?? undefined,
         pain_post: painPost ?? undefined,
         pain_delta: painDelta ?? undefined,
+        source_intake_form_id: sourceIntakeFormId || undefined,
       });
 
       // Save baseline scores to database using the actual episode ID
       for (const [indexType, score] of Object.entries(scores)) {
         await saveOutcomeScore(createdEpisode.id, indexType, "baseline", score);
+      }
+
+      // If this episode was created from an intake form, mark it as converted
+      if (sourceIntakeFormId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase
+          .from("intake_forms")
+          .update({
+            status: "converted",
+            reviewed_at: new Date().toISOString(),
+            converted_to_episode_id: createdEpisode.id,
+            reviewed_by: user?.id
+          })
+          .eq("id", sourceIntakeFormId);
       }
 
       toast.success("Episode created successfully!");

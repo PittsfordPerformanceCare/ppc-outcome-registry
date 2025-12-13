@@ -42,6 +42,8 @@ export interface Episode {
   pain_pre?: number;
   pain_post?: number;
   pain_delta?: number;
+  source_intake_form_id?: string;
+  clinic_id?: string;
 }
 
 export async function createEpisode(episode: Partial<Episode>) {
