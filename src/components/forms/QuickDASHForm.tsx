@@ -14,8 +14,8 @@ interface QuickDASHFormProps {
 }
 
 export function QuickDASHForm({ onScoreChange, onComplete, readOnly }: QuickDASHFormProps) {
-  const handleScoreChange = (score: number) => {
-    onScoreChange(score);
+  const handleScoreChange = (score: number, isComplete?: boolean) => {
+    onScoreChange(score, isComplete);
   };
 
   const handleComplete = (data: {

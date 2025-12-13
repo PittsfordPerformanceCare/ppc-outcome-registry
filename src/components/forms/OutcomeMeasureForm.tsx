@@ -17,7 +17,7 @@ interface OutcomeMeasureFormProps {
     isValid: boolean;
     interpretation: string;
   }) => void;
-  onScoreChange?: (score: number) => void;
+  onScoreChange?: (score: number, isComplete?: boolean) => void;
   initialResponses?: Map<number, number | null>;
   readOnly?: boolean;
 }
@@ -40,7 +40,7 @@ export function OutcomeMeasureForm({
 
   useEffect(() => {
     const result = calculateCurrentScore();
-    onScoreChange?.(result.score);
+    onScoreChange?.(result.score, result.isValid);
   }, [responses, calculateCurrentScore, onScoreChange]);
 
   const handleResponseChange = (questionNumber: number, value: number) => {
