@@ -2179,6 +2179,162 @@ export const mskArticles: ArticleData[] = [
       label: "Take MSK Self-Assessment",
       route: "/patient/self-tests/msk"
     }
+  },
+  {
+    slug: "cerebellar-timing-deficits-and-chronic-pain",
+    title: "Cerebellar Timing Deficits and Chronic Pain: When Movement Loses Precision",
+    category: "msk",
+    readTime: "8 min read",
+    excerpt: "Why pain emerges when the brain struggles to coordinate force, timing, and sequencing — even when strength is preserved.",
+    heroContent: "Your strength tests look fine. Your imaging is clean. But movement still feels stiff, delayed, or out of sync — and pain keeps returning. If this sounds familiar, the issue may not be your muscles or joints. It may be your timing.",
+    sections: [
+      {
+        type: "callout",
+        content: "Primary Neurologic Domain: Cerebellar",
+        variant: "info"
+      },
+      {
+        type: "paragraph",
+        content: "When cerebellar timing breaks down, secondary compensation often appears in the Proprioceptive and Autonomic domains — increasing effort, stiffness, and pain."
+      },
+      { type: "heading", content: "Do Any of These Sound Familiar?" },
+      {
+        type: "callout",
+        variant: "symptom",
+        content: "Cerebellar timing deficits often present as stiffness, hesitation, or inefficiency — not weakness:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "'I feel stiff or robotic'",
+          "'I know what I want to do, but my body lags'",
+          "Movements feel effortful or delayed",
+          "Pain worsens with speed or fatigue",
+          "Coordination feels off even though strength is intact",
+          "Simple tasks require more concentration than they should"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "These experiences reflect neurologic timing — not structural damage. They are common, measurable, and addressable."
+      },
+      { type: "heading", content: "What the Cerebellar Domain Controls" },
+      {
+        type: "paragraph",
+        content: "The cerebellum is the brain's timing center. It predicts, sequences, and coordinates movement — allowing smooth transitions between muscle groups and efficient force distribution across joints."
+      },
+      {
+        type: "paragraph",
+        content: "Efficient movement depends on anticipation, not reaction. The cerebellum allows the nervous system to pre-activate muscles before load arrives — so tissues are ready to absorb and distribute force. When this prediction fails, movement becomes reactive, guarded, and inefficient."
+      },
+      { type: "heading", content: "What Changes When Cerebellar Timing Breaks Down" },
+      {
+        type: "paragraph",
+        content: "When cerebellar timing is impaired, several patterns emerge:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Delayed muscle firing — stabilizers activate late",
+          "Poor sequencing — movements feel choppy or out of order",
+          "Overcorrection and rigidity — the body guards against unpredictability",
+          "Increased co-contraction — opposing muscles fire together, wasting energy"
+        ]
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "The brain reacts instead of predicts. Movement becomes guarded. Effort rises. And tissues absorb stress they were never designed to handle."
+      },
+      { type: "heading", content: "How Cerebellar Dysfunction Creates Chronic Pain" },
+      {
+        type: "paragraph",
+        content: "When timing is off, load concentrates instead of distributing. Late muscle activation means joints and tissues absorb shock rather than sharing it across the kinetic chain. Over time, this creates cumulative overload — and pain develops secondarily."
+      },
+      {
+        type: "paragraph",
+        content: "Pain in this context is not a signal of damage. It is a signal of inefficiency — the consequence of a control system that can no longer predict and coordinate load."
+      },
+      {
+        type: "inline-cta",
+        content: "If pain worsens with speed, fatigue, or complexity — but imaging looks normal — a neurologic MSK evaluation can reveal whether timing is the missing link."
+      },
+      { type: "heading", content: "Primary vs. Secondary Cerebellar Dysfunction" },
+      {
+        type: "paragraph",
+        content: "Cerebellar timing deficits may be primary — meaning the cerebellum itself is impaired — or they may emerge secondarily from other neurologic limitations."
+      },
+      {
+        type: "paragraph",
+        content: "Common upstream drivers include vestibular instability, proprioceptive mismatch, and autonomic energy constraints. When these systems are impaired, the cerebellum loses access to accurate sensory input — and timing degrades as a result."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Treating strength without restoring timing often reinforces compensatory motor patterns."
+      },
+      { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
+      {
+        type: "paragraph",
+        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But cerebellar timing deficits live between structure and strength: they affect when muscles fire, how force is sequenced, and whether movement is predictive or reactive."
+      },
+      {
+        type: "paragraph",
+        content: "A normal MRI and strong muscles can coexist with a very real timing problem. This is why pain and stiffness persist for many people despite reassuring test results."
+      },
+      { type: "heading", content: "How PPC Evaluates Cerebellar Involvement" },
+      {
+        type: "paragraph",
+        content: "At PPC, evaluation is domain-based and function-focused:"
+      },
+      {
+        type: "list",
+        content: "",
+        items: [
+          "Assessment of timing, rhythm, and sequencing during real movement",
+          "Evaluation of symmetry and coordination under progressive demand",
+          "Identification of primary vs. compensatory drivers",
+          "Fatigue-based testing to reveal breakdown patterns",
+          "Validated outcome measures to track meaningful change over time"
+        ]
+      },
+      {
+        type: "paragraph",
+        content: "The goal is to determine whether cerebellar timing is driving inefficiency and overload — and what needs to be addressed first."
+      },
+      { type: "heading", content: "What This Means for Recovery" },
+      {
+        type: "paragraph",
+        content: "When cerebellar timing is restored, movement becomes predictive again. Muscles fire in sequence. Force distributes efficiently. Effort decreases. And pain often resolves as tissues are no longer chronically overloaded."
+      },
+      {
+        type: "callout",
+        variant: "insight",
+        content: "Timing improves before strength matters. Fluidity precedes power. Confidence returns with coordination — not force."
+      },
+      { type: "heading", content: "Moving Forward" },
+      {
+        type: "paragraph",
+        content: "If pain persists despite rest, strengthening, or normal imaging — and movement feels stiff, delayed, or effortful — a clinician-led neurologic and musculoskeletal evaluation can help determine whether cerebellar timing is driving the problem, and what to address first."
+      }
+    ],
+    relatedArticles: [
+      "proprioceptive-dysfunction-and-chronic-pain",
+      "movement-asymmetry",
+      "motor-timing-deficits",
+      "chronic-pain-without-structural-damage"
+    ],
+    primaryCTA: {
+      label: "Schedule MSK Evaluation",
+      route: "/patient/concierge",
+      description: "Determine whether cerebellar timing is driving your chronic pain — and build a path to durable recovery."
+    },
+    secondaryCTA: {
+      label: "Take MSK Self-Assessment",
+      route: "/patient/self-tests/msk"
+    }
   }
 ];
 
