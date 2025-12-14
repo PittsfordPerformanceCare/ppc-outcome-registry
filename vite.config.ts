@@ -21,9 +21,9 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icon-192x192.png', 'icon-512x512.png'],
       manifest: {
-        name: 'PPC Patient Companion',
-        short_name: 'PPC Companion',
-        description: 'Track your physical therapy progress and stay connected with your clinician',
+        name: 'Pittsford Performance Care',
+        short_name: 'PPC',
+        description: 'Domain-based neurologic care for concussion, musculoskeletal pain, and performance.',
         theme_color: '#0EA5E9',
         background_color: '#ffffff',
         display: 'standalone',
