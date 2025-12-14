@@ -38,7 +38,7 @@ export const concussionArticles: ArticleData[] = [
     category: "concussion",
     readTime: "10 min read",
     excerpt: "Understanding why your symptoms persist and what neurologic evaluation can reveal about your recovery.",
-    heroContent: "You were cleared to return to normal activities. Your imaging came back clean. But weeks—or months—later, you still don't feel like yourself. Performance has declined. Fatigue is constant. Something is off, and no one can explain why.",
+    heroContent: "You were cleared to return to normal activities. Your imaging came back clean. But weeks, or months, later, you still don't feel like yourself. Performance has declined. Fatigue is constant. Something is off, and no one can explain why.",
     sections: [
       {
         type: "callout",
@@ -154,11 +154,11 @@ export const concussionArticles: ArticleData[] = [
   },
   {
     slug: "visual-vestibular-mismatch",
-    title: "Visual-Vestibular Mismatch: When Your Eyes and Inner Ear Disagree",
+    title: "Visual Vestibular Mismatch: When Your Eyes and Inner Ear Disagree",
     category: "concussion",
     readTime: "8 min read",
     excerpt: "Understanding the sensory conflict that makes busy environments unbearable after concussion.",
-    heroContent: "Grocery stores are overwhelming. Scrolling on your phone makes you nauseous. Being a passenger in a car feels wrong. This isn't anxiety—it's visual-vestibular mismatch, one of the most common and treatable causes of persistent post-concussion symptoms.",
+    heroContent: "Grocery stores are overwhelming. Scrolling on your phone makes you nauseous. Being a passenger in a car feels wrong. This isn't anxiety, it's visual vestibular mismatch, one of the most common and treatable causes of persistent post concussion symptoms.",
     sections: [
       {
         type: "callout",
@@ -171,7 +171,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "heading",
-        content: "What Is Visual-Vestibular Mismatch?"
+        content: "What Is Visual Vestibular Mismatch?"
       },
       {
         type: "paragraph",
@@ -179,7 +179,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "After concussion, the calibration between these systems can be disrupted. Your eyes say one thing; your inner ear says another. The result is a constant, low-grade sense of disorientation that spikes in challenging environments."
+        content: "After concussion, the calibration between these systems can be disrupted. Your eyes say one thing, your inner ear says another. The result is a constant, low grade sense of disorientation that spikes in challenging environments."
       },
       {
         type: "heading",
@@ -187,7 +187,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "callout",
-        content: "Visual-vestibular mismatch symptoms often appear in specific situations:",
+        content: "Visual vestibular mismatch symptoms often appear in specific situations:",
         variant: "symptom"
       },
       {
@@ -230,7 +230,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "heading",
-        content: "How We Evaluate Visual-Vestibular Integration"
+        content: "How We Evaluate Visual Vestibular Integration"
       },
       {
         type: "paragraph",
@@ -246,7 +246,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Treatment involves carefully dosed exercises that retrain your brain to properly integrate conflicting sensory information. This must be done gradually—too much challenge too soon can trigger symptom flares and slow progress."
+        content: "Treatment involves carefully dosed exercises that retrain your brain to properly integrate conflicting sensory information. This must be done gradually, as too much challenge too soon can trigger symptom flares and slow progress."
       },
       {
         type: "paragraph",
@@ -258,7 +258,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Many people with visual-vestibular mismatch develop avoidance strategies—they stop going to stores, limit screen time, always drive instead of riding as a passenger. These adaptations reduce symptom exposure but don't address the underlying problem."
+        content: "Many people with visual vestibular mismatch develop avoidance strategies. They stop going to stores, limit screen time, always drive instead of riding as a passenger. These adaptations reduce symptom exposure but don't address the underlying problem."
       },
       {
         type: "callout",
@@ -279,7 +279,7 @@ export const concussionArticles: ArticleData[] = [
     primaryCTA: {
       label: "Schedule Neurologic Evaluation",
       route: "/patient/concierge",
-      description: "Identify your specific visual-vestibular mismatch pattern."
+      description: "Identify your specific visual vestibular mismatch pattern."
     },
     secondaryCTA: {
       label: "Take the Concussion Self-Test",
@@ -292,7 +292,7 @@ export const concussionArticles: ArticleData[] = [
     category: "concussion",
     readTime: "9 min read",
     excerpt: "How cerebellar dysfunction after concussion affects everything from balance to cognition.",
-    heroContent: "The cerebellum is your brain's timing center. It coordinates movement, calibrates sensory input, and ensures that everything happens in the right sequence at the right speed. After concussion, cerebellar function often suffers—even when traditional testing looks normal.",
+    heroContent: "The cerebellum is your brain's timing center. It coordinates movement, calibrates sensory input, and ensures that everything happens in the right sequence at the right speed. After concussion, cerebellar function often suffers, even when traditional testing looks normal.",
     sections: [
       {
         type: "callout",
@@ -301,7 +301,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When cerebellar timing and coordination are disrupted after concussion, secondary compensation often appears in the Proprioceptive and Autonomic domains—which is why movement feels inefficient, effort escalates quickly, and fatigue sets in early."
+        content: "When cerebellar timing and coordination are disrupted after concussion, secondary compensation often appears in the Proprioceptive and Autonomic domains, which is why movement feels inefficient, effort escalates quickly, and fatigue sets in early."
       },
       {
         type: "heading",
@@ -339,11 +339,11 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "heading",
-        content: "The Cerebellar-Concussion Connection"
+        content: "The Cerebellar Concussion Connection"
       },
       {
         type: "paragraph",
-        content: "The cerebellum is particularly vulnerable to concussive forces because of its position at the back of the brain and its high metabolic demands. Even mild concussions can affect cerebellar timing—and because standard neurologic exams don't test cerebellar precision, these deficits often go undetected."
+        content: "The cerebellum is particularly vulnerable to concussive forces because of its position at the back of the brain and its high metabolic demands. Even mild concussions can affect cerebellar timing, and because standard neurologic exams don't test cerebellar precision, these deficits often go undetected."
       },
       {
         type: "paragraph",
@@ -382,7 +382,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Cerebellar rehabilitation involves exercises that challenge timing precision at the edge of your current ability. The cerebellum learns through repetition and error correction—we provide structured challenges that drive this adaptation."
+        content: "Cerebellar rehabilitation involves exercises that challenge timing precision at the edge of your current ability. The cerebellum learns through repetition and error correction, and we provide structured challenges that drive this adaptation."
       },
       {
         type: "callout",
@@ -391,7 +391,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "At PPC, identifying cerebellar timing as a primary driver—rather than a downstream compensation—helps determine what to address first in recovery."
+        content: "At PPC, identifying cerebellar timing as a primary driver, rather than a downstream compensation, helps determine what to address first in recovery."
       }
     ],
     relatedArticles: [
@@ -425,7 +425,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When autonomic regulation becomes inefficient after concussion, secondary compensation often appears in the Brainstem and Limbic–Prefrontal domains—which is why exercise tolerance drops, recovery slows, and symptoms amplify under stress."
+        content: "When autonomic regulation becomes inefficient after concussion, secondary compensation often appears in the Brainstem and Limbic Prefrontal domains, which is why exercise tolerance drops, recovery slows, and symptoms amplify under stress."
       },
       {
         type: "heading",
@@ -448,13 +448,13 @@ export const concussionArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Exercise intolerance—getting exhausted from light activity",
+          "Exercise intolerance, getting exhausted from light activity",
           "Rapid heart rate with minimal exertion",
           "Dizziness when standing up (orthostatic intolerance)",
           "Difficulty regulating body temperature",
-          "Digestive changes—nausea, appetite loss, irregularity",
+          "Digestive changes such as nausea, appetite loss, irregularity",
           "Sleep that doesn't feel restorative",
-          "Anxiety-like symptoms without clear cause",
+          "Anxiety like symptoms without clear cause",
           "Fatigue that doesn't match your activity level"
         ]
       },
@@ -472,7 +472,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "heading",
-        content: "The Concussion-Autonomic Connection"
+        content: "The Concussion Autonomic Connection"
       },
       {
         type: "paragraph",
@@ -480,7 +480,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "callout",
-        content: "Autonomic dysfunction is one of the most common—and most overlooked—consequences of concussion.",
+        content: "Autonomic dysfunction is one of the most common, and most overlooked, consequences of concussion.",
         variant: "insight"
       },
       {
@@ -529,7 +529,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "At PPC, identifying autonomic dysfunction as a primary driver—rather than a downstream stress response—helps determine what to address first in concussion recovery."
+        content: "At PPC, identifying autonomic dysfunction as a primary driver, rather than a downstream stress response, helps determine what to address first in concussion recovery."
       }
     ],
     relatedArticles: [
@@ -554,7 +554,7 @@ export const concussionArticles: ArticleData[] = [
     category: "concussion",
     readTime: "9 min read",
     excerpt: "Understanding the cognitive fog that persists after concussion and how frontal lobe function affects everyday thinking.",
-    heroContent: "The words are there, but they won't come out right. Decisions that used to be automatic now require conscious effort. You start tasks and lose track of what you were doing. This isn't laziness or lack of focus—it's frontal system dysfunction after concussion.",
+    heroContent: "The words are there, but they won't come out right. Decisions that used to be automatic now require conscious effort. You start tasks and lose track of what you were doing. This isn't laziness or lack of focus, it's frontal system dysfunction after concussion.",
     sections: [
       {
         type: "callout",
@@ -563,11 +563,11 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When frontal executive systems become overloaded after concussion, secondary compensation often reflects unresolved dysfunction in the Visual–Oculomotor, Autonomic, or Cerebellar domains—which is why thinking feels effortful, focus fades quickly, and mental endurance collapses later in the day."
+        content: "When frontal executive systems become overloaded after concussion, secondary compensation often reflects unresolved dysfunction in the Visual Oculomotor, Autonomic, or Cerebellar domains, which is why thinking feels effortful, focus fades quickly, and mental endurance collapses later in the day."
       },
       {
         type: "callout",
-        content: "If you feel like you're thinking through fog—slower, less sharp, more effortful—your frontal systems may not have fully recovered from concussion.",
+        content: "If you feel like you're thinking through fog, slower, less sharp, more effortful, your frontal systems may not have fully recovered from concussion.",
         variant: "insight"
       },
       {
@@ -576,7 +576,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Your frontal lobes are the CEO of your brain. They manage executive functions: planning, decision-making, working memory, impulse control, attention regulation, and cognitive flexibility. When these systems work well, thinking feels effortless. When they're compromised, every cognitive task becomes a struggle."
+        content: "Your frontal lobes are the CEO of your brain. They manage executive functions: planning, decision making, working memory, impulse control, attention regulation, and cognitive flexibility. When these systems work well, thinking feels effortless. When they're compromised, every cognitive task becomes a struggle."
       },
       {
         type: "paragraph",
@@ -616,16 +616,16 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Most cognitive screening after concussion uses brief, standardized tests administered in quiet rooms. But your frontal systems fail under real-world conditions—multiple demands, distractions, time pressure, and sustained effort. The gap between test performance and daily function is where frontal fog lives."
+        content: "Most cognitive screening after concussion uses brief, standardized tests administered in quiet rooms. But your frontal systems fail under real world conditions, with multiple demands, distractions, time pressure, and sustained effort. The gap between test performance and daily function is where frontal fog lives."
       },
       {
         type: "callout",
-        content: "Passing a 10-minute cognitive screen doesn't mean your frontal systems can handle an 8-hour workday.",
+        content: "Passing a 10 minute cognitive screen doesn't mean your frontal systems can handle an 8 hour workday.",
         variant: "insight"
       },
       {
         type: "heading",
-        content: "The Energy-Cognition Connection"
+        content: "The Energy Cognition Connection"
       },
       {
         type: "paragraph",
@@ -652,7 +652,7 @@ export const concussionArticles: ArticleData[] = [
           "Cognitive flexibility and task-switching",
           "Processing speed across multiple domains",
           "Executive function during divided attention",
-          "Decision-making speed and accuracy under pressure"
+          "Decision making speed and accuracy under pressure"
         ]
       },
       {
@@ -678,7 +678,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "At PPC, frontal fog is rarely treated in isolation—identifying which lower-level domains are overloading the executive system helps determine what to address first."
+        content: "At PPC, frontal fog is rarely treated in isolation. Identifying which lower level domains are overloading the executive system helps determine what to address first."
       }
     ],
     relatedArticles: [
@@ -704,7 +704,7 @@ export const concussionArticles: ArticleData[] = [
     category: "concussion",
     readTime: "10 min read",
     excerpt: "Understanding the metabolic disruption that makes everything exhausting after concussion.",
-    heroContent: "You sleep eight hours and wake up exhausted. Simple tasks drain you. By afternoon, your brain feels like it's running on empty. This isn't depression or laziness—it's the metabolic energy crisis that follows concussion, and understanding it is the first step to recovery.",
+    heroContent: "You sleep eight hours and wake up exhausted. Simple tasks drain you. By afternoon, your brain feels like it's running on empty. This isn't depression or laziness, it's the metabolic energy crisis that follows concussion, and understanding it is the first step to recovery.",
     sections: [
       {
         type: "callout",
@@ -713,7 +713,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When brainstem regulation becomes inefficient after concussion, secondary compensation often appears in the Autonomic and Frontal (Executive) domains—which is why energy availability drops, recovery slows, and even simple physical or cognitive tasks feel disproportionately exhausting."
+        content: "When brainstem regulation becomes inefficient after concussion, secondary compensation often appears in the Autonomic and Frontal (Executive) domains, which is why energy availability drops, recovery slows, and even simple physical or cognitive tasks feel disproportionately exhausting."
       },
       {
         type: "heading",
@@ -721,7 +721,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Your brain is only 2% of your body weight but consumes 20% of your energy. It's the most metabolically demanding organ you have. This energy comes from glucose and oxygen, processed through intricate cellular machinery that generates ATP—the fuel that powers every thought, every movement, every sensation."
+        content: "Your brain is only 2% of your body weight but consumes 20% of your energy. It's the most metabolically demanding organ you have. This energy comes from glucose and oxygen, processed through intricate cellular machinery that generates ATP, the fuel that powers every thought, every movement, every sensation."
       },
       {
         type: "paragraph",
@@ -749,7 +749,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "The brain compensates by limiting activity—which is why rest helps initially. But the metabolic dysfunction can persist long after the acute phase resolves."
+        content: "The brain compensates by limiting activity, which is why rest helps initially. But the metabolic dysfunction can persist long after the acute phase resolves."
       },
       {
         type: "paragraph",
@@ -784,7 +784,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "heading",
-        content: "The Boom-Bust Cycle"
+        content: "The Boom Bust Cycle"
       },
       {
         type: "paragraph",
@@ -792,7 +792,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "callout",
-        content: "Breaking the boom-bust cycle requires understanding your actual energy capacity—not your perceived capacity or your pre-injury capacity.",
+        content: "Breaking the boom bust cycle requires understanding your actual energy capacity, not your perceived capacity or your pre injury capacity.",
         variant: "insight"
       },
       {
@@ -877,7 +877,7 @@ export const concussionArticles: ArticleData[] = [
     sections: [
       {
         type: "callout",
-        content: "Primary Neurologic Domain: Limbic–Prefrontal",
+        content: "Primary Neurologic Domain: Limbic Prefrontal",
         variant: "info"
       },
       {
@@ -912,7 +912,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "heading",
-        content: "What the Limbic–Prefrontal System Does"
+        content: "What the Limbic Prefrontal System Does"
       },
       {
         type: "paragraph",
@@ -928,7 +928,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Concussion can shift this balance. The limbic system becomes sensitized—detecting threat where none exists. The prefrontal cortex loses some of its inhibitory control. The result is a nervous system biased toward protection."
+        content: "Concussion can shift this balance. The limbic system becomes sensitized, detecting threat where none exists. The prefrontal cortex loses some of its inhibitory control. The result is a nervous system biased toward protection."
       },
       {
         type: "callout",
@@ -937,7 +937,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "This isn't irrational fear—it's a neurologic shift in how your brain assesses safety. The threshold for triggering protective responses has lowered, and the capacity to calm those responses has diminished."
+        content: "This isn't irrational fear. It's a neurologic shift in how your brain assesses safety. The threshold for triggering protective responses has lowered, and the capacity to calm those responses has diminished."
       },
       {
         type: "heading",
@@ -976,7 +976,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When vestibular function is unreliable, when autonomic regulation is unstable, when visual processing is inefficient—the limbic system has good reason to stay vigilant. Calming the limbic response requires stabilizing the systems that are triggering it."
+        content: "When vestibular function is unreliable, when autonomic regulation is unstable, when visual processing is inefficient, the limbic system has good reason to stay vigilant. Calming the limbic response requires stabilizing the systems that are triggering it."
       },
       {
         type: "heading",
@@ -992,11 +992,11 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "inline-cta",
-        content: "Understanding whether your symptoms reflect limbic overload—and what's driving it—requires comprehensive neurologic evaluation."
+        content: "Understanding whether your symptoms reflect limbic overload, and what's driving it, requires comprehensive neurologic evaluation."
       },
       {
         type: "heading",
-        content: "How PPC Evaluates Limbic–Prefrontal Involvement"
+        content: "How PPC Evaluates Limbic Prefrontal Involvement"
       },
       {
         type: "paragraph",
@@ -1004,7 +1004,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "The goal is to identify whether limbic overload is primary—or a downstream response to other unresolved dysfunction. This distinction fundamentally changes the treatment approach."
+        content: "The goal is to identify whether limbic overload is primary, or a downstream response to other unresolved dysfunction. This distinction fundamentally changes the treatment approach."
       },
       {
         type: "heading",
@@ -1012,11 +1012,11 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Stability returns when the nervous system regains a sense of safety. This doesn't come from reassurance or willpower—it comes from resolving the neurologic instabilities that are triggering protective responses."
+        content: "Stability returns when the nervous system regains a sense of safety. This doesn't come from reassurance or willpower, it comes from resolving the neurologic instabilities that are triggering protective responses."
       },
       {
         type: "paragraph",
-        content: "Limbic calm follows integration. When vestibular function stabilizes, when autonomic regulation improves, when visual processing becomes efficient—the limbic system naturally downregulates. Recovery becomes durable once the cascades resolve."
+        content: "Limbic calm follows integration. When vestibular function stabilizes, when autonomic regulation improves, when visual processing becomes efficient, the limbic system naturally downregulates. Recovery becomes durable once the cascades resolve."
       },
       {
         type: "callout",
@@ -1025,7 +1025,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "If recovery feels fragile or symptoms escalate under stress, a clinician-led neurologic evaluation can help clarify whether limbic overload is a primary issue—or a downstream response to other unresolved domains."
+        content: "If recovery feels fragile or symptoms escalate under stress, a clinician led neurologic evaluation can help clarify whether limbic overload is a primary issue, or a downstream response to other unresolved domains."
       }
     ],
     relatedArticles: [
@@ -1060,7 +1060,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When proprioceptive feedback becomes unreliable after concussion, secondary compensation often appears in the Cerebellar and Autonomic domains—which is why movement efficiency drops and fatigue escalates quickly."
+        content: "When proprioceptive feedback becomes unreliable after concussion, secondary compensation often appears in the Cerebellar and Autonomic domains, which is why movement efficiency drops and fatigue escalates quickly."
       },
       {
         type: "heading",
@@ -1115,7 +1115,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "This isn't about muscle strength—it's about the brain's ability to sense and coordinate. The hardware is intact, but the software has degraded."
+        content: "This isn't about muscle strength, it's about the brain's ability to sense and coordinate. The hardware is intact, but the software has degraded."
       },
       {
         type: "heading",
@@ -1139,7 +1139,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "This explains why some people develop persistent pain, joint problems, or movement difficulties after concussion—even when imaging shows no structural damage."
+        content: "This explains why some people develop persistent pain, joint problems, or movement difficulties after concussion, even when imaging shows no structural damage."
       },
       {
         type: "heading",
@@ -1164,11 +1164,11 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Imaging assesses structure—bones, discs, ligaments. Strength tests measure output—how much force you can generate. Neither captures proprioceptive function, which lives in the space between structure and strength."
+        content: "Imaging assesses structure: bones, discs, ligaments. Strength tests measure output: how much force you can generate. Neither captures proprioceptive function, which lives in the space between structure and strength."
       },
       {
         type: "paragraph",
-        content: "You can have normal imaging, pass strength tests, and still have significant proprioceptive dysfunction. The problem isn't what you can do—it's how efficiently and accurately you can do it."
+        content: "You can have normal imaging, pass strength tests, and still have significant proprioceptive dysfunction. The problem isn't what you can do, it's how efficiently and accurately you can do it."
       },
       {
         type: "inline-cta",
@@ -1201,7 +1201,7 @@ export const concussionArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "If movement feels heavy, asymmetrical, or unreliable after concussion, a clinician-led neurologic evaluation can help determine whether proprioceptive dysfunction is primary—or compensatory—and what to address first."
+        content: "If movement feels heavy, asymmetrical, or unreliable after concussion, a clinician led neurologic evaluation can help determine whether proprioceptive dysfunction is primary, or compensatory, and what to address first."
       }
     ],
     relatedArticles: [
@@ -1234,7 +1234,7 @@ export const pediatricArticles: ArticleData[] = [
     category: "pediatric",
     readTime: "11 min read",
     excerpt: "Understanding how concussions affect developing brains and why specialized pediatric care matters.",
-    heroContent: "Children are not small adults—their brains are still developing, and concussion affects them differently. If your child's concussion symptoms aren't resolving, specialized neurologic evaluation can identify what's driving the persistent problems.",
+    heroContent: "Children are not small adults. Their brains are still developing, and concussion affects them differently. If your child's concussion symptoms aren't resolving, specialized neurologic evaluation can identify what's driving the persistent problems.",
     sections: [
       {
         type: "heading",
@@ -1422,11 +1422,11 @@ export const athleteArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Many athletes are symptom-free at rest but experience performance degradation under the demands of competition. Standard protocols don't test at these intensities. Our evaluation specifically challenges the systems under sport-relevant conditions."
+        content: "Many athletes are symptom free at rest but experience performance degradation under the demands of competition. Standard protocols don't test at these intensities. Our evaluation specifically challenges the systems under sport relevant conditions."
       },
       {
         type: "heading",
-        content: "Targeted Return-to-Performance Protocols"
+        content: "Targeted Return to Performance Protocols"
       },
       {
         type: "paragraph",
@@ -1434,7 +1434,7 @@ export const athleteArticles: ArticleData[] = [
       },
       {
         type: "callout",
-        content: "The goal isn't just returning to play—it's returning to your pre-injury performance level or better.",
+        content: "The goal isn't just returning to play, it's returning to your pre injury performance level or better.",
         variant: "insight"
       },
       {
@@ -1484,11 +1484,11 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "What Is a Motor Timing Deficit?" },
       {
         type: "paragraph",
-        content: "A motor timing deficit occurs when the nervous system fails to activate the right muscles at the right time. Even small timing delays can change how force is distributed across a joint—creating overload, compensations, and repeated flare-ups."
+        content: "A motor timing deficit occurs when the nervous system fails to activate the right muscles at the right time. Even small timing delays can change how force is distributed across a joint, creating overload, compensations, and repeated flare ups."
       },
       {
         type: "paragraph",
-        content: "This often shows up after injury, after prolonged pain, or when your body has learned protective movement strategies. The result can be a pattern where movement is technically possible, but inefficient—like a car that drives with misfiring cylinders."
+        content: "This often shows up after injury, after prolonged pain, or when your body has learned protective movement strategies. The result can be a pattern where movement is technically possible, but inefficient, like a car that drives with misfiring cylinders."
       },
       { type: "heading", content: "Recognizing the Signs" },
       {
@@ -1500,12 +1500,12 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Pain that flares with activity but calms with rest—then returns",
-          "Feeling \"unstable\" or \"not supported\" in a joint (knee, hip, shoulder, back)",
+          "Pain that flares with activity but calms with rest, then returns",
+          "Feeling unstable or not supported in a joint (knee, hip, shoulder, back)",
           "Early fatigue with simple tasks (stairs, jogging, lifting, prolonged standing)",
           "Muscles that feel tight or overworked after small amounts of movement",
-          "A sense that your body \"can't find the groove\" or moves differently day to day",
-          "Recurring strains or \"tweaks\" without a clear new injury"
+          "A sense that your body can't find the groove or moves differently day to day",
+          "Recurring strains or tweaks without a clear new injury"
         ]
       },
       {
@@ -1527,17 +1527,17 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Movement sequencing screens (how you coordinate multi-joint tasks)",
-          "Single-leg and dynamic stability testing (force absorption and control)",
-          "Reaction-time and rapid stabilization demands (when appropriate)",
-          "Fatigue-based testing to reveal breakdown patterns",
+          "Movement sequencing screens (how you coordinate multi joint tasks)",
+          "Single leg and dynamic stability testing (force absorption and control)",
+          "Reaction time and rapid stabilization demands (when appropriate)",
+          "Fatigue based testing to reveal breakdown patterns",
           "Outcome measures to track functional change over time"
         ]
       },
       { type: "heading", content: "Treatment Approach" },
       {
         type: "paragraph",
-        content: "Treatment focuses on restoring efficient sequencing and stabilization—not just reducing pain. That may include targeted neuromuscular training, graded load exposure, and precision drills that rebuild timing under realistic movement demands."
+        content: "Treatment focuses on restoring efficient sequencing and stabilization, not just reducing pain. That may include targeted neuromuscular training, graded load exposure, and precision drills that rebuild timing under realistic movement demands."
       },
       {
         type: "paragraph",
@@ -1557,7 +1557,7 @@ export const mskArticles: ArticleData[] = [
     primaryCTA: {
       label: "Schedule MSK Evaluation",
       route: "/patient/concierge",
-      description: "Identify whether motor timing and sequencing are driving your pain, instability, or recurring flare-ups."
+      description: "Identify whether motor timing and sequencing are driving your pain, instability, or recurring flare ups."
     },
     secondaryCTA: {
       label: "Take MSK Self-Assessment",
@@ -1569,8 +1569,8 @@ export const mskArticles: ArticleData[] = [
     title: "Movement Asymmetry: When One Side Quietly Does More Work",
     category: "msk",
     readTime: "6 min read",
-    excerpt: "Asymmetry isn't just a strength issue—it's often a control issue. When one side compensates, tissues overload and performance drops even if imaging looks normal.",
-    heroContent: "You may not feel weak—but you might feel uneven. Many people with chronic pain or recurring injury develop a subtle shift where one side carries more load, stabilizes more, and tires faster.",
+    excerpt: "Asymmetry isn't just a strength issue. It's often a control issue. When one side compensates, tissues overload and performance drops even if imaging looks normal.",
+    heroContent: "You may not feel weak, but you might feel uneven. Many people with chronic pain or recurring injury develop a subtle shift where one side carries more load, stabilizes more, and tires faster.",
     sections: [
       {
         type: "callout",
@@ -1584,13 +1584,13 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Over time, the stronger or more stable side becomes the default. The compensating side may feel tight, sore, or overworked—while the under-contributing side becomes less coordinated and less reliable."
+        content: "Over time, the stronger or more stable side becomes the default. The compensating side may feel tight, sore, or overworked, while the under contributing side becomes less coordinated and less reliable."
       },
       { type: "heading", content: "Common Signs" },
       {
         type: "callout",
         variant: "symptom",
-        content: "Asymmetry often shows up as 'one-sided fatigue' or recurring discomfort that seems to move around."
+        content: "Asymmetry often shows up as one sided fatigue or recurring discomfort that seems to move around."
       },
       {
         type: "list",
@@ -1611,7 +1611,7 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "Why Standard Care Misses It" },
       {
         type: "paragraph",
-        content: "Many exams assess a body part in isolation. But asymmetry is a systems problem—coordination, timing, balance, and load tolerance. If the root issue is neurologic control, treating only the painful area can provide short-term relief without restoring symmetry."
+        content: "Many exams assess a body part in isolation. But asymmetry is a systems problem: coordination, timing, balance, and load tolerance. If the root issue is neurologic control, treating only the painful area can provide short term relief without restoring symmetry."
       },
       {
         type: "callout",
@@ -1623,8 +1623,8 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Side-to-side comparisons during functional tasks (squat, hinge, step-down)",
-          "Single-leg stability and force absorption testing",
+          "Side to side comparisons during functional tasks (squat, hinge, step down)",
+          "Single leg stability and force absorption testing",
           "Balance and coordination screens under fatigue",
           "Movement efficiency and sequencing checks",
           "Outcome measures to track progress objectively over time"
@@ -1633,7 +1633,7 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "Treatment Approach" },
       {
         type: "paragraph",
-        content: "Treatment targets the driver of compensation and rebuilds symmetry through precision loading, neuromuscular retraining, and graded exposure. The goal is to restore trust and capacity on the under-performing side—so the body doesn't have to cheat."
+        content: "Treatment targets the driver of compensation and rebuilds symmetry through precision loading, neuromuscular retraining, and graded exposure. The goal is to restore trust and capacity on the under performing side, so the body doesn't have to cheat."
       },
       {
         type: "callout",
