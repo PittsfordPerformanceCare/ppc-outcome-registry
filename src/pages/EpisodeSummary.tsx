@@ -17,6 +17,7 @@ import { OrthoReferralForm } from "@/components/OrthoReferralForm";
 import { OrthoReferralCard } from "@/components/OrthoReferralCard";
 import { OrthoReferralPrint } from "@/components/OrthoReferralPrint";
 import { UpdateEpisodeStatusDialog } from "@/components/UpdateEpisodeStatusDialog";
+import { CareCoordinationPauseControl } from "@/components/CareCoordinationPauseControl";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -404,6 +405,12 @@ export default function EpisodeSummary() {
             </Badge>
           )}
         </div>
+        {/* Care Coordination Pause Control */}
+        {episodeId && !isCompleted && (
+          <div className="mt-3 print:hidden">
+            <CareCoordinationPauseControl episodeId={episodeId} />
+          </div>
+        )}
       </div>
 
       {/* Ortho Referral Form Dialog */}

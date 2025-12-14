@@ -8,6 +8,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, User, Calendar, Stethoscope, Activity, FileText, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CareStatusDisplay } from "@/components/CareStatusDisplay";
 
 interface EpisodeData {
   id: string;
@@ -304,6 +305,7 @@ export default function ClinicalOutcomesReview() {
                   {episode.start_date ? format(new Date(episode.start_date), "MMMM d, yyyy") : "Pending"}
                 </p>
               </div>
+              {episodeId && <CareStatusDisplay episodeId={episodeId} />}
             </CardContent>
           </Card>
 
