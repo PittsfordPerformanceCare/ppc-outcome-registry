@@ -25,8 +25,11 @@ const ProfessionalOutcomesPortal = () => {
   return (
     <>
       <Helmet>
-        <meta name="robots" content="noindex, nofollow" />
-        <title>Professional Outcomes Portal | Pittsford Performance Care</title>
+        <title>PPC Aggregate Clinical Outcomes | Pittsford Performance Care</title>
+        <meta 
+          name="description" 
+          content="Transparency into observed clinical trends. Aggregate, condition specific outcomes from the PPC Outcome Registry for referring professionals." 
+        />
       </Helmet>
 
       <div className="min-h-screen bg-white">
@@ -52,17 +55,17 @@ const ProfessionalOutcomesPortal = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="text-slate-900">Professional Outcomes Portal</BreadcrumbPage>
+                  <BreadcrumbPage className="text-slate-900">PPC Aggregate Clinical Outcomes</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
 
             <div className="mt-8">
               <h1 className="text-2xl lg:text-3xl font-semibold text-slate-900 tracking-tight">
-                Professional Outcomes Portal
+                PPC Aggregate Clinical Outcomes
               </h1>
               <p className="mt-2 text-slate-500 text-sm">
-                Aggregate clinical outcomes for referring professionals
+                Transparency Into Observed Clinical Trends
               </p>
             </div>
           </div>
@@ -76,18 +79,77 @@ const ProfessionalOutcomesPortal = () => {
               <Alert className="mb-8 border-amber-200 bg-amber-50">
                 <AlertCircle className="h-4 w-4 text-amber-600" />
                 <AlertDescription className="text-amber-800">
-                  Access restricted to verified professionals. Please request access below to view condition-specific outcome data.
+                  Access restricted to verified professionals. Please request access below to view condition specific outcome data.
                 </AlertDescription>
               </Alert>
             )}
 
-            {/* Opening Section */}
+            {/* Introduction */}
             <section className="mb-12">
               <p className="text-slate-700 leading-relaxed">
-                The Professional Outcomes Portal provides referring clinicians with access to aggregate, condition-specific outcome data derived from the Pittsford Performance Care Outcome Registry.
+                Pittsford Performance Care provides referring professionals with access to aggregate, condition specific clinical outcomes derived from our internal Outcome Registry. These data are presented descriptively and with clinical context to support referral confidence, shared decision making, and professional collaboration.
               </p>
               <p className="text-slate-700 leading-relaxed mt-4">
-                These data are presented descriptively and with clinical context to support shared decision-making, referral confidence, and professional collaboration.
+                This overview reflects observed trends across defined episodes of care using validated outcome measures and longitudinal tracking. It is designed to offer transparency into how patients progress across common referral conditions managed at PPC, without marketing overlay, selective reporting, or comparative claims.
+              </p>
+            </section>
+
+            <Separator className="my-10" />
+
+            {/* What This Page Provides */}
+            <section className="mb-12">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                What This Page Provides
+              </h2>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                This page offers aggregate clinical insight, including:
+              </p>
+              <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2">
+                <li>Condition specific outcome distributions</li>
+                <li>Longitudinal recovery trajectories across defined care episodes</li>
+                <li>Functional outcome measures interpreted with clinical context</li>
+                <li>Clear explanations of how outcomes are collected and tracked</li>
+                <li>Guidance on appropriate interpretation and use</li>
+              </ul>
+              <p className="text-slate-700 leading-relaxed mt-4">
+                All data are presented in aggregate form and reflect real world clinical experience across a diverse case mix.
+              </p>
+            </section>
+
+            <Separator className="my-10" />
+
+            {/* What This Page Does Not Provide */}
+            <section className="mb-12">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                What This Page Does Not Provide
+              </h2>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                To ensure appropriate use and clarity, this page:
+              </p>
+              <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2">
+                <li>Does not contain patient level data</li>
+                <li>Does not predict individual outcomes</li>
+                <li>Does not include testimonials or case highlights</li>
+                <li>Does not compare outcomes to other providers</li>
+                <li>Does not replace independent clinical judgment</li>
+              </ul>
+              <p className="text-slate-700 leading-relaxed mt-4">
+                Observed trends and distributions are emphasized over averages, recognizing the importance of variability and case complexity.
+              </p>
+            </section>
+
+            <Separator className="my-10" />
+
+            {/* Differentiation Block */}
+            <section className="mb-12 border border-slate-200 rounded-lg p-6 bg-slate-50/50">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                For Referring Professionals With Shared Patients
+              </h2>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Patient specific progress, episode level outcomes, and clinical trajectory for shared patients are provided separately through PPC Clinical Outcomes Review.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Clinical Outcomes Review is a complimentary service made available automatically to referring professionals for shared patients to support coordinated care and informed decision making throughout the episode of care.
               </p>
             </section>
 
@@ -96,7 +158,7 @@ const ProfessionalOutcomesPortal = () => {
             {/* Condition Views Section */}
             <section className="mb-12">
               <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                Condition-Specific Outcomes
+                Condition Specific Outcomes
               </h2>
               <p className="text-slate-700 leading-relaxed mb-6">
                 Select a condition to view aggregate outcomes, recovery trajectories, and clinical interpretation guidance.
@@ -143,42 +205,22 @@ const ProfessionalOutcomesPortal = () => {
 
             <Separator className="my-10" />
 
-            {/* What This Portal Provides */}
-            <section className="mb-12">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                What This Portal Provides
-              </h2>
-              <p className="text-slate-700 leading-relaxed mb-4">
-                This portal is designed to offer transparency into observed clinical trends across common referral conditions managed at PPC, without marketing overlay or selective reporting.
-              </p>
-              <p className="text-slate-700 leading-relaxed">
-                It includes aggregate outcomes by condition, longitudinal recovery trajectories, and functional outcome measures interpreted with context. You will also find clear explanations of how outcomes are measured, along with clinical interpretation guidance for appropriate use.
-              </p>
-            </section>
-
-            <Separator className="my-10" />
-
-            {/* What This Portal Is Not */}
-            <section className="mb-12">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                What This Portal Is Not
-              </h2>
-              <p className="text-slate-700 leading-relaxed">
-                This portal does not contain patient-level data and is not predictive of individual outcomes. It does not feature testimonials or case highlights, nor does it provide comparative benchmarking against other providers. It is not a substitute for clinical judgment.
-              </p>
-            </section>
-
-            <Separator className="my-10" />
-
             {/* Intended Audience */}
             <section className="mb-12">
               <h2 className="text-lg font-semibold text-slate-900 mb-4">
                 Intended Audience
               </h2>
               <p className="text-slate-700 leading-relaxed mb-4">
-                This portal is intended for physicians and physician extenders, orthopedic and sports medicine specialists, physical therapists and rehabilitation professionals, athletic trainers and performance clinicians, and school-based clinical teams.
+                This aggregate outcomes overview is intended for:
               </p>
-              <p className="text-slate-600 text-sm">
+              <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2">
+                <li>Physicians and physician extenders</li>
+                <li>Orthopedic and sports medicine specialists</li>
+                <li>Physical therapists and rehabilitation professionals</li>
+                <li>Athletic trainers and performance clinicians</li>
+                <li>School based clinical teams</li>
+              </ul>
+              <p className="text-slate-600 text-sm mt-4">
                 Access is restricted to verified professionals.
               </p>
             </section>
@@ -188,27 +230,30 @@ const ProfessionalOutcomesPortal = () => {
             {/* Clinical Governance & Data Integrity */}
             <section className="mb-12">
               <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                Clinical Governance & Data Integrity
+                Clinical Governance and Data Integrity
               </h2>
               <p className="text-slate-700 leading-relaxed mb-4">
-                Data are derived from PPC's internal Outcome Registry. Outcomes are tracked across defined episodes of care using validated measures and longitudinal tracking. Aggregate views are presented with safeguards to protect privacy.
+                Aggregate outcomes are derived from PPC's internal Outcome Registry. Outcomes are tracked across defined episodes of care using validated measures and longitudinal tracking protocols designed to support clinical accountability and transparency.
               </p>
               <p className="text-slate-700 leading-relaxed">
-                Pittsford Performance Care also engages in translational neuroscience research under Institutional Review Board (IRB) oversight. While the portal reflects real-world clinical data, it is designed for transparency and collaboration—not research publication or individual prediction.
+                Pittsford Performance Care also engages in translational neuroscience research under Institutional Review Board oversight. While this page reflects real world clinical data, it is designed for professional transparency and collaboration, not research publication or individual prediction.
               </p>
             </section>
 
             <Separator className="my-10" />
 
-            {/* How to Interpret the Data */}
+            {/* How to Interpret Aggregate Outcomes */}
             <section className="mb-12">
               <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                How to Interpret the Data
+                How to Interpret Aggregate Outcomes
               </h2>
-              <p className="text-slate-700 leading-relaxed mb-4">
-                Outcomes are descriptive, not prescriptive. Distributions and trends matter more than averages. Symptom resolution may precede readiness. Case mix influences observed outcomes.
-              </p>
-              <p className="text-slate-700 leading-relaxed">
+              <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2">
+                <li>Outcomes are descriptive, not prescriptive.</li>
+                <li>Distributions and trends matter more than averages.</li>
+                <li>Symptom resolution may precede readiness.</li>
+                <li>Case mix and referral patterns influence observed outcomes.</li>
+              </ul>
+              <p className="text-slate-700 leading-relaxed mt-4">
                 Each condition view includes interpretation guidance to support appropriate clinical use.
               </p>
             </section>
@@ -216,27 +261,42 @@ const ProfessionalOutcomesPortal = () => {
             <Separator className="my-10" />
 
             {/* Access Request CTA */}
-            <section className="border border-slate-200 rounded-lg p-6 lg:p-8 bg-slate-50/50">
+            <section className="border border-slate-200 rounded-lg p-6 lg:p-8 bg-slate-50/50 mb-12">
               <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                Request Professional Access
+                Review Aggregate Clinical Outcomes
               </h2>
-              <p className="text-slate-700 leading-relaxed mb-4">
-                Access to the Professional Outcomes Portal is available to verified clinicians and professional partners.
-              </p>
               <p className="text-slate-700 leading-relaxed mb-6">
-                If you are interested in reviewing aggregate outcome data to support referral decisions or collaborative care discussions, you may request access below.
+                Professional verification required.
               </p>
               <div>
                 <Link
                   to="/patient/intake/referral"
                   className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-100 hover:border-slate-400 transition-colors"
                 >
-                  Request Access to Outcomes Portal
+                  Request Professional Verification
                 </Link>
               </div>
               <p className="text-slate-500 text-xs mt-4">
-                Access is view-only. No patient-identifiable data are displayed. No obligation to refer.
+                Access is view only. No patient identifiable data are displayed. No obligation to refer.
               </p>
+            </section>
+
+            {/* Footer CTA - Physician Referral */}
+            <section className="border-t border-slate-200 pt-10">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                Looking to Refer a Patient?
+              </h2>
+              <p className="text-slate-700 leading-relaxed mb-6">
+                Visit our Physician Referral page to initiate coordinated care and access Clinical Outcomes Review for shared patients.
+              </p>
+              <div>
+                <Link
+                  to="/site/physicians"
+                  className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-slate-900 border border-slate-900 rounded-md hover:bg-slate-800 transition-colors"
+                >
+                  Physician Referral Page
+                </Link>
+              </div>
             </section>
           </div>
         </div>
