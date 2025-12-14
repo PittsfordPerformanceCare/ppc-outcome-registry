@@ -103,6 +103,7 @@ const ClinicianGuidesIndex = lazy(() => import("./pages/site/ClinicianGuidesInde
 const ClinicianGuideMotorTiming = lazy(() => import("./pages/site/ClinicianGuideMotorTiming"));
 const ProfessionalOutcomesPortal = lazy(() => import("./pages/site/ProfessionalOutcomesPortal"));
 const ProfessionalConditionView = lazy(() => import("./pages/site/ProfessionalConditionView"));
+const ClinicalOutcomesReview = lazy(() => import("./pages/professional/ClinicalOutcomesReview"));
 
 // ========== PHASE 1 SHELL: /patient PAGES ==========
 const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
@@ -184,6 +185,9 @@ const App = () => (
               <Route index element={<ProfessionalOutcomesPortal />} />
               <Route path="conditions/:conditionSlug" element={<ProfessionalConditionView />} />
             </Route>
+
+            {/* ========== PROFESSIONAL: CLINICAL OUTCOMES REVIEW (GATED) ========== */}
+            <Route path="/professional/clinical-outcomes-review/:episodeId" element={<ClinicalOutcomesReview />} />
 
             {/* ========== PHASE 1 SHELL: /patient ROUTES (PUBLIC) ========== */}
             <Route path="/patient" element={<PatientLayout />}>
