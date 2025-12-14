@@ -690,34 +690,59 @@ const SitePerformance = () => {
       </section>
 
       {/* Related Articles Section */}
-      <section className="py-16 lg:py-20 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-200 dark:border-slate-800">
+      <section className="py-20 lg:py-28 bg-background border-t border-border/40">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-xl font-semibold mb-6 text-foreground">Performance Articles</h3>
-            <div className="grid sm:grid-cols-2 gap-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Zap className="h-4 w-4" />
+                Deep Dive
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">Performance Articles</h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Explore the principles behind performance oriented recovery and outcome tracking.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6">
               <Link 
                 to="/site/performance/speed-of-recovery-as-a-performance-metric" 
-                className="p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
+                className="group flex flex-col p-8 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <span className="text-sm text-primary font-medium">Pillar Article</span>
-                <h4 className="text-lg font-semibold mt-1 mb-2 text-foreground group-hover:text-primary transition-colors">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+                  <Timer className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Pillar Article</span>
+                <h3 className="font-bold text-xl mb-3 group-hover:text-primary transition-colors">
                   Why Speed of Recovery Is a Performance Metric
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  How neurologic readiness, not timelines, determines how quickly patients return to confidence and capacity.
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4 flex-1">
+                  Discover how neurologic readiness, not timelines, determines how quickly patients return to confidence and capacity. Learn why recovery efficiency matters.
                 </p>
+                <span className="text-sm text-primary font-medium group-hover:underline flex items-center gap-2">
+                  Read Article
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </span>
               </Link>
+              
               <Link 
                 to="/site/registry" 
-                className="p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
+                className="group flex flex-col p-8 rounded-2xl bg-card border border-border/60 hover:border-primary/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <span className="text-sm text-primary font-medium">Outcome Tracking</span>
-                <h4 className="text-lg font-semibold mt-1 mb-2 text-foreground group-hover:text-primary transition-colors">
+                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5">
+                  <Target className="h-6 w-6 text-primary" />
+                </div>
+                <span className="text-xs font-semibold text-primary uppercase tracking-wider mb-2">Outcome Tracking</span>
+                <h3 className="font-bold text-xl mb-3 group-hover:text-primary transition-colors">
                   PPC Outcome Registry
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  How PPC tracks clinical outcomes across neurologic and musculoskeletal cases.
+                </h3>
+                <p className="text-muted-foreground leading-relaxed mb-4 flex-1">
+                  Understand how PPC tracks clinical outcomes across neurologic and musculoskeletal cases, supporting transparency and clinical accountability.
                 </p>
+                <span className="text-sm text-primary font-medium group-hover:underline flex items-center gap-2">
+                  Learn More
+                  <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </span>
               </Link>
             </div>
           </div>
