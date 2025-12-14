@@ -19,7 +19,8 @@ import {
   Ear,
   Heart,
   Hand,
-  Gauge
+  Gauge,
+  AlertTriangle
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
@@ -314,12 +315,16 @@ const SiteMsk = () => {
       </section>
 
       {/* Load & Compensation Cascade Section */}
-      <section className="py-20 lg:py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+      <section className="py-24 lg:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950" />
         
         <div className="container mx-auto px-4 relative">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-sm font-medium mb-6">
+                <AlertTriangle className="h-4 w-4" />
+                The Cascade Effect
+              </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 How Neurologic Dysfunction Creates Pain Cascades
               </h2>
@@ -329,36 +334,76 @@ const SiteMsk = () => {
               </p>
             </div>
             
-            <div className="space-y-4 mb-10">
-              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
-                <p className="text-muted-foreground leading-relaxed">
-                  <span className="font-semibold text-foreground">Cerebellar timing delay</span> → 
-                  late muscle firing → joint overload → chronic pain
-                </p>
-              </Card>
-              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
-                <p className="text-muted-foreground leading-relaxed">
-                  <span className="font-semibold text-foreground">Proprioceptive asymmetry</span> → 
-                  uneven force absorption → tissue irritation
-                </p>
-              </Card>
-              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
-                <p className="text-muted-foreground leading-relaxed">
-                  <span className="font-semibold text-foreground">Brainstem/autonomic inefficiency</span> → 
-                  poor recovery → reduced tissue tolerance
-                </p>
-              </Card>
-              <Card className="p-5 rounded-xl border border-border/60 bg-card/50">
-                <p className="text-muted-foreground leading-relaxed">
-                  <span className="font-semibold text-foreground">Limbic overactivation</span> → 
-                  guarding → altered movement → persistent pain
-                </p>
-              </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-14">
+              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
+                  <Brain className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <h3 className="font-bold text-lg mb-3 text-foreground">Cerebellar Cascade</h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">Cerebellar timing delay</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span>late muscle firing</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span>joint overload</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span className="font-medium text-foreground">chronic pain</span>
+                </div>
+              </div>
+
+              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
+                  <Hand className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <h3 className="font-bold text-lg mb-3 text-foreground">Proprioceptive Cascade</h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">Proprioceptive asymmetry</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span>uneven force absorption</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span className="font-medium text-foreground">tissue irritation</span>
+                </div>
+              </div>
+
+              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
+                  <Zap className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <h3 className="font-bold text-lg mb-3 text-foreground">Brainstem Cascade</h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">Brainstem/autonomic inefficiency</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span>poor recovery</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span className="font-medium text-foreground">reduced tissue tolerance</span>
+                </div>
+              </div>
+
+              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
+                  <Shield className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                </div>
+                <h3 className="font-bold text-lg mb-3 text-foreground">Limbic Cascade</h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">Limbic overactivation</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span>guarding</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span>altered movement</span>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                  <span className="font-medium text-foreground">persistent pain</span>
+                </div>
+              </div>
             </div>
             
-            <p className="text-lg text-center text-muted-foreground leading-relaxed font-medium">
-              Treating pain at the tissue level alone rarely resolves the underlying control problem.
-            </p>
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 shadow-lg">
+                <Target className="h-5 w-5 text-primary shrink-0" />
+                <p className="text-base font-medium text-foreground">
+                  Treating pain at the tissue level alone rarely resolves the underlying control problem.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
