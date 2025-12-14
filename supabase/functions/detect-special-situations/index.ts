@@ -13,16 +13,23 @@ interface TriggerConfig {
 }
 
 const TRIGGER_CONFIGS: TriggerConfig[] = [
+  // Primary special situations (episode pause triggers)
   {
-    type: "referral_initiated",
-    phrases: ["referral to", "referred to", "referral initiated"],
-    label: "Referral Initiated"
+    type: "neuro_exam_pivot",
+    phrases: ["neuro exam", "neurologic examination", "internal neuro eval", "neuro assessment scheduled", "pivoting to neuro"],
+    label: "Internal Neuro Exam"
   },
   {
-    type: "new_neurologic_symptoms",
-    phrases: ["new neurologic symptoms", "new neuro symptoms", "new symptoms reported"],
-    label: "New Neurologic Symptoms"
+    type: "ortho_referral",
+    phrases: ["ortho referral", "orthopedic referral", "referred to orthopedics", "ortho consult", "orthopedic consult", "sent to ortho"],
+    label: "Ortho Referral"
   },
+  {
+    type: "imaging_request",
+    phrases: ["mri ordered", "imaging requested", "ct scan", "x-ray ordered", "imaging ordered", "mri scheduled", "ct ordered", "radiograph ordered"],
+    label: "Imaging Request"
+  },
+  // Secondary special situations
   {
     type: "red_flag",
     phrases: ["red flag", "concerning finding", "urgent concern"],
@@ -37,11 +44,6 @@ const TRIGGER_CONFIGS: TriggerConfig[] = [
     type: "provider_transition",
     phrases: ["transition of care", "provider transition", "care transferred to"],
     label: "Provider Transition"
-  },
-  {
-    type: "change_in_plan_unexpected",
-    phrases: ["plan changed due to", "unexpected change in plan"],
-    label: "Unexpected Change in Plan"
   }
 ];
 

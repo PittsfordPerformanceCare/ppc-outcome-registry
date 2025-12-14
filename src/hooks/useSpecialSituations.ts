@@ -27,13 +27,19 @@ export interface SpecialSituationSummary {
   openOlderThan7Days: number;
 }
 
-export const SITUATION_TYPE_LABELS: Record<string, { label: string; color: string }> = {
-  referral_initiated: { label: "Referral Initiated", color: "bg-blue-500" },
-  new_neurologic_symptoms: { label: "New Neuro Symptoms", color: "bg-purple-500" },
-  red_flag: { label: "Red Flag", color: "bg-red-500" },
-  emergency_or_911: { label: "Emergency/911", color: "bg-red-700" },
-  provider_transition: { label: "Provider Transition", color: "bg-orange-500" },
-  change_in_plan_unexpected: { label: "Unexpected Change", color: "bg-yellow-500" }
+export const SITUATION_TYPE_LABELS: Record<string, { label: string; color: string; isPauseTrigger: boolean }> = {
+  // Primary pause triggers - patient pivots out but returns for discharge
+  neuro_exam_pivot: { label: "Internal Neuro Exam", color: "bg-purple-500", isPauseTrigger: true },
+  ortho_referral: { label: "Ortho Referral", color: "bg-blue-500", isPauseTrigger: true },
+  imaging_request: { label: "Imaging Request", color: "bg-cyan-500", isPauseTrigger: true },
+  // Secondary situations
+  red_flag: { label: "Red Flag", color: "bg-red-500", isPauseTrigger: false },
+  emergency_or_911: { label: "Emergency/911", color: "bg-red-700", isPauseTrigger: false },
+  provider_transition: { label: "Provider Transition", color: "bg-orange-500", isPauseTrigger: false },
+  // Legacy types for backwards compatibility
+  referral_initiated: { label: "Referral Initiated", color: "bg-blue-400", isPauseTrigger: true },
+  new_neurologic_symptoms: { label: "New Neuro Symptoms", color: "bg-purple-400", isPauseTrigger: false },
+  change_in_plan_unexpected: { label: "Unexpected Change", color: "bg-yellow-500", isPauseTrigger: false }
 };
 
 export function useSpecialSituations(filters?: {
