@@ -65,7 +65,7 @@ export const ArticleCTA = ({ variant, primaryCTA, secondaryCTA, category }: Arti
           </h2>
           <p className="text-muted-foreground text-lg">
             Stop wondering what's wrong. Get a comprehensive neurologic evaluation 
-            that identifies exactly what's driving your symptoms—and what can be done about it.
+            that identifies exactly what's driving your symptoms, and what can be done about it.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">

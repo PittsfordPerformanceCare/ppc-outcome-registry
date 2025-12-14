@@ -85,7 +85,7 @@ const SiteMsk = () => {
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Pain that doesn't match your imaging results. Movements that feel heavy, slow, or 
-                effortful—like your body isn't responding the way it used to. One side that doesn't 
+                effortful, like your body isn't responding the way it used to. One side that doesn't 
                 work quite like the other. Fatigue that limits your activity tolerance, even when 
                 you're doing everything right.
               </p>
@@ -97,7 +97,7 @@ const SiteMsk = () => {
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 These aren't signs of weakness or aging. They're not in your head. They're signs 
-                of neuromuscular dysfunction—problems with how your nervous system controls movement 
+                of neuromuscular dysfunction, problems with how your nervous system controls movement 
                 that require a different approach.
               </p>
             </div>
@@ -120,7 +120,7 @@ const SiteMsk = () => {
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Musculoskeletal pain does not always reflect tissue damage. Pain often persists 
-                when the nervous system cannot properly time, coordinate, or distribute load—even 
+                when the nervous system cannot properly time, coordinate, or distribute load, even 
                 when strength and imaging appear normal.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
@@ -151,8 +151,8 @@ const SiteMsk = () => {
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   At Pittsford Performance Care, chronic and recurrent MSK pain is evaluated through 
-                  a domain-based neurologic model. Each domain below represents a specific control 
-                  system that can independently — or collectively — contribute to pain, inefficiency, 
+                  a domain based neurologic model. Each domain below represents a specific control 
+                  system that can independently, or collectively, contribute to pain, inefficiency, 
                   and compensation when function is disrupted.
                 </p>
               </div>
@@ -420,11 +420,11 @@ const SiteMsk = () => {
                 MRI and X-rays show structure, not function. They can capture a torn ligament or 
                 a herniated disc, but they can't see timing deficits, sequencing errors, or the 
                 neural control problems that actually drive most chronic pain. Motor timing happens 
-                in milliseconds—invisible to any imaging technology.
+                in milliseconds, invisible to any imaging technology.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 This is why so many people receive imaging that looks relatively normal despite 
-                significant symptoms. The problem isn't structural—it's functional. Sequencing 
+                significant symptoms. The problem isn't structural, it's functional. Sequencing 
                 errors don't show up on scans. Neural control deficits require dynamic assessment, 
                 not static pictures.
               </p>
@@ -576,7 +576,7 @@ const SiteMsk = () => {
                   Motor Timing Deficits
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed tracking-wide flex-1">
-                  Why milliseconds matter for joint protection—and how timing errors cause pain without structural damage.
+                  Why milliseconds matter for joint protection, and how timing errors cause pain without structural damage.
                 </p>
                 <div className="mt-8 pt-6 border-t border-border/30">
                   <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all duration-300">
@@ -655,7 +655,7 @@ const SiteMsk = () => {
                 PPC's approach to musculoskeletal care is informed by established research in 
                 clinical neuroscience, motor control, and rehabilitation medicine. Our methodology 
                 focuses on identifying neurologic drivers of pain and dysfunction rather than 
-                relying solely on structural findings—grounded in the understanding that persistent 
+                relying solely on structural findings, grounded in the understanding that persistent 
                 pain and performance loss often reflect deficits in timing, coordination, load 
                 tolerance, or central regulation.
               </p>
@@ -663,14 +663,14 @@ const SiteMsk = () => {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Validated outcome measures and functional indicators are integrated throughout 
                 our musculoskeletal care. Treatment progression is guided by objective change over 
-                time—not pain reports alone. Care adapts based on how the nervous system responds 
+                time, not pain reports alone. Care adapts based on how the nervous system responds 
                 to load, movement demand, and fatigue.
               </p>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Pittsford Performance Care actively engages in translational neuroscience research 
-                relevant to musculoskeletal and performance-related conditions under Institutional 
-                Review Board (IRB) oversight—contributing responsibly to broader understanding 
+                relevant to musculoskeletal and performance related conditions under Institutional 
+                Review Board (IRB) oversight, contributing responsibly to broader understanding 
                 while maintaining the highest standards of patient care.
               </p>
             </div>
@@ -706,7 +706,7 @@ const SiteMsk = () => {
               <p className="text-muted-foreground leading-relaxed">
                 All supporting evidence is maintained in a centralized Works Cited resource, 
                 actively curated as the science of motor control, pain, and rehabilitation 
-                advances—reflecting PPC's commitment to transparency and continuous learning.
+                advances, reflecting PPC's commitment to transparency and continuous learning.
               </p>
             </div>
           </div>
@@ -722,8 +722,8 @@ const SiteMsk = () => {
                 If Pain Persists Despite Rest, Strength Work, or Normal Imaging
               </h3>
               <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-                A clinician-led neurologic and musculoskeletal evaluation can identify which 
-                domain is failing to manage load—and what to address first.
+                A clinician led neurologic and musculoskeletal evaluation can identify which 
+                domain is failing to manage load, and what to address first.
               </p>
               <Button size="lg" asChild>
                 <Link to="/patient/concierge">

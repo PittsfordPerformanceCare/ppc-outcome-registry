@@ -60,8 +60,8 @@ const SiteAbout = () => {
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   We started Pittsford Performance Care because we knew there had to be a better way. 
-                  By focusing on the neurologic systems that actually control function—not just the 
-                  structures that show up on scans—we help patients who've tried everything 
+                  By focusing on the neurologic systems that actually control function, not just the 
+                  structures that show up on scans, we help patients who've tried everything 
                   else finally find answers and a path forward.
                 </p>
                 
@@ -98,7 +98,7 @@ const SiteAbout = () => {
                       <h3 className="text-lg font-bold mb-2">Measured Outcomes</h3>
                       <p className="text-muted-foreground leading-relaxed">
                         Every episode is tracked with validated clinical measures 
-                        so you can see your progress objectively. No guessing—just 
+                        so you can see your progress objectively. No guessing, just 
                         clear data on what's working.
                       </p>
                     </div>
@@ -113,7 +113,7 @@ const SiteAbout = () => {
                     <div>
                       <h3 className="text-lg font-bold mb-2">Targeted Treatment</h3>
                       <p className="text-muted-foreground leading-relaxed">
-                        We treat the specific systems causing your symptoms—
+                        We treat the specific systems causing your symptoms, 
                         not just generic protocols. This means faster recovery 
                         and more lasting results.
                       </p>
@@ -327,9 +327,9 @@ const SiteAbout = () => {
             
             <div className="space-y-6 mb-10">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                At PPC, validated outcome measurements are integrated directly into active care — not 
-                collected retrospectively or for administrative purposes alone. Real-time objective 
-                data informs treatment progression, guides clinical decision-making, and ensures that 
+                At PPC, validated outcome measurements are integrated directly into active care, not 
+                collected retrospectively or for administrative purposes alone. Real time objective 
+                data informs treatment progression, guides clinical decision making, and ensures that 
                 patient recovery is tracked against meaningful thresholds rather than symptom reports alone.
               </p>
               
@@ -366,7 +366,7 @@ const SiteAbout = () => {
               <li className="flex items-start gap-4">
                 <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
                 <span className="text-muted-foreground leading-relaxed">
-                  Research demonstrating persistent metabolic and cerebral blood-flow disruption after concussion
+                  Research demonstrating persistent metabolic and cerebral blood flow disruption after concussion
                 </span>
               </li>
               <li className="flex items-start gap-4">

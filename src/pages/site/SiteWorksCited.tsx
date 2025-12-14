@@ -107,7 +107,7 @@ const SiteWorksCited = () => {
                 </li>
                 <li className="flex items-start gap-3 text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0" />
-                  <span>Persistent metabolic and cerebral blood-flow disruption after concussion</span>
+                  <span>Persistent metabolic and cerebral blood flow disruption after concussion</span>
                 </li>
                 <li className="flex items-start gap-3 text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0" />
@@ -115,7 +115,7 @@ const SiteWorksCited = () => {
                 </li>
                 <li className="flex items-start gap-3 text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-blue-500 mt-2.5 shrink-0" />
-                  <span>Limitations of symptom-only or time-based return-to-play models</span>
+                  <span>Limitations of symptom only or time based return to play models</span>
                 </li>
               </ul>
             </div>
@@ -139,23 +139,23 @@ const SiteWorksCited = () => {
                 </li>
                 <li className="flex items-start gap-3 text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-rose-500 mt-2.5 shrink-0" />
-                  <span>Exercise intolerance and orthostatic symptoms in post-injury states</span>
+                  <span>Exercise intolerance and orthostatic symptoms in post injury states</span>
                 </li>
               </ul>
             </div>
 
-            {/* Visual-Vestibular & Balance */}
+            {/* Visual Vestibular & Balance */}
             <div className="space-y-6">
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-violet-600/10 flex items-center justify-center">
                   <Eye className="h-6 w-6 text-violet-600 dark:text-violet-400" />
                 </div>
-                <h3 className="text-xl font-bold">Visual–Vestibular & Balance Systems</h3>
+                <h3 className="text-xl font-bold">Visual Vestibular & Balance Systems</h3>
               </div>
               <ul className="space-y-3 pl-16">
                 <li className="flex items-start gap-3 text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-violet-500 mt-2.5 shrink-0" />
-                  <span>Visual–vestibular integration and mismatch after concussion</span>
+                  <span>Visual vestibular integration and mismatch after concussion</span>
                 </li>
                 <li className="flex items-start gap-3 text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-violet-500 mt-2.5 shrink-0" />
@@ -226,7 +226,7 @@ const SiteWorksCited = () => {
                 <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 flex items-center justify-center">
                   <FileText className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />
                 </div>
-                <h3 className="text-xl font-bold">Outcome Measurement & Clinical Decision-Making</h3>
+                <h3 className="text-xl font-bold">Outcome Measurement & Clinical Decision Making</h3>
               </div>
               <ul className="space-y-3 pl-16">
                 <li className="flex items-start gap-3 text-muted-foreground">
@@ -263,11 +263,11 @@ const SiteWorksCited = () => {
                 </li>
                 <li className="flex items-start gap-3 text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2.5 shrink-0" />
-                  <span>Ethical and governance frameworks for IRB-supervised research</span>
+                  <span>Ethical and governance frameworks for IRB supervised research</span>
                 </li>
                 <li className="flex items-start gap-3 text-muted-foreground">
                   <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2.5 shrink-0" />
-                  <span>Responsible integration of research methods into real-world clinical care</span>
+                  <span>Responsible integration of research methods into real world clinical care</span>
                 </li>
               </ul>
             </div>
