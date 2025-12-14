@@ -689,6 +689,41 @@ const SitePerformance = () => {
         </div>
       </section>
 
+      {/* Related Articles Section */}
+      <section className="py-16 lg:py-20 bg-slate-50 dark:bg-slate-900/30 border-t border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <h3 className="text-xl font-semibold mb-6 text-foreground">Performance Articles</h3>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <Link 
+                to="/site/performance/speed-of-recovery-as-a-performance-metric" 
+                className="p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
+              >
+                <span className="text-sm text-primary font-medium">Pillar Article</span>
+                <h4 className="text-lg font-semibold mt-1 mb-2 text-foreground group-hover:text-primary transition-colors">
+                  Why Speed of Recovery Is a Performance Metric
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  How neurologic readiness, not timelines, determines how quickly patients return to confidence and capacity.
+                </p>
+              </Link>
+              <Link 
+                to="/site/registry" 
+                className="p-5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-primary/50 hover:shadow-md transition-all group"
+              >
+                <span className="text-sm text-primary font-medium">Outcome Tracking</span>
+                <h4 className="text-lg font-semibold mt-1 mb-2 text-foreground group-hover:text-primary transition-colors">
+                  PPC Outcome Registry
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  How PPC tracks clinical outcomes across neurologic and musculoskeletal cases.
+                </p>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section - Dark, immersive close */}
       <section className="py-24 lg:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
