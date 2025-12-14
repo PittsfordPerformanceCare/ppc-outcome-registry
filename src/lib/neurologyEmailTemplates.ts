@@ -78,7 +78,7 @@ export const NEUROLOGY_EMAIL_TEMPLATES = {
     <ul style="color: #166534;">
       <li>Continue with your home exercise program as discussed</li>
       <li>Gradually return to your normal activities, respecting symptom limits</li>
-      <li>Practice pacing strategies to avoid symptom flare-ups</li>
+      <li>Practice pacing strategies to avoid symptom flare ups</li>
       <li>Monitor for any return or worsening of neurologic symptoms</li>
       <li>Maintain good sleep hygiene and stress management</li>
       <li>We will follow up with you in 90 days to ensure your progress is maintained</li>
@@ -109,7 +109,7 @@ export const NEUROLOGY_EMAIL_TEMPLATES = {
     <h3 style="color: #1e40af; margin-top: 0;">Why This Assessment Matters</h3>
     <p style="color: #1e40af;">The RPQ helps us:</p>
     <ul style="color: #1e40af;">
-      <li>Track changes in your post-concussion symptoms</li>
+      <li>Track changes in your post concussion symptoms</li>
       <li>Identify areas of improvement or concern</li>
       <li>Adjust your treatment plan based on your progress</li>
       <li>Document your recovery for clinical records</li>
