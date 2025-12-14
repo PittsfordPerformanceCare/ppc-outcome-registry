@@ -28,10 +28,10 @@ const SiteAbout = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              At Pittsford Performance Care, we don't just treat symptoms—we identify 
+              At Pittsford Performance Care, we do not just treat symptoms. We identify 
               and address the neurologic systems driving your condition. Our approach 
               combines advanced clinical evaluation with validated outcome tracking, 
-              ensuring you always know whether you're actually getting better.
+              ensuring you always know whether you are actually getting better.
             </p>
           </div>
         </div>
@@ -137,7 +137,7 @@ const SiteAbout = () => {
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">What Makes PPC Different</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Three foundational pillars define our approach to care—each designed 
+                Three foundational pillars define our approach to care, each designed 
                 to ensure you receive focused, effective, and measurable treatment.
               </p>
             </div>
@@ -147,10 +147,10 @@ const SiteAbout = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
                   <Brain className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">Systems-Based Evaluation</h3>
+                <h3 className="text-xl font-bold mb-4">Systems Based Evaluation</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  We don't just look at where it hurts. We evaluate all the neurologic 
-                  systems that could be contributing—visual, vestibular, cerebellar, 
+                  We do not just look at where it hurts. We evaluate all the neurologic 
+                  systems that could be contributing: visual, vestibular, cerebellar, 
                   autonomic, and proprioceptive. This comprehensive view reveals 
                   dysfunction that focused exams often miss.
                 </p>
@@ -160,10 +160,10 @@ const SiteAbout = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
                   <BarChart3 className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">Registry-Tracked Outcomes</h3>
+                <h3 className="text-xl font-bold mb-4">Registry Tracked Outcomes</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Every patient's progress is tracked in our Outcome Registry using 
-                  validated clinical measures. We don't guess—we prove improvement 
+                  validated clinical measures. We do not guess. We prove improvement 
                   with data. This accountability benefits both you and your referring 
                   providers.
                 </p>
@@ -173,10 +173,10 @@ const SiteAbout = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
                   <Target className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-bold mb-4">Episode-Based Care</h3>
+                <h3 className="text-xl font-bold mb-4">Episode Based Care</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Each complaint is its own episode with clear intake, treatment, 
-                  and discharge criteria. No endless treatment plans—just focused 
+                  and discharge criteria. No endless treatment plans, just focused 
                   interventions with defined endpoints. You know what to expect 
                   from day one.
                 </p>
@@ -224,15 +224,15 @@ const SiteAbout = () => {
                 <div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
                     <BarChart3 className="h-4 w-4" />
-                    Outcome-Driven Care
+                    Outcome Driven Care
                   </div>
                   <h2 className="text-3xl md:text-4xl font-bold mb-6">The PPC Outcome Registry</h2>
                 </div>
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   Our proprietary registry tracks every episode from intake through 
-                  discharge using validated clinical outcome measures. This isn't 
-                  just for our records—it's for you, your family, and any providers 
+                  discharge using validated clinical outcome measures. This is not 
+                  just for our records. It is for you, your family, and any providers 
                   coordinating your care.
                 </p>
                 
@@ -246,7 +246,7 @@ const SiteAbout = () => {
                   <li className="flex items-start gap-4">
                     <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-0.5" />
                     <span className="text-lg text-muted-foreground leading-relaxed">
-                      MCID-tracked outcomes for clinical significance
+                      MCID tracked outcomes for clinical significance
                     </span>
                   </li>
                   <li className="flex items-start gap-4">
@@ -258,7 +258,7 @@ const SiteAbout = () => {
                   <li className="flex items-start gap-4">
                     <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-0.5" />
                     <span className="text-lg text-muted-foreground leading-relaxed">
-                      Data-driven treatment adjustments when needed
+                      Treatment adjustments driven by data when needed
                     </span>
                   </li>
                 </ul>
@@ -335,9 +335,9 @@ const SiteAbout = () => {
               
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Our treatment methodology is grounded in established clinical neuroscience methods 
-                and practice. From visual-vestibular rehabilitation to autonomic reconditioning 
+                and practice. From visual vestibular rehabilitation to autonomic reconditioning 
                 and cerebellar timing protocols, each intervention reflects current understanding 
-                of neurologic function and recovery — applied with precision and adapted to 
+                of neurologic function and recovery, applied with precision and adapted to 
                 individual patient presentation.
               </p>
               
@@ -345,7 +345,7 @@ const SiteAbout = () => {
                 PPC is actively engaged in translational neuroscience research conducted under 
                 Institutional Review Board (IRB) oversight. This commitment to rigor and 
                 transparency ensures that our clinical observations contribute responsibly to 
-                the broader scientific understanding of neurologic rehabilitation — while 
+                the broader scientific understanding of neurologic rehabilitation, while 
                 maintaining the highest standards of patient care and ethical governance.
               </p>
             </div>
@@ -404,10 +404,10 @@ const SiteAbout = () => {
                   <Brain className="h-7 w-7 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2">Is PPC the Same as Physical Therapy?</h3>
+                <h3 className="text-xl font-bold mb-2">Is PPC the Same as Physical Therapy?</h3>
                   <p className="text-muted-foreground leading-relaxed">
                     Understand the distinction between our neurologic & musculoskeletal care model 
-                    and traditional approaches—and why this difference matters for your outcomes.
+                    and traditional approaches, and why this difference matters for your outcomes.
                   </p>
                 </div>
                 <Button asChild className="rounded-full shrink-0">
@@ -437,7 +437,7 @@ const SiteAbout = () => {
             
             <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
               Schedule your comprehensive neurologic evaluation and see what 
-              systems-based care can do for you. Our team is ready to help 
+              systems based care can do for you. Our team is ready to help 
               you find answers and build a path toward recovery.
             </p>
             

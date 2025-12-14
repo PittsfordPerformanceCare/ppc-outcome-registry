@@ -18,7 +18,7 @@ const providers = [
       "Concussion & mTBI Care",
       "Pediatric & Athlete Performance Care",
       "Neuromuscular Rehabilitation",
-      "Injury Prevention & Return-to-Play"
+      "Injury Prevention & Return to Play"
     ],
     bio: "Dr. Fink earned his undergraduate degree from Houghton University (2009) and his Doctor of Chiropractic from Northeastern College of Health Sciences (2012). Since joining PPC in 2013, he has completed extensive post-doctoral coursework in clinical neuroscience and is currently pursuing advanced training in Functional Neurology. Dr. Fink coordinates musculoskeletal care operations and actively bridges professional gaps in pediatric athlete care through evidence-based education and interdisciplinary collaboration with physicians, athletic trainers, and school personnel.",
     image: drMichaelFink,
@@ -33,8 +33,8 @@ const providers = [
     title: "Primary Clinician, Neurological Care",
     specialties: [
       "Concussion & mTBI Care",
-      "Functional Neurology-Based Rehabilitation",
-      "Visual-Vestibular Integration",
+      "Functional Neurology Based Rehabilitation",
+      "Visual Vestibular Integration",
       "Athlete Performance Care"
     ],
     bio: "Dr. Gaffney earned his undergraduate degree from Nazareth University while competing in Division II Soccer and Lacrosse (2013) and his Doctor of Chiropractic from Northeastern College of Health Sciences (2018). He has completed extensive post-doctoral education in clinical neuroscience with a focus on concussion and neurologic contributors to athletic performance. As a primary clinician for neurological cases alongside Dr. Luckey, Dr. Gaffney applies neurology-driven principles to mTBI recovery and performance restoration through structured rehabilitation protocols.",
@@ -50,8 +50,8 @@ const providers = [
     title: "Clinic Director",
     credentialNote: "Board-Eligible in Functional Neurology",
     specialties: [
-      "Concussion & Post-Concussion Syndrome",
-      "Visual-Vestibular & Balance Disorders",
+      "Concussion & Post Concussion Syndrome",
+      "Visual Vestibular & Balance Disorders",
       "Chronic Migraine & Headache",
       "Performance Readiness Assessment"
     ],
@@ -182,10 +182,10 @@ const SiteProviders = () => {
               <div>
                 <h3 className="font-semibold">Post-Doctoral Education</h3>
                 <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                  <li>Post-doctoral education in Clinical Neuroscience & Functional Neurology</li>
+                  <li>Post doctoral education in Clinical Neuroscience & Functional Neurology</li>
                   <li>Advanced concussion and mTBI care training</li>
                   <li>Vestibular and balance rehabilitation coursework</li>
-                  <li>Neuromuscular rehabilitation and performance-based care models</li>
+                  <li>Neuromuscular rehabilitation and performance based care models</li>
                 </ul>
               </div>
             </div>
@@ -196,10 +196,10 @@ const SiteProviders = () => {
               <div>
                 <h3 className="font-semibold">Clinical Training Focus</h3>
                 <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                  <li>Neurology-driven rehabilitation principles</li>
-                  <li>Visual-vestibular integration assessment</li>
-                  <li>Performance-based care models</li>
-                  <li>Data-driven outcome tracking systems</li>
+                  <li>Neurology driven rehabilitation principles</li>
+                  <li>Visual vestibular integration assessment</li>
+                  <li>Performance based care models</li>
+                  <li>Outcome tracking systems driven by data</li>
                 </ul>
               </div>
             </div>

@@ -21,11 +21,11 @@ const SiteHub = () => {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
               <Sparkles className="h-4 w-4" />
-              Systems-Based Care
+              Systems Based Care
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Neurologic-Driven Care for
+              Neurologic Driven Care for
               <span className="text-primary block mt-2">Lasting Recovery</span>
             </h1>
             
@@ -75,18 +75,18 @@ const SiteHub = () => {
                 </div>
                 <h3 className="text-2xl font-bold mb-3">Concussion Care</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  Persistent post-concussion symptoms require a systems-based approach. 
+                  Persistent post concussion symptoms require a systems based approach. 
                   We identify which neurologic systems are affected and target treatment accordingly.
                 </p>
                 
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Five-System Concussion Model evaluation</span>
+                    <span className="text-muted-foreground">Five System Concussion Model evaluation</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Visual-vestibular mismatch testing</span>
+                    <span className="text-muted-foreground">Visual vestibular mismatch testing</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -157,7 +157,7 @@ const SiteHub = () => {
                 <div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
                     <BarChart3 className="h-4 w-4" />
-                    The Registry Advantage
+                    Registry Advantage
                   </div>
                   <h2 className="text-3xl md:text-4xl font-bold mb-6">
                     Measured Outcomes, Not Just Reported Improvement
@@ -166,7 +166,7 @@ const SiteHub = () => {
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   Our PPC Outcome Registry tracks validated clinical measures from intake 
-                  through discharge. This means we can prove your progress with objective data—
+                  through discharge. This means we can prove your progress with objective data, 
                   not just subjective reports. You always know whether treatment is working.
                 </p>
                 
@@ -176,7 +176,7 @@ const SiteHub = () => {
                       <Target className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <span className="font-medium">MCID-tracked outcomes</span>
+                      <span className="font-medium">MCID tracked outcomes</span>
                       <p className="text-muted-foreground text-sm mt-1">
                         Every episode measured for clinically meaningful improvement
                       </p>
@@ -187,7 +187,7 @@ const SiteHub = () => {
                       <BarChart3 className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <span className="font-medium">Real-time analytics</span>
+                      <span className="font-medium">Live analytics</span>
                       <p className="text-muted-foreground text-sm mt-1">
                         Track your recovery trajectory with objective data
                       </p>

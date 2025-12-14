@@ -58,9 +58,9 @@ const SiteWhyNotPhysicalTherapy = () => {
                 <div>
                   <h2 className="text-lg font-semibold mb-2">TL;DR</h2>
                   <p className="text-muted-foreground leading-relaxed">
-                    Pittsford Performance Care (PPC) is a clinician-led neurologic & musculoskeletal care practice—not a physical therapy clinic. 
-                    We evaluate and treat the neurologic systems that control movement and function, then prescribe targeted interventions based on 
-                    those findings. This system-based approach identifies dysfunction that traditional structural exams often miss, leading to more 
+61:                     Pittsford Performance Care (PPC) is a clinician led neurologic & musculoskeletal care practice, not a physical therapy clinic. 
+62:                     We evaluate and treat the neurologic systems that control movement and function, then prescribe targeted interventions based on 
+63:                     those findings. This system based approach identifies dysfunction that traditional structural exams often miss, leading to more 
                     precise care and measurable outcomes.
                   </p>
                 </div>
@@ -81,7 +81,7 @@ const SiteWhyNotPhysicalTherapy = () => {
             </p>
             
             <p className="text-lg text-muted-foreground leading-relaxed">
-              The answer is <strong className="text-foreground">no</strong>—and understanding why matters clinically. 
+              The answer is <strong className="text-foreground">no</strong>, and understanding why matters clinically. 
               While physical therapy is a respected profession that helps many patients, PPC operates from a 
               fundamentally different clinical framework. This distinction affects how we evaluate patients, 
               what we identify as the source of symptoms, and how we design treatment.
@@ -97,7 +97,7 @@ const SiteWhyNotPhysicalTherapy = () => {
             <div className="text-center mb-12">
               <h2 className="text-2xl md:text-3xl font-bold mb-4">Understanding the Difference</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                A comparison of clinical frameworks—not a critique, but a clarification.
+                A comparison of clinical frameworks, not a critique, but a clarification.
               </p>
             </div>
 
@@ -115,7 +115,7 @@ const SiteWhyNotPhysicalTherapy = () => {
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="h-2 w-2 rounded-full bg-muted-foreground/40 mt-2.5 shrink-0" />
-                    <span className="text-muted-foreground">Protocol-based exercise progressions</span>
+                    <span className="text-muted-foreground">Protocol based exercise progressions</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <div className="h-2 w-2 rounded-full bg-muted-foreground/40 mt-2.5 shrink-0" />
@@ -161,13 +161,13 @@ const SiteWhyNotPhysicalTherapy = () => {
                     <Activity className="h-4 w-4" />
                     Our Approach
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-4">System-Based Evaluation</h2>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-4">System Based Evaluation</h2>
                 </div>
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   PPC integrates neurologic and musculoskeletal assessment into a unified clinical model. 
                   Rather than focusing solely on where symptoms appear, we evaluate the systems that 
-                  control function—identifying dysfunction at its source.
+                  control function, identifying dysfunction at its source.
                 </p>
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
@@ -225,10 +225,10 @@ const SiteWhyNotPhysicalTherapy = () => {
 
             <div className="space-y-6">
               <Card className="p-6 rounded-xl border border-border/60 bg-card/50">
-                <h3 className="font-semibold mb-2">Concussion & Post-Concussion Symptoms</h3>
+                <h3 className="font-semibold mb-2">Concussion & Post Concussion Symptoms</h3>
                 <p className="text-muted-foreground">
-                  Persistent symptoms after head injury often stem from visual-vestibular mismatch, 
-                  autonomic dysregulation, or cerebellar timing deficits—not structural damage. 
+                  Persistent symptoms after head injury often stem from visual vestibular mismatch, 
+                  autonomic dysregulation, or cerebellar timing deficits, not structural damage. 
                   Traditional imaging is typically normal because the problem is functional, not anatomical.
                 </p>
               </Card>
@@ -271,8 +271,8 @@ const SiteWhyNotPhysicalTherapy = () => {
             <h2 className="text-2xl md:text-3xl font-bold">Exercises Are an Output, Not an Identity</h2>
             
             <p className="text-lg text-muted-foreground leading-relaxed">
-              At PPC, exercise prescription is the <em>result</em> of neurologic evaluation—not the 
-              definition of our care. We don't start with generic protocols; we start with a 
+              At PPC, exercise prescription is the <em>result</em> of neurologic evaluation, not the 
+              definition of our care. We do not start with generic protocols; we start with a 
               comprehensive systems assessment.
             </p>
             
@@ -284,7 +284,7 @@ const SiteWhyNotPhysicalTherapy = () => {
             
             <Card className="p-6 rounded-xl border border-primary/20 bg-primary/5">
               <p className="text-foreground font-medium">
-                "Exercises are prescribed based on neurologic system performance—not as a default 
+                "Exercises are prescribed based on neurologic system performance, not as a default 
                 starting point for care."
               </p>
             </Card>
@@ -303,16 +303,16 @@ const SiteWhyNotPhysicalTherapy = () => {
                     <BarChart3 className="h-4 w-4" />
                     Accountability
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-4">Clinician-Led, Outcome-Driven Care</h2>
+                  <h2 className="text-2xl md:text-3xl font-bold mb-4">Clinician Led, Outcome Driven Care</h2>
                 </div>
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Every patient at PPC is managed within an <strong className="text-foreground">episode-based care model</strong>. 
+                  Every patient at PPC is managed within an <strong className="text-foreground">episode based care model</strong>. 
                   Each episode has defined intake criteria, treatment milestones, and discharge endpoints.
                 </p>
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Progress is tracked using validated clinical outcome measures—not subjective impressions. 
+                  Progress is tracked using validated clinical outcome measures, not subjective impressions. 
                   Our Outcome Registry and Companion App provide transparent data on whether care is working, 
                   both for you and for any providers coordinating your treatment.
                 </p>
@@ -320,7 +320,7 @@ const SiteWhyNotPhysicalTherapy = () => {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                    <span className="text-muted-foreground">Episode-based care with clear endpoints</span>
+                    <span className="text-muted-foreground">Episode based care with clear endpoints</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 shrink-0" />
@@ -384,7 +384,7 @@ const SiteWhyNotPhysicalTherapy = () => {
                 <p className="font-medium">Athletes at all levels seeking performance optimization or injury recovery</p>
               </Card>
               <Card className="p-5 rounded-xl border border-border/60 bg-card/50 hover:border-primary/30 transition-colors">
-                <p className="font-medium">Students managing concussion recovery and return-to-learn protocols</p>
+                <p className="font-medium">Students managing concussion recovery and return to learn protocols</p>
               </Card>
               <Card className="p-5 rounded-xl border border-border/60 bg-card/50 hover:border-primary/30 transition-colors">
                 <p className="font-medium">Adults with persistent symptoms that haven't responded to conventional care</p>
@@ -396,7 +396,7 @@ const SiteWhyNotPhysicalTherapy = () => {
                 <p className="font-medium">Complex cases involving multiple systems or unclear etiology</p>
               </Card>
               <Card className="p-5 rounded-xl border border-border/60 bg-card/50 hover:border-primary/30 transition-colors">
-                <p className="font-medium">Anyone seeking outcome-verified, clinician-led care with clear accountability</p>
+                <p className="font-medium">Anyone seeking outcome verified, clinician led care with clear accountability</p>
               </Card>
             </div>
           </div>
@@ -410,15 +410,15 @@ const SiteWhyNotPhysicalTherapy = () => {
             <h2 className="text-2xl md:text-3xl font-bold">Clear, Calm, Confident</h2>
             
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Pittsford Performance Care is not physical therapy. We are a clinician-led neurologic 
+              Pittsford Performance Care is not physical therapy. We are a clinician led neurologic 
               & musculoskeletal care practice that evaluates the systems controlling function, 
               tracks outcomes with validated measures, and provides care designed for efficiency 
               and durability.
             </p>
             
             <p className="text-lg text-muted-foreground leading-relaxed">
-              If you're looking for care that goes beyond symptom management to address the 
-              neurologic foundations of your condition—with clear data to prove it's working—you're 
+              If you are looking for care that goes beyond symptom management to address the 
+              neurologic foundations of your condition, with clear data to prove it is working, you are 
               in the right place.
             </p>
             

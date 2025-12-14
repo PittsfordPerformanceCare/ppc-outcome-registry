@@ -35,7 +35,7 @@ const SiteFooter = memo(() => {
                 <span className="font-semibold text-white text-lg">Pittsford Performance Care</span>
               </Link>
               <p className="text-slate-400 leading-relaxed">
-                Neurologic-driven care for concussion recovery and musculoskeletal performance.
+                Neurologic driven care for concussion recovery and musculoskeletal performance.
               </p>
             </div>
 
