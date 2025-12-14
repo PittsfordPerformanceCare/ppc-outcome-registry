@@ -71,8 +71,8 @@ const SiteSpeedOfRecovery = () => {
                 </p>
                 <p>
                   When the correct neurologic systems are identified and supported early, recovery progresses 
-                  with less friction, fewer compensations, and greater confidence—often in less time than 
-                  traditional care pathways.
+                  with less friction, fewer compensations, and greater confidence. This often occurs in less 
+                  time than traditional care pathways.
                 </p>
               </div>
             </div>
@@ -133,7 +133,7 @@ const SiteSpeedOfRecovery = () => {
                 Time to functional confidence matters. Every additional week of uncertainty affects 
                 training, competition schedules, academic participation, and family planning. Recovery 
                 velocity reflects how well the nervous system is integrating sensory, motor, and cognitive 
-                inputs—not just whether pain has subsided.
+                inputs, not just whether pain has subsided.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 This is why we treat recovery efficiency as a meaningful clinical variable, not a marketing 
@@ -204,7 +204,7 @@ const SiteSpeedOfRecovery = () => {
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 This approach does not guarantee faster healing. But it does reduce the friction that 
-                causes recovery to stall—unidentified bottlenecks, misallocated effort, and uncertainty 
+                causes recovery to stall: unidentified bottlenecks, misallocated effort, and uncertainty 
                 about what to address next.
               </p>
             </div>
