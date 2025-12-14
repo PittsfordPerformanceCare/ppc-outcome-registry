@@ -2,14 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { usePWAStandalone } from "@/hooks/usePWAStandalone";
-import SiteHeader from "@/components/site/SiteHeader";
-import SiteFooter from "@/components/site/SiteFooter";
-import SiteHome from "./site/SiteHome";
 
 const Index = () => {
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { isStandalone, isChecked } = usePWAStandalone();
 
   useEffect(() => {
@@ -39,8 +35,8 @@ const Index = () => {
         // This provides a better UX for installed app users
         navigate("/patient-auth", { replace: true });
       } else {
-        // Regular browser, not logged in - show public site
-        setIsAuthenticated(false);
+        // Regular browser, not logged in - redirect to public site
+        navigate("/site/home", { replace: true });
       }
       setChecking(false);
     };
@@ -48,28 +44,12 @@ const Index = () => {
     checkAuth();
   }, [navigate, isStandalone, isChecked]);
 
-  if (checking || !isChecked) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
-
-  // Show Hub Home with header and footer for unauthenticated users
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <SiteHeader />
-        <main className="flex-1">
-          <SiteHome />
-        </main>
-        <SiteFooter />
-      </div>
-    );
-  }
-
-  return null;
+  // Always show loading while checking or redirecting
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-muted-foreground">Loading...</div>
+    </div>
+  );
 };
 
 export default Index;
