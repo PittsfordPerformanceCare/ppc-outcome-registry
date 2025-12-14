@@ -1661,18 +1661,18 @@ export const mskArticles: ArticleData[] = [
     title: "Chronic Pain Without Structural Damage: When Imaging Is Normal but Pain Isn't",
     category: "msk",
     readTime: "8 min read",
-    excerpt: "Normal imaging doesn't mean normal function. Chronic pain can persist when the nervous system remains protective—altering timing, load tolerance, and sensitivity.",
-    heroContent: "It can be deeply frustrating to hear, \"Your MRI looks fine,\" when pain is still limiting your life. The good news is that this pattern is common—and it often points toward a functional problem in how your nervous system is regulating movement and sensitivity.",
+    excerpt: "Normal imaging doesn't mean normal function. Chronic pain can persist when the nervous system remains protective, altering timing, load tolerance, and sensitivity.",
+    heroContent: "It can be deeply frustrating to hear, \"Your MRI looks fine,\" when pain is still limiting your life. The good news is that this pattern is common, and it often points toward a functional problem in how your nervous system is regulating movement and sensitivity.",
     sections: [
       {
         type: "callout",
         variant: "insight",
-        content: "You don't need a scary scan to have real pain. Pain is a protective output—and protection can stay on long after tissues have healed."
+        content: "You don't need a scary scan to have real pain. Pain is a protective output, and protection can stay on long after tissues have healed."
       },
       { type: "heading", content: "What Does 'Normal Imaging' Actually Mean?" },
       {
         type: "paragraph",
-        content: "Imaging can be extremely helpful for identifying fractures, tears, severe degeneration, or other structural problems. But many pain conditions are driven by factors that don't show up on scans—like timing deficits, load intolerance, persistent guarding, altered coordination, or heightened sensitivity in the nervous system."
+        content: "Imaging can be extremely helpful for identifying fractures, tears, severe degeneration, or other structural problems. But many pain conditions are driven by factors that don't show up on scans, like timing deficits, load intolerance, persistent guarding, altered coordination, or heightened sensitivity in the nervous system."
       },
       {
         type: "paragraph",
@@ -1691,19 +1691,19 @@ export const mskArticles: ArticleData[] = [
           "Pain that changes location or quality without a new injury",
           "Pain that spikes with stress, poor sleep, or fatigue",
           "A sense of stiffness, guarding, or 'bracing' during movement",
-          "Flare-ups after activity that used to be easy",
+          "Flare ups after activity that used to be easy",
           "Sensitivity to load, impact, or prolonged positions",
           "Feeling weaker or less coordinated than expected"
         ]
       },
       {
         type: "inline-cta",
-        content: "If your scans are normal but your function isn't, the next step is a functional evaluation—not more guessing."
+        content: "If your scans are normal but your function isn't, the next step is a functional evaluation, not more guessing."
       },
       { type: "heading", content: "Why Standard Care Misses It" },
       {
         type: "paragraph",
-        content: "When imaging is reassuring, care can drift toward rest, generic strengthening, or symptom management. Those can help—but if the primary limiter is the nervous system's control and tolerance, the plan must address movement coordination, load progression, and sensitivity patterns in a structured way."
+        content: "When imaging is reassuring, care can drift toward rest, generic strengthening, or symptom management. Those can help, but if the primary limiter is the nervous system's control and tolerance, the plan must address movement coordination, load progression, and sensitivity patterns in a structured way."
       },
       {
         type: "callout",
@@ -1718,14 +1718,14 @@ export const mskArticles: ArticleData[] = [
           "Functional movement assessment under realistic load",
           "Motor control and sequencing screens",
           "Balance and stability testing when appropriate",
-          "Fatigue-based testing to reveal breakdown patterns",
+          "Fatigue based testing to reveal breakdown patterns",
           "Validated outcome measures to track meaningful change over time"
         ]
       },
       { type: "heading", content: "Treatment Approach" },
       {
         type: "paragraph",
-        content: "Treatment focuses on restoring function progressively: improving movement efficiency, rebuilding load tolerance, and reducing protective guarding through graded exposure and precision training. The goal is to help the nervous system re-learn that movement is safe and controllable."
+        content: "Treatment focuses on restoring function progressively: improving movement efficiency, rebuilding load tolerance, and reducing protective guarding through graded exposure and precision training. The goal is to help the nervous system relearn that movement is safe and controllable."
       },
       {
         type: "callout",
@@ -1753,18 +1753,18 @@ export const mskArticles: ArticleData[] = [
     title: "Post-Injury Performance Loss: When You're 'Healed' but Not the Same",
     category: "msk",
     readTime: "7 min read",
-    excerpt: "You can be cleared and still underperform. Post-injury performance loss often reflects timing delays, compensation, and reduced load tolerance—especially under speed, fatigue, and sport demand.",
-    heroContent: "Many athletes and active adults reach a confusing stage after injury: you're cleared, your scans are fine, and you can train—but you don't feel like yourself. Speed, confidence, endurance, and explosiveness don't return the way you expected.",
+    excerpt: "You can be cleared and still underperform. Post injury performance loss often reflects timing delays, compensation, and reduced load tolerance, especially under speed, fatigue, and sport demand.",
+    heroContent: "Many athletes and active adults reach a confusing stage after injury: you're cleared, your scans are fine, and you can train, but you don't feel like yourself. Speed, confidence, endurance, and explosiveness don't return the way you expected.",
     sections: [
       {
         type: "callout",
         variant: "insight",
         content: "Being 'cleared' usually means you're safe from major structural risk. It does not always mean your system is ready for full performance demands."
       },
-      { type: "heading", content: "What Is Post-Injury Performance Loss?" },
+      { type: "heading", content: "What Is Post Injury Performance Loss?" },
       {
         type: "paragraph",
-        content: "Post-injury performance loss describes a persistent gap between what your body can technically do and what it can do efficiently under real intensity. This often stems from compensation patterns, delayed stabilization, reduced force absorption, or fatigue-driven breakdown."
+        content: "Post injury performance loss describes a persistent gap between what your body can technically do and what it can do efficiently under real intensity. This often stems from compensation patterns, delayed stabilization, reduced force absorption, or fatigue driven breakdown."
       },
       {
         type: "paragraph",
@@ -1774,7 +1774,7 @@ export const mskArticles: ArticleData[] = [
       {
         type: "callout",
         variant: "symptom",
-        content: "Performance loss is often revealed under speed, fatigue, reaction, and complexity—not during basic strength tests."
+        content: "Performance loss is often revealed under speed, fatigue, reaction, and complexity, not during basic strength tests."
       },
       {
         type: "list",
@@ -1790,17 +1790,17 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "inline-cta",
-        content: "If you feel 'cleared but not ready,' the next step is testing that matches real performance demand—not just basic strength."
+        content: "If you feel 'cleared but not ready,' the next step is testing that matches real performance demand, not just basic strength."
       },
       { type: "heading", content: "Why Standard Care Misses It" },
       {
         type: "paragraph",
-        content: "Traditional rehab often focuses on pain reduction and basic strength milestones. Those matter—but performance requires timing, sequencing, and force absorption under reactive conditions. If those aren't tested, the gap can persist even when the injury is healed."
+        content: "Traditional rehab often focuses on pain reduction and basic strength milestones. Those matter, but performance requires timing, sequencing, and force absorption under reactive conditions. If those aren't tested, the gap can persist even when the injury is healed."
       },
       {
         type: "callout",
         variant: "insight",
-        content: "Performance is a coordination problem as much as a strength problem—especially under fatigue and speed."
+        content: "Performance is a coordination problem as much as a strength problem, especially under fatigue and speed."
       },
       { type: "heading", content: "How We Evaluate" },
       {
@@ -1808,10 +1808,10 @@ export const mskArticles: ArticleData[] = [
         content: "",
         items: [
           "Force absorption and landing mechanics under progressive demand",
-          "Side-to-side symmetry during sport-relevant tasks",
+          "Side to side symmetry during sport relevant tasks",
           "Sequencing and stabilization timing screens",
-          "Fatigue-based testing to reveal performance breakdown",
-          "Outcome measures to quantify return-to-function progress"
+          "Fatigue based testing to reveal performance breakdown",
+          "Outcome measures to quantify return to function progress"
         ]
       },
       { type: "heading", content: "Treatment Approach" },
@@ -1822,7 +1822,7 @@ export const mskArticles: ArticleData[] = [
       {
         type: "callout",
         variant: "insight",
-        content: "The goal is not just to return to activity—it's to return to performance with stability, endurance, and trust in your body."
+        content: "The goal is not just to return to activity, it's to return to performance with stability, endurance, and trust in your body."
       }
     ],
     relatedArticles: [
@@ -1833,7 +1833,7 @@ export const mskArticles: ArticleData[] = [
     primaryCTA: {
       label: "Schedule MSK Evaluation",
       route: "/patient/concierge",
-      description: "Identify the performance limiter—timing, symmetry, force absorption, or fatigue breakdown—and build a clear return plan."
+      description: "Identify the performance limiter, whether timing, symmetry, force absorption, or fatigue breakdown, and build a clear return plan."
     },
     secondaryCTA: {
       label: "Take MSK Self-Assessment",
@@ -1845,7 +1845,7 @@ export const mskArticles: ArticleData[] = [
     title: "Asymmetric Loading: When One Side Absorbs More Than Its Share",
     category: "msk",
     readTime: "6 min read",
-    excerpt: "Asymmetric loading occurs when one side of the body consistently absorbs more force than the other—often without pain at first. Over time, this imbalance can drive chronic pain, fatigue, and recurring injury.",
+    excerpt: "Asymmetric loading occurs when one side of the body consistently absorbs more force than the other, often without pain at first. Over time, this imbalance can drive chronic pain, fatigue, and recurring injury.",
     heroContent: "You may not notice it in the mirror, but your body might be loading one side more than the other with every step, lift, or landing. Over time, that quiet imbalance can wear tissues down and limit performance.",
     sections: [
       {
@@ -1856,7 +1856,7 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "What Is Asymmetric Loading?" },
       {
         type: "paragraph",
-        content: "Asymmetric loading refers to a pattern where force is distributed unevenly between the left and right sides of the body. This often develops after injury, pain, or prolonged compensation—even when strength appears equal on basic testing."
+        content: "Asymmetric loading refers to a pattern where force is distributed unevenly between the left and right sides of the body. This often develops after injury, pain, or prolonged compensation, even when strength appears equal on basic testing."
       },
       {
         type: "paragraph",
@@ -1887,7 +1887,7 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "Why Standard Care Misses It" },
       {
         type: "paragraph",
-        content: "Many assessments focus on strength or range of motion in isolation. But asymmetric loading is a coordination and control issue—how force is managed dynamically during movement. These patterns often only appear during functional or fatigue-based testing."
+        content: "Many assessments focus on strength or range of motion in isolation. But asymmetric loading is a coordination and control issue, how force is managed dynamically during movement. These patterns often only appear during functional or fatigue based testing."
       },
       {
         type: "callout",
@@ -1900,7 +1900,7 @@ export const mskArticles: ArticleData[] = [
         content: "",
         items: [
           "Side-to-side force absorption during functional tasks",
-          "Single-leg and unilateral loading assessments",
+          "Single leg and unilateral loading assessments",
           "Dynamic balance and stability testing",
           "Movement sequencing under progressive demand",
           "Outcome measures to track symmetry over time"
@@ -1914,7 +1914,7 @@ export const mskArticles: ArticleData[] = [
       {
         type: "callout",
         variant: "insight",
-        content: "Balanced loading reduces wear and tear—not by forcing symmetry, but by restoring trust in both sides."
+        content: "Balanced loading reduces wear and tear, not by forcing symmetry, but by restoring trust in both sides."
       }
     ],
     relatedArticles: [
@@ -1938,7 +1938,7 @@ export const mskArticles: ArticleData[] = [
     category: "msk",
     readTime: "7 min read",
     excerpt: "Feeling heavy or fatigued early during activity is often a control and efficiency issue—not a conditioning problem. When timing and load management break down, effort skyrockets.",
-    heroContent: "If everyday movement feels heavier than it used to—stairs, walking, light workouts—you may be dealing with a neurologic efficiency problem rather than weakness or poor fitness.",
+    heroContent: "If everyday movement feels heavier than it used to, such as stairs, walking, or light workouts, you may be dealing with a neurologic efficiency problem rather than weakness or poor fitness.",
     sections: [
       {
         type: "callout",
@@ -1952,7 +1952,7 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "This can develop after injury, prolonged pain, or periods of reduced activity—and it often persists even when strength and conditioning return."
+        content: "This can develop after injury, prolonged pain, or periods of reduced activity, and it often persists even when strength and conditioning return."
       },
       { type: "heading", content: "Common Signs" },
       {
@@ -1993,15 +1993,15 @@ export const mskArticles: ArticleData[] = [
         items: [
           "Movement efficiency and sequencing assessments",
           "Stability testing under sustained demand",
-          "Fatigue-based movement screens",
-          "Side-to-side contribution analysis",
+          "Fatigue based movement screens",
+          "Side to side contribution analysis",
           "Validated outcome measures to track functional endurance"
         ]
       },
       { type: "heading", content: "Treatment Approach" },
       {
         type: "paragraph",
-        content: "Treatment targets efficiency first—improving timing, coordination, and load sharing—before layering endurance. As movement becomes more economical, fatigue often decreases and confidence returns."
+        content: "Treatment targets efficiency first, improving timing, coordination, and load sharing, before layering endurance. As movement becomes more economical, fatigue often decreases and confidence returns."
       },
       {
         type: "callout",
@@ -2030,7 +2030,7 @@ export const mskArticles: ArticleData[] = [
     category: "msk",
     readTime: "8 min read",
     excerpt: "Understanding why pain persists, movement feels heavy or asymmetrical, and imaging often looks normal — even when strength is intact.",
-    heroContent: "You've tried rest. You've tried strengthening. Your imaging came back normal. But the pain keeps returning — or never quite leaves. If this sounds familiar, the issue may not be structural damage. It may be proprioceptive dysfunction — when the nervous system loses its ability to sense and manage load accurately.",
+    heroContent: "You've tried rest. You've tried strengthening. Your imaging came back normal. But the pain keeps returning, or never quite leaves. If this sounds familiar, the issue may not be structural damage. It may be proprioceptive dysfunction, when the nervous system loses its ability to sense and manage load accurately.",
     sections: [
       {
         type: "callout",
@@ -2039,7 +2039,7 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When proprioceptive feedback becomes unreliable, secondary compensation often appears in the Cerebellar and Autonomic domains — which is why effort rises, fatigue escalates, and pain persists despite adequate strength."
+        content: "When proprioceptive feedback becomes unreliable, secondary compensation often appears in the Cerebellar and Autonomic domains, which is why effort rises, fatigue escalates, and pain persists despite adequate strength."
       },
       { type: "heading", content: "Do Any of These Sound Familiar?" },
       {
@@ -2061,7 +2061,7 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "These experiences are common. They reflect neurologic control issues — not signs of structural damage."
+        content: "These experiences are common. They reflect neurologic control issues, not signs of structural damage."
       },
       { type: "heading", content: "What the Proprioceptive Domain Controls" },
       {
@@ -2070,7 +2070,7 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Efficient, pain-free movement depends on accurate proprioceptive feedback. When that feedback becomes unreliable, the nervous system starts guessing — and those guesses often lead to uneven loading, compensation, and tissue overload."
+        content: "Efficient, pain free movement depends on accurate proprioceptive feedback. When that feedback becomes unreliable, the nervous system starts guessing, and those guesses often lead to uneven loading, compensation, and tissue overload."
       },
       { type: "heading", content: "What Changes When Proprioceptive Control Breaks Down" },
       {
@@ -2082,8 +2082,8 @@ export const mskArticles: ArticleData[] = [
         content: "",
         items: [
           "Late or poorly graded muscle activation",
-          "Over-reliance on certain joints or tissues",
-          "Guarding, stiffness, or excessive co-contraction",
+          "Over reliance on certain joints or tissues",
+          "Guarding, stiffness, or excessive co contraction",
           "Increased effort for basic movement"
         ]
       },
@@ -2095,11 +2095,11 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "How Proprioceptive Dysfunction Creates Chronic Pain" },
       {
         type: "paragraph",
-        content: "Chronic pain emerges when load is unevenly distributed, compensation becomes habitual, and tissues are repeatedly overloaded despite normal structure. Pain in this context is the result — not the cause."
+        content: "Chronic pain emerges when load is unevenly distributed, compensation becomes habitual, and tissues are repeatedly overloaded despite normal structure. Pain in this context is the result, not the cause."
       },
       {
         type: "paragraph",
-        content: "Examples include hip dominance shifting stress to the low back, one leg absorbing more force during running, or shoulder irritation from poor joint position awareness. In each case, the tissue experiencing pain isn't necessarily damaged — it's overloaded."
+        content: "Examples include hip dominance shifting stress to the low back, one leg absorbing more force during running, or shoulder irritation from poor joint position awareness. In each case, the tissue experiencing pain isn't necessarily damaged, it's overloaded."
       },
       {
         type: "inline-cta",
@@ -2108,11 +2108,11 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "Primary vs. Secondary Proprioceptive Dysfunction" },
       {
         type: "paragraph",
-        content: "Proprioceptive dysfunction may be primary — meaning the proprioceptive system itself is impaired — or it may be compensatory, emerging downstream from other neurologic drivers."
+        content: "Proprioceptive dysfunction may be primary, meaning the proprioceptive system itself is impaired, or it may be compensatory, emerging downstream from other neurologic drivers."
       },
       {
         type: "paragraph",
-        content: "Common upstream drivers include cerebellar timing deficits, vestibular instability, and brainstem energy limitation. When these systems are impaired, the body loses access to accurate sensory integration — and proprioception suffers as a result."
+        content: "Common upstream drivers include cerebellar timing deficits, vestibular instability, and brainstem energy limitation. When these systems are impaired, the body loses access to accurate sensory integration, and proprioception suffers as a result."
       },
       {
         type: "callout",
@@ -2122,7 +2122,7 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "Why Imaging and Strength Tests Can Look Normal" },
       {
         type: "paragraph",
-        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But proprioceptive deficits live between structure and strength: they affect control, coordination, and load management."
+        content: "Imaging evaluates structure: bones, discs, tendons, and ligaments. Strength tests measure output: how much force a muscle can produce. But proprioceptive deficits live between structure and strength, affecting control, coordination, and load management."
       },
       {
         type: "paragraph",
@@ -2140,13 +2140,13 @@ export const mskArticles: ArticleData[] = [
           "Assessment of symmetry, timing, and load control during real movement",
           "Identification of primary vs. compensatory drivers",
           "Functional movement screening under progressive demand",
-          "Fatigue-based testing to reveal breakdown patterns",
+          "Fatigue based testing to reveal breakdown patterns",
           "Validated outcome measures to track meaningful change over time"
         ]
       },
       {
         type: "paragraph",
-        content: "The goal is to determine whether proprioceptive dysfunction is driving load imbalance — and what needs to be addressed first."
+        content: "The goal is to determine whether proprioceptive dysfunction is driving load imbalance, and what needs to be addressed first."
       },
       { type: "heading", content: "What This Means for Recovery" },
       {
@@ -2156,12 +2156,12 @@ export const mskArticles: ArticleData[] = [
       {
         type: "callout",
         variant: "insight",
-        content: "Confidence returns with integration — not force. When the nervous system can sense load accurately, it can manage load safely."
+        content: "Confidence returns with integration, not force. When the nervous system can sense load accurately, it can manage load safely."
       },
       { type: "heading", content: "Moving Forward" },
       {
         type: "paragraph",
-        content: "If pain persists despite rest, strengthening, or normal imaging, a clinician-led neurologic and musculoskeletal evaluation can help determine whether proprioceptive dysfunction is driving load imbalance — and what to address first."
+        content: "If pain persists despite rest, strengthening, or normal imaging, a clinician led neurologic and musculoskeletal evaluation can help determine whether proprioceptive dysfunction is driving load imbalance, and what to address first."
       }
     ],
     relatedArticles: [
@@ -2173,7 +2173,7 @@ export const mskArticles: ArticleData[] = [
     primaryCTA: {
       label: "Schedule MSK Evaluation",
       route: "/patient/concierge",
-      description: "Determine whether proprioceptive dysfunction is driving your chronic pain — and build a path to durable recovery."
+      description: "Determine whether proprioceptive dysfunction is driving your chronic pain, and build a path to durable recovery."
     },
     secondaryCTA: {
       label: "Take MSK Self-Assessment",
@@ -2185,8 +2185,8 @@ export const mskArticles: ArticleData[] = [
     title: "Cerebellar Timing Deficits and Chronic Pain: When Movement Loses Precision",
     category: "msk",
     readTime: "8 min read",
-    excerpt: "Why pain emerges when the brain struggles to coordinate force, timing, and sequencing — even when strength is preserved.",
-    heroContent: "Your strength tests look fine. Your imaging is clean. But movement still feels stiff, delayed, or out of sync — and pain keeps returning. If this sounds familiar, the issue may not be your muscles or joints. It may be your timing.",
+    excerpt: "Why pain emerges when the brain struggles to coordinate force, timing, and sequencing, even when strength is preserved.",
+    heroContent: "Your strength tests look fine. Your imaging is clean. But movement still feels stiff, delayed, or out of sync, and pain keeps returning. If this sounds familiar, the issue may not be your muscles or joints. It may be your timing.",
     sections: [
       {
         type: "callout",
@@ -2195,13 +2195,13 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When cerebellar timing breaks down, secondary compensation often appears in the Proprioceptive and Autonomic domains — increasing effort, stiffness, and pain."
+        content: "When cerebellar timing breaks down, secondary compensation often appears in the Proprioceptive and Autonomic domains, increasing effort, stiffness, and pain."
       },
       { type: "heading", content: "Do Any of These Sound Familiar?" },
       {
         type: "callout",
         variant: "symptom",
-        content: "Cerebellar timing deficits often present as stiffness, hesitation, or inefficiency — not weakness:"
+        content: "Cerebellar timing deficits often present as stiffness, hesitation, or inefficiency, not weakness:"
       },
       {
         type: "list",
@@ -2217,16 +2217,16 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "These experiences reflect neurologic timing — not structural damage. They are common, measurable, and addressable."
+        content: "These experiences reflect neurologic timing, not structural damage. They are common, measurable, and addressable."
       },
       { type: "heading", content: "What the Cerebellar Domain Controls" },
       {
         type: "paragraph",
-        content: "The cerebellum is the brain's timing center. It predicts, sequences, and coordinates movement — allowing smooth transitions between muscle groups and efficient force distribution across joints."
+        content: "The cerebellum is the brain's timing center. It predicts, sequences, and coordinates movement, allowing smooth transitions between muscle groups and efficient force distribution across joints."
       },
       {
         type: "paragraph",
-        content: "Efficient movement depends on anticipation, not reaction. The cerebellum allows the nervous system to pre-activate muscles before load arrives — so tissues are ready to absorb and distribute force. When this prediction fails, movement becomes reactive, guarded, and inefficient."
+        content: "Efficient movement depends on anticipation, not reaction. The cerebellum allows the nervous system to pre activate muscles before load arrives, so tissues are ready to absorb and distribute force. When this prediction fails, movement becomes reactive, guarded, and inefficient."
       },
       { type: "heading", content: "What Changes When Cerebellar Timing Breaks Down" },
       {
@@ -2237,10 +2237,10 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Delayed muscle firing — stabilizers activate late",
-          "Poor sequencing — movements feel choppy or out of order",
-          "Overcorrection and rigidity — the body guards against unpredictability",
-          "Increased co-contraction — opposing muscles fire together, wasting energy"
+          "Delayed muscle firing, stabilizers activate late",
+          "Poor sequencing, movements feel choppy or out of order",
+          "Overcorrection and rigidity, the body guards against unpredictability",
+          "Increased co contraction, opposing muscles fire together, wasting energy"
         ]
       },
       {
@@ -2251,24 +2251,24 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "How Cerebellar Dysfunction Creates Chronic Pain" },
       {
         type: "paragraph",
-        content: "When timing is off, load concentrates instead of distributing. Late muscle activation means joints and tissues absorb shock rather than sharing it across the kinetic chain. Over time, this creates cumulative overload — and pain develops secondarily."
+        content: "When timing is off, load concentrates instead of distributing. Late muscle activation means joints and tissues absorb shock rather than sharing it across the kinetic chain. Over time, this creates cumulative overload, and pain develops secondarily."
       },
       {
         type: "paragraph",
-        content: "Pain in this context is not a signal of damage. It is a signal of inefficiency — the consequence of a control system that can no longer predict and coordinate load."
+        content: "Pain in this context is not a signal of damage. It is a signal of inefficiency, the consequence of a control system that can no longer predict and coordinate load."
       },
       {
         type: "inline-cta",
-        content: "If pain worsens with speed, fatigue, or complexity — but imaging looks normal — a neurologic MSK evaluation can reveal whether timing is the missing link."
+        content: "If pain worsens with speed, fatigue, or complexity, but imaging looks normal, a neurologic MSK evaluation can reveal whether timing is the missing link."
       },
       { type: "heading", content: "Primary vs. Secondary Cerebellar Dysfunction" },
       {
         type: "paragraph",
-        content: "Cerebellar timing deficits may be primary — meaning the cerebellum itself is impaired — or they may emerge secondarily from other neurologic limitations."
+        content: "Cerebellar timing deficits may be primary, meaning the cerebellum itself is impaired, or they may emerge secondarily from other neurologic limitations."
       },
       {
         type: "paragraph",
-        content: "Common upstream drivers include vestibular instability, proprioceptive mismatch, and autonomic energy constraints. When these systems are impaired, the cerebellum loses access to accurate sensory input — and timing degrades as a result."
+        content: "Common upstream drivers include vestibular instability, proprioceptive mismatch, and autonomic energy constraints. When these systems are impaired, the cerebellum loses access to accurate sensory input, and timing degrades as a result."
       },
       {
         type: "callout",
@@ -2278,7 +2278,7 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
       {
         type: "paragraph",
-        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But cerebellar timing deficits live between structure and strength: they affect when muscles fire, how force is sequenced, and whether movement is predictive or reactive."
+        content: "Imaging evaluates structure: bones, discs, tendons, and ligaments. Strength tests measure output: how much force a muscle can produce. But cerebellar timing deficits live between structure and strength, affecting when muscles fire, how force is sequenced, and whether movement is predictive or reactive."
       },
       {
         type: "paragraph",
@@ -2296,13 +2296,13 @@ export const mskArticles: ArticleData[] = [
           "Assessment of timing, rhythm, and sequencing during real movement",
           "Evaluation of symmetry and coordination under progressive demand",
           "Identification of primary vs. compensatory drivers",
-          "Fatigue-based testing to reveal breakdown patterns",
+          "Fatigue based testing to reveal breakdown patterns",
           "Validated outcome measures to track meaningful change over time"
         ]
       },
       {
         type: "paragraph",
-        content: "The goal is to determine whether cerebellar timing is driving inefficiency and overload — and what needs to be addressed first."
+        content: "The goal is to determine whether cerebellar timing is driving inefficiency and overload, and what needs to be addressed first."
       },
       { type: "heading", content: "What This Means for Recovery" },
       {
@@ -2312,12 +2312,12 @@ export const mskArticles: ArticleData[] = [
       {
         type: "callout",
         variant: "insight",
-        content: "Timing improves before strength matters. Fluidity precedes power. Confidence returns with coordination — not force."
+        content: "Timing improves before strength matters. Fluidity precedes power. Confidence returns with coordination, not force."
       },
       { type: "heading", content: "Moving Forward" },
       {
         type: "paragraph",
-        content: "If pain persists despite rest, strengthening, or normal imaging — and movement feels stiff, delayed, or effortful — a clinician-led neurologic and musculoskeletal evaluation can help determine whether cerebellar timing is driving the problem, and what to address first."
+        content: "If pain persists despite rest, strengthening, or normal imaging, and movement feels stiff, delayed, or effortful, a clinician led neurologic and musculoskeletal evaluation can help determine whether cerebellar timing is driving the problem, and what to address first."
       }
     ],
     relatedArticles: [
@@ -2329,7 +2329,7 @@ export const mskArticles: ArticleData[] = [
     primaryCTA: {
       label: "Schedule MSK Evaluation",
       route: "/patient/concierge",
-      description: "Determine whether cerebellar timing is driving your chronic pain — and build a path to durable recovery."
+      description: "Determine whether cerebellar timing is driving your chronic pain, and build a path to durable recovery."
     },
     secondaryCTA: {
       label: "Take MSK Self-Assessment",
@@ -2341,8 +2341,8 @@ export const mskArticles: ArticleData[] = [
     title: "Vestibular Dysfunction and Chronic Pain: When the Body Can't Stabilize Itself",
     category: "msk",
     readTime: "8 min read",
-    excerpt: "Why pain emerges when balance, orientation, and motion sensing break down — even when imaging looks normal.",
-    heroContent: "Your neck and back are constantly tight. You brace before you move. Certain motions make you uneasy — or exhausted. If this sounds familiar, the issue may not be your joints or muscles. It may be your vestibular system — the part of the brain that tells you where you are in space.",
+    excerpt: "Why pain emerges when balance, orientation, and motion sensing break down, even when imaging looks normal.",
+    heroContent: "Your neck and back are constantly tight. You brace before you move. Certain motions make you uneasy, or exhausted. If this sounds familiar, the issue may not be your joints or muscles. It may be your vestibular system, the part of the brain that tells you where you are in space.",
     sections: [
       {
         type: "callout",
@@ -2351,13 +2351,13 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When vestibular stability is unreliable, secondary compensation often appears in the Cervical and Autonomic domains — increasing stiffness and pain."
+        content: "When vestibular stability is unreliable, secondary compensation often appears in the Cervical and Autonomic domains, increasing stiffness and pain."
       },
       { type: "heading", content: "Do Any of These Sound Familiar?" },
       {
         type: "callout",
         variant: "symptom",
-        content: "Vestibular dysfunction often presents as stiffness, bracing, or motion intolerance — not dizziness alone:"
+        content: "Vestibular dysfunction often presents as stiffness, bracing, or motion intolerance, not dizziness alone:"
       },
       {
         type: "list",
@@ -2373,7 +2373,7 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "These experiences reflect neurologic instability — not structural damage. They are common, measurable, and addressable."
+        content: "These experiences reflect neurologic instability, not structural damage. They are common, measurable, and addressable."
       },
       { type: "heading", content: "What the Vestibular System Controls" },
       {
@@ -2382,7 +2382,7 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "Efficient posture and movement depend on accurate vestibular input. When the vestibular system is impaired, the nervous system loses its anchor — and the body compensates by bracing, guarding, and over-stabilizing."
+        content: "Efficient posture and movement depend on accurate vestibular input. When the vestibular system is impaired, the nervous system loses its anchor, and the body compensates by bracing, guarding, and over stabilizing."
       },
       { type: "heading", content: "What Changes When Vestibular Function Breaks Down" },
       {
@@ -2393,48 +2393,48 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Excessive bracing — muscles lock to create artificial stability",
-          "Motion intolerance — certain movements feel threatening",
-          "Postural fatigue — maintaining upright posture becomes exhausting",
-          "Hypervigilance — the nervous system stays on high alert"
+          "Excessive bracing, muscles lock to create artificial stability",
+          "Motion intolerance, certain movements feel threatening",
+          "Postural fatigue, maintaining upright posture becomes exhausting",
+          "Hypervigilance, the nervous system stays on high alert"
         ]
       },
       {
         type: "callout",
         variant: "insight",
-        content: "The body compensates for unreliable balance by creating stiffness. That stiffness is protective — but over time, it becomes the source of pain."
+        content: "The body compensates for unreliable balance by creating stiffness. That stiffness is protective, but over time, it becomes the source of pain."
       },
       { type: "heading", content: "How Vestibular Dysfunction Creates Chronic Pain" },
       {
         type: "paragraph",
-        content: "When the vestibular system fails to provide reliable orientation, the body recruits muscles to do the job instead. The cervical spine, upper back, and shoulders become chronically overloaded — not because of injury, but because they are working to stabilize a system that should stabilize itself."
+        content: "When the vestibular system fails to provide reliable orientation, the body recruits muscles to do the job instead. The cervical spine, upper back, and shoulders become chronically overloaded, not because of injury, but because they are working to stabilize a system that should stabilize itself."
       },
       {
         type: "paragraph",
-        content: "Pain in this context is not a signal of damage. It is a signal of overwork — the consequence of muscles substituting for a vestibular system that can no longer anchor posture and movement."
+        content: "Pain in this context is not a signal of damage. It is a signal of overwork, the consequence of muscles substituting for a vestibular system that can no longer anchor posture and movement."
       },
       {
         type: "inline-cta",
-        content: "If pain concentrates in the neck, upper back, or shoulders — and imaging looks normal — a neurologic MSK evaluation can reveal whether vestibular instability is the missing link."
+        content: "If pain concentrates in the neck, upper back, or shoulders, and imaging looks normal, a neurologic MSK evaluation can reveal whether vestibular instability is the missing link."
       },
       { type: "heading", content: "Primary vs. Secondary Vestibular Dysfunction" },
       {
         type: "paragraph",
-        content: "Vestibular dysfunction may be primary — meaning the vestibular system itself is impaired — or it may emerge secondarily from other neurologic limitations."
+        content: "Vestibular dysfunction may be primary, meaning the vestibular system itself is impaired, or it may emerge secondarily from other neurologic limitations."
       },
       {
         type: "paragraph",
-        content: "Common upstream drivers include brainstem energy constraints and cerebellar timing deficits. When these systems are impaired, vestibular processing degrades — and instability increases as a result."
+        content: "Common upstream drivers include brainstem energy constraints and cerebellar timing deficits. When these systems are impaired, vestibular processing degrades, and instability increases as a result."
       },
       {
         type: "callout",
         variant: "insight",
-        content: "Treating muscle tightness without restoring vestibular stability often provides temporary relief — but the pattern returns."
+        content: "Treating muscle tightness without restoring vestibular stability often provides temporary relief, but the pattern returns."
       },
       { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
       {
         type: "paragraph",
-        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But vestibular dysfunction lives in the control system: it affects how the brain orients the body in space and how muscles coordinate to maintain stability."
+        content: "Imaging evaluates structure: bones, discs, tendons, and ligaments. Strength tests measure output: how much force a muscle can produce. But vestibular dysfunction lives in the control system, affecting how the brain orients the body in space and how muscles coordinate to maintain stability."
       },
       {
         type: "paragraph",
@@ -2452,13 +2452,13 @@ export const mskArticles: ArticleData[] = [
           "Assessment of balance, orientation, and postural control",
           "Evaluation of motion tolerance and vestibular reflexes",
           "Identification of primary vs. compensatory drivers",
-          "Fatigue-based testing to reveal breakdown patterns",
+          "Fatigue based testing to reveal breakdown patterns",
           "Validated outcome measures to track meaningful change over time"
         ]
       },
       {
         type: "paragraph",
-        content: "The goal is to determine whether vestibular instability is driving compensatory bracing and overload — and what needs to be addressed first."
+        content: "The goal is to determine whether vestibular instability is driving compensatory bracing and overload, and what needs to be addressed first."
       },
       { type: "heading", content: "What This Means for Recovery" },
       {
@@ -2473,7 +2473,7 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "Moving Forward" },
       {
         type: "paragraph",
-        content: "If pain persists in the neck, upper back, or shoulders — and movement feels guarded, unstable, or exhausting — a clinician-led neurologic and musculoskeletal evaluation can help determine whether vestibular dysfunction is driving the problem, and what to address first."
+        content: "If pain persists in the neck, upper back, or shoulders, and movement feels guarded, unstable, or exhausting, a clinician led neurologic and musculoskeletal evaluation can help determine whether vestibular dysfunction is driving the problem, and what to address first."
       }
     ],
     relatedArticles: [
@@ -2484,7 +2484,7 @@ export const mskArticles: ArticleData[] = [
     primaryCTA: {
       label: "Schedule MSK Evaluation",
       route: "/patient/concierge",
-      description: "Determine whether vestibular instability is driving your chronic pain — and build a path to durable recovery."
+      description: "Determine whether vestibular instability is driving your chronic pain, and build a path to durable recovery."
     },
     secondaryCTA: {
       label: "Take MSK Self-Assessment",
@@ -2496,8 +2496,8 @@ export const mskArticles: ArticleData[] = [
     title: "Autonomic Dysfunction and Chronic Pain: When the System Runs Out of Capacity",
     category: "msk",
     readTime: "8 min read",
-    excerpt: "Why pain emerges when the nervous system loses its ability to regulate energy, recovery, and load tolerance — even when tissues are intact.",
-    heroContent: "You rest, but you never fully recover. Activity flares symptoms for days. Your endurance is gone — and pain seems to amplify out of proportion to what you actually did. If this sounds familiar, the issue may not be your muscles or joints. It may be your autonomic nervous system.",
+    excerpt: "Why pain emerges when the nervous system loses its ability to regulate energy, recovery, and load tolerance, even when tissues are intact.",
+    heroContent: "You rest, but you never fully recover. Activity flares symptoms for days. Your endurance is gone, and pain seems to amplify out of proportion to what you actually did. If this sounds familiar, the issue may not be your muscles or joints. It may be your autonomic nervous system.",
     sections: [
       {
         type: "callout",
@@ -2506,7 +2506,7 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When autonomic regulation falters, secondary compensation often appears in the Proprioceptive and Limbic domains — increasing pain sensitivity and fatigue."
+        content: "When autonomic regulation falters, secondary compensation often appears in the Proprioceptive and Limbic domains, increasing pain sensitivity and fatigue."
       },
       { type: "heading", content: "Do Any of These Sound Familiar?" },
       {
@@ -2518,26 +2518,26 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Low endurance — even light activity wipes you out",
-          "Flare cycles — symptoms spike after exertion and take days to settle",
-          "Delayed recovery — rest doesn't restore energy the way it used to",
-          "Pain amplification — symptoms seem out of proportion to what you did",
-          "Sleep that doesn't refresh — waking tired despite adequate hours",
+          "Low endurance, even light activity wipes you out",
+          "Flare cycles, symptoms spike after exertion and take days to settle",
+          "Delayed recovery, rest doesn't restore energy the way it used to",
+          "Pain amplification, symptoms seem out of proportion to what you did",
+          "Sleep that doesn't refresh, waking tired despite adequate hours",
           "Sensitivity to temperature, light, or sound"
         ]
       },
       {
         type: "paragraph",
-        content: "These experiences reflect neurologic regulation issues — not tissue damage or deconditioning. They are common, measurable, and addressable."
+        content: "These experiences reflect neurologic regulation issues, not tissue damage or deconditioning. They are common, measurable, and addressable."
       },
       { type: "heading", content: "What the Autonomic System Controls" },
       {
         type: "paragraph",
-        content: "The autonomic nervous system regulates everything that happens automatically — heart rate, blood pressure, digestion, temperature, and recovery. It determines how much capacity you have to meet physical and cognitive demands, and how quickly you recover after exertion."
+        content: "The autonomic nervous system regulates everything that happens automatically: heart rate, blood pressure, digestion, temperature, and recovery. It determines how much capacity you have to meet physical and cognitive demands, and how quickly you recover after exertion."
       },
       {
         type: "paragraph",
-        content: "When the autonomic system is functioning well, you can push, recover, and adapt. When it is impaired, the system runs in a constant energy deficit — and pain often emerges as a warning signal that capacity has been exceeded."
+        content: "When the autonomic system is functioning well, you can push, recover, and adapt. When it is impaired, the system runs in a constant energy deficit, and pain often emerges as a warning signal that capacity has been exceeded."
       },
       { type: "heading", content: "What Changes When Autonomic Regulation Breaks Down" },
       {
@@ -2548,16 +2548,16 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Energy deficit — the body cannot meet basic demands without strain",
-          "Flare-crash cycles — overexertion leads to prolonged symptom spikes",
-          "Pain amplification — the nervous system becomes hypersensitive",
-          "Poor recovery — rest fails to restore baseline function"
+          "Energy deficit, the body cannot meet basic demands without strain",
+          "Flare crash cycles, overexertion leads to prolonged symptom spikes",
+          "Pain amplification, the nervous system becomes hypersensitive",
+          "Poor recovery, rest fails to restore baseline function"
         ]
       },
       {
         type: "callout",
         variant: "insight",
-        content: "The body protects itself by amplifying pain when capacity is exceeded. Pain becomes a brake — not a signal of damage, but a warning that the system is running on empty."
+        content: "The body protects itself by amplifying pain when capacity is exceeded. Pain becomes a brake, not a signal of damage, but a warning that the system is running on empty."
       },
       { type: "heading", content: "How Autonomic Dysfunction Creates Chronic Pain" },
       {
@@ -2570,26 +2570,26 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "inline-cta",
-        content: "If pain flares after activity, recovery takes too long, and endurance has collapsed — a neurologic MSK evaluation can reveal whether autonomic dysfunction is the missing link."
+        content: "If pain flares after activity, recovery takes too long, and endurance has collapsed, a neurologic MSK evaluation can reveal whether autonomic dysfunction is the missing link."
       },
       { type: "heading", content: "Primary vs. Secondary Autonomic Dysfunction" },
       {
         type: "paragraph",
-        content: "Autonomic dysfunction may be primary — meaning the autonomic system itself is impaired — or it may emerge secondarily from other neurologic limitations."
+        content: "Autonomic dysfunction may be primary, meaning the autonomic system itself is impaired, or it may emerge secondarily from other neurologic limitations."
       },
       {
         type: "paragraph",
-        content: "Common upstream drivers include brainstem energy constraints, vestibular instability, and cerebellar timing deficits. When these systems are impaired, autonomic regulation degrades — and capacity collapses as a result."
+        content: "Common upstream drivers include brainstem energy constraints, vestibular instability, and cerebellar timing deficits. When these systems are impaired, autonomic regulation degrades, and capacity collapses as a result."
       },
       {
         type: "callout",
         variant: "insight",
-        content: "Pushing through fatigue without restoring autonomic regulation often deepens the deficit — making recovery longer and symptoms worse."
+        content: "Pushing through fatigue without restoring autonomic regulation often deepens the deficit, making recovery longer and symptoms worse."
       },
       { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
       {
         type: "paragraph",
-        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But autonomic dysfunction lives in the regulation system: it affects how the body manages energy, recovers from exertion, and modulates pain sensitivity."
+        content: "Imaging evaluates structure: bones, discs, tendons, and ligaments. Strength tests measure output: how much force a muscle can produce. But autonomic dysfunction lives in the regulation system, affecting how the body manages energy, recovers from exertion, and modulates pain sensitivity."
       },
       {
         type: "paragraph",
@@ -2607,13 +2607,13 @@ export const mskArticles: ArticleData[] = [
           "Assessment of heart rate variability and autonomic tone",
           "Evaluation of exertion tolerance and recovery patterns",
           "Identification of primary vs. compensatory drivers",
-          "Fatigue-based testing to reveal breakdown patterns",
+          "Fatigue based testing to reveal breakdown patterns",
           "Validated outcome measures to track meaningful change over time"
         ]
       },
       {
         type: "paragraph",
-        content: "The goal is to determine whether autonomic dysfunction is driving pain amplification and energy collapse — and what needs to be addressed first."
+        content: "The goal is to determine whether autonomic dysfunction is driving pain amplification and energy collapse, and what needs to be addressed first."
       },
       { type: "heading", content: "What This Means for Recovery" },
       {
@@ -2628,7 +2628,7 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "Moving Forward" },
       {
         type: "paragraph",
-        content: "If pain flares after activity, recovery takes too long, and endurance has collapsed — a clinician-led neurologic and musculoskeletal evaluation can help determine whether autonomic dysfunction is driving the problem, and what to address first."
+        content: "If pain flares after activity, recovery takes too long, and endurance has collapsed, a clinician led neurologic and musculoskeletal evaluation can help determine whether autonomic dysfunction is driving the problem, and what to address first."
       }
     ],
     relatedArticles: [
@@ -2639,7 +2639,7 @@ export const mskArticles: ArticleData[] = [
     primaryCTA: {
       label: "Schedule MSK Evaluation",
       route: "/patient/concierge",
-      description: "Determine whether autonomic dysfunction is driving your chronic pain — and build a path to durable recovery."
+      description: "Determine whether autonomic dysfunction is driving your chronic pain, and build a path to durable recovery."
     },
     secondaryCTA: {
       label: "Take MSK Self-Assessment",
@@ -2651,8 +2651,8 @@ export const mskArticles: ArticleData[] = [
     title: "Frontal Control Dysfunction and Chronic Pain: When the Brain Can't Organize Movement",
     category: "msk",
     readTime: "8 min read",
-    excerpt: "Why pain emerges when the brain struggles to plan, sequence, and inhibit movement — even when strength and structure are intact.",
-    heroContent: "You try to move efficiently, but everything feels effortful. You over-grip, over-brace, and over-recruit muscles that should stay quiet. Simple tasks require too much concentration. If this sounds familiar, the issue may not be your muscles or joints. It may be frontal motor control.",
+    excerpt: "Why pain emerges when the brain struggles to plan, sequence, and inhibit movement, even when strength and structure are intact.",
+    heroContent: "You try to move efficiently, but everything feels effortful. You over grip, over brace, and over recruit muscles that should stay quiet. Simple tasks require too much concentration. If this sounds familiar, the issue may not be your muscles or joints. It may be frontal motor control.",
     sections: [
       {
         type: "callout",
@@ -2661,38 +2661,38 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When frontal motor control weakens, secondary compensation often appears in the Cerebellar and Proprioceptive domains — increasing effort and pain."
+        content: "When frontal motor control weakens, secondary compensation often appears in the Cerebellar and Proprioceptive domains, increasing effort and pain."
       },
       { type: "heading", content: "Do Any of These Sound Familiar?" },
       {
         type: "callout",
         variant: "symptom",
-        content: "Frontal control dysfunction often presents as over-effort, poor inhibition, and inefficient movement planning:"
+        content: "Frontal control dysfunction often presents as over effort, poor inhibition, and inefficient movement planning:"
       },
       {
         type: "list",
         content: "",
         items: [
-          "Over-gripping or over-bracing during simple tasks",
+          "Over gripping or over bracing during simple tasks",
           "Difficulty 'turning off' muscles that should relax",
           "Movement feels effortful even when strength is adequate",
-          "Poor motor planning — needing to think through movements that should be automatic",
+          "Poor motor planning, needing to think through movements that should be automatic",
           "Fatigue from concentration, not just exertion",
           "Pain that worsens with complexity or multitasking"
         ]
       },
       {
         type: "paragraph",
-        content: "These experiences reflect neurologic control issues — not weakness or structural damage. They are common, measurable, and addressable."
+        content: "These experiences reflect neurologic control issues, not weakness or structural damage. They are common, measurable, and addressable."
       },
       { type: "heading", content: "What Frontal Motor Control Does" },
       {
         type: "paragraph",
-        content: "The frontal cortex is the brain's executive motor center. It plans movement, sequences muscle activation, and — critically — inhibits muscles that should stay quiet. Efficient movement depends on knowing what not to do as much as what to do."
+        content: "The frontal cortex is the brain's executive motor center. It plans movement, sequences muscle activation, and, critically, inhibits muscles that should stay quiet. Efficient movement depends on knowing what not to do as much as what to do."
       },
       {
         type: "paragraph",
-        content: "When frontal control is functioning well, movement is smooth, automatic, and economical. When it is impaired, the brain loses its ability to organize movement efficiently — and the body compensates with over-effort."
+        content: "When frontal control is functioning well, movement is smooth, automatic, and economical. When it is impaired, the brain loses its ability to organize movement efficiently, and the body compensates with over effort."
       },
       { type: "heading", content: "What Changes When Frontal Control Breaks Down" },
       {
@@ -2703,10 +2703,10 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Poor inhibition — muscles that should relax stay active",
-          "Over-effort — simple tasks require excessive force and concentration",
-          "Inefficient motor planning — movements feel choppy or disorganized",
-          "Cognitive load — movement requires conscious attention that depletes energy"
+          "Poor inhibition, muscles that should relax stay active",
+          "Over effort, simple tasks require excessive force and concentration",
+          "Inefficient motor planning, movements feel choppy or disorganized",
+          "Cognitive load, movement requires conscious attention that depletes energy"
         ]
       },
       {
@@ -2717,38 +2717,38 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "How Frontal Dysfunction Creates Chronic Pain" },
       {
         type: "paragraph",
-        content: "When the frontal cortex cannot organize movement efficiently, the body defaults to brute force. Muscles co-contract when they should alternate. Stabilizers fire when they should rest. Tissues absorb load they were never designed to handle — not because of injury, but because of poor motor organization."
+        content: "When the frontal cortex cannot organize movement efficiently, the body defaults to brute force. Muscles co contract when they should alternate. Stabilizers fire when they should rest. Tissues absorb load they were never designed to handle, not because of injury, but because of poor motor organization."
       },
       {
         type: "paragraph",
-        content: "Pain in this context is not a signal of damage. It is a signal of inefficiency — the consequence of a control system that can no longer plan, inhibit, and sequence movement effectively."
+        content: "Pain in this context is not a signal of damage. It is a signal of inefficiency, the consequence of a control system that can no longer plan, inhibit, and sequence movement effectively."
       },
       {
         type: "inline-cta",
-        content: "If movement feels effortful, over-braced, or mentally exhausting — and imaging looks normal — a neurologic MSK evaluation can reveal whether frontal control is the missing link."
+        content: "If movement feels effortful, over braced, or mentally exhausting, and imaging looks normal, a neurologic MSK evaluation can reveal whether frontal control is the missing link."
       },
       { type: "heading", content: "Primary vs. Secondary Frontal Dysfunction" },
       {
         type: "paragraph",
-        content: "Frontal control dysfunction may be primary — meaning the frontal motor system itself is impaired — or it may emerge secondarily from other neurologic limitations."
+        content: "Frontal control dysfunction may be primary, meaning the frontal motor system itself is impaired, or it may emerge secondarily from other neurologic limitations."
       },
       {
         type: "paragraph",
-        content: "Common upstream drivers include cerebellar timing deficits and autonomic energy constraints. When these systems are impaired, the frontal cortex loses the resources it needs to plan and inhibit efficiently — and over-effort increases as a result."
+        content: "Common upstream drivers include cerebellar timing deficits and autonomic energy constraints. When these systems are impaired, the frontal cortex loses the resources it needs to plan and inhibit efficiently, and over effort increases as a result."
       },
       {
         type: "callout",
         variant: "insight",
-        content: "Strengthening without restoring motor planning often reinforces over-recruitment — making movement less efficient, not more."
+        content: "Strengthening without restoring motor planning often reinforces over recruitment, making movement less efficient, not more."
       },
       { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
       {
         type: "paragraph",
-        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But frontal control dysfunction lives in the planning system: it affects how the brain organizes movement, inhibits unnecessary activation, and sequences muscle firing."
+        content: "Imaging evaluates structure: bones, discs, tendons, and ligaments. Strength tests measure output: how much force a muscle can produce. But frontal control dysfunction lives in the planning system, affecting how the brain organizes movement, inhibits unnecessary activation, and sequences muscle firing."
       },
       {
         type: "paragraph",
-        content: "A normal MRI and strong muscles can coexist with a very real frontal control problem. This is why over-effort, fatigue, and pain persist for many people despite reassuring test results."
+        content: "A normal MRI and strong muscles can coexist with a very real frontal control problem. This is why over effort, fatigue, and pain persist for many people despite reassuring test results."
       },
       { type: "heading", content: "How PPC Evaluates Frontal Involvement" },
       {
@@ -2762,13 +2762,13 @@ export const mskArticles: ArticleData[] = [
           "Assessment of motor planning and sequencing",
           "Evaluation of inhibition and muscle relaxation patterns",
           "Identification of primary vs. compensatory drivers",
-          "Fatigue-based testing to reveal breakdown patterns",
+          "Fatigue based testing to reveal breakdown patterns",
           "Validated outcome measures to track meaningful change over time"
         ]
       },
       {
         type: "paragraph",
-        content: "The goal is to determine whether frontal control dysfunction is driving over-effort and tissue overload — and what needs to be addressed first."
+        content: "The goal is to determine whether frontal control dysfunction is driving over effort and tissue overload, and what needs to be addressed first."
       },
       { type: "heading", content: "What This Means for Recovery" },
       {
@@ -2778,12 +2778,12 @@ export const mskArticles: ArticleData[] = [
       {
         type: "callout",
         variant: "insight",
-        content: "Efficiency returns when the brain can plan. Pain settles when over-effort is no longer necessary."
+        content: "Efficiency returns when the brain can plan. Pain settles when over effort is no longer necessary."
       },
       { type: "heading", content: "Moving Forward" },
       {
         type: "paragraph",
-        content: "If movement feels effortful, over-braced, or mentally exhausting — a clinician-led neurologic and musculoskeletal evaluation can help determine whether frontal control dysfunction is driving the problem, and what to address first."
+        content: "If movement feels effortful, over braced, or mentally exhausting, a clinician led neurologic and musculoskeletal evaluation can help determine whether frontal control dysfunction is driving the problem, and what to address first."
       }
     ],
     relatedArticles: [
@@ -2794,7 +2794,7 @@ export const mskArticles: ArticleData[] = [
     primaryCTA: {
       label: "Schedule MSK Evaluation",
       route: "/patient/concierge",
-      description: "Determine whether frontal control dysfunction is driving your chronic pain — and build a path to durable recovery."
+      description: "Determine whether frontal control dysfunction is driving your chronic pain, and build a path to durable recovery."
     },
     secondaryCTA: {
       label: "Take MSK Self-Assessment",
@@ -2806,8 +2806,8 @@ export const mskArticles: ArticleData[] = [
     title: "Brainstem Dysfunction and Chronic Pain: When the System Can't Settle",
     category: "msk",
     readTime: "8 min read",
-    excerpt: "Why pain emerges when the brainstem loses its ability to regulate baseline tone, reflexes, and stress tolerance — even when tissues are intact.",
-    heroContent: "Your nervous system never seems to settle. Muscles stay tight. Reflexes feel heightened. Stress tolerance is gone — and pain seems to spread or amplify without a clear cause. If this sounds familiar, the issue may not be your muscles or joints. It may be your brainstem.",
+    excerpt: "Why pain emerges when the brainstem loses its ability to regulate baseline tone, reflexes, and stress tolerance, even when tissues are intact.",
+    heroContent: "Your nervous system never seems to settle. Muscles stay tight. Reflexes feel heightened. Stress tolerance is gone, and pain seems to spread or amplify without a clear cause. If this sounds familiar, the issue may not be your muscles or joints. It may be your brainstem.",
     sections: [
       {
         type: "callout",
@@ -2816,7 +2816,7 @@ export const mskArticles: ArticleData[] = [
       },
       {
         type: "paragraph",
-        content: "When brainstem regulation falters, secondary compensation often appears across all MSK control domains — lowering pain thresholds globally."
+        content: "When brainstem regulation falters, secondary compensation often appears across all MSK control domains, lowering pain thresholds globally."
       },
       { type: "heading", content: "Do Any of These Sound Familiar?" },
       {
@@ -2828,9 +2828,9 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Muscles that never fully relax — even at rest",
+          "Muscles that never fully relax, even at rest",
           "Heightened reflexes or startle responses",
-          "Low stress tolerance — small demands trigger large responses",
+          "Low stress tolerance, small demands trigger large responses",
           "Pain that spreads or migrates without clear injury",
           "Sensitivity to light, sound, or environmental changes",
           "Difficulty calming down after exertion or stress"
