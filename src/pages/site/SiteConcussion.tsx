@@ -24,7 +24,7 @@ const SiteConcussion = () => {
     <div className="flex flex-col">
       <Helmet>
         <title>Concussion Recovery | Neurologic & Musculoskeletal Care | Pittsford Performance Care</title>
-        <meta name="description" content="Persistent post-concussion symptoms require domain-based neurologic evaluation. PPC identifies which neurologic domains are limiting your recovery." />
+        <meta name="description" content="Persistent post concussion symptoms require domain based neurologic evaluation. PPC identifies which neurologic domains are limiting your recovery." />
         <link rel="canonical" href="https://pittsfordperformancecare.com/site/concussion" />
       </Helmet>
 
@@ -45,8 +45,8 @@ const SiteConcussion = () => {
               Still Struggling Months After Your Concussion?
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
-              Persistent post-concussion symptoms aren't just "in your head." They're real 
-              neurologic deficits that require a domain-based evaluation—not just rest and time.
+              Persistent post concussion symptoms aren't just "in your head." They're real 
+              neurologic deficits that require a domain based evaluation, not just rest and time.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild>
@@ -87,7 +87,7 @@ const SiteConcussion = () => {
                 environments overwhelming.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Feeling off-balance or unsteady. Fatigue that limits daily activities, no matter 
+                Feeling off balance or unsteady. Fatigue that limits daily activities, no matter 
                 how much you rest. Trouble with screens and reading. Anxiety or mood changes that 
                 weren't there before your injury.
               </p>
@@ -120,7 +120,7 @@ const SiteConcussion = () => {
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Concussion recovery does not fail randomly. Symptoms persist when one or more 
-                neurologic domains fail to reintegrate after injury—forcing other domains to 
+                neurologic domains fail to reintegrate after injury, forcing other domains to 
                 compensate. Over time, these compensations fatigue, amplify symptoms, and stall recovery.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
@@ -149,7 +149,7 @@ const SiteConcussion = () => {
                 </p>
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   At Pittsford Performance Care, concussion recovery is approached through the same 
-                  domain-based neurologic framework used across all conditions — with emphasis on 
+                  domain based neurologic framework used across all conditions, with emphasis on 
                   restoring tolerance, integration, and efficiency across systems rather than chasing isolated symptoms.
                 </p>
               </div>
@@ -165,7 +165,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Visual Domain</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
-                  Processes visual motion, focus, and spatial accuracy — commonly contributing to headaches, dizziness, and screen intolerance after concussion.
+                  Processes visual motion, focus, and spatial accuracy, commonly contributing to headaches, dizziness, and screen intolerance after concussion.
                 </p>
                 <span className="text-sm text-primary font-medium group-hover:underline">
                   Visual Dysfunction After Concussion →
@@ -181,7 +181,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Vestibular Domain</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
-                  Regulates balance, orientation, and motion sensing — often driving dizziness, nausea, and movement sensitivity.
+                  Regulates balance, orientation, and motion sensing, often driving dizziness, nausea, and movement sensitivity.
                 </p>
                 <span className="text-sm text-primary font-medium group-hover:underline">
                   Vestibular Dysfunction After Concussion →
@@ -197,7 +197,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Cerebellar Domain</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
-                  Coordinates timing, sequencing, and motor prediction — contributing to clumsiness, slowed performance, and exertional fatigue.
+                  Coordinates timing, sequencing, and motor prediction, contributing to clumsiness, slowed performance, and exertional fatigue.
                 </p>
                 <span className="text-sm text-primary font-medium group-hover:underline">
                   Cerebellar Timing Deficits After Concussion →
@@ -213,7 +213,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Autonomic Domain</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
-                  Controls energy regulation, heart rate, and recovery capacity — commonly underlying exercise intolerance and symptom flares.
+                  Controls energy regulation, heart rate, and recovery capacity, commonly underlying exercise intolerance and symptom flares.
                 </p>
                 <span className="text-sm text-primary font-medium group-hover:underline">
                   Autonomic Dysfunction After Concussion →
@@ -229,7 +229,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Frontal / Executive Domain</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
-                  Supports attention, inhibition, and cognitive-motor control — often involved in brain fog, overwhelm, and decision fatigue.
+                  Supports attention, inhibition, and cognitive motor control, often involved in brain fog, overwhelm, and decision fatigue.
                 </p>
                 <span className="text-sm text-primary font-medium group-hover:underline">
                   Executive Dysfunction After Concussion →
@@ -245,7 +245,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Brainstem Domain</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
-                  Establishes baseline regulation and sensory gating — influencing sleep, light sensitivity, and symptom volatility.
+                  Establishes baseline regulation and sensory gating, influencing sleep, light sensitivity, and symptom volatility.
                 </p>
                 <span className="text-sm text-primary font-medium group-hover:underline">
                   Brainstem Dysfunction After Concussion →
@@ -261,7 +261,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Proprioceptive Domain</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
-                  Integrates body position and movement feedback — contributing to disorientation, clumsiness, and movement insecurity.
+                  Integrates body position and movement feedback, contributing to disorientation, clumsiness, and movement insecurity.
                 </p>
                 <span className="text-sm text-primary font-medium group-hover:underline">
                   Proprioceptive Dysfunction After Concussion →
@@ -277,7 +277,7 @@ const SiteConcussion = () => {
                 </div>
                 <h3 className="font-bold text-lg mb-2 group-hover:text-blue-600 transition-colors">Limbic Domain</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3 flex-1">
-                  Modulates threat perception and protective responses — influencing symptom persistence, anxiety, and pain amplification.
+                  Modulates threat perception and protective responses, influencing symptom persistence, anxiety, and pain amplification.
                 </p>
                 <span className="text-sm text-primary font-medium group-hover:underline">
                   Limbic Dysregulation After Concussion →
@@ -288,7 +288,7 @@ const SiteConcussion = () => {
             <div className="max-w-3xl mx-auto text-center">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Concussion symptoms often reflect interaction between multiple domains rather than a single deficit. 
-                Identifying which systems are primary — and which are compensating — is essential for restoring 
+                Identifying which systems are primary, and which are compensating, is essential for restoring 
                 tolerance, integration, and meaningful recovery.
               </p>
             </div>
@@ -356,23 +356,23 @@ const SiteConcussion = () => {
                 Clinical Precision
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Why PPC's Domain-Based Evaluation Matters
+                Why Domain Based Evaluation Matters at PPC
               </h2>
             </div>
             
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Our clinician-led evaluation is designed to distinguish between primary domain 
+                Our clinician led evaluation is designed to distinguish between primary domain 
                 dysfunction and secondary compensation. This distinction determines the treatment 
-                sequence—because addressing a compensating domain first often makes symptoms worse.
+                sequence, because addressing a compensating domain first often makes symptoms worse.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 PPC focuses on neurologic integration, not isolated symptoms. Rather than treating 
                 headaches, dizziness, or fatigue as separate problems, we trace each symptom back 
-                to the domain-level dysfunction driving it.
+                to the domain level dysfunction driving it.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Progress is measured by readiness—not timelines. We use validated outcome measures 
+                Progress is measured by readiness, not timelines. We use validated outcome measures 
                 to track meaningful change and determine when each domain is ready for increased 
                 demand, avoiding premature loading that prolongs recovery.
               </p>
@@ -393,10 +393,10 @@ const SiteConcussion = () => {
                 Understanding Fatigue
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                The Post-Concussion Energy Crisis
+                The Post Concussion Energy Crisis
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                After a concussion, your brain's energy metabolism is disrupted—normal activities 
+                After a concussion, your brain's energy metabolism is disrupted. Normal activities 
                 now require more neural resources than you have available.
               </p>
             </div>
@@ -416,7 +416,7 @@ const SiteConcussion = () => {
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Our approach includes carefully dosed neurologic exercise to rebuild capacity without 
-                triggering symptom flares—restoring your brain's ability to meet the demands of daily life.
+                triggering symptom flares, restoring your brain's ability to meet the demands of daily life.
               </p>
             </div>
             
@@ -523,10 +523,10 @@ const SiteConcussion = () => {
                   <Eye className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-5 leading-snug">
-                  Visual-Vestibular Mismatch
+                  Visual Vestibular Mismatch
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed tracking-wide flex-1">
-                  Understanding why your eyes and inner ear aren't working together—and what targeted treatment looks like.
+                  Understanding why your eyes and inner ear aren't working together, and what targeted treatment looks like.
                 </p>
                 <div className="mt-8 pt-6 border-t border-border/30">
                   <span className="inline-flex items-center gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all duration-300">
