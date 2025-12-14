@@ -38,17 +38,18 @@ const SiteAbout = () => {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
               <Brain className="h-4 w-4" />
-              Domain-Based Care
+              Domain-Based Neurologic Care
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              A Neurologic Model for Recovery, Pain, and Performance
+              One Neurologic Framework for Concussion, Pain, and Performance
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              At Pittsford Performance Care, we evaluate how neurologic domains integrate, 
-              compensate, and cascade. When a foundational domain fails, symptoms appear 
-              downstream. Identifying the primary domain is the key to lasting recovery.
+              Whether dysfunction originates from concussion (top-down) or musculoskeletal 
+              injury (bottom-up), the neurologic domains respond the same way: they compensate, 
+              fatigue, and cascade into symptoms. PPC's clinician-led evaluation identifies 
+              the primary domain driving dysfunction—not just the symptom endpoint.
             </p>
           </div>
         </div>
@@ -169,7 +170,7 @@ const SiteAbout = () => {
         </div>
       </section>
 
-      {/* How Domain Dysfunction Cascades */}
+      {/* The Cascade Effect - Enhanced with Top-Down and Bottom-Up */}
       <section className="py-24 lg:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-white to-slate-50 dark:from-slate-950 dark:to-slate-900" />
         
@@ -181,81 +182,175 @@ const SiteAbout = () => {
                 The Cascade Effect
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                How Domain Dysfunction Cascades
+                Why Symptoms Persist Despite Normal Imaging
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                When a foundational domain fails to integrate, other domains compensate. 
-                Over time, those compensations fatigue and become symptoms.
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                When a foundational neurologic domain fails to integrate, other domains compensate. 
+                Over time, those compensations fatigue and become symptoms. This explains why 
+                rest and time often fail—and why treating symptom endpoints rarely resolves 
+                the underlying dysfunction.
               </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-14">
-              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
-                  <Ear className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+
+            {/* Concussion-Driven Cascades */}
+            <div className="mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center">
+                  <Brain className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="font-bold text-lg mb-3 text-foreground">Vestibular Cascade</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">Vestibular instability</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>visual strain</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>frontal fatigue</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span className="font-medium text-foreground">headaches</span>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">Concussion-Driven Cascades</h3>
+                  <p className="text-sm text-muted-foreground">Top-Down Neurologic Disruption</p>
                 </div>
               </div>
-
-              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
-                  <Brain className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              <p className="text-muted-foreground mb-6 max-w-3xl">
+                Concussion disrupts cortical and subcortical integration. The injury affects how the brain 
+                processes, coordinates, and regulates—not the structure itself. This functional integration 
+                failure cascades across domains.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                    <Ear className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h4 className="font-bold text-base mb-3 text-foreground">Vestibular Cascade</h4>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">Vestibular instability</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>visual strain</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>frontal fatigue</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-medium text-foreground">headaches</span>
+                  </div>
                 </div>
-                <h3 className="font-bold text-lg mb-3 text-foreground">Cerebellar Cascade</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">Timing delay</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>proprioceptive overload</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>asymmetry</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span className="font-medium text-foreground">pain</span>
+
+                <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                    <Brain className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h4 className="font-bold text-base mb-3 text-foreground">Cerebellar Cascade</h4>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">Timing disruption</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>motor prediction failure</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-medium text-foreground">exertional fatigue</span>
+                  </div>
+                </div>
+
+                <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                    <Heart className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h4 className="font-bold text-base mb-3 text-foreground">Autonomic Cascade</h4>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">Autonomic dysregulation</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>poor recovery capacity</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-medium text-foreground">exercise intolerance</span>
+                  </div>
+                </div>
+
+                <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-blue-300 dark:hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mb-4">
+                    <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h4 className="font-bold text-base mb-3 text-foreground">Limbic Cascade</h4>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                    <span className="font-semibold text-blue-600 dark:text-blue-400">Limbic hyperactivation</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>frontal suppression</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-medium text-foreground">brain fog, anxiety</span>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+            {/* MSK-Driven Cascades */}
+            <div className="mb-14">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center">
+                  <Hand className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 </div>
-                <h3 className="font-bold text-lg mb-3 text-foreground">Autonomic Cascade</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">Autonomic inefficiency</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>poor recovery</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span className="font-medium text-foreground">exercise intolerance</span>
+                <div>
+                  <h3 className="text-xl font-bold text-foreground">Musculoskeletal-Driven Cascades</h3>
+                  <p className="text-sm text-muted-foreground">Bottom-Up Neurologic Disruption</p>
                 </div>
               </div>
-
-              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              <p className="text-muted-foreground mb-6 max-w-3xl">
+                Peripheral dysfunction alters how the brain controls movement, manages load, and regulates 
+                energy. When proprioceptive input is distorted, the brain compensates—and those compensations 
+                cascade. This explains why pain persists despite structurally normal imaging.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
+                    <Hand className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h4 className="font-bold text-base mb-3 text-foreground">Proprioceptive Cascade</h4>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                    <span className="font-semibold text-amber-600 dark:text-amber-400">Joint dysfunction</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>distorted afferent input</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>motor control failure</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-medium text-foreground">pain</span>
+                  </div>
                 </div>
-                <h3 className="font-bold text-lg mb-3 text-foreground">Limbic Cascade</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">Limbic hyperactivation</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>frontal suppression</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span className="font-medium text-foreground">brain fog</span>
+
+                <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
+                    <Brain className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h4 className="font-bold text-base mb-3 text-foreground">Cerebellar Compensation</h4>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                    <span className="font-semibold text-amber-600 dark:text-amber-400">Afferent mismatch</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>cerebellar overload</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-medium text-foreground">asymmetry, clumsiness</span>
+                  </div>
+                </div>
+
+                <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
+                    <Zap className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h4 className="font-bold text-base mb-3 text-foreground">Autonomic Overlay</h4>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                    <span className="font-semibold text-amber-600 dark:text-amber-400">Chronic pain signaling</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>autonomic stress</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-medium text-foreground">poor recovery</span>
+                  </div>
+                </div>
+
+                <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                  <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
+                    <Gauge className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h4 className="font-bold text-base mb-3 text-foreground">Frontal Fatigue</h4>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                    <span className="font-semibold text-amber-600 dark:text-amber-400">Persistent compensation</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span>executive drain</span>
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+                    <span className="font-medium text-foreground">decision fatigue</span>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <div className="max-w-2xl mx-auto text-center">
-              <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 shadow-lg">
+            <div className="max-w-3xl mx-auto text-center">
+              <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-primary/5 to-amber-500/5 border border-primary/20 shadow-lg">
                 <Target className="h-5 w-5 text-primary shrink-0" />
                 <p className="text-base font-medium text-foreground">
-                  Treating the endpoint of the cascade rarely works. Identifying the primary domain does.
+                  Treating the endpoint of the cascade rarely works. Identifying and restoring the primary domain does.
                 </p>
               </div>
             </div>
@@ -493,7 +588,7 @@ const SiteAbout = () => {
         </div>
       </section>
 
-      {/* Applied Across All Conditions */}
+      {/* One Framework Applied Consistently */}
       <section className="py-20 lg:py-28 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
         
@@ -511,33 +606,39 @@ const SiteAbout = () => {
             
             <div className="space-y-6 mb-10">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                The same domain-based neurologic framework is applied consistently across 
-                concussion recovery, musculoskeletal care, athletic performance, and 
-                pediatric development. This explains why:
+                PPC does not treat diagnoses in isolation. Whether the origin is concussion, 
+                musculoskeletal injury, performance limitation, or developmental challenge, 
+                the same domain-based neurologic framework applies. Cascades differ based on 
+                the origin of dysfunction—not the diagnostic label.
+              </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                This unified approach explains why traditional treatments often fail:
               </p>
               
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50">
                   <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Recovery can stall despite time and rest</span>
+                  <span className="text-muted-foreground">Recovery stalls despite time and rest</span>
                 </div>
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50">
                   <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Pain can persist despite normal imaging</span>
+                  <span className="text-muted-foreground">Pain persists despite normal imaging</span>
                 </div>
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50">
                   <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Performance can decline after clearance</span>
+                  <span className="text-muted-foreground">Performance declines after medical clearance</span>
                 </div>
                 <div className="flex items-start gap-3 p-4 rounded-xl bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50">
                   <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Learning can struggle even with support</span>
+                  <span className="text-muted-foreground">Symptoms recur despite endpoint treatment</span>
                 </div>
               </div>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
-                PPC's clinician-led evaluations identify which domain is primary, which 
-                domains are compensating, and where intervention restores efficiency, 
+                PPC's clinician-led evaluations identify the <span className="font-medium text-foreground">primary domain</span>, 
+                the <span className="font-medium text-foreground">compensating domains</span>, and the 
+                <span className="font-medium text-foreground"> intervention targets</span> that restore efficiency, 
                 regulation, and readiness.
               </p>
             </div>
