@@ -1,138 +1,130 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  checkRateLimit,
+  recordRateLimitUsage,
+  getClientIp,
+  rateLimitResponse,
+} from "../_shared/rate-limiter.ts";
+import {
+  validateLeadPayload,
+  validationErrorResponse,
+} from "../_shared/input-validator.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface CreateLeadRequest {
-  full_name: string;
-  email?: string;
-  phone?: string;
-  who_is_this_for?: string;
-  primary_concern?: string;
-  symptom_summary?: string;
-  preferred_contact_method?: string;
-  utm_source?: string;
-  utm_medium?: string;
-  utm_campaign?: string;
-  utm_content?: string;
-  origin_page?: string;
-  origin_cta?: string;
-  pillar_origin?: string;
-  notes?: string;
-}
+const SERVICE_TYPE = "lead_submission";
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   // Only allow POST
-  if (req.method !== 'POST') {
+  if (req.method !== "POST") {
     return new Response(
-      JSON.stringify({ error: 'Method not allowed. Use POST.' }),
-      { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: "Method not allowed. Use POST." }),
+      { status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 
+  const clientIp = getClientIp(req);
+
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+    // Check rate limit first
+    const rateLimitResult = await checkRateLimit(SERVICE_TYPE, clientIp);
+    if (!rateLimitResult.allowed) {
+      console.log(`[create-lead] Rate limit exceeded for IP: ${clientIp}`);
+      return rateLimitResponse(rateLimitResult, corsHeaders);
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Parse request body
-    const body: CreateLeadRequest = await req.json();
-    
-    console.log('[create-lead] Received request:', JSON.stringify(body, null, 2));
+    // Parse and validate request body
+    const body = await req.json();
+    console.log("[create-lead] Received request from IP:", clientIp);
 
-    // Validation: full_name is required
-    if (!body.full_name || body.full_name.trim() === '') {
-      console.log('[create-lead] Validation failed: full_name is required');
-      return new Response(
-        JSON.stringify({ error: 'full_name is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const validation = validateLeadPayload(body);
+    if (!validation.valid) {
+      console.log("[create-lead] Validation failed:", validation.errors);
+      await recordRateLimitUsage(SERVICE_TYPE, false);
+      return validationErrorResponse(validation.errors, corsHeaders);
     }
 
-    // Validation: at least one of email or phone is required
-    if ((!body.email || body.email.trim() === '') && (!body.phone || body.phone.trim() === '')) {
-      console.log('[create-lead] Validation failed: email or phone required');
-      return new Response(
-        JSON.stringify({ error: 'At least one of email or phone is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const { sanitized } = validation;
 
-    // Build lead data - mapping to leads table columns
+    // Build lead data from sanitized input
     const leadData = {
-      name: body.full_name.trim(),
-      email: body.email?.trim() || null,
-      phone: body.phone?.trim() || null,
-      who_is_this_for: body.who_is_this_for || null,
-      primary_concern: body.primary_concern || null,
-      symptom_summary: body.symptom_summary || null,
-      preferred_contact_method: body.preferred_contact_method || null,
-      notes: body.notes || null,
-      utm_source: body.utm_source || null,
-      utm_medium: body.utm_medium || null,
-      utm_campaign: body.utm_campaign || null,
-      utm_content: body.utm_content || null,
-      origin_page: body.origin_page || null,
-      origin_cta: body.origin_cta || null,
-      pillar_origin: body.pillar_origin || null,
-      // Also map primary_concern to system_category for analytics compatibility
-      system_category: body.primary_concern || null,
-      checkpoint_status: 'lead_created',
-      funnel_stage: 'lead',
+      name: sanitized.name as string,
+      email: sanitized.email as string | null,
+      phone: sanitized.phone as string | null,
+      who_is_this_for: sanitized.who_is_this_for as string | null,
+      primary_concern: sanitized.primary_concern as string | null,
+      symptom_summary: sanitized.symptom_summary as string | null,
+      preferred_contact_method: sanitized.preferred_contact_method as string | null,
+      notes: sanitized.notes as string | null,
+      utm_source: sanitized.utm_source as string | null,
+      utm_medium: sanitized.utm_medium as string | null,
+      utm_campaign: sanitized.utm_campaign as string | null,
+      utm_content: sanitized.utm_content as string | null,
+      origin_page: sanitized.origin_page as string | null,
+      origin_cta: sanitized.origin_cta as string | null,
+      pillar_origin: sanitized.pillar_origin as string | null,
+      system_category: sanitized.primary_concern as string | null,
+      checkpoint_status: "lead_created",
+      funnel_stage: "lead",
     };
-
-    console.log('[create-lead] Inserting lead:', JSON.stringify(leadData, null, 2));
 
     // Insert into leads table
     const { data, error } = await supabase
-      .from('leads')
+      .from("leads")
       .insert(leadData)
-      .select('id')
+      .select("id")
       .single();
 
     if (error) {
-      console.error('[create-lead] Database error:', error);
+      console.error("[create-lead] Database error:", error);
+      await recordRateLimitUsage(SERVICE_TYPE, false);
       return new Response(
-        JSON.stringify({ error: error.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: "Failed to create lead" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log('[create-lead] Lead created successfully:', data.id);
+    console.log("[create-lead] Lead created successfully:", data.id);
+    await recordRateLimitUsage(SERVICE_TYPE, true);
 
-    // Log to audit_logs
+    // Log to audit_logs (non-blocking)
     try {
-      await supabase.from('audit_logs').insert({
-        action: 'lead_created_via_api',
-        table_name: 'leads',
+      await supabase.from("audit_logs").insert({
+        action: "lead_created_via_api",
+        table_name: "leads",
         record_id: data.id,
+        ip_address: clientIp,
         new_data: {
           ...leadData,
-          source: 'create-lead-api',
-        }
+          source: "create-lead-api",
+        },
       });
-    } catch (auditError) {
-      console.error('[create-lead] Audit log error (non-fatal):', auditError);
+    } catch (auditErr) {
+      console.error("[create-lead] Audit log error (non-fatal):", auditErr);
     }
 
     return new Response(
       JSON.stringify({ success: true, lead_id: data.id }),
-      { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
   } catch (err) {
-    console.error('[create-lead] Unexpected error:', err);
+    console.error("[create-lead] Unexpected error:", err);
+    await recordRateLimitUsage(SERVICE_TYPE, false);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: "Internal server error" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });

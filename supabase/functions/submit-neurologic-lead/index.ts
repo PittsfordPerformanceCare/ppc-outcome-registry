@@ -1,4 +1,14 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  checkRateLimit,
+  recordRateLimitUsage,
+  getClientIp,
+  rateLimitResponse,
+} from "../_shared/rate-limiter.ts";
+import {
+  validateNeurologicIntakePayload,
+  validationErrorResponse,
+} from "../_shared/input-validator.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -6,98 +16,88 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+const SERVICE_TYPE = "neurologic_intake";
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const clientIp = getClientIp(req);
   console.log("=== Neurologic Lead Submission Request ===");
   console.log("Method:", req.method);
-  console.log("URL:", req.url);
+  console.log("Client IP:", clientIp);
 
   try {
+    // Check rate limit first
+    const rateLimitResult = await checkRateLimit(SERVICE_TYPE, clientIp);
+    if (!rateLimitResult.allowed) {
+      console.log(`[submit-neurologic-lead] Rate limit exceeded for IP: ${clientIp}`);
+      return rateLimitResponse(rateLimitResult, corsHeaders);
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const body = await req.json();
-    console.log("Request body:", JSON.stringify(body, null, 2));
-    
-    // Flexible field mapping - support various field name formats
-    const email = body.email || body.Email || body.EMAIL || body.patient_email || body.patientEmail;
-    const persona = body.persona || body.Persona || "self";
-    const name = body.name || body.Name || body.full_name || body.fullName || body.patient_name || body.patientName;
-    const phone = body.phone || body.Phone || body.patient_phone || body.patientPhone;
-    const primaryConcern = body.primary_concern || body.primaryConcern || body.concern || body.Concern || body.symptoms || body.Symptoms || body.chief_complaint || body.chiefComplaint;
-    const symptomProfile = body.symptom_profile || body.symptomProfile || body.symptoms || body.symptom_list || body.symptomList;
-    const duration = body.duration || body.Duration || body.symptom_duration || body.symptomDuration;
-    const source = body.source || body.Source || body.referral_source || body.referralSource || "pillar-app";
-    
-    // UTM tracking fields (full ecosystem support)
-    const utmSource = body.utm_source || body.utmSource || null;
-    const utmMedium = body.utm_medium || body.utmMedium || null;
-    const utmCampaign = body.utm_campaign || body.utmCampaign || null;
-    const utmContent = body.utm_content || body.utmContent || null;
-    
-    // Enhanced CTA tracking fields (ecosystem-wide attribution)
-    const originPage = body.origin_page || body.originPage || null;
-    const originCta = body.origin_cta || body.originCta || null;
-    const funnelStage = body.funnel_stage || body.funnelStage || "landing";
-    const pillarOrigin = body.pillar_origin || body.pillarOrigin || 
-      (source?.includes("hub") ? "hub" : 
-       source?.includes("concussion") ? "concussion_pillar" :
-       source?.includes("msk") ? "msk_pillar" :
-       source?.includes("registry") ? "registry" : "direct");
 
-    // Validate required fields
-    if (!email) {
-      console.error("Missing email field. Body keys:", Object.keys(body));
-      return new Response(
-        JSON.stringify({ 
-          error: "Missing required field: email",
-          receivedFields: Object.keys(body),
-          hint: "Please include an 'email' field in your request"
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    // Validate input
+    const validation = validateNeurologicIntakePayload(body);
+    if (!validation.valid) {
+      console.error("[submit-neurologic-lead] Validation failed:", validation.errors);
+      await recordRateLimitUsage(SERVICE_TYPE, false);
+      return validationErrorResponse(validation.errors, corsHeaders);
     }
 
-    console.log("Parsed data:", { email, persona, name, source, pillarOrigin, funnelStage });
+    const { sanitized } = validation;
+
+    // Determine pillar origin
+    const source = (sanitized.source as string) || "pillar-app";
+    const pillarOrigin =
+      (sanitized.pillar_origin as string) ||
+      (source?.includes("hub")
+        ? "hub"
+        : source?.includes("concussion")
+        ? "concussion_pillar"
+        : source?.includes("msk")
+        ? "msk_pillar"
+        : source?.includes("registry")
+        ? "registry"
+        : "direct");
 
     // Insert the lead with full tracking attribution
     const { data, error } = await supabase
       .from("neurologic_intake_leads")
       .insert({
-        email: email,
-        persona: persona,
-        name: name || null,
-        phone: phone || null,
-        primary_concern: primaryConcern || null,
-        symptom_profile: symptomProfile || null,
-        duration: duration || null,
-        parent_name: body.parent_name || body.parentName || null,
-        child_name: body.child_name || body.childName || null,
-        child_age: body.child_age || body.childAge || null,
-        symptom_location: body.symptom_location || body.symptomLocation || null,
-        referrer_name: body.referrer_name || body.referrerName || null,
-        role: body.role || body.Role || null,
-        organization: body.organization || body.Organization || null,
-        patient_name: body.patient_name || body.patientName || null,
-        patient_age: body.patient_age || body.patientAge || null,
-        urgency: body.urgency || body.Urgency || "routine",
-        notes: body.notes || body.Notes || body.additional_info || body.additionalInfo || null,
+        email: sanitized.email as string,
+        persona: (sanitized.persona as string) || "self",
+        name: sanitized.name as string | null,
+        phone: sanitized.phone as string | null,
+        primary_concern: sanitized.primary_concern as string | null,
+        symptom_profile: sanitized.symptom_profile as string | null,
+        duration: sanitized.duration as string | null,
+        parent_name: sanitized.parent_name as string | null,
+        child_name: sanitized.child_name as string | null,
+        child_age: sanitized.child_age as string | null,
+        symptom_location: sanitized.symptom_location as string | null,
+        referrer_name: sanitized.referrer_name as string | null,
+        role: sanitized.role as string | null,
+        organization: sanitized.organization as string | null,
+        patient_name: sanitized.patient_name as string | null,
+        patient_age: sanitized.patient_age as string | null,
+        urgency: (sanitized.urgency as string) || "routine",
+        notes: sanitized.notes as string | null,
         source: source,
         status: "new",
-        // UTM tracking
-        utm_source: utmSource,
-        utm_medium: utmMedium,
-        utm_campaign: utmCampaign,
-        utm_content: utmContent,
-        // Enhanced CTA tracking
-        origin_page: originPage,
-        origin_cta: originCta,
-        funnel_stage: funnelStage,
+        utm_source: sanitized.utm_source as string | null,
+        utm_medium: sanitized.utm_medium as string | null,
+        utm_campaign: sanitized.utm_campaign as string | null,
+        utm_content: sanitized.utm_content as string | null,
+        origin_page: sanitized.origin_page as string | null,
+        origin_cta: sanitized.origin_cta as string | null,
+        funnel_stage: (sanitized.funnel_stage as string) || "landing",
         pillar_origin: pillarOrigin,
       })
       .select()
@@ -105,72 +105,69 @@ Deno.serve(async (req) => {
 
     if (error) {
       console.error("Error inserting lead:", error);
-      
-      // Log failed lead submission to audit_logs
+      await recordRateLimitUsage(SERVICE_TYPE, false);
+
+      // Log failed submission
       await supabase.from("audit_logs").insert({
         action: "lead_submission_failed",
         table_name: "neurologic_intake_leads",
         record_id: `lead_fail_${Date.now()}`,
+        ip_address: clientIp,
         new_data: {
-          email: email,
-          persona: persona,
+          email: sanitized.email,
           error_message: error.message,
           error_code: error.code,
           source: source,
           timestamp: new Date().toISOString(),
         },
       });
-      
+
       return new Response(
-        JSON.stringify({ 
-          error: "Failed to submit lead", 
-          details: error.message,
-          code: error.code 
+        JSON.stringify({
+          error: "Failed to submit lead",
+          code: error.code,
         }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     console.log("Lead submitted successfully:", data.id);
-    
-    // Log successful lead submission with full tracking attribution
-    await supabase.from("audit_logs").insert({
-      action: "lead_submission_success",
-      table_name: "neurologic_intake_leads",
-      record_id: data.id,
-      new_data: {
-        lead_id: data.id,
-        email: email,
-        persona: persona,
-        source: source,
-        // Include full tracking attribution in audit log
-        utm_source: utmSource,
-        utm_medium: utmMedium,
-        utm_campaign: utmCampaign,
-        utm_content: utmContent,
-        origin_page: originPage,
-        origin_cta: originCta,
-        funnel_stage: funnelStage,
-        pillar_origin: pillarOrigin,
-        timestamp: new Date().toISOString(),
-      },
-    });
+    await recordRateLimitUsage(SERVICE_TYPE, true);
+
+    // Log successful submission (non-blocking)
+    try {
+      await supabase.from("audit_logs").insert({
+        action: "lead_submission_success",
+        table_name: "neurologic_intake_leads",
+        record_id: data.id,
+        ip_address: clientIp,
+        new_data: {
+          lead_id: data.id,
+          email: sanitized.email,
+          persona: sanitized.persona,
+          source: source,
+          pillar_origin: pillarOrigin,
+          timestamp: new Date().toISOString(),
+        },
+      });
+    } catch (auditErr) {
+      console.error("Audit log error (non-fatal):", auditErr);
+    }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         message: "Lead submitted successfully",
-        leadId: data.id 
+        leadId: data.id,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
   } catch (err) {
     console.error("Error processing request:", err);
+    await recordRateLimitUsage(SERVICE_TYPE, false);
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: "Internal server error",
-        details: err instanceof Error ? err.message : "Unknown error"
       }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
