@@ -2966,7 +2966,7 @@ export const mskArticles: ArticleData[] = [
     sections: [
       {
         type: "callout",
-        content: "Primary Neurologic Domain: Visual–Oculomotor",
+        content: "Primary Neurologic Domain: Visual Oculomotor",
         variant: "info"
       },
       {
@@ -3014,8 +3014,8 @@ export const mskArticles: ArticleData[] = [
         content: "",
         items: [
           "Poor spatial accuracy — distances and depths are miscalculated",
-          "Visual-motor mismatch — movements don't match visual expectations",
-          "Over-bracing — the body guards against spatial uncertainty",
+          "Visual motor mismatch, movements don't match visual expectations",
+          "Over bracing, the body guards against spatial uncertainty",
           "Cervical strain — the neck works overtime to stabilize the head and eyes"
         ]
       },
@@ -3069,8 +3069,8 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Assessment of visual-spatial processing and depth perception",
-          "Evaluation of eye movement control and visual-motor integration",
+          "Assessment of visual spatial processing and depth perception",
+          "Evaluation of eye movement control and visual motor integration",
           "Identification of primary vs. compensatory drivers",
           "Fatigue-based testing to reveal breakdown patterns",
           "Validated outcome measures to track meaningful change over time"
@@ -3121,7 +3121,7 @@ export const mskArticles: ArticleData[] = [
     sections: [
       {
         type: "callout",
-        content: "Primary Neurologic Domain: Limbic–Prefrontal",
+        content: "Primary Neurologic Domain: Limbic Prefrontal",
         variant: "info"
       },
       {
@@ -3168,48 +3168,48 @@ export const mskArticles: ArticleData[] = [
         type: "list",
         content: "",
         items: [
-          "Threat perception — normal sensations are interpreted as dangerous",
-          "Protective tension — muscles guard against movement",
-          "Pain persistence — pain continues beyond tissue healing timelines",
-          "Avoidance — activities are restricted to prevent anticipated pain"
+          "Threat perception, normal sensations are interpreted as dangerous",
+          "Protective tension, muscles guard against movement",
+          "Pain persistence, pain continues beyond tissue healing timelines",
+          "Avoidance, activities are restricted to prevent anticipated pain"
         ]
       },
       {
         type: "callout",
         variant: "insight",
-        content: "The brain amplifies pain not because tissues are damaged, but because the system has not yet received the signal that it is safe. Pain becomes a protective brake — not a damage signal."
+        content: "The brain amplifies pain not because tissues are damaged, but because the system has not yet received the signal that it is safe. Pain becomes a protective brake, not a damage signal."
       },
       { type: "heading", content: "How Limbic Dysregulation Creates Chronic Pain" },
       {
         type: "paragraph",
-        content: "When the limbic system perceives ongoing threat, it keeps the nervous system in a protective mode. Pain thresholds drop. Muscles stay tense. Movement becomes guarded. And the body operates as if injury is ongoing — even when it is not."
+        content: "When the limbic system perceives ongoing threat, it keeps the nervous system in a protective mode. Pain thresholds drop. Muscles stay tense. Movement becomes guarded. And the body operates as if injury is ongoing, even when it is not."
       },
       {
         type: "paragraph",
-        content: "Pain in this context is not a signal of structural damage. It is a signal of protective amplification — the consequence of a nervous system that has not yet downregulated its threat response."
+        content: "Pain in this context is not a signal of structural damage. It is a signal of protective amplification, the consequence of a nervous system that has not yet downregulated its threat response."
       },
       {
         type: "inline-cta",
-        content: "If pain persists despite healing, and symptoms flare with stress or unpredictability — a neurologic MSK evaluation can reveal whether limbic modulation is the missing link."
+        content: "If pain persists despite healing, and symptoms flare with stress or unpredictability, a neurologic MSK evaluation can reveal whether limbic modulation is the missing link."
       },
       { type: "heading", content: "Primary vs. Secondary Limbic Involvement" },
       {
         type: "paragraph",
-        content: "Limbic dysregulation may be primary — meaning the limbic system itself is driving the protective response — or it may emerge secondarily from other neurologic limitations."
+        content: "Limbic dysregulation may be primary, meaning the limbic system itself is driving the protective response, or it may emerge secondarily from other neurologic limitations."
       },
       {
         type: "paragraph",
-        content: "Common upstream drivers include autonomic dysregulation and brainstem dysfunction. When these systems are impaired, the limbic system receives signals that reinforce threat perception — and protective amplification continues."
+        content: "Common upstream drivers include autonomic dysregulation and brainstem dysfunction. When these systems are impaired, the limbic system receives signals that reinforce threat perception, and protective amplification continues."
       },
       {
         type: "callout",
         variant: "insight",
-        content: "Reassurance alone rarely resolves limbic-driven pain. The system needs evidence of safety — through graded exposure and neurologic integration — not just words."
+        content: "Reassurance alone rarely resolves limbic driven pain. The system needs evidence of safety, through graded exposure and neurologic integration, not just words."
       },
       { type: "heading", content: "Why Imaging and Strength Tests Look Normal" },
       {
         type: "paragraph",
-        content: "Imaging evaluates structure — bones, discs, tendons, and ligaments. Strength tests measure output — how much force a muscle can produce. But limbic modulation lives in the threat-detection system: it affects how the brain interprets sensation and whether protective responses remain elevated."
+        content: "Imaging evaluates structure, bones, discs, tendons, and ligaments. Strength tests measure output, how much force a muscle can produce. But limbic modulation lives in the threat detection system: it affects how the brain interprets sensation and whether protective responses remain elevated."
       },
       {
         type: "paragraph",
@@ -3248,7 +3248,7 @@ export const mskArticles: ArticleData[] = [
       { type: "heading", content: "Moving Forward" },
       {
         type: "paragraph",
-        content: "If pain persists despite healing, and symptoms flare with stress, fatigue, or unpredictability — a clinician-led neurologic and musculoskeletal evaluation can help determine whether limbic modulation is sustaining the problem, and what to address first."
+        content: "If pain persists despite healing, and symptoms flare with stress, fatigue, or unpredictability, a clinician led neurologic and musculoskeletal evaluation can help determine whether limbic modulation is sustaining the problem, and what to address first."
       }
     ],
     relatedArticles: [
@@ -3259,7 +3259,7 @@ export const mskArticles: ArticleData[] = [
     primaryCTA: {
       label: "Schedule MSK Evaluation",
       route: "/patient/concierge",
-      description: "Determine whether limbic modulation is sustaining your chronic pain — and build a path to durable recovery."
+      description: "Determine whether limbic modulation is sustaining your chronic pain, and build a path to durable recovery."
     },
     secondaryCTA: {
       label: "Take MSK Self-Assessment",
