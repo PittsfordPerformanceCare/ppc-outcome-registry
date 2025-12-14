@@ -96,6 +96,7 @@ const SiteProviders = lazy(() => import("./pages/site/SiteProviders"));
 const SiteContact = lazy(() => import("./pages/site/SiteContact"));
 const SiteWcsdPartnership = lazy(() => import("./pages/site/SiteWcsdPartnership"));
 const SitePerformance = lazy(() => import("./pages/site/SitePerformance"));
+const SiteSpeedOfRecovery = lazy(() => import("./pages/site/SiteSpeedOfRecovery"));
 const SiteWorksCited = lazy(() => import("./pages/site/SiteWorksCited"));
 const SiteWhyNotPhysicalTherapy = lazy(() => import("./pages/site/SiteWhyNotPhysicalTherapy"));
 const ClinicianGuidesIndex = lazy(() => import("./pages/site/ClinicianGuidesIndex"));
@@ -167,6 +168,7 @@ const App = () => (
               <Route path="contact" element={<SiteContact />} />
               <Route path="wcsd-partnership" element={<SiteWcsdPartnership />} />
               <Route path="performance" element={<SitePerformance />} />
+              <Route path="performance/speed-of-recovery-as-a-performance-metric" element={<SiteSpeedOfRecovery />} />
               <Route path="works-cited" element={<SiteWorksCited />} />
               <Route path="why-not-physical-therapy" element={<SiteWhyNotPhysicalTherapy />} />
             </Route>
