@@ -270,8 +270,7 @@ const ProfessionalOutcomesPortal = () => {
               </p>
               <div>
                 <Link
-                  to="/auth"
-                  state={{ professionalVerification: true }}
+                  to="/resources/professional-outcomes/request-verification"
                   className="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-100 hover:border-slate-400 transition-colors"
                 >
                   Request Professional Verification
