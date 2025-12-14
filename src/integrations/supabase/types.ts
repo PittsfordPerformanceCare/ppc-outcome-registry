@@ -3604,6 +3604,50 @@ export type Database = {
           },
         ]
       }
+      professional_shared_episodes: {
+        Row: {
+          access_level: string
+          created_at: string
+          episode_id: string
+          expires_at: string | null
+          id: string
+          professional_user_id: string
+          shared_at: string
+          shared_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          access_level?: string
+          created_at?: string
+          episode_id: string
+          expires_at?: string | null
+          id?: string
+          professional_user_id: string
+          shared_at?: string
+          shared_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          access_level?: string
+          created_at?: string
+          episode_id?: string
+          expires_at?: string | null
+          id?: string
+          professional_user_id?: string
+          shared_at?: string
+          shared_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_shared_episodes_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           clinic_id: string | null
