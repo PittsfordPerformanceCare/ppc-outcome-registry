@@ -1,3 +1,4 @@
+import { memo, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +10,6 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Brain, Sparkles, Activity, ChevronRight, User } from "lucide-react";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
@@ -23,9 +23,10 @@ const NavLink = ({ to, children }: { to: string; children: React.ReactNode }) =>
   </Link>
 );
 
-const SiteHeader = () => {
+const SiteHeader = memo(() => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const toggleMobileMenu = useCallback(() => setMobileMenuOpen(prev => !prev), []);
+  const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* Ambient glow effect */}
@@ -249,7 +250,7 @@ const SiteHeader = () => {
           {/* Mobile Menu Button */}
           <button
             className="lg:hidden relative p-2.5 rounded-lg transition-all duration-300 hover:bg-accent/80 active:scale-95 overflow-hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={toggleMobileMenu}
             aria-label="Toggle menu"
           >
             <div className="relative w-5 h-5">
@@ -361,6 +362,8 @@ const SiteHeader = () => {
       </div>
     </header>
   );
-};
+});
+
+SiteHeader.displayName = "SiteHeader";
 
 export default SiteHeader;

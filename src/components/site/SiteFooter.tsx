@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import { Brain, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const SiteFooter = () => {
+const SiteFooter = memo(() => {
   return (
     <footer className="relative overflow-hidden">
       {/* Top CTA Banner */}
@@ -138,6 +139,8 @@ const SiteFooter = () => {
       </div>
     </footer>
   );
-};
+});
+
+SiteFooter.displayName = "SiteFooter";
 
 export default SiteFooter;
