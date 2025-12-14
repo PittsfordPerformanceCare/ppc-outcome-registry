@@ -123,7 +123,16 @@ const AdminShellTasks = lazy(() => import("./pages/admin-shell/AdminShellTasks")
 const AdminShellProviderTools = lazy(() => import("./pages/admin-shell/AdminShellProviderTools"));
 const AdminShellCommunications = lazy(() => import("./pages/admin-shell/AdminShellCommunications"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes - reduces refetches
+      gcTime: 1000 * 60 * 30, // 30 minutes - keeps data in cache longer
+      refetchOnWindowFocus: false, // Prevents refetch on tab focus
+      retry: 1, // Reduce retry attempts for faster failure feedback
+    },
+  },
+});
 
 // Loading fallback component
 const PageLoader = () => (
