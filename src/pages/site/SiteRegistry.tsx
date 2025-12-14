@@ -30,7 +30,7 @@ const SiteRegistry = () => {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
               <BarChart3 className="h-4 w-4" />
-              Outcome-Driven Care
+              Outcome Driven Care
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
@@ -39,7 +39,7 @@ const SiteRegistry = () => {
             
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
               Clarity Through Measurable Recovery. Every patient deserves to know whether 
-              they're getting better—and we believe the data should prove it.
+              they're getting better, and we believe the data should prove it.
             </p>
           </div>
         </div>
@@ -51,7 +51,7 @@ const SiteRegistry = () => {
           <div className="max-w-4xl mx-auto space-y-8">
             <p className="text-lg text-muted-foreground leading-relaxed">
               Recovery should not feel confusing. When patients are uncertain about 
-              whether they're improving—or why—it erodes confidence and delays healing. 
+              whether they're improving, or why, it erodes confidence and delays healing. 
               Too often, traditional care leaves people wondering if they're on the right path.
             </p>
             
@@ -64,7 +64,7 @@ const SiteRegistry = () => {
             
             <p className="text-lg text-muted-foreground leading-relaxed">
               The Registry reflects who we are as clinicians. It represents our commitment 
-              to data-driven clinical care, our belief that patients should never be left 
+              to clinical care driven by data, our belief that patients should never be left 
               in the dark, and our philosophy that measurable recovery is the foundation 
               of meaningful care.
             </p>
@@ -96,14 +96,14 @@ const SiteRegistry = () => {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 An outcome registry addresses this gap by capturing objective, validated 
                 measures of function over time. It allows clinicians to observe patterns 
-                that extend beyond the surface—tracking neurologic readiness rather than 
+                that extend beyond the surface, tracking neurologic readiness rather than 
                 symptom resolution alone. This longitudinal perspective is essential for 
                 making informed decisions about return to activity, school, sport, or work.
               </p>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
                 For patients recovering from concussion or complex neurologic conditions, 
-                the registry is not a convenience. It is a clinical necessity—a structured 
+                the registry is not a convenience. It is a clinical necessity, a structured 
                 framework that ensures recovery is observed with the depth and rigor these 
                 conditions require.
               </p>
@@ -125,7 +125,7 @@ const SiteRegistry = () => {
               <h2 className="text-3xl md:text-4xl font-bold mb-6">How the PPC Outcome Registry Works</h2>
               
               <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-                The registry operates within our episode-based care model, capturing 
+                The registry operates within our episode based care model, capturing 
                 structured data at key clinical moments to build a complete picture of 
                 each patient's recovery.
               </p>
@@ -179,8 +179,8 @@ const SiteRegistry = () => {
             
             <div className="mt-12 p-6 rounded-2xl bg-primary/5 border border-primary/10">
               <p className="text-muted-foreground leading-relaxed text-center">
-                <span className="font-semibold text-foreground">Episode-based care</span> means 
-                every condition is tracked as a distinct clinical episode—with a defined beginning, 
+                <span className="font-semibold text-foreground">Episode based care</span> means 
+                every condition is tracked as a distinct clinical episode with a defined beginning, 
                 structured observation, and documented resolution. This approach ensures continuity 
                 and prevents gaps in the recovery record.
               </p>
@@ -203,7 +203,7 @@ const SiteRegistry = () => {
             <div className="space-y-8">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Many clinics collect outcome data. Fewer actually use it. The difference 
-                at Pittsford Performance Care is that registry data is operationalized—meaning 
+                at Pittsford Performance Care is that registry data is operationalized, meaning 
                 it directly informs clinical decisions in real time, not just at discharge 
                 or for retrospective review.
               </p>
@@ -215,7 +215,7 @@ const SiteRegistry = () => {
                       <Activity className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-bold mb-2">Real-Time Clinical Adjustment</h3>
+                      <h3 className="font-bold mb-2">Real Time Clinical Adjustment</h3>
                       <p className="text-muted-foreground leading-relaxed">
                         When progress stalls or trends in an unexpected direction, treatment 
                         is adjusted promptly. Data drives action, not just documentation.
@@ -232,8 +232,8 @@ const SiteRegistry = () => {
                     <div>
                       <h3 className="font-bold mb-2">Support for Safe Return Decisions</h3>
                       <p className="text-muted-foreground leading-relaxed">
-                        Return-to-learn, return-to-play, and return-to-performance decisions 
-                        are grounded in objective functional data—not symptom reports alone.
+                        Return to learn, return to play, and return to performance decisions 
+                        are grounded in objective functional data, not symptom reports alone.
                       </p>
                     </div>
                   </div>
@@ -257,7 +257,7 @@ const SiteRegistry = () => {
               
               <p className="text-lg text-muted-foreground leading-relaxed">
                 This operational approach transforms the registry from a passive record 
-                into an active clinical tool—one that shapes care as it unfolds, rather 
+                into an active clinical tool, one that shapes care as it unfolds, rather 
                 than simply summarizing it afterward.
               </p>
             </div>
@@ -313,8 +313,8 @@ const SiteRegistry = () => {
               <h2 className="text-3xl md:text-4xl font-bold mb-6">What the Registry Represents</h2>
               
               <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-                The PPC Outcome Registry is more than a record-keeping system. It is a 
-                clinical standard—a commitment we make to every patient who walks through 
+                The PPC Outcome Registry is more than a record keeping system. It is a 
+                clinical standard, a commitment we make to every patient who walks through 
                 our doors. It is the foundation upon which we build trust, guide treatment, 
                 and define what success looks like.
               </p>
@@ -327,7 +327,7 @@ const SiteRegistry = () => {
                 </div>
                 <h3 className="text-lg font-bold mb-2">Transparency</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Recovery is visible and understandable to everyone involved—patients, 
+                  Recovery is visible and understandable to everyone involved: patients, 
                   families, and referring providers alike.
                 </p>
               </Card>
@@ -413,7 +413,7 @@ const SiteRegistry = () => {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 The Outcome Registry provides that context. By capturing a structured, 
                 longitudinal view of recovery, it allows both clinicians and patients to 
-                see patterns over time—patterns that would be invisible in isolated snapshots. 
+                see patterns over time, patterns that would be invisible in isolated snapshots. 
                 This perspective transforms uncertainty into understanding.
               </p>
               
@@ -440,7 +440,7 @@ const SiteRegistry = () => {
             
             <div className="space-y-8">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Evidence-based practice is not simply a phrase—it is a commitment to 
+                Evidence based practice is not simply a phrase. It is a commitment to 
                 grounding clinical decisions in the best available science. The PPC 
                 Outcome Registry is built on principles recognized across neurologic 
                 rehabilitation, concussion management, and musculoskeletal care.
@@ -493,9 +493,9 @@ const SiteRegistry = () => {
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-semibold">Return-to-Activity Frameworks</span>
+                      <span className="font-semibold">Return to Activity Frameworks</span>
                       <p className="text-muted-foreground mt-1">
-                        Decisions around return-to-learn, return-to-play, and return-to-performance 
+                        Decisions around return to learn, return to play, and return to performance 
                         are guided by stepwise protocols aligned with international consensus statements.
                       </p>
                     </div>
@@ -504,7 +504,7 @@ const SiteRegistry = () => {
               </Card>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
-                These principles inform every aspect of how the registry functions—ensuring 
+                These principles inform every aspect of how the registry functions, ensuring 
                 that our clinical observations are not only consistent but also aligned with 
                 the standards of care recognized by the broader medical community.
               </p>
@@ -535,9 +535,9 @@ const SiteRegistry = () => {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 This commitment extends beyond our clinic walls. Pittsford Performance 
                 Care is proud to collaborate with Webster Central School District on 
-                community-embedded initiatives aimed at supporting student-athlete health. 
+                community-embedded initiatives aimed at supporting student athlete health. 
                 Through this partnership, we are contributing to the validation of a 
-                patented school-based screening tool—work that reflects our belief that 
+                patented school based screening tool, work that reflects our belief that 
                 clinical responsibility includes giving back to the community.
               </p>
               
@@ -605,7 +605,7 @@ const SiteRegistry = () => {
                   <div>
                     <h3 className="text-xl font-bold mb-3">For Athletes</h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      Structured support for return-to-activity decisions. Safety grounded 
+                      Structured support for return to activity decisions. Safety grounded 
                       in observation, not guesswork. Clear criteria for when it's safe 
                       to return to play.
                     </p>
@@ -657,7 +657,7 @@ const SiteRegistry = () => {
                   </div>
                   <h3 className="font-bold mb-2">Transparency in Every Conversation</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Patients and families can see the data that informs their care—no 
+                    Patients and families can see the data that informs their care: no 
                     hidden judgments, no unexplained decisions.
                   </p>
                 </Card>
@@ -666,7 +666,7 @@ const SiteRegistry = () => {
                   <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-4">
                     <Shield className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="font-bold mb-2">Safer Return-to-Activity Decisions</h3>
+                  <h3 className="font-bold mb-2">Safer Return to Activity Decisions</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     Whether returning to school, sport, or work, decisions are grounded 
                     in documented recovery rather than subjective readiness.
@@ -680,7 +680,7 @@ const SiteRegistry = () => {
                   <h3 className="font-bold mb-2">Clearer Communication</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     When schools, coaches, or employers need updates, families have 
-                    objective information to share—not just reassurance.
+                    objective information to share, not just reassurance.
                   </p>
                 </Card>
                 
@@ -691,14 +691,14 @@ const SiteRegistry = () => {
                   <h3 className="font-bold mb-2">Accountability You Can Trust</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     The registry holds us accountable to the outcomes we promise. 
-                    If progress stalls, we adjust—and the data proves it.
+                    If progress stalls, we adjust, and the data proves it.
                   </p>
                 </Card>
               </div>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
-                This is what outcome-driven care looks like in practice: not claims, 
-                but structure. Not promises, but documentation. Not hope, but clarity.
+                This is what outcome driven care looks like in practice: not claims, 
+                but structure; not promises, but documentation; not hope, but clarity.
               </p>
             </div>
           </div>
@@ -720,12 +720,12 @@ const SiteRegistry = () => {
             
             <p className="text-lg text-muted-foreground leading-relaxed mb-6">
               At Pittsford Performance Care, we believe that recovery should never be 
-              a mystery. The Outcome Registry is how we deliver on that promise—bringing 
+              a mystery. The Outcome Registry is how we deliver on that promise, bringing 
               clarity, trust, and measurable progress to every patient we serve.
             </p>
             
             <p className="text-lg text-muted-foreground leading-relaxed mb-10">
-              If you're ready to experience care built on transparency and patient-first 
+              If you're ready to experience care built on transparency and patient first 
               values, we invite you to take the next step.
             </p>
             

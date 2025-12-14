@@ -306,7 +306,7 @@ const SiteMsk = () => {
 
             <p className="text-center text-muted-foreground leading-relaxed max-w-3xl mx-auto">
               Pain often reflects interaction between multiple domains rather than a single failing 
-              structure. Identifying which control systems are primary — and which are compensating — 
+              structure. Identifying which control systems are primary, and which are compensating, 
               is essential for restoring efficient movement and resolving persistent symptoms.
             </p>
           </div>
@@ -379,13 +379,13 @@ const SiteMsk = () => {
             
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Our clinician-led evaluation focuses on how movement is controlled—not just where 
+                Our clinician led evaluation focuses on how movement is controlled, not just where 
                 pain is felt. This distinction determines treatment sequence, because addressing 
                 compensatory patterns before primary dysfunction often makes symptoms worse.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 PPC identifies primary versus compensatory domain involvement. We restore timing, 
-                load distribution, and movement efficiency—not just strength or flexibility. Care 
+                load distribution, and movement efficiency, not just strength or flexibility. Care 
                 progresses based on readiness, not symptom suppression alone.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
