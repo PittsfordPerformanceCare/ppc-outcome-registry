@@ -76,9 +76,9 @@ const SiteHeader = memo(() => {
                     <div className="w-[480px] p-2">
                       <div className="grid gap-1.5">
                         {[
-                          { to: "/site/concussion", title: "Concussion Care", desc: "Specialized neurologic evaluation for persistent post-concussion symptoms", icon: Brain, color: "from-blue-500/20 to-blue-600/10" },
-                          { to: "/site/msk", title: "Musculoskeletal Care", desc: "Neuromuscular-driven approach to chronic pain and movement dysfunction", icon: Activity, color: "from-emerald-500/20 to-emerald-600/10" },
-                          { to: "/site/performance", title: "Performance & Athletic Care", desc: "Neurologic readiness, recovery, and confident return-to-play for athletes", icon: Sparkles, color: "from-amber-500/20 to-amber-600/10" },
+                          { to: "/site/concussion", title: "Concussion Care", desc: "Specialized neurologic evaluation for persistent post concussion symptoms", icon: Brain, color: "from-blue-500/20 to-blue-600/10" },
+                          { to: "/site/msk", title: "Musculoskeletal Care", desc: "Neuromuscular driven approach to chronic pain and movement dysfunction", icon: Activity, color: "from-emerald-500/20 to-emerald-600/10" },
+                          { to: "/site/performance", title: "Performance & Athletic Care", desc: "Neurologic readiness, recovery, and confident return to play for athletes", icon: Sparkles, color: "from-amber-500/20 to-amber-600/10" },
                         ].map((item) => (
                           <NavigationMenuLink key={item.to} asChild>
                             <Link

@@ -209,8 +209,8 @@ const SitePerformance = () => {
                   movement, and maintains precision under increasing demand.
                 </p>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  At Pittsford Performance Care, performance is evaluated through the same domain-based 
-                  neurologic framework used in injury recovery and concussion care — with emphasis on 
+                  At Pittsford Performance Care, performance is evaluated through the same domain based 
+                  neurologic framework used in injury recovery and concussion care, with emphasis on 
                   readiness, efficiency, and resilience rather than symptom resolution.
                 </p>
               </div>
@@ -349,8 +349,8 @@ const SitePerformance = () => {
             <div className="max-w-3xl mx-auto text-center">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Performance limitations often reflect inefficiencies across multiple neurologic domains 
-                rather than a single weakness. Identifying which systems are limiting output — and which 
-                are compensating — allows performance gains to occur through integration and efficiency, not increased strain.
+                rather than a single weakness. Identifying which systems are limiting output, and which 
+                are compensating, allows performance gains to occur through integration and efficiency, not increased strain.
               </p>
             </div>
           </div>
@@ -477,7 +477,7 @@ const SitePerformance = () => {
             <div className="prose prose-lg dark:prose-invert mx-auto">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Athletes at Pittsford Performance Care receive the same neurologic, outcome driven care 
-                as all patients. There is no separate tier or exclusive program. Only an application of 
+                as all patients. There is no separate tier or exclusive program. Only an application of
                 the same clinical principles to the unique demands of sport and performance.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
