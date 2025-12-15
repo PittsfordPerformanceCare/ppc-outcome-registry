@@ -326,94 +326,166 @@ const SiteConcussion = () => {
 
       {/* Domain Cascade Explanation */}
       <section className="py-24 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-900/20 via-transparent to-transparent" />
         
         <div className="container mx-auto px-4 relative">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-14">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-sm font-medium mb-6">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-sm font-medium mb-6">
                 <AlertTriangle className="h-4 w-4" />
                 The Cascade Effect
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
                 How Domain Dysfunction Cascades After Concussion
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
                 Symptoms often appear downstream from the original disruption. The symptom you 
                 notice may not be the domain where the problem started.
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-14">
-              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
-                  <Ear className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+            {/* Cascade Visualization */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
+              {/* Vestibular Cascade */}
+              <div className="group relative">
+                <div className="absolute left-6 top-14 bottom-4 w-px bg-gradient-to-b from-amber-500 via-amber-500/50 to-red-500/80 group-hover:via-amber-400 transition-all duration-500" />
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="relative z-10 h-12 w-12 rounded-xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/30">
+                    <Ear className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">Vestibular Cascade</h3>
                 </div>
-                <h3 className="font-bold text-lg mb-3 text-foreground">Vestibular Cascade</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">Vestibular instability</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>visual strain</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>frontal fatigue</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span className="font-medium text-foreground">headaches</span>
-                </div>
-              </div>
-
-              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
-                  <Brain className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                </div>
-                <h3 className="font-bold text-lg mb-3 text-foreground">Cerebellar Cascade</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">Cerebellar timing delay</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>proprioceptive overload</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>asymmetry</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span className="font-medium text-foreground">pain</span>
-                </div>
-              </div>
-
-              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
-                  <Zap className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                </div>
-                <h3 className="font-bold text-lg mb-3 text-foreground">Brainstem Cascade</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">Brainstem inefficiency</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>autonomic dysregulation</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span className="font-medium text-foreground">exercise intolerance</span>
+                <div className="space-y-0 pl-4">
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-5 w-5 rounded-full bg-amber-500 border-2 border-slate-900 shadow-md shadow-amber-500/20 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-amber-400 font-semibold">Vestibular instability</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">Primary</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-4 w-4 rounded-full bg-amber-500/70 border-2 border-slate-900 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-slate-300">Visual strain & tracking difficulty</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-4 w-4 rounded-full bg-amber-500/50 border-2 border-slate-900 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-slate-400">Frontal fatigue & overwhelm</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-5 w-5 rounded-full bg-red-500 border-2 border-slate-900 shadow-md shadow-red-500/20 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-red-400 font-semibold">Persistent headaches</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">Symptom</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="h-12 w-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              {/* Cerebellar Cascade */}
+              <div className="group relative">
+                <div className="absolute left-6 top-14 bottom-4 w-px bg-gradient-to-b from-blue-500 via-blue-500/50 to-red-500/80 group-hover:via-blue-400 transition-all duration-500" />
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="relative z-10 h-12 w-12 rounded-xl bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <Brain className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">Cerebellar Cascade</h3>
                 </div>
-                <h3 className="font-bold text-lg mb-3 text-foreground">Limbic Cascade</h3>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">Limbic hyperactivation</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>frontal suppression</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span>brain fog</span>
-                  <ArrowRight className="h-3.5 w-3.5 shrink-0" />
-                  <span className="font-medium text-foreground">mood changes</span>
+                <div className="space-y-0 pl-4">
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-5 w-5 rounded-full bg-blue-500 border-2 border-slate-900 shadow-md shadow-blue-500/20 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-blue-400 font-semibold">Cerebellar timing delay</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">Primary</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-4 w-4 rounded-full bg-blue-500/70 border-2 border-slate-900 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-slate-300">Proprioceptive overload</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-4 w-4 rounded-full bg-blue-500/50 border-2 border-slate-900 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-slate-400">Movement asymmetry</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-5 w-5 rounded-full bg-red-500 border-2 border-slate-900 shadow-md shadow-red-500/20 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-red-400 font-semibold">Chronic pain patterns</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">Symptom</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Brainstem Cascade */}
+              <div className="group relative">
+                <div className="absolute left-6 top-14 bottom-4 w-px bg-gradient-to-b from-purple-500 via-purple-500/50 to-red-500/80 group-hover:via-purple-400 transition-all duration-500" />
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="relative z-10 h-12 w-12 rounded-xl bg-purple-500 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                    <Zap className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">Brainstem Cascade</h3>
+                </div>
+                <div className="space-y-0 pl-4">
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-5 w-5 rounded-full bg-purple-500 border-2 border-slate-900 shadow-md shadow-purple-500/20 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-purple-400 font-semibold">Brainstem inefficiency</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">Primary</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-4 w-4 rounded-full bg-purple-500/70 border-2 border-slate-900 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-slate-300">Autonomic dysregulation</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-4 w-4 rounded-full bg-purple-500/50 border-2 border-slate-900 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-slate-400">Heart rate variability disruption</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-5 w-5 rounded-full bg-red-500 border-2 border-slate-900 shadow-md shadow-red-500/20 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-red-400 font-semibold">Exercise intolerance</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">Symptom</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Limbic Cascade */}
+              <div className="group relative">
+                <div className="absolute left-6 top-14 bottom-4 w-px bg-gradient-to-b from-emerald-500 via-emerald-500/50 to-red-500/80 group-hover:via-emerald-400 transition-all duration-500" />
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="relative z-10 h-12 w-12 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                    <Shield className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-white">Limbic Cascade</h3>
+                </div>
+                <div className="space-y-0 pl-4">
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-5 w-5 rounded-full bg-emerald-500 border-2 border-slate-900 shadow-md shadow-emerald-500/20 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-emerald-400 font-semibold">Limbic hyperactivation</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">Primary</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-4 w-4 rounded-full bg-emerald-500/70 border-2 border-slate-900 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-slate-300">Frontal suppression</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-4 w-4 rounded-full bg-emerald-500/50 border-2 border-slate-900 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-slate-400">Cognitive fog & overwhelm</span>
+                  </div>
+                  <div className="flex items-center gap-4 py-3 group/step">
+                    <div className="relative z-10 h-5 w-5 rounded-full bg-red-500 border-2 border-slate-900 shadow-md shadow-red-500/20 group-hover/step:scale-125 transition-transform" />
+                    <span className="text-red-400 font-semibold">Mood & anxiety changes</span>
+                    <span className="text-xs text-slate-500 uppercase tracking-wider">Symptom</span>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <div className="max-w-2xl mx-auto text-center">
-              <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 shadow-lg">
-                <Target className="h-5 w-5 text-primary shrink-0" />
-                <p className="text-base font-medium text-foreground">
-                  Treating the endpoint of the cascade rarely works. Identifying the primary domain does.
-                </p>
+            {/* Bottom callout */}
+            <div className="max-w-3xl mx-auto">
+              <div className="relative p-8 rounded-2xl bg-gradient-to-r from-slate-800/80 to-slate-800/40 border border-slate-700/50 backdrop-blur-sm">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <div className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold shadow-lg">
+                    Key Insight
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 pt-2">
+                  <Target className="h-8 w-8 text-primary shrink-0" />
+                  <p className="text-lg md:text-xl font-medium text-white">
+                    Treating the endpoint of the cascade rarely works. <span className="text-primary">Identifying the primary domain does.</span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
