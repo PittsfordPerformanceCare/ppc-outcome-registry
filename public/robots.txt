@@ -1,14 +1,40 @@
+# Sitemap
+Sitemap: https://muse-meadow-app.lovable.app/sitemap.xml
+
+# Google
 User-agent: Googlebot
 Allow: /
+Disallow: /admin
+Disallow: /admin-shell
+Disallow: /dashboard
+Disallow: /staff-login
+Disallow: /auth
 
+# Bing
 User-agent: Bingbot
 Allow: /
+Disallow: /admin
+Disallow: /admin-shell
+Disallow: /dashboard
+Disallow: /staff-login
+Disallow: /auth
 
+# Social Media Crawlers
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
+# Default
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin-shell
+Disallow: /dashboard
+Disallow: /staff-login
+Disallow: /auth
+Disallow: /patient-dashboard
+Disallow: /patient-episode
+Disallow: /patient-preferences
+Disallow: /clinician
