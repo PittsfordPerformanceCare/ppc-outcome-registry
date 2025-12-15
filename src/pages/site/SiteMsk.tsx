@@ -23,6 +23,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { MedicalConditionSchema, BreadcrumbSchema } from "@/components/site/StructuredData";
 
 const SiteMsk = () => {
   return (
@@ -30,8 +31,34 @@ const SiteMsk = () => {
       <Helmet>
         <title>Musculoskeletal Care | Neurologic & MSK Care | Pittsford Performance Care</title>
         <meta name="description" content="Chronic pain with normal imaging? MSK dysfunction is often a control and load problem. PPC identifies which neurologic domains are failing to manage movement." />
-        <link rel="canonical" href="https://pittsfordperformancecare.com/site/msk" />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/msk" />
       </Helmet>
+      <MedicalConditionSchema
+        name="Chronic Musculoskeletal Pain"
+        description="Persistent pain and movement dysfunction with normal imaging, often driven by neurologic control deficits rather than structural damage."
+        url="https://muse-meadow-app.lovable.app/site/msk"
+        signOrSymptom={[
+          "Chronic pain despite normal imaging",
+          "Movement asymmetry",
+          "Early fatigue during activity",
+          "Recurrent injuries",
+          "Post-surgical performance deficits",
+          "Movement heaviness or slowness"
+        ]}
+        possibleTreatment={[
+          "Motor timing rehabilitation",
+          "Cerebellar integration therapy",
+          "Vestibular-motor training",
+          "Proprioceptive retraining",
+          "Load management optimization"
+        ]}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://muse-meadow-app.lovable.app/site/home" },
+          { name: "MSK Care", url: "https://muse-meadow-app.lovable.app/site/msk" }
+        ]}
+      />
 
       {/* Hero Section */}
       <section className="relative py-28 lg:py-36 overflow-hidden">

@@ -1,11 +1,19 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Brain, Activity, Heart, Sparkles } from "lucide-react";
+import { LocalBusinessSchema } from "@/components/site/StructuredData";
 
 const SiteHome = () => {
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>Pittsford Performance Care | Neurologic Rehabilitation for Concussion & MSK</title>
+        <meta name="description" content="Specialized neurologic rehabilitation for concussion recovery and musculoskeletal performance in Rochester, NY. Evidence-based care with measured outcomes." />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/home" />
+      </Helmet>
+      <LocalBusinessSchema />
       {/* Hero Section */}
       <section className="relative py-28 lg:py-36 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
