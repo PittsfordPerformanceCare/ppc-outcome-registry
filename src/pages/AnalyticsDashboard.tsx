@@ -99,11 +99,10 @@ export default function AnalyticsDashboard() {
         ? subDays(new Date(), 30)
         : subMonths(new Date(), 3);
 
-      // Fetch episodes
+      // Fetch episodes (all clinic episodes, not filtered by user)
       let episodesQuery = supabase
         .from("episodes")
         .select("*")
-        .eq("user_id", user.id)
         .gte("created_at", startDate.toISOString());
 
       if (selectedRegion !== "all") {
