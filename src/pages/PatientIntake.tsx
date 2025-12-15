@@ -3008,7 +3008,7 @@ export default function PatientIntake() {
                         </FormControl>
                         <div className="space-y-1 leading-none">
                           <FormLabel>
-                            I acknowledge that I have received and reviewed the HIPAA Privacy Notice *
+                            I acknowledge that I have read and understand the HIPAA Privacy Notice *
                           </FormLabel>
                           <FormDescription>
                             You must acknowledge to continue
