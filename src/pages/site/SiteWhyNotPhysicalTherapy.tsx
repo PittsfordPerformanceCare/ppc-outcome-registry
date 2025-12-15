@@ -56,11 +56,11 @@ const SiteWhyNotPhysicalTherapy = () => {
                   <Layers className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold mb-2">TL;DR</h2>
+                  <h2 className="text-lg font-semibold mb-2">The Bottom Line</h2>
                   <p className="text-muted-foreground leading-relaxed">
-61:                     Pittsford Performance Care (PPC) is a clinician led neurologic & musculoskeletal care practice, not a physical therapy clinic. 
-62:                     We evaluate and treat the neurologic systems that control movement and function, then prescribe targeted interventions based on 
-63:                     those findings. This system based approach identifies dysfunction that traditional structural exams often miss, leading to more 
+                    Pittsford Performance Care (PPC) is a clinician led neurologic & musculoskeletal care practice, not a physical therapy clinic. 
+                    We evaluate and treat the neurologic systems that control movement and function, then prescribe targeted interventions based on 
+                    those findings. This system based approach identifies dysfunction that traditional structural exams often miss, leading to more 
                     precise care and measurable outcomes.
                   </p>
                 </div>
