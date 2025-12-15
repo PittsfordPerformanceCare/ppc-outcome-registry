@@ -131,3 +131,6 @@ verify_jwt = false
 
 [functions.submit-referral]
 verify_jwt = false
+
+[functions.submit-intake-form]
+verify_jwt = false

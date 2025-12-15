@@ -239,6 +239,10 @@ export default function PatientIntake() {
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   
+  // Bot protection: form load timestamp and honeypot fields
+  const [formLoadedAt] = useState(() => Date.now());
+  const [honeypot, setHoneypot] = useState({ website: '', fax: '' });
+  
   // Wizard state
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
@@ -650,9 +654,6 @@ export default function PatientIntake() {
     return () => subscription.unsubscribe();
   }, [form, hasTriggeredConfetti]);
 
-  const generateAccessCode = () => {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-  };
 
   // Handle returning patient selection and pre-fill
   const handleReturningPatientSelect = (patientData: any) => {
@@ -740,17 +741,14 @@ export default function PatientIntake() {
     }
     
     try {
-      const code = generateAccessCode();
-      
       // Get referral code from session storage if it exists
       const referralCode = sessionStorage.getItem("referral_code");
       
       const primaryComplaint = data.complaints.find(c => c.isPrimary);
       
-      const { error } = await supabase
-        .from("intake_forms")
-        .insert({
-          access_code: code,
+      // Use edge function for rate limiting and bot protection
+      const { data: responseData, error } = await supabase.functions.invoke('submit-intake-form', {
+        body: {
           patient_name: data.patientName,
           date_of_birth: data.dateOfBirth,
           phone: data.phone || null,
@@ -791,34 +789,20 @@ export default function PatientIntake() {
           consent_clinic_updates: data.consentClinicUpdates,
           opt_out_newsletter: data.optOutNewsletter,
           referral_code: referralCode,
-          status: "pending"
-        });
+          // Bot detection fields
+          website: honeypot.website,
+          fax: honeypot.fax,
+          _form_loaded_at: formLoadedAt,
+        },
+      });
 
       if (error) throw error;
+      
+      const code = responseData?.access_code;
 
-      // If there's a referral code, update the referral record
+      // Clear referral code from session storage (edge function handles the update)
       if (referralCode) {
-        const { data: insertedData } = await supabase
-          .from("intake_forms")
-          .select("id")
-          .eq("access_code", code)
-          .single();
-
-        if (insertedData) {
-          await supabase
-            .from("patient_referrals")
-            .update({
-              referred_patient_email: data.email,
-              referred_patient_name: data.patientName,
-              intake_form_id: insertedData.id,
-              status: "completed",
-              intake_submitted_at: new Date().toISOString(),
-            })
-            .eq("referral_code", referralCode);
-          
-          // Clear from session storage
-          sessionStorage.removeItem("referral_code");
-        }
+        sessionStorage.removeItem("referral_code");
       }
 
       setAccessCode(code);
