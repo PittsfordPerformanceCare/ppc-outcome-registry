@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,11 @@ const PatientIntakeAdult = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formLoadTime = useRef(Date.now());
+
+  // Honeypot fields (should remain empty)
+  const [honeypotWebsite, setHoneypotWebsite] = useState("");
+  const [honeypotFax, setHoneypotFax] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -76,26 +81,32 @@ const PatientIntakeAdult = () => {
       const originCta = searchParams.get("origin_cta") || storedTracking.origin_cta || null;
       const pillarOrigin = searchParams.get("pillar_origin") || storedTracking.pillar_origin || null;
 
-      // Insert lead into database
-      const { error } = await supabase.from("leads").insert({
-        name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        phone: formData.phone || null,
-        preferred_contact_method: formData.preferredContact,
-        system_category: formData.symptomCategory,
-        primary_concern: formData.symptomCategory,
-        symptom_summary: formData.symptomDescription || null,
-        who_is_this_for: "self",
-        funnel_stage: "lead_intake",
-        checkpoint_status: "lead_intake_completed",
-        notes: `Duration: ${formData.symptomDuration}. Previous treatment: ${formData.previousTreatment}. Has referral: ${formData.hasReferral}`,
-        origin_page: originPage,
-        origin_cta: originCta,
-        pillar_origin: pillarOrigin,
-        utm_source: utmSource,
-        utm_medium: utmMedium,
-        utm_campaign: utmCampaign,
-        utm_content: utmContent,
+      // Submit via edge function with bot protection
+      const { data, error } = await supabase.functions.invoke("create-lead", {
+        body: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          phone: formData.phone || null,
+          preferred_contact_method: formData.preferredContact,
+          system_category: formData.symptomCategory,
+          primary_concern: formData.symptomCategory,
+          symptom_summary: formData.symptomDescription || null,
+          who_is_this_for: "self",
+          funnel_stage: "lead_intake",
+          checkpoint_status: "lead_intake_completed",
+          notes: `Duration: ${formData.symptomDuration}. Previous treatment: ${formData.previousTreatment}. Has referral: ${formData.hasReferral}`,
+          origin_page: originPage,
+          origin_cta: originCta,
+          pillar_origin: pillarOrigin,
+          utm_source: utmSource,
+          utm_medium: utmMedium,
+          utm_campaign: utmCampaign,
+          utm_content: utmContent,
+          // Honeypot fields for bot detection
+          website: honeypotWebsite,
+          fax: honeypotFax,
+          _formLoadTime: formLoadTime.current,
+        },
       });
 
       if (error) throw error;

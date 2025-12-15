@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,11 @@ const PatientIntakeReferral = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formLoadTime = useRef(Date.now());
+
+  // Honeypot fields (should remain empty)
+  const [honeypotWebsite, setHoneypotWebsite] = useState("");
+  const [honeypotFax, setHoneypotFax] = useState("");
 
   const [formData, setFormData] = useState({
     providerName: "",
@@ -60,22 +65,29 @@ const PatientIntakeReferral = () => {
         if (stored) storedTracking = JSON.parse(stored);
       } catch {}
 
-      const { error } = await supabase.from("leads").insert({
-        name: formData.patientName,
-        email: formData.providerEmail,
-        phone: formData.providerPhone || null,
-        preferred_contact_method: "email",
-        primary_concern: formData.referralReason,
-        who_is_this_for: "referral",
-        funnel_stage: "provider_referral",
-        checkpoint_status: "referral_lead_submitted",
-        notes: `Referring Provider: ${formData.providerName}. Practice: ${formData.practiceName}. Provider phone: ${formData.providerPhone}`,
-        origin_page: searchParams.get("origin_page") || storedTracking.origin_page || "/patient/intake/referral",
-        origin_cta: searchParams.get("origin_cta") || storedTracking.origin_cta || null,
-        utm_source: searchParams.get("utm_source") || storedTracking.utm_source || null,
-        utm_medium: searchParams.get("utm_medium") || storedTracking.utm_medium || null,
-        utm_campaign: searchParams.get("utm_campaign") || storedTracking.utm_campaign || null,
-        utm_content: searchParams.get("utm_content") || storedTracking.utm_content || null,
+      // Submit via edge function with bot protection
+      const { data, error } = await supabase.functions.invoke("create-lead", {
+        body: {
+          name: formData.patientName,
+          email: formData.providerEmail,
+          phone: formData.providerPhone || null,
+          preferred_contact_method: "email",
+          primary_concern: formData.referralReason,
+          who_is_this_for: "referral",
+          funnel_stage: "provider_referral",
+          checkpoint_status: "referral_lead_submitted",
+          notes: `Referring Provider: ${formData.providerName}. Practice: ${formData.practiceName}. Provider phone: ${formData.providerPhone}`,
+          origin_page: searchParams.get("origin_page") || storedTracking.origin_page || "/patient/intake/referral",
+          origin_cta: searchParams.get("origin_cta") || storedTracking.origin_cta || null,
+          utm_source: searchParams.get("utm_source") || storedTracking.utm_source || null,
+          utm_medium: searchParams.get("utm_medium") || storedTracking.utm_medium || null,
+          utm_campaign: searchParams.get("utm_campaign") || storedTracking.utm_campaign || null,
+          utm_content: searchParams.get("utm_content") || storedTracking.utm_content || null,
+          // Honeypot fields for bot detection
+          website: honeypotWebsite,
+          fax: honeypotFax,
+          _formLoadTime: formLoadTime.current,
+        },
       });
 
       if (error) throw error;

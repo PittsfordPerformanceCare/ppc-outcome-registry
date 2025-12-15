@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,11 @@ const PatientIntakePediatric = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formLoadTime = useRef(Date.now());
+
+  // Honeypot fields (should remain empty)
+  const [honeypotWebsite, setHoneypotWebsite] = useState("");
+  const [honeypotFax, setHoneypotFax] = useState("");
 
   const [formData, setFormData] = useState({
     // Parent info
@@ -84,25 +89,32 @@ const PatientIntakePediatric = () => {
       const originCta = searchParams.get("origin_cta") || storedTracking.origin_cta || null;
       const pillarOrigin = searchParams.get("pillar_origin") || storedTracking.pillar_origin || null;
 
-      const { error } = await supabase.from("leads").insert({
-        name: `${formData.childFirstName} ${formData.childLastName} (Parent: ${formData.parentFirstName} ${formData.parentLastName})`,
-        email: formData.parentEmail,
-        phone: formData.parentPhone || null,
-        preferred_contact_method: formData.preferredContact,
-        system_category: formData.primaryConcern,
-        primary_concern: formData.primaryConcern,
-        symptom_summary: formData.symptomDescription || null,
-        who_is_this_for: "child",
-        funnel_stage: "lead_intake",
-        checkpoint_status: "lead_intake_completed",
-        notes: `Child age: ${formData.childAge}. Grade: ${formData.childGrade}. Duration: ${formData.symptomDuration}. School symptoms: ${formData.schoolSymptoms}. Previous evaluation: ${formData.previousEvaluation}`,
-        origin_page: originPage,
-        origin_cta: originCta,
-        pillar_origin: pillarOrigin,
-        utm_source: utmSource,
-        utm_medium: utmMedium,
-        utm_campaign: utmCampaign,
-        utm_content: utmContent,
+      // Submit via edge function with bot protection
+      const { data, error } = await supabase.functions.invoke("create-lead", {
+        body: {
+          name: `${formData.childFirstName} ${formData.childLastName} (Parent: ${formData.parentFirstName} ${formData.parentLastName})`,
+          email: formData.parentEmail,
+          phone: formData.parentPhone || null,
+          preferred_contact_method: formData.preferredContact,
+          system_category: formData.primaryConcern,
+          primary_concern: formData.primaryConcern,
+          symptom_summary: formData.symptomDescription || null,
+          who_is_this_for: "child",
+          funnel_stage: "lead_intake",
+          checkpoint_status: "lead_intake_completed",
+          notes: `Child age: ${formData.childAge}. Grade: ${formData.childGrade}. Duration: ${formData.symptomDuration}. School symptoms: ${formData.schoolSymptoms}. Previous evaluation: ${formData.previousEvaluation}`,
+          origin_page: originPage,
+          origin_cta: originCta,
+          pillar_origin: pillarOrigin,
+          utm_source: utmSource,
+          utm_medium: utmMedium,
+          utm_campaign: utmCampaign,
+          utm_content: utmContent,
+          // Honeypot fields for bot detection
+          website: honeypotWebsite,
+          fax: honeypotFax,
+          _formLoadTime: formLoadTime.current,
+        },
       });
 
       if (error) throw error;
