@@ -27,58 +27,69 @@ const SiteHub = () => {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
               <Network className="h-4 w-4" />
-              Specialists in Complex Cases
+              Domain Mapped Neurologic Care
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Still Struggling Despite
-              <span className="text-primary block mt-2">"Normal" Test Results?</span>
+              One Neurologic Framework.
+              <span className="text-primary block mt-2">Two Clinical Pillars.</span>
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              You've seen specialists. Your MRI came back clean. But the headaches, dizziness, 
-              or pain won't go away. <strong className="text-foreground">You're not imagining it.</strong> When 
-              standard tests miss what's wrong, we specialize in finding what others have overlooked—and 
-              getting you better.
-            </p>
-
-            <p className="text-base text-muted-foreground/80 italic max-w-2xl mx-auto">
-              We work with patients who haven't responded to traditional treatment. 
-              If your case feels complicated, you're in the right place.
+              At Pittsford Performance Care, we use a single neurologic domain map to evaluate 
+              and treat symptoms across concussion recovery and chronic musculoskeletal 
+              conditions. Whether you're recovering from a recent injury or stuck with persistent 
+              symptoms others couldn't resolve—our approach finds what's wrong and fixes it.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild className="h-12 px-8 text-base rounded-xl">
                 <Link to="/patient/concierge">
-                  Find Out What's Really Going On
+                  Schedule Your Evaluation
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="h-12 px-8 text-base rounded-xl">
-                <Link to="/site/about">How We're Different</Link>
+                <Link to="/site/about">Learn Our Approach</Link>
               </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why Standard Care Misses It */}
+      {/* Who We Help */}
       <section className="py-16 lg:py-20 bg-background border-b border-border/40">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-6">
-              Why Haven't You Gotten Better Yet?
-            </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-              Most providers focus on where it hurts. We focus on <strong className="text-foreground">why it's not healing</strong>. 
-              Persistent symptoms usually stem from how your brain controls movement, balance, and coordination—not 
-              damage that shows up on imaging.
-            </p>
-            <p className="text-base text-muted-foreground leading-relaxed mb-8">
-              We evaluate six neurologic systems that standard tests miss. When we find the dysfunction, 
-              we can treat it—and you can finally start getting better.
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                We Help Patients at Every Stage
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                From acute injuries to cases others couldn't solve—our domain-based evaluation 
+                identifies dysfunction that standard tests miss.
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-primary/5 border border-primary/10 rounded-xl p-6">
+                <h3 className="font-semibold text-lg mb-2">New Injuries & Acute Recovery</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Get the right evaluation from day one. Our domain-mapped approach accelerates 
+                  recovery and prevents symptoms from becoming chronic. Most patients recover 
+                  in just 6 visits.
+                </p>
+              </div>
+              <div className="bg-primary/5 border border-primary/10 rounded-xl p-6">
+                <h3 className="font-semibold text-lg mb-2">Complex & Persistent Cases</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Your MRI was normal but symptoms persist? We specialize in finding what others 
+                  overlook. If previous treatment didn't work, you're in the right place.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-3 mt-10">
               {[
                 "Vision & Eye Movement",
                 "Balance & Inner Ear", 
