@@ -146,6 +146,7 @@ const complaintSchema = z.object({
 
 const intakeFormSchema = z.object({
   patientName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
+  legalName: z.string().max(100, "Name is too long").optional(),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   episodeType: z.enum(["MSK", "Neurology", "Performance"]).default("MSK"),
   phone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
@@ -285,6 +286,7 @@ export default function PatientIntake() {
     reValidateMode: "onChange", // Re-validate on change after first validation
     defaultValues: {
       patientName: "",
+      legalName: "",
       dateOfBirth: "",
       episodeType: "MSK",
       phone: "",
@@ -1696,6 +1698,45 @@ export default function PatientIntake() {
                               onBlur={(e) => {
                                 field.onBlur();
                                 setTouchedFields(prev => new Set(prev).add('patientName'));
+                              }}
+                              className={isValid ? 'border-success focus:ring-success pr-10' : ''}
+                            />
+                            {isValid && (
+                              <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success animate-scale-in" />
+                            )}
+                          </div>
+                        </FormControl>
+                        {fieldState.error && (
+                          <FormMessage className="animate-slide-down" />
+                        )}
+                      </FormItem>
+                    );
+                  }}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="legalName"
+                  render={({ field, fieldState }) => {
+                    const isValid = touchedFields.has('legalName') && !fieldState.error && field.value;
+                    const hasError = touchedFields.has('legalName') && fieldState.error;
+                    return (
+                      <FormItem className={hasError ? 'animate-shake' : ''}>
+                        <FormLabel>Legal Name</FormLabel>
+                        <FormDescription className="text-xs">
+                          Only if different from Full Name above
+                        </FormDescription>
+                        <FormControl>
+                          <div className="relative">
+                            <Input 
+                              {...field}
+                              autoComplete="name"
+                              inputMode="text"
+                              enterKeyHint="next"
+                              placeholder="Leave blank if same as Full Name"
+                              onBlur={(e) => {
+                                field.onBlur();
+                                setTouchedFields(prev => new Set(prev).add('legalName'));
                               }}
                               className={isValid ? 'border-success focus:ring-success pr-10' : ''}
                             />
