@@ -129,6 +129,37 @@ const SitePerformance = () => {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
       </section>
 
+      {/* Highlighted Recovery Timeline Section */}
+      <section className="py-16 lg:py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/15 via-primary/10 to-primary/15" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 text-primary text-sm font-semibold">
+              <Timer className="h-4 w-4" />
+              Recovery That Matters
+            </div>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+              When Recovery Timelines <span className="text-primary">MATTER</span>
+            </h2>
+            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+              Most acute and chronic injuries recover faster when rehabilitation is guided through a neurological lens.
+            </p>
+            <p className="text-2xl md:text-3xl font-semibold text-foreground">
+              Experience the difference.
+            </p>
+            <div className="pt-4">
+              <Button size="lg" asChild className="shadow-lg">
+                <Link to="/patient/concierge">
+                  Start Your Recovery
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Section 2: Performance Is Neurologic */}
       <section className="py-20 lg:py-28 bg-background relative">
         <div className="container mx-auto px-4">
