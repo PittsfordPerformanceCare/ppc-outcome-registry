@@ -19,6 +19,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { MedicalConditionSchema, BreadcrumbSchema } from "@/components/site/StructuredData";
 
 const SiteConcussion = () => {
   return (
@@ -26,8 +27,34 @@ const SiteConcussion = () => {
       <Helmet>
         <title>Concussion Recovery | Neurologic & Musculoskeletal Care | Pittsford Performance Care</title>
         <meta name="description" content="Persistent post concussion symptoms require domain based neurologic evaluation. PPC identifies which neurologic domains are limiting your recovery." />
-        <link rel="canonical" href="https://pittsfordperformancecare.com/site/concussion" />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/concussion" />
       </Helmet>
+      <MedicalConditionSchema
+        name="Post-Concussion Syndrome"
+        description="Persistent symptoms following concussion or mild traumatic brain injury, including headaches, dizziness, cognitive difficulties, and visual disturbances."
+        url="https://muse-meadow-app.lovable.app/site/concussion"
+        signOrSymptom={[
+          "Persistent headaches",
+          "Dizziness and balance problems",
+          "Visual disturbances",
+          "Cognitive fog and difficulty concentrating",
+          "Fatigue and sleep disturbances",
+          "Sensitivity to light and sound"
+        ]}
+        possibleTreatment={[
+          "Vestibular rehabilitation",
+          "Oculomotor therapy",
+          "Autonomic nervous system regulation",
+          "Cognitive rehabilitation",
+          "Cervical spine treatment"
+        ]}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://muse-meadow-app.lovable.app/site/home" },
+          { name: "Concussion Care", url: "https://muse-meadow-app.lovable.app/site/concussion" }
+        ]}
+      />
 
       {/* Hero Section */}
       <section className="relative py-28 lg:py-36 overflow-hidden">
