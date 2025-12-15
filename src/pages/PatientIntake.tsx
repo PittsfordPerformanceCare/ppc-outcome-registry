@@ -1936,19 +1936,38 @@ export default function PatientIntake() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField
-                    control={form.control}
-                    name="insuranceProvider"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Insurance Provider</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <FormField
+                control={form.control}
+                name="insuranceProvider"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Insurance Provider</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select insurance provider" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Aetna">Aetna</SelectItem>
+                        <SelectItem value="Anthem">Anthem</SelectItem>
+                        <SelectItem value="BlueCross BlueShield">BlueCross BlueShield</SelectItem>
+                        <SelectItem value="Cigna">Cigna</SelectItem>
+                        <SelectItem value="Excellus">Excellus</SelectItem>
+                        <SelectItem value="Humana">Humana</SelectItem>
+                        <SelectItem value="Medicare">Medicare</SelectItem>
+                        <SelectItem value="Medicaid">Medicaid</SelectItem>
+                        <SelectItem value="MVP">MVP</SelectItem>
+                        <SelectItem value="UnitedHealthcare">UnitedHealthcare</SelectItem>
+                        <SelectItem value="Self-Pay">Self-Pay</SelectItem>
+                        <SelectItem value="Workers Comp">Workers Comp</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                   <FormField
                     control={form.control}
                     name="insuranceId"
@@ -1964,19 +1983,30 @@ export default function PatientIntake() {
                   />
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="billResponsibleParty"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Who is responsible for the bill?</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Self, Spouse, Parent, etc." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <FormField
+              control={form.control}
+              name="billResponsibleParty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Who is responsible for the bill?</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select responsible party" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Self">Self</SelectItem>
+                      <SelectItem value="Spouse">Spouse</SelectItem>
+                      <SelectItem value="Parent">Parent</SelectItem>
+                      <SelectItem value="Employer">Employer</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
               </CardContent>
             </Card>
 
@@ -2031,19 +2061,31 @@ export default function PatientIntake() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="emergencyContactRelationship"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Relationship</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g., Spouse, Parent" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <FormField
+                control={form.control}
+                name="emergencyContactRelationship"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Relationship</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select relationship" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Spouse">Spouse</SelectItem>
+                        <SelectItem value="Parent">Parent</SelectItem>
+                        <SelectItem value="Child">Child</SelectItem>
+                        <SelectItem value="Sibling">Sibling</SelectItem>
+                        <SelectItem value="Friend">Friend</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
                 </div>
               </CardContent>
             </Card>
@@ -2081,19 +2123,34 @@ export default function PatientIntake() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="referralSource"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>How did you hear about us? (Referral Source)</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Friend, doctor referral, online search, etc." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <FormField
+              control={form.control}
+              name="referralSource"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>How did you hear about us? (Referral Source)</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value || ""}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select how you heard about us" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Doctor Referral">Doctor Referral</SelectItem>
+                      <SelectItem value="Friend/Family">Friend/Family</SelectItem>
+                      <SelectItem value="Google Search">Google Search</SelectItem>
+                      <SelectItem value="Social Media">Social Media</SelectItem>
+                      <SelectItem value="Insurance Provider">Insurance Provider</SelectItem>
+                      <SelectItem value="School/Athletic Trainer">School/Athletic Trainer</SelectItem>
+                      <SelectItem value="Previous Patient">Previous Patient</SelectItem>
+                      <SelectItem value="Walk-in">Walk-in</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <FormField
@@ -2132,7 +2189,7 @@ export default function PatientIntake() {
                     name="pcpFax"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>PCP Fax <span className="text-destructive">*</span></FormLabel>
+                        <FormLabel>PCP Fax</FormLabel>
                         <FormControl>
                           <Input 
                             type="tel" 
