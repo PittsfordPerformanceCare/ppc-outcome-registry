@@ -7,7 +7,6 @@ import {
   Activity, 
   Target, 
   ArrowRight, 
-  CheckCircle2,
   BarChart3,
   Users,
   Sparkles,
@@ -28,56 +27,65 @@ const SiteHub = () => {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
               <Network className="h-4 w-4" />
-              Domain Mapped Neurologic Care
+              Specialists in Complex Cases
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              One Neurologic Framework.
-              <span className="text-primary block mt-2">Two Clinical Pillars.</span>
+              Still Struggling Despite
+              <span className="text-primary block mt-2">"Normal" Test Results?</span>
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              At Pittsford Performance Care, we use a single neurologic domain map to evaluate 
-              and treat persistent symptoms across concussion recovery and chronic musculoskeletal 
-              conditions. When imaging is normal but symptoms persist, domain specific dysfunction 
-              is often the cause.
+              You've seen specialists. Your MRI came back clean. But the headaches, dizziness, 
+              or pain won't go away. <strong className="text-foreground">You're not imagining it.</strong> When 
+              standard tests miss what's wrong, we specialize in finding what others have overlooked—and 
+              getting you better.
+            </p>
+
+            <p className="text-base text-muted-foreground/80 italic max-w-2xl mx-auto">
+              We work with patients who haven't responded to traditional treatment. 
+              If your case feels complicated, you're in the right place.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild className="h-12 px-8 text-base rounded-xl">
                 <Link to="/patient/concierge">
-                  Schedule Your Evaluation
+                  Find Out What's Really Going On
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="h-12 px-8 text-base rounded-xl">
-                <Link to="/site/about">Learn Our Approach</Link>
+                <Link to="/site/about">How We're Different</Link>
               </Button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Domain Map Framework Section */}
+      {/* Why Standard Care Misses It */}
       <section className="py-16 lg:py-20 bg-background border-b border-border/40">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-6">
-              The Neurologic Domain Map
+              Why Haven't You Gotten Better Yet?
             </h2>
-            <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-              Every patient is evaluated through the same neurologic framework. Our domain mapped 
-              evaluation identifies which of six core neurologic domains are impaired, how they 
-              interact, and which domain should be treated first.
+            <p className="text-lg text-muted-foreground leading-relaxed mb-4">
+              Most providers focus on where it hurts. We focus on <strong className="text-foreground">why it's not healing</strong>. 
+              Persistent symptoms usually stem from how your brain controls movement, balance, and coordination—not 
+              damage that shows up on imaging.
+            </p>
+            <p className="text-base text-muted-foreground leading-relaxed mb-8">
+              We evaluate six neurologic systems that standard tests miss. When we find the dysfunction, 
+              we can treat it—and you can finally start getting better.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               {[
-                "Visual",
-                "Vestibular", 
-                "Cerebellar",
-                "Autonomic",
-                "Proprioceptive / Cervical",
-                "Frontal / Executive Integration"
+                "Vision & Eye Movement",
+                "Balance & Inner Ear", 
+                "Coordination & Timing",
+                "Heart Rate & Energy",
+                "Neck & Body Awareness",
+                "Focus & Processing"
               ].map((domain) => (
                 <span 
                   key={domain}
@@ -91,20 +99,20 @@ const SiteHub = () => {
         </div>
       </section>
 
-      {/* Two Pillars */}
+      {/* Two Pillars - Which Path Is Right For You */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
                 <Target className="h-4 w-4" />
-                Two Clinical Pillars
+                Find Your Path
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Choose Your Entry Point</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">Which Sounds Like You?</h2>
               <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-                Patients enter through one of two clinical pillars, but every evaluation uses 
-                the same neurologic domain map. Whether symptoms began with a head injury or 
-                developed over time, domain specific dysfunction drives persistent problems.
+                Whether your symptoms started with a head injury or developed gradually, 
+                we use the same advanced evaluation to find what's really going on. 
+                Choose the path that fits your story.
               </p>
             </div>
 
@@ -114,35 +122,25 @@ const SiteHub = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
                   <Brain className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3">Concussion and Post Concussion Care</h3>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  Persistent post concussion symptoms occur when neurologic domains fail to 
-                  reintegrate after injury. Our domain mapped evaluation determines which 
-                  domains are impaired and how they interact.
+                <h3 className="text-2xl font-bold mb-3">Concussion & Post-Concussion</h3>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  Your CT or MRI was normal, but the headaches, brain fog, and dizziness 
+                  haven't gone away. You've been told to "just rest"—but rest isn't working.
                 </p>
                 
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Visual and vestibular domain testing</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Cerebellar timing and coordination</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Autonomic regulation assessment</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Frontal executive integration</span>
-                  </li>
-                </ul>
+                <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 mb-6">
+                  <p className="text-sm font-medium text-foreground mb-2">You're in the right place if:</p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• Symptoms persist weeks or months after injury</li>
+                    <li>• Screen time, crowds, or stores make symptoms worse</li>
+                    <li>• You feel "off" but can't explain exactly how</li>
+                    <li>• Previous treatment hasn't helped</li>
+                  </ul>
+                </div>
                 
                 <Button asChild className="w-full h-12 text-base rounded-xl">
                   <Link to="/site/concussion">
-                    Explore Concussion Care
+                    Learn How We Help Concussion Patients
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
@@ -153,45 +151,39 @@ const SiteHub = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
                   <Activity className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3">Musculoskeletal and Chronic Pain Care</h3>
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  Persistent pain despite normal imaging often reflects domain specific 
-                  dysfunction in proprioceptive, cerebellar, or autonomic systems. The same 
-                  neurologic framework applies.
+                <h3 className="text-2xl font-bold mb-3">Chronic Pain & Movement Issues</h3>
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  The pain keeps coming back. Physical therapy helped temporarily, but 
+                  it didn't stick. You're starting to wonder if anyone can actually fix this.
                 </p>
                 
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Proprioceptive and cervical domain mapping</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Motor timing and sequencing analysis</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Compensation and asymmetry detection</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-muted-foreground">Functional integration testing</span>
-                  </li>
-                </ul>
+                <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 mb-6">
+                  <p className="text-sm font-medium text-foreground mb-2">You're in the right place if:</p>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• Pain persists despite "normal" imaging</li>
+                    <li>• Traditional PT provided only temporary relief</li>
+                    <li>• Pain moves around or affects multiple areas</li>
+                    <li>• You've been dealing with this for months or years</li>
+                  </ul>
+                </div>
                 
                 <Button asChild className="w-full h-12 text-base rounded-xl">
                   <Link to="/site/msk">
-                    Explore MSK Care
+                    Learn How We Treat Chronic Pain
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
               </Card>
             </div>
+
+            <p className="text-center text-muted-foreground mt-10 text-sm italic">
+              Not sure which applies to you? That's okay—we'll figure it out together during your evaluation.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Outcome Registry Advantage */}
+      {/* We Track Results - No Guessing */}
       <section className="py-20 lg:py-28 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
@@ -200,17 +192,17 @@ const SiteHub = () => {
                 <div>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
                     <BarChart3 className="h-4 w-4" />
-                    Registry Advantage
+                    Proof, Not Promises
                   </div>
                   <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                    Measured Outcomes, Not Just Reported Improvement
+                    We Measure Everything—So You Know It's Working
                   </h2>
                 </div>
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Our PPC Outcome Registry tracks validated clinical measures from intake 
-                  through discharge. This means we can prove your progress with objective data, 
-                  not just subjective reports. You always know whether treatment is working.
+                  Tired of hearing "you should feel better" without any proof? We track your 
+                  progress with validated clinical measures from day one. You'll see exactly 
+                  how much you've improved—not just how you feel on a good day.
                 </p>
                 
                 <ul className="space-y-4">
@@ -219,9 +211,9 @@ const SiteHub = () => {
                       <Target className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <span className="font-medium">MCID tracked outcomes</span>
+                      <span className="font-medium">Meaningful improvement measured</span>
                       <p className="text-muted-foreground text-sm mt-1">
-                        Every episode measured for clinically meaningful improvement
+                        We don't guess—we use clinical standards to prove you're getting better
                       </p>
                     </div>
                   </li>
@@ -230,9 +222,9 @@ const SiteHub = () => {
                       <BarChart3 className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <span className="font-medium">Live analytics</span>
+                      <span className="font-medium">See your progress in real time</span>
                       <p className="text-muted-foreground text-sm mt-1">
-                        Track your recovery trajectory with objective data
+                        Track your recovery with objective data, not just how you feel
                       </p>
                     </div>
                   </li>
@@ -241,9 +233,9 @@ const SiteHub = () => {
                       <Users className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <span className="font-medium">Transparent results</span>
+                      <span className="font-medium">Share with your other doctors</span>
                       <p className="text-muted-foreground text-sm mt-1">
-                        Shared with you and your care team for coordinated care
+                        We keep your care team in the loop with clear progress reports
                       </p>
                     </div>
                   </li>
@@ -254,13 +246,13 @@ const SiteHub = () => {
                 <Card className="text-center p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
                   <div className="text-4xl font-bold text-primary mb-2">92%</div>
                   <p className="text-muted-foreground leading-relaxed">
-                    Patients achieve meaningful improvement
+                    Of patients get meaningfully better
                   </p>
                 </Card>
                 <Card className="text-center p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
-                  <div className="text-4xl font-bold text-primary mb-2">6.2</div>
+                  <div className="text-4xl font-bold text-primary mb-2">6</div>
                   <p className="text-muted-foreground leading-relaxed">
-                    Average visits to resolution
+                    Average visits to feel like yourself again
                   </p>
                 </Card>
                 <Card className="text-center p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
@@ -272,7 +264,7 @@ const SiteHub = () => {
                 <Card className="text-center p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
                   <div className="text-4xl font-bold text-primary mb-2">100%</div>
                   <p className="text-muted-foreground leading-relaxed">
-                    Outcomes transparently tracked
+                    Of outcomes tracked transparently
                   </p>
                 </Card>
               </div>
@@ -281,19 +273,19 @@ const SiteHub = () => {
         </div>
       </section>
 
-      {/* How to Get Started */}
+      {/* How It Works - Simple Steps */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
                 <Sparkles className="h-4 w-4" />
-                Your Path Forward
+                Getting Started Is Easy
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">How Domain Mapped Care Works</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">What Happens Next</h2>
               <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-                Recovery begins with understanding which neurologic domains are impaired. 
-                Our evaluation identifies the source. Treatment follows the map.
+                You've tried enough things that didn't work. Here's exactly what to expect 
+                when you come see us—no surprises, no runaround.
               </p>
             </div>
 
@@ -302,10 +294,10 @@ const SiteHub = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
                   <span className="text-2xl font-bold text-primary">1</span>
                 </div>
-                <h3 className="text-xl font-bold mb-3">Schedule Online</h3>
+                <h3 className="text-xl font-bold mb-3">Tell Us Your Story</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Describe your symptoms through our concierge. We match you with the 
-                  right clinician based on your clinical pillar.
+                  Fill out a quick form about your symptoms. We actually read it—and 
+                  we'll match you with the right specialist for your situation.
                 </p>
               </Card>
               
@@ -313,10 +305,10 @@ const SiteHub = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
                   <span className="text-2xl font-bold text-primary">2</span>
                 </div>
-                <h3 className="text-xl font-bold mb-3">Domain Mapped Evaluation</h3>
+                <h3 className="text-xl font-bold mb-3">Get a Real Evaluation</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Complete validated outcome measures and undergo neurologic domain 
-                  testing. We identify which domains are impaired and how they interact.
+                  We test things other providers don't look at. You'll leave your 
+                  first visit understanding exactly what's wrong and what to do about it.
                 </p>
               </Card>
               
@@ -324,10 +316,10 @@ const SiteHub = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-6">
                   <span className="text-2xl font-bold text-primary">3</span>
                 </div>
-                <h3 className="text-xl font-bold mb-3">Targeted Domain Treatment</h3>
+                <h3 className="text-xl font-bold mb-3">Start Getting Better</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Receive care targeted to your specific domain deficits. Track 
-                  recovery with validated outcome measures throughout your episode.
+                  Targeted treatment for your specific problem—not a generic protocol. 
+                  You'll see measurable progress, not just hope things improve.
                 </p>
               </Card>
             </div>
@@ -335,7 +327,7 @@ const SiteHub = () => {
             <div className="text-center mt-12">
               <Button size="lg" asChild className="h-12 px-8 text-base rounded-xl">
                 <Link to="/patient/concierge">
-                  Start Your Evaluation
+                  Ready to Feel Better? Let's Talk
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -350,19 +342,19 @@ const SiteHub = () => {
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
               <Brain className="h-4 w-4" />
-              Educational Resources
+              Want to Learn More?
             </div>
             
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Learn More About Your Condition</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Understand What's Happening in Your Body</h2>
             
             <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
-              Explore our resource library for in-depth articles on concussion recovery, 
-              movement dysfunction, and the neurologic systems driving your symptoms.
+              We believe you should understand your own condition. Explore our articles 
+              on concussion recovery, chronic pain, and why traditional approaches often fall short.
             </p>
             
             <Button size="lg" asChild className="h-12 px-8 text-base rounded-xl">
               <Link to="/site/articles">
-                Browse Resources
+                Read Our Articles
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
