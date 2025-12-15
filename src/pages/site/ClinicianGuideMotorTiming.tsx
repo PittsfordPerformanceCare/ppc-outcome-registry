@@ -18,6 +18,7 @@ const ClinicianGuideMotorTiming = () => {
           name="description"
           content="A clinician-oriented educational resource on motor timing deficits: neurologic mechanisms, clinical presentation, assessment considerations, and rehabilitation implications."
         />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/resources/clinician-guides/clinical-considerations-motor-timing-deficits" />
       </Helmet>
 
       <div className="min-h-screen bg-slate-50">

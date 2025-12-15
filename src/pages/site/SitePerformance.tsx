@@ -86,6 +86,7 @@ const SitePerformance = () => {
       <Helmet>
         <title>Performance & Athletic Care | Neurologic Readiness | Pittsford Performance Care</title>
         <meta name="description" content="Performance care focused on neurologic readiness, timing, and efficiency. Understand why athletes can be cleared but still underperform. Rochester NY." />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/performance" />
       </Helmet>
 
       {/* Hero Section - Darker, immersive */}

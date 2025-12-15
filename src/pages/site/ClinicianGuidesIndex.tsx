@@ -29,6 +29,7 @@ const ClinicianGuidesIndex = () => {
           name="description"
           content="Clinician-oriented educational resources on neurologic mechanisms, assessment considerations, and clinical interpretation for musculoskeletal and neurologic rehabilitation."
         />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/resources/clinician-guides" />
       </Helmet>
 
       <div className="min-h-screen bg-slate-50">

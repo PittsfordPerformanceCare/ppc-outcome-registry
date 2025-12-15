@@ -20,7 +20,7 @@ const SiteWcsdPartnership = () => {
           name="description" 
           content="A community partnership advancing student readiness through applied neuroscience. Pittsford Performance Care collaborates with Webster Central School District to translate clinical insight into the educational environment." 
         />
-        <link rel="canonical" href="https://pittsfordperformancecare.com/site/wcsd-partnership" />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/wcsd-partnership" />
       </Helmet>
 
       <div className="flex flex-col">

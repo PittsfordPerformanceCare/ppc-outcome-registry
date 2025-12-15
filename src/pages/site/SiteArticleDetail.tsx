@@ -1,8 +1,10 @@
 import { Link, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, Brain, Activity, Users, Trophy } from "lucide-react";
 import { getArticleBySlug, getRelatedArticles, ArticleSection } from "@/data/siteArticles";
 import { ArticleCTA, SymptomCallout, RelatedArticles } from "@/components/site/ArticleCTA";
+import { ArticleSchema } from "@/components/site/StructuredData";
 
 // Category icon mapping
 const categoryIcons: Record<string, React.ElementType> = {
@@ -125,9 +127,22 @@ const SiteArticleDetail = () => {
   }
 
   const CategoryIcon = categoryIcons[article.category] || Brain;
+  const canonicalUrl = `https://muse-meadow-app.lovable.app/site/articles/${category}/${slug}`;
 
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>{article.title} | Pittsford Performance Care</title>
+        <meta name="description" content={article.excerpt} />
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
+      <ArticleSchema
+        headline={article.title}
+        description={article.excerpt}
+        url={canonicalUrl}
+        datePublished="2025-01-01"
+        author="Pittsford Performance Care"
+      />
       {/* Article Header */}
       <section className="py-16 bg-gradient-to-b from-primary/5 to-background">
         <div className="container mx-auto px-4">

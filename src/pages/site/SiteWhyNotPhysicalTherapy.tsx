@@ -23,7 +23,7 @@ const SiteWhyNotPhysicalTherapy = () => {
           name="description" 
           content="Understand the distinction between Pittsford Performance Care's neurologic & musculoskeletal care model and traditional physical therapy. Clinician-led, system-based, outcomes-driven." 
         />
-        <link rel="canonical" href="https://pittsfordperformancecare.com/site/why-not-physical-therapy" />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/why-not-physical-therapy" />
       </Helmet>
 
       {/* Hero Section */}

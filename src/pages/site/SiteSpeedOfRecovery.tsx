@@ -25,7 +25,7 @@ const SiteSpeedOfRecovery = () => {
           name="description" 
           content="Learn why recovery speed reflects neurologic performance, how early system identification reduces recovery friction, and how Pittsford Performance Care tracks time to readiness through its outcome registry." 
         />
-        <link rel="canonical" href="https://pittsfordperformancecare.com/performance/speed-of-recovery-as-a-performance-metric" />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/performance/speed-of-recovery-as-a-performance-metric" />
       </Helmet>
 
       {/* Hero Section */}

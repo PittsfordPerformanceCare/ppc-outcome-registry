@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +42,11 @@ const SiteArticles = () => {
 
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>Educational Resources | Concussion & MSK Articles | Pittsford Performance Care</title>
+        <meta name="description" content="In-depth articles on concussion recovery, musculoskeletal care, and neurologic rehabilitation from Pittsford Performance Care." />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/articles" />
+      </Helmet>
       {/* Hero Section */}
       <section className="relative py-28 lg:py-36 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">

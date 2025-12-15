@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,11 @@ const SiteContact = () => {
 
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>Contact Us | Pittsford Performance Care</title>
+        <meta name="description" content="Contact Pittsford Performance Care for neurologic rehabilitation and musculoskeletal care. Located in Rochester, NY." />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/contact" />
+      </Helmet>
       {/* Hero Section */}
       <section className="relative py-28 lg:py-36 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">
