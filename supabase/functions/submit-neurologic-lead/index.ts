@@ -8,6 +8,7 @@ import {
 import {
   validateNeurologicIntakePayload,
   validationErrorResponse,
+  botDetectedResponse,
 } from "../_shared/input-validator.ts";
 
 const corsHeaders = {
@@ -45,6 +46,13 @@ Deno.serve(async (req) => {
 
     // Validate input
     const validation = validateNeurologicIntakePayload(body);
+    
+    // Silent rejection for bots (fake success)
+    if (validation.isBot) {
+      console.log("[submit-neurologic-lead] Bot detected, silently rejecting:", clientIp);
+      return botDetectedResponse(corsHeaders);
+    }
+    
     if (!validation.valid) {
       console.error("[submit-neurologic-lead] Validation failed:", validation.errors);
       await recordRateLimitUsage(SERVICE_TYPE, false);

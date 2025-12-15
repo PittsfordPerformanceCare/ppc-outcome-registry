@@ -1,12 +1,15 @@
 /**
  * Enterprise-grade input validation utilities for edge functions
- * Prevents injection attacks and ensures data integrity
+ * Prevents injection attacks, bot submissions, and ensures data integrity
  */
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^[\d\s\-\+\(\)\.]{7,20}$/;
 const NAME_REGEX = /^[a-zA-Z\s\-'\.]{1,100}$/;
 const SAFE_TEXT_REGEX = /^[^<>]*$/; // No HTML tags
+
+// Honeypot field names - bots often fill these automatically
+const HONEYPOT_FIELDS = ["website", "url", "company_website", "fax", "middle_name"];
 
 export interface ValidationError {
   field: string;
@@ -17,6 +20,50 @@ export interface ValidationResult {
   valid: boolean;
   errors: ValidationError[];
   sanitized: Record<string, unknown>;
+  isBot?: boolean;
+}
+
+/**
+ * Check honeypot fields - if filled, likely a bot
+ * Returns true if bot detected
+ */
+export function checkHoneypot(body: Record<string, unknown>): boolean {
+  for (const field of HONEYPOT_FIELDS) {
+    const value = body[field];
+    if (value && typeof value === "string" && value.trim().length > 0) {
+      return true; // Bot detected
+    }
+  }
+  return false;
+}
+
+/**
+ * Check submission timing - if too fast, likely a bot
+ * Expects a timestamp field indicating when the form was loaded
+ */
+export function checkSubmissionTiming(body: Record<string, unknown>, minSeconds = 3): boolean {
+  const formLoadedAt = body._form_loaded_at || body.form_loaded_at;
+  if (!formLoadedAt) return false; // Can't check, allow through
+  
+  const loadTime = Number(formLoadedAt);
+  if (isNaN(loadTime)) return false;
+  
+  const elapsedSeconds = (Date.now() - loadTime) / 1000;
+  return elapsedSeconds < minSeconds; // Too fast = bot
+}
+
+/**
+ * Create bot detection response
+ */
+export function botDetectedResponse(corsHeaders: Record<string, string>): Response {
+  // Return a fake success to not tip off bots
+  return new Response(
+    JSON.stringify({ success: true, message: "Submission received" }),
+    {
+      status: 200, // Fake success
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    }
+  );
 }
 
 /**
@@ -71,11 +118,17 @@ export function isSafeText(text: unknown): boolean {
 }
 
 /**
- * Validate a lead submission payload
+ * Validate a lead submission payload with bot detection
  */
 export function validateLeadPayload(body: Record<string, unknown>): ValidationResult {
   const errors: ValidationError[] = [];
   const sanitized: Record<string, unknown> = {};
+
+  // Bot detection
+  const isBot = checkHoneypot(body) || checkSubmissionTiming(body);
+  if (isBot) {
+    return { valid: false, errors: [], sanitized: {}, isBot: true };
+  }
 
   // Name validation
   const name = sanitizeString(body.full_name || body.name, 100);
@@ -137,15 +190,22 @@ export function validateLeadPayload(body: Record<string, unknown>): ValidationRe
     valid: errors.length === 0,
     errors,
     sanitized,
+    isBot: false,
   };
 }
 
 /**
- * Validate neurologic intake payload
+ * Validate neurologic intake payload with bot detection
  */
 export function validateNeurologicIntakePayload(body: Record<string, unknown>): ValidationResult {
   const errors: ValidationError[] = [];
   const sanitized: Record<string, unknown> = {};
+
+  // Bot detection
+  const isBot = checkHoneypot(body) || checkSubmissionTiming(body);
+  if (isBot) {
+    return { valid: false, errors: [], sanitized: {}, isBot: true };
+  }
 
   // Email is required
   const email = sanitizeString(body.email || body.Email, 255);
@@ -220,6 +280,7 @@ export function validateNeurologicIntakePayload(body: Record<string, unknown>): 
     valid: errors.length === 0,
     errors,
     sanitized,
+    isBot: false,
   };
 }
 
