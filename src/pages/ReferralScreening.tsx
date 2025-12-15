@@ -15,6 +15,13 @@ export default function ReferralScreening() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formLoadedAt] = useState(() => Date.now());
+  
+  // Honeypot state (invisible to users, bots fill these)
+  const [honeypot, setHoneypot] = useState({
+    website: '',
+    fax: '',
+  });
   
   const [formData, setFormData] = useState({
     name: '',
@@ -30,9 +37,9 @@ export default function ReferralScreening() {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from('referral_inquiries')
-        .insert({
+      // Use edge function for rate limiting and bot protection
+      const { data, error } = await supabase.functions.invoke('submit-referral', {
+        body: {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
@@ -40,8 +47,12 @@ export default function ReferralScreening() {
           chief_complaint: formData.chiefComplaint,
           referral_source: formData.referralSource,
           referral_code: searchParams.get('code') || null,
-          clinic_id: null, // Will be set by clinic in future enhancement
-        });
+          // Bot detection fields
+          website: honeypot.website,
+          fax: honeypot.fax,
+          _form_loaded_at: formLoadedAt,
+        },
+      });
 
       if (error) throw error;
 
@@ -154,6 +165,30 @@ export default function ReferralScreening() {
                 value={formData.referralSource}
                 onChange={(e) => setFormData({ ...formData, referralSource: e.target.value })}
                 placeholder="Referral source"
+              />
+            </div>
+
+            {/* Honeypot fields - invisible to users, bots fill these */}
+            <div className="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true" tabIndex={-1}>
+              <label htmlFor="website">Website</label>
+              <input
+                type="text"
+                id="website"
+                name="website"
+                value={honeypot.website}
+                onChange={(e) => setHoneypot({ ...honeypot, website: e.target.value })}
+                autoComplete="off"
+                tabIndex={-1}
+              />
+              <label htmlFor="fax">Fax</label>
+              <input
+                type="text"
+                id="fax"
+                name="fax"
+                value={honeypot.fax}
+                onChange={(e) => setHoneypot({ ...honeypot, fax: e.target.value })}
+                autoComplete="off"
+                tabIndex={-1}
               />
             </div>
 
