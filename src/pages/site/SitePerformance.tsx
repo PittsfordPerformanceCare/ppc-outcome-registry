@@ -90,7 +90,7 @@ const SitePerformance = () => {
       </Helmet>
 
       {/* Hero Section - Darker, immersive */}
-      <section className="relative py-28 lg:py-36 overflow-hidden">
+      <section className="relative py-28 lg:py-40 overflow-hidden">
         {/* Dark gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent" />
@@ -108,16 +108,22 @@ const SitePerformance = () => {
               Performance & Athletic Care
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1]">
-              Neurologic Readiness, Recovery, and Confident Return to Play
+              When Performance Timelines <span className="text-primary">Matter</span>
             </h1>
-            <p className="text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto">
-              Athletic performance places unique demands on the nervous system. Recovery and readiness 
-              are neurologic before they are physical. Athletes need clarity before returning to play.
+            <p className="text-xl md:text-2xl text-slate-300 leading-relaxed max-w-2xl mx-auto">
+              Most acute and chronic injuries recover faster when rehabilitation is guided through a neurological lens.
             </p>
-            <div className="pt-4">
+            <p className="text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto">
+              Athletic performance places unique demands on the nervous system. Recovery and readiness 
+              are neurologic before they are physical.
+            </p>
+            <div className="pt-2 flex flex-col items-center gap-4">
+              <p className="text-xl font-semibold text-white">
+                Experience the difference.
+              </p>
               <Button size="lg" asChild className="bg-white text-slate-900 hover:bg-white/90 shadow-xl">
                 <Link to="/patient/concierge">
-                  Begin Your Intake
+                  Begin Your Performance Intake
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -127,37 +133,6 @@ const SitePerformance = () => {
         
         {/* Bottom vignette */}
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
-      </section>
-
-      {/* Highlighted Recovery Timeline Section */}
-      <section className="py-16 lg:py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/15 via-primary/10 to-primary/15" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/20 border border-primary/30 text-primary text-sm font-semibold">
-              <Timer className="h-4 w-4" />
-              Recovery That Matters
-            </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-              When Recovery Timelines <span className="text-primary">MATTER</span>
-            </h2>
-            <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              Most acute and chronic injuries recover faster when rehabilitation is guided through a neurological lens.
-            </p>
-            <p className="text-2xl md:text-3xl font-semibold text-foreground">
-              Experience the difference.
-            </p>
-            <div className="pt-4">
-              <Button size="lg" asChild className="shadow-lg">
-                <Link to="/patient/concierge">
-                  Start Your Recovery
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Section 2: Performance Is Neurologic */}
