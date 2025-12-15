@@ -99,6 +99,8 @@ const SitePerformance = lazy(() => import("./pages/site/SitePerformance"));
 const SiteSpeedOfRecovery = lazy(() => import("./pages/site/SiteSpeedOfRecovery"));
 const SiteWorksCited = lazy(() => import("./pages/site/SiteWorksCited"));
 const SiteWhyNotPhysicalTherapy = lazy(() => import("./pages/site/SiteWhyNotPhysicalTherapy"));
+const SitePrivacy = lazy(() => import("./pages/site/SitePrivacy"));
+const SiteTerms = lazy(() => import("./pages/site/SiteTerms"));
 const ClinicianGuidesIndex = lazy(() => import("./pages/site/ClinicianGuidesIndex"));
 const ClinicianGuideMotorTiming = lazy(() => import("./pages/site/ClinicianGuideMotorTiming"));
 const ProfessionalOutcomesPortal = lazy(() => import("./pages/site/ProfessionalOutcomesPortal"));
@@ -173,6 +175,8 @@ const App = () => (
               <Route path="performance/speed-of-recovery-as-a-performance-metric" element={<SiteSpeedOfRecovery />} />
               <Route path="works-cited" element={<SiteWorksCited />} />
               <Route path="why-not-physical-therapy" element={<SiteWhyNotPhysicalTherapy />} />
+              <Route path="privacy" element={<SitePrivacy />} />
+              <Route path="terms" element={<SiteTerms />} />
             </Route>
 
             {/* ========== RESOURCES: CLINICIAN GUIDES (PUBLIC) ========== */}
