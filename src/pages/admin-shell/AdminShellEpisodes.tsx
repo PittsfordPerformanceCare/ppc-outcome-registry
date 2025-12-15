@@ -214,7 +214,7 @@ const AdminShellEpisodes = () => {
                         <TableCell>{getStatusBadge(episode)}</TableCell>
                         <TableCell className="text-right">
                           <Button variant="ghost" size="sm" asChild>
-                            <Link to={`/episode/${episode.id}`}>
+                            <Link to={`/episode-summary?id=${episode.id}`}>
                               View
                               <ArrowRight className="ml-1 h-3 w-3" />
                             </Link>
