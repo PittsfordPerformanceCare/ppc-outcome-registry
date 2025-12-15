@@ -10,6 +10,7 @@ const SiteTerms = () => {
           name="description"
           content="Terms of service for Pittsford Performance Care website and clinical outcome registry platform."
         />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/terms" />
       </Helmet>
 
       <div className="min-h-screen bg-background">

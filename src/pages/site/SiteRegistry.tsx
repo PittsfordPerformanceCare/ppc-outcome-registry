@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { 
@@ -24,6 +25,11 @@ import {
 const SiteRegistry = () => {
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>PPC Outcome Registry | Clinical Outcome Tracking | Pittsford Performance Care</title>
+        <meta name="description" content="Track your recovery with PPC's clinical outcome registry. Validated measures, transparent results, and evidence-based care." />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/registry" />
+      </Helmet>
       {/* Hero Section */}
       <section className="relative py-28 lg:py-36 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="container mx-auto px-4">

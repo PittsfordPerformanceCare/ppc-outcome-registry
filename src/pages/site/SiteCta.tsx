@@ -1,4 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Brain, Activity, ClipboardCheck } from "lucide-react";
 
@@ -13,6 +14,11 @@ const SiteCta = () => {
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-b from-primary/5 to-background">
+      <Helmet>
+        <title>Schedule Evaluation | Pittsford Performance Care</title>
+        <meta name="description" content="Take the next step in your recovery. Schedule a neurologic evaluation at Pittsford Performance Care." />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/cta" />
+      </Helmet>
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary font-medium">

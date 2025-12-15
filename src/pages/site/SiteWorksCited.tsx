@@ -1,8 +1,14 @@
+import { Helmet } from "react-helmet";
 import { BookOpen, FileText, Brain, Heart, Eye, Activity, Target, Shield } from "lucide-react";
 
 const SiteWorksCited = () => {
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>Works Cited | Pittsford Performance Care</title>
+        <meta name="description" content="A centralized reference library supporting the clinical methodology and educational content of Pittsford Performance Care." />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/works-cited" />
+      </Helmet>
       {/* Hero Section */}
       <section className="relative py-20 lg:py-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />

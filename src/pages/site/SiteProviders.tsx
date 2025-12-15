@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -68,6 +69,11 @@ const providers = [
 const SiteProviders = () => {
   return (
     <div className="flex flex-col">
+      <Helmet>
+        <title>Our Providers | Pittsford Performance Care</title>
+        <meta name="description" content="Meet our doctoral-level clinicians with advanced training in clinical neuroscience, concussion care, and neuromuscular rehabilitation." />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/providers" />
+      </Helmet>
       {/* Hero Section */}
       <section className="relative py-20 lg:py-28 bg-gradient-to-b from-primary/5 to-background">
         <div className="container mx-auto px-4">

@@ -26,7 +26,7 @@ const SiteAbout = () => {
       <Helmet>
         <title>About PPC | Domain-Based Neurologic & Musculoskeletal Care | Pittsford Performance Care</title>
         <meta name="description" content="Pittsford Performance Care uses a domain-based neurologic model to identify dysfunction across visual, vestibular, cerebellar, autonomic, and other systems. Outcomes tracked. Results measured." />
-        <link rel="canonical" href="https://pittsfordperformancecare.com/site/about" />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/about" />
       </Helmet>
 
       {/* Hero Section */}

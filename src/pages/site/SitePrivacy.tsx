@@ -10,6 +10,7 @@ const SitePrivacy = () => {
           name="description"
           content="Privacy policy for Pittsford Performance Care. Learn how we collect, use, and protect your personal and health information."
         />
+        <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/privacy" />
       </Helmet>
 
       <div className="min-h-screen bg-background">
