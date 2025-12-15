@@ -1968,20 +1968,8 @@ export default function PatientIntake() {
                   </FormItem>
                 )}
               />
-                  <FormField
-                    control={form.control}
-                    name="insuranceId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Insurance ID</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
+
 
             <FormField
               control={form.control}
