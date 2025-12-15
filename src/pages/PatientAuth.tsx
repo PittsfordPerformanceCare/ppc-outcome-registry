@@ -10,10 +10,12 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Activity } from "lucide-react";
 import { z } from "zod";
 import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
+import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
+import { usePasswordValidation, usePasswordMatch } from "@/hooks/usePasswordValidation";
 
 const emailSchema = z.string().email("Invalid email address");
-const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
-
+// Login uses simpler validation (don't block existing users)
+const loginPasswordSchema = z.string().min(1, "Password is required");
 export default function PatientAuth() {
   const navigate = useNavigate();
   
@@ -38,16 +40,26 @@ export default function PatientAuth() {
     checkAuth();
   }, [navigate]);
 
+  // Password validation for signup
+  const passwordValidation = usePasswordValidation(password);
+  const passwordMatch = usePasswordMatch(password, confirmPassword);
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validation
     try {
       emailSchema.parse(email);
-      passwordSchema.parse(password);
-      if (password !== confirmPassword) {
+      
+      // Use enhanced password validation for signup
+      if (!passwordValidation.isValid) {
+        throw new Error(passwordValidation.errors[0] || "Please meet all password requirements");
+      }
+      
+      if (!passwordMatch.matches) {
         throw new Error("Passwords do not match");
       }
+      
       if (fullName.trim().length < 2) {
         throw new Error("Please enter your full name");
       }
@@ -136,9 +148,10 @@ export default function PatientAuth() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Login uses simpler validation - don't block existing users with old passwords
     try {
       emailSchema.parse(email);
-      passwordSchema.parse(password);
+      loginPasswordSchema.parse(password);
     } catch (error: any) {
       toast({
         title: "Validation Error",
@@ -292,7 +305,7 @@ export default function PatientAuth() {
                   <Input
                     id="signup-password"
                     type="password"
-                    placeholder="At least 6 characters"
+                    placeholder="Create a strong password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
@@ -305,6 +318,7 @@ export default function PatientAuth() {
                   <Input
                     id="confirm-password"
                     type="password"
+                    placeholder="Re-enter your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     disabled={loading}
@@ -312,7 +326,17 @@ export default function PatientAuth() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                {/* Password Strength Meter */}
+                <PasswordStrengthMeter 
+                  password={password} 
+                  confirmPassword={confirmPassword}
+                />
+
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading || !passwordValidation.isValid || !passwordMatch.matches}
+                >
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

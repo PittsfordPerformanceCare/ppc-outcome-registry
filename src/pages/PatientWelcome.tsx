@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,44 +7,38 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Lock, CheckCircle2, Smartphone, Share } from "lucide-react";
-import { z } from "zod";
-
-const passwordSchema = z.string()
-  .min(8, "Password must be at least 8 characters")
-  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-  .regex(/[0-9]/, "Password must contain at least one number");
+import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
+import { usePasswordValidation, usePasswordMatch } from "@/hooks/usePasswordValidation";
 
 export default function PatientWelcome() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [passwordSet, setPasswordSet] = useState(false);
   const [isIOS] = useState(/iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream);
 
-  // No longer needed - welcome page is only shown via direct navigation from magic link
+  // Password validation
+  const passwordValidation = usePasswordValidation(password);
+  const passwordMatch = usePasswordMatch(password, confirmPassword);
 
   const handlePasswordSetup = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (password !== confirmPassword) {
+    if (!passwordValidation.isValid) {
       toast({
-        title: "Passwords don't match",
-        description: "Please make sure both passwords are identical",
+        title: "Password Requirements Not Met",
+        description: passwordValidation.errors[0] || "Please meet all password requirements",
         variant: "destructive",
       });
       return;
     }
 
-    try {
-      passwordSchema.parse(password);
-    } catch (error: any) {
+    if (!passwordMatch.matches) {
       toast({
-        title: "Invalid Password",
-        description: error.errors?.[0]?.message || "Please check your password",
+        title: "Passwords don't match",
+        description: "Please make sure both passwords are identical",
         variant: "destructive",
       });
       return;
@@ -263,34 +257,18 @@ export default function PatientWelcome() {
                 />
               </div>
 
-              <div className="p-4 bg-muted/50 rounded-lg border text-sm space-y-2">
-                <div className="font-semibold mb-2">Password Requirements:</div>
-                <ul className="space-y-1 text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className={`h-4 w-4 ${password.length >= 8 ? 'text-green-500' : 'text-muted-foreground/50'}`} />
-                    At least 8 characters
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className={`h-4 w-4 ${/[A-Z]/.test(password) ? 'text-green-500' : 'text-muted-foreground/50'}`} />
-                    One uppercase letter
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className={`h-4 w-4 ${/[a-z]/.test(password) ? 'text-green-500' : 'text-muted-foreground/50'}`} />
-                    One lowercase letter
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle2 className={`h-4 w-4 ${/[0-9]/.test(password) ? 'text-green-500' : 'text-muted-foreground/50'}`} />
-                    One number
-                  </li>
-                </ul>
-              </div>
+              {/* Password Strength Meter */}
+              <PasswordStrengthMeter 
+                password={password} 
+                confirmPassword={confirmPassword}
+              />
             </div>
 
             <Button 
               type="submit" 
               className="w-full" 
               size="lg"
-              disabled={loading}
+              disabled={loading || !passwordValidation.isValid || !passwordMatch.matches}
             >
               {loading ? "Setting Password..." : "Set Password & Continue"}
             </Button>

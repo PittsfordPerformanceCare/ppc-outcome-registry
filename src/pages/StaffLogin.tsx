@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Activity, ArrowLeft } from "lucide-react";
+import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
+import { usePasswordValidation } from "@/hooks/usePasswordValidation";
 
 const StaffLogin = () => {
   const navigate = useNavigate();
@@ -67,8 +69,22 @@ const StaffLogin = () => {
     }
   };
 
+  // Password validation for signup
+  const passwordValidation = usePasswordValidation(password);
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate password meets requirements
+    if (!passwordValidation.isValid) {
+      toast({
+        title: "Password Requirements Not Met",
+        description: passwordValidation.errors[0] || "Please meet all password requirements",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -251,19 +267,20 @@ const StaffLogin = () => {
                   <Input
                     id="signup-password"
                     type="password"
-                    placeholder="Minimum 6 characters"
+                    placeholder="Create a strong password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={6}
                     className="h-12 bg-background border-border/60 focus:border-primary/60 transition-colors"
                   />
-                  <p className="text-xs text-muted-foreground/80 flex items-center gap-1.5">
-                    <span className="w-1 h-1 rounded-full bg-muted-foreground/60"></span>
-                    Must be at least 6 characters
-                  </p>
+                  {/* Password Strength Meter */}
+                  <PasswordStrengthMeter password={password} />
                 </div>
-                <Button type="submit" className="w-full h-12 text-base font-semibold shadow-md hover:shadow-lg transition-all" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 text-base font-semibold shadow-md hover:shadow-lg transition-all" 
+                  disabled={loading || !passwordValidation.isValid}
+                >
                   {loading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
