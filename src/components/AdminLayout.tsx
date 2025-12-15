@@ -1,6 +1,6 @@
 import { Link, useLocation, Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun } from "lucide-react";
+import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun, ExternalLink } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { TeamChatPanel } from "@/components/TeamChatPanel";
 
@@ -38,6 +38,15 @@ export function AdminLayout() {
             <NotificationBell />
           </div>
         </div>
+        
+        {/* Quick link to public site */}
+        <Link
+          to="/site"
+          className="mb-4 flex items-center gap-2 px-3 py-2 rounded-md text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+        >
+          <ExternalLink className="h-4 w-4" />
+          View Public Site
+        </Link>
         <nav className="space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
