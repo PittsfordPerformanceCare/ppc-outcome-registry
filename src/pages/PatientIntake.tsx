@@ -162,7 +162,7 @@ const intakeFormSchema = z.object({
   referralSource: z.string().max(200, "Referral source is too long").optional(),
   primaryCarePhysician: z.string().max(100, "Name is too long").optional(),
   pcpPhone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
-  pcpFax: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid fax number format").min(10, "Fax number must be at least 10 digits").min(1, "PCP fax number is required"),
+  pcpFax: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid fax number format").min(10, "Fax number must be at least 10 digits").optional().or(z.literal("")),
   pcpAddress: z.string().max(300, "Address is too long").optional(),
   referringPhysician: z.string().max(100, "Name is too long").optional(),
   specialistSeen: z.string().max(200, "Information is too long").optional(),
@@ -1225,22 +1225,14 @@ export default function PatientIntake() {
               A staff member will review your information shortly.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 print:hidden animate-[slide-up_0.5s_ease-out_0.7s_both]">
+            <div className="print:hidden animate-[slide-up_0.5s_ease-out_0.7s_both]">
               <Button 
                 onClick={generatePDF} 
                 className="w-full min-h-[52px]"
                 variant="default"
               >
                 <Download className="h-4 w-4 mr-2" />
-                Download PDF
-              </Button>
-              <Button 
-                onClick={() => window.print()} 
-                className="w-full min-h-[52px]"
-                variant="outline"
-              >
-                <Printer className="h-4 w-4 mr-2" />
-                Print Summary
+                Print PDF
               </Button>
             </div>
 
@@ -1800,7 +1792,7 @@ export default function PatientIntake() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="MSK">MSK</SelectItem>
+                            <SelectItem value="MSK">Musculoskeletal</SelectItem>
                             <SelectItem value="Neurology">Neurology</SelectItem>
                             <SelectItem value="Performance">Performance</SelectItem>
                           </SelectContent>
