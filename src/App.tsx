@@ -50,6 +50,7 @@ const PatientAccess = lazy(() => import("./pages/PatientAccess"));
 const ClinicianQuickStart = lazy(() => import("./pages/ClinicianQuickStart"));
 const AdministratorQuickStart = lazy(() => import("./pages/AdministratorQuickStart"));
 const PatientQuickStart = lazy(() => import("./pages/PatientQuickStart"));
+const FrontDeskQuickStart = lazy(() => import("./pages/FrontDeskQuickStart"));
 const AnalyticsDashboard = lazy(() => import("./pages/AnalyticsDashboard"));
 const DataGovernance = lazy(() => import("./pages/DataGovernance"));
 const ReferralScreening = lazy(() => import("./pages/ReferralScreening"));
@@ -234,6 +235,7 @@ const App = () => (
             <Route path="/patient-preferences" element={<PatientNotificationPreferences />} />
             <Route path="/patient-intake" element={<PatientIntake />} />
             <Route path="/patient-quick-start" element={<PatientQuickStart />} />
+            <Route path="/front-desk-quick-start" element={<FrontDeskQuickStart />} />
             <Route path="/intake-start" element={<IntakeStart />} />
             <Route path="/staff-login" element={<StaffLogin />} />
             <Route path="/install" element={<AppInstallGuide />} />
