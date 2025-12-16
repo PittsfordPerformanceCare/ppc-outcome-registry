@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
@@ -89,6 +90,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
   const [showBaselineAssessment, setShowBaselineAssessment] = useState(false);
   const [createdEpisodeId, setCreatedEpisodeId] = useState<string>("");
   const [baselineScores, setBaselineScores] = useState<Record<string, number>>({});
+  const [selectedIndices, setSelectedIndices] = useState<IndexType[]>([]);
 
   // Extract region from complaints
   const inferRegionFromComplaints = (): string => {
@@ -162,13 +164,15 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
   useEffect(() => {
     if (open) {
       const region = inferRegionFromComplaints();
+      const indices = getIndicesForRegion(region);
       setSelectedRegion(region);
+      setSelectedIndices(indices);
       setSelectedDiagnosis("");
       setHasDuplicate(false);
       setPreview({
         region,
         diagnosis: intakeForm.chief_complaint,
-        indices: getIndicesForRegion(region),
+        indices,
         functionalLimitations: extractFunctionalLimitations(),
         priorTreatments: extractPriorTreatments()
       });
@@ -179,6 +183,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
       // Reset state when dialog closes
       setPreview(null);
       setSelectedRegion("");
+      setSelectedIndices([]);
       setSelectedDiagnosis("");
       setHasDuplicate(false);
       setDuplicateEpisodes([]);
@@ -301,6 +306,7 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
       // Pre-selected region from the dialog
       selected_region: selectedRegion,
       selected_diagnosis: selectedDiagnosis,
+      selected_indices: selectedIndices,
       functional_limitations: preview?.functionalLimitations || [],
       prior_treatments: preview?.priorTreatments || [],
     };
@@ -729,11 +735,13 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
               </div>
               <Select value={selectedRegion} onValueChange={(value) => {
                 setSelectedRegion(value);
+                const indices = getIndicesForRegion(value);
+                setSelectedIndices(indices);
                 if (preview) {
                   setPreview({
                     ...preview,
                     region: value,
-                    indices: getIndicesForRegion(value)
+                    indices
                   });
                 }
               }}>
@@ -772,14 +780,49 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
 
             {/* Smart Outcome Measure Recommendations */}
             {selectedRegion && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <OutcomeToolRecommendations 
                   recommendations={getOutcomeToolRecommendations(
                     selectedRegion,
                     selectedDiagnosis || intakeForm.chief_complaint
                   )}
-                  selectedTools={preview?.indices || []}
+                  selectedTools={selectedIndices}
                 />
+                
+                {/* Selectable Outcome Measures */}
+                <div className="space-y-2 rounded-lg border p-4 bg-muted/30">
+                  <Label className="text-sm font-medium">Select Outcome Measures</Label>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Uncheck any measures you don't want to use for this episode
+                  </p>
+                  <div className="space-y-2">
+                    {preview?.indices.map((index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`index-${index}`}
+                          checked={selectedIndices.includes(index)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedIndices([...selectedIndices, index]);
+                            } else {
+                              setSelectedIndices(selectedIndices.filter(i => i !== index));
+                            }
+                          }}
+                        />
+                        <label
+                          htmlFor={`index-${index}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                        >
+                          {index === "NDI" && "Neck Disability Index (NDI)"}
+                          {index === "ODI" && "Oswestry Disability Index (ODI)"}
+                          {index === "QuickDASH" && "QuickDASH (Upper Extremity)"}
+                          {index === "LEFS" && "Lower Extremity Functional Scale (LEFS)"}
+                          {index === "RPQ" && "Rivermead Post-Concussion Questionnaire (RPQ)"}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
 
