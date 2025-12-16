@@ -94,9 +94,9 @@ export function CredibilityTicker() {
               Still Not Feeling Like Yourself?
             </h2>
             <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-              Weeks or months after injury, lingering symptoms can feel isolating. 
-              Headaches, brain fog, chronic pain, fatigue—you're not imagining it, 
-              and you're not alone.
+              Whether it's chronic pain, stiffness, or movement limitations—or 
+              headaches, brain fog, and fatigue after concussion—lingering symptoms 
+              can feel isolating. You're not imagining it, and you're not alone.
             </p>
             <p className="text-muted-foreground/80 text-sm md:text-base mt-4 max-w-xl mx-auto">
               When symptoms persist, there's usually a reason. Understanding why is 
