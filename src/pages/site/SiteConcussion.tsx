@@ -325,25 +325,28 @@ const SiteConcussion = () => {
       </section>
 
       {/* Domain Cascade Explanation */}
-      <section className="py-24 lg:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-900/20 via-transparent to-transparent" />
+      <section className="relative overflow-hidden">
+        {/* Smooth transition gradient from light to dark */}
+        <div className="h-24 lg:h-32 bg-gradient-to-b from-background via-slate-100/50 dark:via-slate-800/50 to-slate-900" />
         
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-400 text-sm font-medium mb-6">
-                <AlertTriangle className="h-4 w-4" />
-                The Cascade Effect
+        <div className="bg-slate-900 pb-24 lg:pb-32 relative">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800/80 via-transparent to-transparent opacity-60" />
+          
+          <div className="container mx-auto px-4 relative">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-16 pt-8">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-sm font-medium mb-6">
+                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  Understanding the Cascade
+                </div>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
+                  How Symptoms Spread Between Domains
+                </h2>
+                <p className="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                  Symptoms often appear downstream from the original disruption. The symptom you 
+                  notice may not be the domain where the problem started.
+                </p>
               </div>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
-                How Domain Dysfunction Cascades After Concussion
-              </h2>
-              <p className="text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                Symptoms often appear downstream from the original disruption. The symptom you 
-                notice may not be the domain where the problem started.
-              </p>
-            </div>
             
             {/* Cascade Visualization */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-16">
@@ -488,8 +491,12 @@ const SiteConcussion = () => {
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </div>
+        
+        {/* Smooth transition gradient from dark to light */}
+        <div className="h-24 lg:h-32 bg-gradient-to-b from-slate-900 via-slate-800/50 dark:via-slate-800/50 to-background" />
       </section>
 
       {/* Why Domain-Based Evaluation Matters */}
