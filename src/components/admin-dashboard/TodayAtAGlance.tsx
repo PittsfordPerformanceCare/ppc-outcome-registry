@@ -1,6 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, FileCheck, Activity, LogOut, Sun, Moon, Cloud, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TodayStats {
   newLeadsToday: number;
@@ -31,8 +33,29 @@ const formatDate = () => {
 };
 
 export function TodayAtAGlance({ stats, loading }: TodayAtAGlanceProps) {
+  const [userName, setUserName] = useState<string>("");
   const greeting = getGreeting();
   const GreetingIcon = greeting.icon;
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+        
+        if (profile?.full_name) {
+          // Get first name only
+          const firstName = profile.full_name.split(" ")[0];
+          setUserName(firstName);
+        }
+      }
+    };
+    fetchUserName();
+  }, []);
 
   const metrics = [
     {
@@ -82,7 +105,7 @@ export function TodayAtAGlance({ stats, loading }: TodayAtAGlanceProps) {
           </div>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              {greeting.text}, Jennifer!
+              {greeting.text}{userName ? `, ${userName}` : ""}!
             </h1>
             <p className="text-muted-foreground mt-1">
               Here's what's happening today — <span className="font-medium text-foreground">{formatDate()}</span>
