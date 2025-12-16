@@ -48,18 +48,22 @@ Deno.serve(async (req) => {
 
     // Parse and validate request body
     const body = await req.json();
-    console.log("[create-lead] Received request from IP:", clientIp);
+    console.log("[create-lead] Received request from IP:", clientIp, "body keys:", Object.keys(body));
+    console.log("[create-lead] Name:", body.name || body.full_name);
+    console.log("[create-lead] Email:", body.email);
+    console.log("[create-lead] Honeypot website:", body.website, "fax:", body.fax);
+    console.log("[create-lead] Form load time:", body._form_loaded_at, "elapsed:", body._form_loaded_at ? (Date.now() - body._form_loaded_at) / 1000 : "N/A", "seconds");
 
     const validation = validateLeadPayload(body);
     
     // Silent rejection for bots (fake success)
     if (validation.isBot) {
-      console.log("[create-lead] Bot detected, silently rejecting:", clientIp);
+      console.log("[create-lead] Bot detected - honeypot or timing check failed, silently rejecting:", clientIp);
       return botDetectedResponse(corsHeaders);
     }
     
     if (!validation.valid) {
-      console.log("[create-lead] Validation failed:", validation.errors);
+      console.log("[create-lead] Validation failed:", JSON.stringify(validation.errors));
       await recordRateLimitUsage(SERVICE_TYPE, false);
       return validationErrorResponse(validation.errors, corsHeaders);
     }
