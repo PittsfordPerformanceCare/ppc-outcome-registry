@@ -55,6 +55,7 @@ interface UpcomingVisit {
 interface PCPSummaryStats {
   pendingCount: number;
   oldestDays: number | null;
+  resendCount: number;
 }
 
 export interface LeadCentricDashboardData {
@@ -97,6 +98,7 @@ const initialData: LeadCentricDashboardData = {
   pcpSummaries: {
     pendingCount: 0,
     oldestDays: null,
+    resendCount: 0,
   },
 };
 
@@ -257,15 +259,18 @@ export function useLeadCentricDashboard() {
         };
       });
 
-      // PCP Summary stats
+      // PCP Summary stats - count READY or RESEND_REQUIRED statuses
       const { data: pcpTasks } = await supabase
         .from("pcp_summary_tasks")
-        .select("id, created_at")
-        .eq("status", "pending");
+        .select("id, created_at, status")
+        .in("status", ["READY", "RESEND_REQUIRED", "FAILED"]);
 
       let pcpOldestDays: number | null = null;
-      if (pcpTasks && pcpTasks.length > 0) {
-        const oldest = pcpTasks.reduce((prev, curr) => 
+      const actionableTasks = pcpTasks?.filter(t => t.status === "READY" || t.status === "RESEND_REQUIRED") || [];
+      const resendTasks = pcpTasks?.filter(t => t.status === "RESEND_REQUIRED" || t.status === "FAILED") || [];
+      
+      if (actionableTasks.length > 0) {
+        const oldest = actionableTasks.reduce((prev, curr) => 
           new Date(prev.created_at) < new Date(curr.created_at) ? prev : curr
         );
         pcpOldestDays = Math.floor((now.getTime() - new Date(oldest.created_at).getTime()) / (1000 * 60 * 60 * 24));
@@ -290,8 +295,9 @@ export function useLeadCentricDashboard() {
         },
         upcomingVisits,
         pcpSummaries: {
-          pendingCount: pcpTasks?.length || 0,
+          pendingCount: actionableTasks.length,
           oldestDays: pcpOldestDays,
+          resendCount: resendTasks.length,
         },
       });
     } catch (err) {

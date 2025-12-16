@@ -122,23 +122,50 @@ Examples:
 - **System generates**: PCP Summary task in `pcp_summary_tasks` table
 - **Lifecycle event**: `PCP_SUMMARY_GENERATED`
 
+### Delivery Status Enum (Tier A)
+| Status | Description |
+|--------|-------------|
+| `READY` | New summary, awaiting delivery |
+| `SENT` | Successfully delivered |
+| `FAILED` | Delivery attempted but failed |
+| `RESEND_REQUIRED` | Marked for retry after failure |
+| `SKIPPED` | Admin chose not to send |
+
+### Delivery Methods
+| Method | Description |
+|--------|-------------|
+| `FAX` | Traditional fax delivery |
+| `SECURE_EMAIL` | Encrypted email to provider |
+| `PORTAL_UPLOAD` | Upload to provider portal |
+| `MANUAL_EXPORT` | Download/print for manual handling |
+
 ### Admin Notification Rules
 - Notify admins only (not clinicians)
 - Displayed as dedicated tile on Admin Dashboard (only when count > 0)
+- Tile shows count of READY + RESEND_REQUIRED statuses
+- Failed deliveries highlighted for attention
 - Routes to `/pcp-queue` for delivery management
+
+### SLA Tracking (Passive)
+- Timestamps tracked: generated_at (created_at), sent_at (delivered_at)
+- Time since generation displayed in queue
+- Visual indicators for delays > 24 hours
+- Enables future quality reporting
 
 ### Lifecycle Events
 | Event | Trigger |
 |-------|---------|
 | `PCP_SUMMARY_GENERATED` | Episode discharged |
 | `PCP_SUMMARY_SENT` | Admin confirms delivery |
+| `PCP_SUMMARY_FAILED` | Admin marks delivery failed |
+| `PCP_SUMMARY_RETRY_REQUESTED` | Admin requests resend |
 | `PCP_SUMMARY_SKIPPED` | Admin skips delivery |
 
-### Delivery Methods
-- Fax
-- Secure Email
-- Manual Export/Print
-- Phone/Verbal
+### Provider Delivery Preferences
+- `preferred_delivery_method` stored per task
+- Pre-selects method for admin when available
+- Admin can override per send
+- Does NOT auto-send
 
 ## Acceptance Criteria
 
@@ -148,3 +175,6 @@ Examples:
 4. ✅ Conversion requires explicit admin action
 5. ✅ PCP Summaries only generated after discharge
 6. ✅ PCP delivery is admin responsibility, not clinician
+7. ✅ Delivery status is explicit and trackable
+8. ✅ Failed deliveries visible and recoverable
+9. ✅ SLA tracking passive but available

@@ -31,6 +31,7 @@ const AdminDashboard = () => {
       <PCPSummaryTile 
         count={data.pcpSummaries.pendingCount} 
         oldestDays={data.pcpSummaries.oldestDays}
+        resendCount={data.pcpSummaries.resendCount}
       />
 
       {/* Main Content Grid */}
