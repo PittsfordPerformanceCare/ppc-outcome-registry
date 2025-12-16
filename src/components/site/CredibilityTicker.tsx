@@ -107,7 +107,7 @@ export function CredibilityTicker() {
           {/* Stats grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
             <AnimatedStat 
-              value={900} 
+              value={10000} 
               suffix="+" 
               label="Patients Helped" 
               icon={Users}
@@ -121,15 +121,15 @@ export function CredibilityTicker() {
               delay={150}
             />
             <AnimatedStat 
-              value={15} 
+              value={20} 
               suffix="+" 
-              label="Years of Experience" 
+              label="Years of Clinical Experience" 
               icon={Award}
               delay={300}
             />
             <AnimatedStat 
-              value={5} 
-              label="Neurologic Systems Assessed" 
+              value={8} 
+              label="Neurologic Domains Assessed" 
               icon={Brain}
               delay={450}
             />
