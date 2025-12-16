@@ -261,6 +261,9 @@ const PatientIntakeReferral = () => {
               We respect the referring provider's role in the patient's ongoing care. When appropriate, 
               clinical updates and summaries can be shared to support coordinated, patient-centered care.
             </p>
+            <p className="text-base text-muted-foreground leading-relaxed mb-4">
+              For shared patients, referring providers receive concise episode-level summaries focused on progress, care status, and next steps.
+            </p>
             <p className="text-base text-muted-foreground leading-relaxed">
               All referrals are handled thoughtfully and professionally, with careful attention to 
               the clinical context you provide.

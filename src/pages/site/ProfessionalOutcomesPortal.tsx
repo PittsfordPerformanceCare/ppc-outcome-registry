@@ -254,7 +254,7 @@ const ProfessionalOutcomesPortal = () => {
                 How to Interpret Aggregate Outcomes
               </h2>
               <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2">
-                <li>Outcomes are descriptive, not prescriptive.</li>
+                <li>Aggregate outcomes are descriptive, not predictive.</li>
                 <li>Distributions and trends matter more than averages.</li>
                 <li>Symptom resolution may precede readiness.</li>
                 <li>Case mix and referral patterns influence observed outcomes.</li>
