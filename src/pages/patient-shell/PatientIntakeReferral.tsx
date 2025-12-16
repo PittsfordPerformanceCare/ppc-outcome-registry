@@ -230,6 +230,27 @@ const PatientIntakeReferral = () => {
           </div>
         </section>
 
+        {/* How Care Is Structured & Communicated */}
+        <section className="py-16 lg:py-20">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-5">
+              How Care Is Structured & Communicated
+            </h2>
+            <p className="text-base text-muted-foreground leading-relaxed mb-4">
+              To support clarity and continuity, Pittsford Performance Care organizes treatment into 
+              defined care episodes. An episode represents a focused period of care aimed at identifying 
+              the primary drivers of a patient's symptoms, delivering targeted intervention, and 
+              determining readiness for next steps.
+            </p>
+            <p className="text-base text-muted-foreground leading-relaxed">
+              Episodes are not visit-limited and do not replace traditional documentation. All visit-level 
+              SOAP notes and clinical narratives are maintained in our primary medical record. The episode 
+              framework operates in parallel to support outcome tracking and clear communication with 
+              referring providers.
+            </p>
+          </div>
+        </section>
+
         {/* Communication & Continuity */}
         <section className="py-16 lg:py-20">
           <div className="container mx-auto px-4 max-w-3xl">
@@ -381,8 +402,37 @@ const PatientIntakeReferral = () => {
           </div>
         </section>
 
-        {/* Closing Statement */}
+        {/* For Referring Physicians CTA */}
         <section className="py-16 lg:py-20">
+          <div className="container mx-auto px-4 max-w-3xl">
+            <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-5">
+              For Referring Physicians
+            </h2>
+            <p className="text-base text-muted-foreground leading-relaxed mb-4">
+              Want to see how we communicate outcomes and care status?
+            </p>
+            <div className="space-y-2 mb-4">
+              <a 
+                href="/professional/sample-summary" 
+                className="block text-primary hover:text-primary/80 transition-colors"
+              >
+                → View a sample physician care summary
+              </a>
+              <a 
+                href="mailto:info@pittsfordperformance.com" 
+                className="block text-primary hover:text-primary/80 transition-colors"
+              >
+                → Contact our clinical team
+              </a>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              We're happy to align communication with your preferences and level of detail.
+            </p>
+          </div>
+        </section>
+
+        {/* Closing Statement */}
+        <section className="py-16 lg:py-20 bg-muted/30">
           <div className="container mx-auto px-4 max-w-3xl text-center">
             <p className="text-base text-muted-foreground leading-relaxed">
               We appreciate the trust you place in us when referring your patients. Our commitment 
