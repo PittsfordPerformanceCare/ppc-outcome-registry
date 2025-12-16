@@ -1,8 +1,11 @@
-import { Link, useLocation, Outlet } from "react-router-dom";
+import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun, ExternalLink } from "lucide-react";
+import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun, ExternalLink, LogOut } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { TeamChatPanel } from "@/components/TeamChatPanel";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: Home },
@@ -23,11 +26,19 @@ const navItems = [
 
 export function AdminLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({ title: "Logged out successfully" });
+    navigate("/auth");
+  };
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className="w-64 border-r bg-muted/30 p-4 hidden md:block">
+      <aside className="w-64 border-r bg-muted/30 p-4 hidden md:flex md:flex-col">
         <div className="mb-6 flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold">Admin Panel</h2>
@@ -69,6 +80,18 @@ export function AdminLayout() {
             );
           })}
         </nav>
+        
+        {/* Logout button at bottom */}
+        <div className="mt-auto pt-4 border-t">
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4" />
+            Log Out
+          </Button>
+        </div>
       </aside>
 
       {/* Main Content */}
