@@ -10,7 +10,7 @@ import {
   ClinicianQueuesOverview
 } from "@/components/admin-dashboard";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Stethoscope, BookOpen } from "lucide-react";
+import { RefreshCw, Stethoscope, BookOpen, ClipboardList } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
@@ -20,7 +20,7 @@ const AdminDashboard = () => {
     <div className="space-y-12 pb-12">
       {/* Header with navigation and refresh */}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button 
             variant="outline" 
             size="sm" 
@@ -41,6 +41,17 @@ const AdminDashboard = () => {
             <Link to="/admin-quick-start">
               <BookOpen className="h-4 w-4" />
               Training Guide
+            </Link>
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            asChild
+            className="gap-2"
+          >
+            <Link to="/front-desk-quick-start">
+              <ClipboardList className="h-4 w-4" />
+              Front Desk Guide
             </Link>
           </Button>
         </div>
