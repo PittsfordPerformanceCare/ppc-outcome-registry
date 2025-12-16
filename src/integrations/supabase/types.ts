@@ -957,12 +957,15 @@ export type Database = {
           complaint_priority: number | null
           compliance_notes: string | null
           compliance_rating: string | null
+          continuation_details: Json | null
+          continuation_episode_source: string | null
           created_at: string
           current_status: Database["public"]["Enums"]["episode_status"] | null
           date_of_birth: string | null
           date_of_service: string
           diagnosis: string | null
           discharge_date: string | null
+          discharge_outcome: string | null
           emergency_contact: string | null
           emergency_phone: string | null
           episode_type: string | null
@@ -1025,12 +1028,15 @@ export type Database = {
           complaint_priority?: number | null
           compliance_notes?: string | null
           compliance_rating?: string | null
+          continuation_details?: Json | null
+          continuation_episode_source?: string | null
           created_at?: string
           current_status?: Database["public"]["Enums"]["episode_status"] | null
           date_of_birth?: string | null
           date_of_service: string
           diagnosis?: string | null
           discharge_date?: string | null
+          discharge_outcome?: string | null
           emergency_contact?: string | null
           emergency_phone?: string | null
           episode_type?: string | null
@@ -1093,12 +1099,15 @@ export type Database = {
           complaint_priority?: number | null
           compliance_notes?: string | null
           compliance_rating?: string | null
+          continuation_details?: Json | null
+          continuation_episode_source?: string | null
           created_at?: string
           current_status?: Database["public"]["Enums"]["episode_status"] | null
           date_of_birth?: string | null
           date_of_service?: string
           diagnosis?: string | null
           discharge_date?: string | null
+          discharge_outcome?: string | null
           emergency_contact?: string | null
           emergency_phone?: string | null
           episode_type?: string | null
@@ -3621,6 +3630,101 @@ export type Database = {
             columns: ["episode_id"]
             isOneToOne: true
             referencedRelation: "episodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pending_episode_continuations: {
+        Row: {
+          category: string
+          clinic_id: string | null
+          clinician_id: string | null
+          clinician_name: string | null
+          completed_at: string | null
+          completed_by: string | null
+          continuation_source: string
+          created_at: string
+          created_episode_id: string | null
+          documented_complaint_ref: string | null
+          id: string
+          notes: string | null
+          outcome_tools_suggestion: string[] | null
+          patient_name: string
+          primary_complaint: string
+          source_episode_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          clinic_id?: string | null
+          clinician_id?: string | null
+          clinician_name?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          continuation_source: string
+          created_at?: string
+          created_episode_id?: string | null
+          documented_complaint_ref?: string | null
+          id?: string
+          notes?: string | null
+          outcome_tools_suggestion?: string[] | null
+          patient_name: string
+          primary_complaint: string
+          source_episode_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          clinic_id?: string | null
+          clinician_id?: string | null
+          clinician_name?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          continuation_source?: string
+          created_at?: string
+          created_episode_id?: string | null
+          documented_complaint_ref?: string | null
+          id?: string
+          notes?: string | null
+          outcome_tools_suggestion?: string[] | null
+          patient_name?: string
+          primary_complaint?: string
+          source_episode_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_episode_continuations_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_episode_continuations_clinician_id_fkey"
+            columns: ["clinician_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_episode_continuations_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_episode_continuations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

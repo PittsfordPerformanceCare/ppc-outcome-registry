@@ -18,6 +18,7 @@ import { OrthoReferralCard } from "@/components/OrthoReferralCard";
 import { OrthoReferralPrint } from "@/components/OrthoReferralPrint";
 import { UpdateEpisodeStatusDialog } from "@/components/UpdateEpisodeStatusDialog";
 import { CareCoordinationPauseControl } from "@/components/CareCoordinationPauseControl";
+import { DischargeDecisionDialog } from "@/components/DischargeDecisionDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,8 @@ import {
   Printer,
   Home,
   ExternalLink,
-  RefreshCw
+  RefreshCw,
+  LogOut
 } from "lucide-react";
 import { format } from "date-fns";
 import { getMCIDThreshold } from "@/lib/mcidUtils";
@@ -98,6 +100,7 @@ export default function EpisodeSummary() {
   const [showOrthoReferralForm, setShowOrthoReferralForm] = useState(false);
   const [episodeDetails, setEpisodeDetails] = useState<any>(null);
   const [showStatusUpdateDialog, setShowStatusUpdateDialog] = useState(false);
+  const [showDischargeDialog, setShowDischargeDialog] = useState(false);
 
   useEffect(() => {
     const loadEpisodeData = async () => {
@@ -389,7 +392,18 @@ export default function EpisodeSummary() {
               )}
             />
           )}
-          <Button onClick={handlePrint} className="gap-2 print:hidden">
+          {/* Discharge Button - Only show for active episodes */}
+          {!isCompleted && (
+            <Button 
+              variant="default" 
+              onClick={() => setShowDischargeDialog(true)} 
+              className="gap-2 print:hidden bg-primary"
+            >
+              <LogOut className="h-4 w-4" />
+              Discharge
+            </Button>
+          )}
+          <Button onClick={handlePrint} className="gap-2 print:hidden" variant="outline">
             <Printer className="h-4 w-4" />
             Print
           </Button>
@@ -432,6 +446,21 @@ export default function EpisodeSummary() {
           episodeId={episodeId}
           currentStatus={episode.current_status}
           onSuccess={handleReferralSuccess}
+        />
+      )}
+
+      {/* Discharge Decision Dialog */}
+      {episodeId && episode && (
+        <DischargeDecisionDialog
+          open={showDischargeDialog}
+          onOpenChange={setShowDischargeDialog}
+          episodeId={episodeId}
+          patientName={episode.patientName}
+          region={episode.region}
+          onSuccess={() => {
+            // Reload episode data after discharge
+            window.location.reload();
+          }}
         />
       )}
 
