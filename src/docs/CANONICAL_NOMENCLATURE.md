@@ -113,6 +113,32 @@ Examples:
 - Lead creation: `src/lib/leadTracking.ts`
 - Care Request queue: `src/components/care-requests/CareRequestsQueue.tsx`
 - Dashboard: `src/components/lead-dashboard/`
+- PCP Summary Queue: `src/pages/PCPQueue.tsx`
+
+## PCP Summary Delivery Workflow
+
+### Canonical Trigger
+- **Trigger on**: `EPISODE_DISCHARGED` (discharge_date set)
+- **System generates**: PCP Summary task in `pcp_summary_tasks` table
+- **Lifecycle event**: `PCP_SUMMARY_GENERATED`
+
+### Admin Notification Rules
+- Notify admins only (not clinicians)
+- Displayed as dedicated tile on Admin Dashboard (only when count > 0)
+- Routes to `/pcp-queue` for delivery management
+
+### Lifecycle Events
+| Event | Trigger |
+|-------|---------|
+| `PCP_SUMMARY_GENERATED` | Episode discharged |
+| `PCP_SUMMARY_SENT` | Admin confirms delivery |
+| `PCP_SUMMARY_SKIPPED` | Admin skips delivery |
+
+### Delivery Methods
+- Fax
+- Secure Email
+- Manual Export/Print
+- Phone/Verbal
 
 ## Acceptance Criteria
 
@@ -120,3 +146,5 @@ Examples:
 2. ✅ No Care Requests from marketing-only actions
 3. ✅ Terminology consistent across UI
 4. ✅ Conversion requires explicit admin action
+5. ✅ PCP Summaries only generated after discharge
+6. ✅ PCP delivery is admin responsibility, not clinician

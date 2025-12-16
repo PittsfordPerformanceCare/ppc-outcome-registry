@@ -19,6 +19,7 @@ const FollowUp = lazy(() => import("./pages/FollowUp"));
 const Discharge = lazy(() => import("./pages/Discharge"));
 const Dashboards = lazy(() => import("./pages/Dashboards"));
 const PCPSummary = lazy(() => import("./pages/PCPSummary"));
+const PCPQueue = lazy(() => import("./pages/PCPQueue"));
 const EpisodeSummary = lazy(() => import("./pages/EpisodeSummary"));
 const AdminManagement = lazy(() => import("./pages/AdminManagement"));
 const ComplianceAudit = lazy(() => import("./pages/ComplianceAudit"));
@@ -294,6 +295,11 @@ const App = () => (
                         <Route path="/discharge" element={<Discharge />} />
                         <Route path="/dashboards" element={<Dashboards />} />
                         <Route path="/pcp-summary" element={<PCPSummary />} />
+                        <Route path="/pcp-queue" element={
+                          <ProtectedRoute requireAdmin>
+                            <PCPQueue />
+                          </ProtectedRoute>
+                        } />
                         <Route path="/episode-summary" element={<EpisodeSummary />} />
                         <Route path="/admin-management" element={
                           <ProtectedRoute requireAdmin>
