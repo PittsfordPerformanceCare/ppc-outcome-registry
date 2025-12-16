@@ -1,95 +1,75 @@
-import { useAdminDashboard } from "@/hooks/useAdminDashboard";
-import { 
-  TodayAtAGlance, 
-  LeadManagementSection, 
-  SchedulingSection,
-  EpisodePivotSection,
-  CommunicationsSection,
-  FinanceSnapshot,
-  QuickLinksSection,
-  ClinicianQueuesOverview
-} from "@/components/admin-dashboard";
+import { useLeadCentricDashboard } from "@/hooks/useLeadCentricDashboard";
+import {
+  DashboardHeader,
+  LeadHealthBanner,
+  CareRequestsActionTable,
+  ConversionFunnel,
+  PreVisitMomentumPanel,
+  IntelligencePanel,
+} from "@/components/lead-dashboard";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Stethoscope, BookOpen, ClipboardList } from "lucide-react";
-import { Link } from "react-router-dom";
+import { RefreshCw } from "lucide-react";
 
 const AdminDashboard = () => {
-  const { data, loading, refetch } = useAdminDashboard();
+  const { data, loading, refetch } = useLeadCentricDashboard();
 
   return (
-    <div className="space-y-12 pb-12">
-      {/* Header with navigation and refresh */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            asChild
-            className="gap-2"
-          >
-            <Link to="/clinician/dashboard">
-              <Stethoscope className="h-4 w-4" />
-              My Clinician Dashboard
-            </Link>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            asChild
-            className="gap-2"
-          >
-            <Link to="/admin-quick-start">
-              <BookOpen className="h-4 w-4" />
-              Training Guide
-            </Link>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            asChild
-            className="gap-2"
-          >
-            <Link to="/front-desk-quick-start">
-              <ClipboardList className="h-4 w-4" />
-              Front Desk Guide
-            </Link>
-          </Button>
+    <div className="space-y-6 pb-12 max-w-7xl mx-auto">
+      {/* Header */}
+      <DashboardHeader />
+
+      {/* Lead Health Banner */}
+      <LeadHealthBanner
+        newLast24Hours={data.newLast24Hours}
+        newLast24HoursPrior={data.newLast24HoursPrior}
+        inMotion={data.inMotion}
+        loading={loading}
+      />
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Primary Action Zone - 2 columns */}
+        <div className="lg:col-span-2 space-y-6">
+          <CareRequestsActionTable
+            careRequests={data.careRequests}
+            loading={loading}
+            onRefresh={refetch}
+          />
+
+          {/* Pre-Visit Momentum */}
+          <PreVisitMomentumPanel
+            visits={data.upcomingVisits}
+            loading={loading}
+          />
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
+
+        {/* Right Sidebar - 1 column */}
+        <div className="space-y-6">
+          {/* Conversion Funnel */}
+          <ConversionFunnel funnel={data.funnel} loading={loading} />
+
+          {/* Intelligence Panel */}
+          <IntelligencePanel
+            sources={data.sources}
+            sla={data.sla}
+            loading={loading}
+          />
+        </div>
+      </div>
+
+      {/* Refresh Button - Fixed bottom right */}
+      <div className="fixed bottom-6 right-6">
+        <Button
+          variant="secondary"
+          size="sm"
           onClick={refetch}
           disabled={loading}
-          className="gap-2"
+          className="shadow-lg gap-2"
         >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           Refresh
         </Button>
       </div>
-
-      {/* Section 0: Today at a Glance */}
-      <TodayAtAGlance stats={data.today} loading={loading} />
-
-      {/* Section: Clinician Queues Overview */}
-      <ClinicianQueuesOverview />
-
-      {/* Section 1: Lead Management */}
-      <LeadManagementSection stats={data.leads} loading={loading} />
-
-      {/* Section 2: Scheduling & New Patient Prep */}
-      <SchedulingSection stats={data.scheduling} loading={loading} />
-
-      {/* Section 3: Episode & Pivot Alerts */}
-      <EpisodePivotSection stats={data.episodes} loading={loading} />
-
-      {/* Section 4: Communications & PCP Summaries */}
-      <CommunicationsSection stats={data.communications} loading={loading} />
-
-      {/* Section 5: Finance / Discharge Snapshot */}
-      <FinanceSnapshot stats={data.finance} loading={loading} />
-
-      {/* Section 6: Quick Links */}
-      <QuickLinksSection />
     </div>
   );
 };
