@@ -355,9 +355,9 @@ export function DischargeDecisionDialog({
                   <Pause className="h-5 w-5 text-warning" />
                 </div>
                 <div>
-                  <p className="font-medium">Care paused – follow-up decision later</p>
+                  <p className="font-medium">Care temporarily paused — awaiting external input</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Discharge for now, may return for additional care
+                    Use when care cannot safely continue without imaging, consult, or records
                   </p>
                 </div>
               </button>

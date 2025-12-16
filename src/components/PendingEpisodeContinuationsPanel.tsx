@@ -147,20 +147,20 @@ export function PendingEpisodeContinuationsPanel() {
 
   return (
     <>
-      <Card>
+      <Card className="border-primary/20">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
                 <RefreshCw className="h-5 w-5 text-primary" />
-                Episodes Requiring Follow-On Setup
+                New Episode Setup Required
               </CardTitle>
               <CardDescription>
-                Continuation episodes ready for admin setup
+                Action needed — create continuation episodes
               </CardDescription>
             </div>
             {continuations.length > 0 && (
-              <Badge variant="secondary" className="text-lg px-3 py-1">
+              <Badge className="text-lg px-3 py-1 bg-primary text-primary-foreground">
                 {continuations.length}
               </Badge>
             )}
@@ -237,7 +237,7 @@ export function PendingEpisodeContinuationsPanel() {
                         onClick={() => handleSetupClick(item)}
                         className="shrink-0"
                       >
-                        Setup
+                        Create Episode
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </div>

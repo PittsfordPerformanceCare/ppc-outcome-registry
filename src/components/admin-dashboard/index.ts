@@ -6,3 +6,4 @@ export { CommunicationsSection } from './CommunicationsSection';
 export { FinanceSnapshot } from './FinanceSnapshot';
 export { QuickLinksSection } from './QuickLinksSection';
 export { ClinicianQueuesOverview } from './ClinicianQueuesOverview';
+export { PausedEpisodesSignal } from './PausedEpisodesSignal';

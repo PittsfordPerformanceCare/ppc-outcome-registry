@@ -1,14 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { PauseCircle, CheckCircle, ChevronDown } from 'lucide-react';
-import { useCareCoordinationPause, PAUSE_REASON_LABELS, PauseReason } from '@/hooks/useCareCoordinationPause';
+import { PauseCircle, CheckCircle } from 'lucide-react';
+import { useCareCoordinationPause, PAUSE_REASON_LABELS } from '@/hooks/useCareCoordinationPause';
+import { CareCoordinationPauseDialog } from './CareCoordinationPauseDialog';
 import { toast } from 'sonner';
 
 interface CareCoordinationPauseControlProps {
@@ -16,29 +11,16 @@ interface CareCoordinationPauseControlProps {
 }
 
 export function CareCoordinationPauseControl({ episodeId }: CareCoordinationPauseControlProps) {
-  const { activePause, loading, createPause, resolvePause } = useCareCoordinationPause(episodeId);
+  const { activePause, loading, resolvePause, refetch } = useCareCoordinationPause(episodeId);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleCreatePause = async (reason: PauseReason) => {
-    setIsSubmitting(true);
-    try {
-      const success = await createPause(reason);
-      if (success) {
-        toast.success('Care coordination pause activated');
-      } else {
-        toast.error('Failed to activate pause');
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleResolvePause = async () => {
     setIsSubmitting(true);
     try {
       const success = await resolvePause();
       if (success) {
-        toast.success('Pause resolved - episode is now active');
+        toast.success('Pause resolved — episode is now active');
       } else {
         toast.error('Failed to resolve pause');
       }
@@ -73,32 +55,25 @@ export function CareCoordinationPauseControl({ episodeId }: CareCoordinationPaus
     );
   }
 
-  // No active pause - show dropdown to create one
+  // No active pause - show button to open pause dialog
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={isSubmitting}
-          className="gap-1.5"
-        >
-          <PauseCircle className="h-4 w-4" />
-          Care coordination pause
-          <ChevronDown className="h-3 w-3 ml-1" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuItem onClick={() => handleCreatePause('neuro_exam')}>
-          Neuro exam in progress
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleCreatePause('imaging')}>
-          Imaging requested
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleCreatePause('specialist_referral')}>
-          Specialist referral in progress
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setDialogOpen(true)}
+        className="gap-1.5"
+      >
+        <PauseCircle className="h-4 w-4" />
+        Care coordination pause
+      </Button>
+      
+      <CareCoordinationPauseDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        episodeId={episodeId}
+        onSuccess={refetch}
+      />
+    </>
   );
 }

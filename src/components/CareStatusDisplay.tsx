@@ -1,4 +1,5 @@
 import { useCareCoordinationPause, PAUSE_REASON_LABELS } from '@/hooks/useCareCoordinationPause';
+import { formatDistanceToNow } from 'date-fns';
 
 interface CareStatusDisplayProps {
   episodeId: string;
@@ -10,8 +11,8 @@ export function CareStatusDisplay({ episodeId }: CareStatusDisplayProps) {
   if (loading) {
     return (
       <div>
-        <p className="text-xs text-slate-500">Care status</p>
-        <p className="text-lg font-semibold text-slate-400">Loading...</p>
+        <p className="text-xs text-muted-foreground">Care status</p>
+        <p className="text-lg font-semibold text-muted-foreground">Loading...</p>
       </div>
     );
   }
@@ -19,21 +20,23 @@ export function CareStatusDisplay({ episodeId }: CareStatusDisplayProps) {
   if (!activePause) {
     return (
       <div>
-        <p className="text-xs text-slate-500">Care status</p>
-        <p className="text-lg font-semibold text-slate-900">Active</p>
+        <p className="text-xs text-muted-foreground">Care status</p>
+        <p className="text-lg font-semibold text-foreground">Active</p>
       </div>
     );
   }
 
+  const pauseDuration = formatDistanceToNow(new Date(activePause.created_at), { addSuffix: false });
+
   return (
     <div className="col-span-2">
-      <p className="text-xs text-slate-500">Care status</p>
+      <p className="text-xs text-muted-foreground">Care status</p>
       <p className="text-lg font-semibold text-amber-700">Care coordination pause</p>
-      <p className="text-sm text-slate-600 mt-1">
-        PPC remains the coordinating provider. Episode discharge is completed by PPC when the patient returns.
+      <p className="text-sm text-muted-foreground mt-1">
+        {PAUSE_REASON_LABELS[activePause.pause_reason]} · {pauseDuration}
       </p>
-      <p className="text-sm text-slate-700 mt-1 font-medium">
-        {PAUSE_REASON_LABELS[activePause.pause_reason]}
+      <p className="text-xs text-muted-foreground mt-1 italic">
+        PPC remains coordinating provider. Episode discharge is completed by PPC when patient returns.
       </p>
     </div>
   );

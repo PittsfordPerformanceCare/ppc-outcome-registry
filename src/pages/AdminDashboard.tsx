@@ -10,6 +10,7 @@ import {
   OutstandingTasksTile,
 } from "@/components/lead-dashboard";
 import { PendingEpisodeContinuationsPanel } from "@/components/PendingEpisodeContinuationsPanel";
+import { PausedEpisodesSignal } from "@/components/admin-dashboard";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
@@ -38,6 +39,9 @@ const AdminDashboard = () => {
 
       {/* Pending Episode Continuations - Episodes requiring follow-on setup */}
       <PendingEpisodeContinuationsPanel />
+
+      {/* Paused Episodes Signal - Passive visibility, no action required */}
+      <PausedEpisodesSignal />
 
       {/* Outstanding Communication Tasks - Only shows when count > 0 */}
       <OutstandingTasksTile />
