@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 
-interface ExportEpisode {
+export interface ExportEpisode {
   id: string;
   patient_name: string;
   region: string;
@@ -16,6 +16,12 @@ interface ExportEpisode {
   injury_date?: string;
   pain_level?: string;
   treatment_goals?: any;
+  // Enhanced MCID metrics
+  mcidThreshold?: number;
+  mcidPercentage?: number; // % of MCID achieved (can exceed 100%)
+  mcidStatus?: 'Met' | 'Partial' | 'Not Met' | 'Insufficient Data';
+  visitsToMCID?: number;
+  daysToMCID?: number;
 }
 
 /**
@@ -46,7 +52,11 @@ export function convertToCSV(episodes: ExportEpisode[], includeScores: boolean =
       'Baseline Score',
       'Final Score',
       'Improvement',
-      'MCID Achieved'
+      'MCID Threshold',
+      'MCID % Achieved',
+      'MCID Status',
+      'Visits to MCID',
+      'Days to MCID'
     );
   }
 
@@ -71,7 +81,11 @@ export function convertToCSV(episodes: ExportEpisode[], includeScores: boolean =
         episode.baselineScore !== undefined ? episode.baselineScore.toString() : '',
         episode.finalScore !== undefined ? episode.finalScore.toString() : '',
         episode.improvement !== undefined ? episode.improvement.toFixed(1) : '',
-        episode.mcidAchieved !== undefined ? (episode.mcidAchieved ? 'Yes' : 'No') : ''
+        episode.mcidThreshold !== undefined ? episode.mcidThreshold.toString() : '',
+        episode.mcidPercentage !== undefined ? episode.mcidPercentage.toFixed(1) + '%' : '',
+        episode.mcidStatus || '',
+        episode.visitsToMCID !== undefined ? episode.visitsToMCID.toString() : '',
+        episode.daysToMCID !== undefined ? episode.daysToMCID.toString() : ''
       );
     }
 
@@ -129,7 +143,11 @@ export function convertToExcel(episodes: ExportEpisode[], includeScores: boolean
       'Baseline Score',
       'Final Score',
       'Improvement',
-      'MCID Achieved'
+      'MCID Threshold',
+      'MCID % Achieved',
+      'MCID Status',
+      'Visits to MCID',
+      'Days to MCID'
     );
   }
 
@@ -154,7 +172,11 @@ export function convertToExcel(episodes: ExportEpisode[], includeScores: boolean
         episode.baselineScore !== undefined ? episode.baselineScore.toString() : '',
         episode.finalScore !== undefined ? episode.finalScore.toString() : '',
         episode.improvement !== undefined ? episode.improvement.toFixed(1) : '',
-        episode.mcidAchieved !== undefined ? (episode.mcidAchieved ? 'Yes' : 'No') : ''
+        episode.mcidThreshold !== undefined ? episode.mcidThreshold.toString() : '',
+        episode.mcidPercentage !== undefined ? episode.mcidPercentage.toFixed(1) + '%' : '',
+        episode.mcidStatus || '',
+        episode.visitsToMCID !== undefined ? episode.visitsToMCID.toString() : '',
+        episode.daysToMCID !== undefined ? episode.daysToMCID.toString() : ''
       );
     }
 
