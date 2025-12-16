@@ -52,6 +52,11 @@ interface UpcomingVisit {
   source?: string;
 }
 
+interface PCPSummaryStats {
+  pendingCount: number;
+  oldestDays: number | null;
+}
+
 export interface LeadCentricDashboardData {
   careRequests: CareRequest[];
   newLast24Hours: number;
@@ -61,6 +66,7 @@ export interface LeadCentricDashboardData {
   sources: SourceStats;
   sla: SLAStats;
   upcomingVisits: UpcomingVisit[];
+  pcpSummaries: PCPSummaryStats;
 }
 
 const initialData: LeadCentricDashboardData = {
@@ -88,6 +94,10 @@ const initialData: LeadCentricDashboardData = {
     oldestOpenRequestHours: null,
   },
   upcomingVisits: [],
+  pcpSummaries: {
+    pendingCount: 0,
+    oldestDays: null,
+  },
 };
 
 export function useLeadCentricDashboard() {
@@ -247,6 +257,20 @@ export function useLeadCentricDashboard() {
         };
       });
 
+      // PCP Summary stats
+      const { data: pcpTasks } = await supabase
+        .from("pcp_summary_tasks")
+        .select("id, created_at")
+        .eq("status", "pending");
+
+      let pcpOldestDays: number | null = null;
+      if (pcpTasks && pcpTasks.length > 0) {
+        const oldest = pcpTasks.reduce((prev, curr) => 
+          new Date(prev.created_at) < new Date(curr.created_at) ? prev : curr
+        );
+        pcpOldestDays = Math.floor((now.getTime() - new Date(oldest.created_at).getTime()) / (1000 * 60 * 60 * 24));
+      }
+
       setData({
         careRequests: (careRequests || []) as CareRequest[],
         newLast24Hours: newLast24Hours || 0,
@@ -265,6 +289,10 @@ export function useLeadCentricDashboard() {
           oldestOpenRequestHours,
         },
         upcomingVisits,
+        pcpSummaries: {
+          pendingCount: pcpTasks?.length || 0,
+          oldestDays: pcpOldestDays,
+        },
       });
     } catch (err) {
       console.error("Error fetching lead-centric dashboard data:", err);

@@ -6,6 +6,7 @@ import {
   ConversionFunnel,
   PreVisitMomentumPanel,
   IntelligencePanel,
+  PCPSummaryTile,
 } from "@/components/lead-dashboard";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -24,6 +25,12 @@ const AdminDashboard = () => {
         newLast24HoursPrior={data.newLast24HoursPrior}
         inMotion={data.inMotion}
         loading={loading}
+      />
+
+      {/* PCP Summary Tile - Only shows when count > 0 */}
+      <PCPSummaryTile 
+        count={data.pcpSummaries.pendingCount} 
+        oldestDays={data.pcpSummaries.oldestDays}
       />
 
       {/* Main Content Grid */}
