@@ -9,6 +9,7 @@ import {
   PCPSummaryTile,
   OutstandingTasksTile,
 } from "@/components/lead-dashboard";
+import { PendingEpisodeContinuationsPanel } from "@/components/PendingEpisodeContinuationsPanel";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
@@ -34,6 +35,9 @@ const AdminDashboard = () => {
         oldestDays={data.pcpSummaries.oldestDays}
         resendCount={data.pcpSummaries.resendCount}
       />
+
+      {/* Pending Episode Continuations - Episodes requiring follow-on setup */}
+      <PendingEpisodeContinuationsPanel />
 
       {/* Outstanding Communication Tasks - Only shows when count > 0 */}
       <OutstandingTasksTile />
