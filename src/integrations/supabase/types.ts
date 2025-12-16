@@ -3501,6 +3501,7 @@ export type Database = {
           clinic_id: string | null
           clinician_name: string | null
           created_at: string
+          delivery_method_used: string | null
           discharge_date: string
           episode_id: string
           id: string
@@ -3508,6 +3509,7 @@ export type Database = {
           patient_name: string
           pcp_contact: string | null
           pcp_name: string | null
+          preferred_delivery_method: string | null
           region: string | null
           sent_at: string | null
           sent_by: string | null
@@ -3519,6 +3521,7 @@ export type Database = {
           clinic_id?: string | null
           clinician_name?: string | null
           created_at?: string
+          delivery_method_used?: string | null
           discharge_date: string
           episode_id: string
           id?: string
@@ -3526,6 +3529,7 @@ export type Database = {
           patient_name: string
           pcp_contact?: string | null
           pcp_name?: string | null
+          preferred_delivery_method?: string | null
           region?: string | null
           sent_at?: string | null
           sent_by?: string | null
@@ -3537,6 +3541,7 @@ export type Database = {
           clinic_id?: string | null
           clinician_name?: string | null
           created_at?: string
+          delivery_method_used?: string | null
           discharge_date?: string
           episode_id?: string
           id?: string
@@ -3544,6 +3549,7 @@ export type Database = {
           patient_name?: string
           pcp_contact?: string | null
           pcp_name?: string | null
+          preferred_delivery_method?: string | null
           region?: string | null
           sent_at?: string | null
           sent_by?: string | null
