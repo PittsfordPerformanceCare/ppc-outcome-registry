@@ -25,39 +25,39 @@ const statusConfig = {
   waitingOnClinician: { 
     label: "Waiting on Clinician", 
     icon: UserCheck, 
-    color: "text-blue-600 dark:text-blue-400",
-    bg: "bg-blue-50 dark:bg-blue-950/30"
+    color: "text-muted-foreground",
+    bg: "bg-muted/50"
   },
   waitingOnPatient: { 
     label: "Waiting on Patient", 
     icon: Hourglass, 
-    color: "text-purple-600 dark:text-purple-400",
-    bg: "bg-purple-50 dark:bg-purple-950/30"
+    color: "text-muted-foreground",
+    bg: "bg-muted/50"
   },
   inProgress: { 
     label: "In Progress", 
     icon: Loader2, 
-    color: "text-amber-600 dark:text-amber-400",
-    bg: "bg-amber-50 dark:bg-amber-950/30"
+    color: "text-muted-foreground",
+    bg: "bg-muted/50"
   },
   blocked: { 
     label: "Blocked", 
     icon: AlertTriangle, 
-    color: "text-red-600 dark:text-red-400",
-    bg: "bg-red-50 dark:bg-red-950/30"
+    color: "text-destructive",
+    bg: "bg-destructive/10"
   },
   open: { 
     label: "Open", 
     icon: ClipboardList, 
-    color: "text-slate-600 dark:text-slate-400",
-    bg: "bg-slate-50 dark:bg-slate-950/30"
+    color: "text-muted-foreground",
+    bg: "bg-muted/50"
   },
 };
 
 export function OutstandingTasksTile() {
   const navigate = useNavigate();
   const { summary, isLoading } = useTaskSummary();
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false); // Collapsed by default
   const [isHidden, setIsHidden] = useState(false);
   const [showAddTask, setShowAddTask] = useState(false);
 
