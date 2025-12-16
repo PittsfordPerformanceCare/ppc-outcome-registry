@@ -413,9 +413,51 @@ export type Database = {
         }
         Relationships: []
       }
+      communication_task_notes: {
+        Row: {
+          author_id: string
+          created_at: string | null
+          id: string
+          note: string
+          task_id: string
+        }
+        Insert: {
+          author_id: string
+          created_at?: string | null
+          id?: string
+          note: string
+          task_id: string
+        }
+        Update: {
+          author_id?: string
+          created_at?: string | null
+          id?: string
+          note?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "communication_task_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "communication_task_notes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "communication_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       communication_tasks: {
         Row: {
+          admin_acknowledged_at: string | null
           assigned_clinician_id: string
+          cancelled_reason: string | null
+          category: string | null
           completed_at: string | null
           created_at: string
           created_by: string | null
@@ -431,11 +473,15 @@ export type Database = {
           priority: Database["public"]["Enums"]["task_priority"]
           source: Database["public"]["Enums"]["task_source"]
           status: string
+          status_changed_at: string | null
           type: Database["public"]["Enums"]["task_type"]
           updated_at: string
         }
         Insert: {
+          admin_acknowledged_at?: string | null
           assigned_clinician_id: string
+          cancelled_reason?: string | null
+          category?: string | null
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
@@ -451,11 +497,15 @@ export type Database = {
           priority?: Database["public"]["Enums"]["task_priority"]
           source: Database["public"]["Enums"]["task_source"]
           status?: string
+          status_changed_at?: string | null
           type: Database["public"]["Enums"]["task_type"]
           updated_at?: string
         }
         Update: {
+          admin_acknowledged_at?: string | null
           assigned_clinician_id?: string
+          cancelled_reason?: string | null
+          category?: string | null
           completed_at?: string | null
           created_at?: string
           created_by?: string | null
@@ -471,6 +521,7 @@ export type Database = {
           priority?: Database["public"]["Enums"]["task_priority"]
           source?: Database["public"]["Enums"]["task_source"]
           status?: string
+          status_changed_at?: string | null
           type?: Database["public"]["Enums"]["task_type"]
           updated_at?: string
         }

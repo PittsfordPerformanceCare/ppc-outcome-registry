@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCommunicationTasks, useClinicians, TaskType, TaskSource, TaskPriority } from "@/hooks/useCommunicationTasks";
+import { useCommunicationTasks, useClinicians, TaskType, TaskSource, TaskPriority, TaskCategory } from "@/hooks/useCommunicationTasks";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
@@ -43,6 +43,12 @@ const LETTER_SUBTYPES = [
   "Other",
 ];
 
+const CATEGORY_OPTIONS: { value: TaskCategory; label: string }[] = [
+  { value: "CLINICAL_EXECUTION", label: "Clinical Execution" },
+  { value: "ADMIN_EXECUTION", label: "Admin Execution" },
+  { value: "COORDINATION", label: "Coordination" },
+];
+
 export function AddTaskDialog({
   open,
   onOpenChange,
@@ -65,6 +71,7 @@ export function AddTaskDialog({
   const [dueDate, setDueDate] = useState(format(addDays(new Date(), 1), "yyyy-MM-dd"));
   const [dueTime, setDueTime] = useState("09:00");
   const [letterSubtype, setLetterSubtype] = useState("");
+  const [category, setCategory] = useState<TaskCategory>("CLINICAL_EXECUTION");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -83,6 +90,7 @@ export function AddTaskDialog({
         priority,
         due_at: `${dueDate}T${dueTime}:00`,
         letter_subtype: type === "LETTER" ? letterSubtype : null,
+        category,
       });
 
       // Reset form
@@ -94,6 +102,7 @@ export function AddTaskDialog({
       setDueDate(format(addDays(new Date(), 1), "yyyy-MM-dd"));
       setDueTime("09:00");
       setLetterSubtype("");
+      setCategory("CLINICAL_EXECUTION");
       onOpenChange(false);
     } finally {
       setIsSubmitting(false);
@@ -221,6 +230,25 @@ export function AddTaskDialog({
               />
             </div>
           </div>
+
+          {/* Category (Admin only) */}
+          {isAdmin && source === "ADMIN" && (
+            <div className="grid gap-2">
+              <Label htmlFor="category">Category</Label>
+              <Select value={category} onValueChange={(v) => setCategory(v as TaskCategory)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORY_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Priority */}
           <div className="grid gap-2">
