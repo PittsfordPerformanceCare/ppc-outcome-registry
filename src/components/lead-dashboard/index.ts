@@ -5,3 +5,4 @@ export { ConversionFunnel } from "./ConversionFunnel";
 export { PreVisitMomentumPanel } from "./PreVisitMomentumPanel";
 export { IntelligencePanel } from "./IntelligencePanel";
 export { PCPSummaryTile } from "./PCPSummaryTile";
+export { OutstandingTasksTile } from "./OutstandingTasksTile";

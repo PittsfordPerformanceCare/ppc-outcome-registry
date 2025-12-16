@@ -7,6 +7,7 @@ import {
   PreVisitMomentumPanel,
   IntelligencePanel,
   PCPSummaryTile,
+  OutstandingTasksTile,
 } from "@/components/lead-dashboard";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -33,6 +34,9 @@ const AdminDashboard = () => {
         oldestDays={data.pcpSummaries.oldestDays}
         resendCount={data.pcpSummaries.resendCount}
       />
+
+      {/* Outstanding Communication Tasks - Only shows when count > 0 */}
+      <OutstandingTasksTile />
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

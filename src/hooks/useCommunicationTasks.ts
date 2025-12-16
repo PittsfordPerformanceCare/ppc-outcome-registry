@@ -13,7 +13,8 @@ export type TaskType =
 
 export type TaskSource = "ADMIN" | "CLINICIAN" | "PATIENT_PORTAL";
 export type TaskPriority = "HIGH" | "NORMAL";
-export type TaskStatus = "OPEN" | "IN_PROGRESS" | "COMPLETED";
+export type TaskStatus = "OPEN" | "IN_PROGRESS" | "WAITING_ON_CLINICIAN" | "WAITING_ON_PATIENT" | "BLOCKED" | "COMPLETED" | "CANCELLED";
+export type TaskCategory = "CLINICAL_EXECUTION" | "ADMIN_EXECUTION" | "COORDINATION";
 
 export interface CommunicationTask {
   id: string;
@@ -26,6 +27,7 @@ export interface CommunicationTask {
   description: string;
   priority: TaskPriority;
   status: TaskStatus;
+  category: TaskCategory;
   due_at: string;
   created_by: string | null;
   created_at: string;
@@ -34,6 +36,9 @@ export interface CommunicationTask {
   letter_subtype: string | null;
   letter_file_url: string | null;
   patient_message_id: string | null;
+  cancelled_reason: string | null;
+  status_changed_at: string | null;
+  admin_acknowledged_at: string | null;
   // Joined data
   episode?: {
     region: string;
@@ -42,6 +47,17 @@ export interface CommunicationTask {
   clinician?: {
     full_name: string;
   } | null;
+}
+
+export interface TaskNote {
+  id: string;
+  task_id: string;
+  author_id: string;
+  note: string;
+  created_at: string;
+  author?: {
+    full_name: string;
+  };
 }
 
 export interface CreateTaskInput {
@@ -55,6 +71,7 @@ export interface CreateTaskInput {
   priority?: TaskPriority;
   due_at?: string;
   letter_subtype?: string | null;
+  category?: TaskCategory;
 }
 
 export function useCommunicationTasks() {
@@ -84,8 +101,15 @@ export function useCommunicationTasks() {
   });
 
   // Filter tasks by status
-  const openTasks = tasks.filter(t => t.status === "OPEN" || t.status === "IN_PROGRESS");
+  const openTasks = tasks.filter(t => 
+    t.status === "OPEN" || 
+    t.status === "IN_PROGRESS" || 
+    t.status === "WAITING_ON_CLINICIAN" || 
+    t.status === "WAITING_ON_PATIENT" || 
+    t.status === "BLOCKED"
+  );
   const completedTasks = tasks.filter(t => t.status === "COMPLETED");
+  const cancelledTasks = tasks.filter(t => t.status === "CANCELLED");
   
   // Calculate overdue tasks
   const overdueTasks = openTasks.filter(t => new Date(t.due_at) < new Date());
@@ -109,6 +133,7 @@ export function useCommunicationTasks() {
         .insert({
           ...input,
           created_by: user?.id,
+          category: input.category || "CLINICAL_EXECUTION",
         })
         .select()
         .single();
@@ -118,6 +143,7 @@ export function useCommunicationTasks() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communication-tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["all-communication-tasks"] });
       toast.success("Task created successfully");
     },
     onError: (error) => {
@@ -128,10 +154,16 @@ export function useCommunicationTasks() {
 
   // Update task status mutation
   const updateTaskStatus = useMutation({
-    mutationFn: async ({ taskId, status }: { taskId: string; status: TaskStatus }) => {
-      const updates: Record<string, unknown> = { status };
+    mutationFn: async ({ taskId, status, cancelledReason }: { taskId: string; status: TaskStatus; cancelledReason?: string }) => {
+      const updates: Record<string, unknown> = { 
+        status,
+        status_changed_at: new Date().toISOString(),
+      };
       if (status === "COMPLETED") {
         updates.completed_at = new Date().toISOString();
+      }
+      if (status === "CANCELLED" && cancelledReason) {
+        updates.cancelled_reason = cancelledReason;
       }
 
       const { data, error } = await supabase
@@ -146,11 +178,39 @@ export function useCommunicationTasks() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communication-tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["all-communication-tasks"] });
       toast.success("Task updated");
     },
     onError: (error) => {
       console.error("Error updating task:", error);
       toast.error("Failed to update task");
+    },
+  });
+
+  // Reassign task mutation
+  const reassignTask = useMutation({
+    mutationFn: async ({ taskId, newClinicianId }: { taskId: string; newClinicianId: string }) => {
+      const { data, error } = await supabase
+        .from("communication_tasks")
+        .update({
+          assigned_clinician_id: newClinicianId,
+          status_changed_at: new Date().toISOString(),
+        })
+        .eq("id", taskId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["communication-tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["all-communication-tasks"] });
+      toast.success("Task reassigned");
+    },
+    onError: (error) => {
+      console.error("Error reassigning task:", error);
+      toast.error("Failed to reassign task");
     },
   });
 
@@ -162,6 +222,7 @@ export function useCommunicationTasks() {
         .update({
           status: "COMPLETED",
           completed_at: new Date().toISOString(),
+          status_changed_at: new Date().toISOString(),
         })
         .eq("id", taskId)
         .select()
@@ -172,6 +233,7 @@ export function useCommunicationTasks() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["communication-tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["all-communication-tasks"] });
       toast.success("Task completed!");
     },
     onError: (error) => {
@@ -180,10 +242,29 @@ export function useCommunicationTasks() {
     },
   });
 
+  // Acknowledge completed tasks (admin only)
+  const acknowledgeCompletedTasks = useMutation({
+    mutationFn: async (taskIds: string[]) => {
+      const { error } = await supabase
+        .from("communication_tasks")
+        .update({
+          admin_acknowledged_at: new Date().toISOString(),
+        })
+        .in("id", taskIds);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["communication-tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["all-communication-tasks"] });
+    },
+  });
+
   return {
     tasks,
     openTasks,
     completedTasks,
+    cancelledTasks,
     overdueTasks,
     todayTasks,
     thisWeekTasks,
@@ -191,10 +272,85 @@ export function useCommunicationTasks() {
     refetch,
     createTask,
     updateTaskStatus,
+    reassignTask,
     markCompleted,
+    acknowledgeCompletedTasks,
     openCount: openTasks.length,
     overdueCount: overdueTasks.length,
   };
+}
+
+// Hook to fetch all tasks (for admin view)
+export function useAllCommunicationTasks() {
+  return useQuery({
+    queryKey: ["all-communication-tasks"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("communication_tasks")
+        .select("*")
+        .order("due_at", { ascending: true });
+
+      if (error) throw error;
+      return (data || []) as CommunicationTask[];
+    },
+  });
+}
+
+// Hook to fetch task notes
+export function useTaskNotes(taskId: string | null) {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  const { data: notes = [], isLoading } = useQuery({
+    queryKey: ["task-notes", taskId],
+    queryFn: async () => {
+      if (!taskId) return [];
+      
+      const { data, error } = await supabase
+        .from("communication_task_notes")
+        .select(`
+          *,
+          author:profiles!communication_task_notes_author_id_fkey(full_name)
+        `)
+        .eq("task_id", taskId)
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching task notes:", error);
+        throw error;
+      }
+
+      return (data || []) as TaskNote[];
+    },
+    enabled: !!taskId,
+  });
+
+  const addNote = useMutation({
+    mutationFn: async ({ taskId, note }: { taskId: string; note: string }) => {
+      const { data, error } = await supabase
+        .from("communication_task_notes")
+        .insert({
+          task_id: taskId,
+          author_id: user?.id,
+          note,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["task-notes", taskId] });
+      toast.success("Note added");
+    },
+    onError: (error) => {
+      console.error("Error adding note:", error);
+      toast.error("Failed to add note");
+    },
+  });
+
+  return { notes, isLoading, addNote };
 }
 
 // Hook to fetch all clinicians (for admin task assignment)
@@ -211,4 +367,29 @@ export function useClinicians() {
       return data || [];
     },
   });
+}
+
+// Hook to get task summary for dashboard
+export function useTaskSummary() {
+  const { data: tasks = [], isLoading } = useAllCommunicationTasks();
+
+  const activeTasks = tasks.filter(t => 
+    t.status !== "COMPLETED" && t.status !== "CANCELLED"
+  );
+
+  const summary = {
+    waitingOnClinician: activeTasks.filter(t => t.status === "WAITING_ON_CLINICIAN").length,
+    waitingOnPatient: activeTasks.filter(t => t.status === "WAITING_ON_PATIENT").length,
+    inProgress: activeTasks.filter(t => t.status === "IN_PROGRESS").length,
+    blocked: activeTasks.filter(t => t.status === "BLOCKED").length,
+    open: activeTasks.filter(t => t.status === "OPEN").length,
+    total: activeTasks.length,
+    recentlyCompleted: tasks.filter(t => 
+      t.status === "COMPLETED" && 
+      !t.admin_acknowledged_at &&
+      new Date(t.completed_at || "").getTime() > Date.now() - 24 * 60 * 60 * 1000
+    ).length,
+  };
+
+  return { summary, isLoading };
 }
