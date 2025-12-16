@@ -153,11 +153,13 @@ export default function NewEpisode() {
         // Pre-select region if provided
         if (intakeData.selected_region) {
           setRegion(intakeData.selected_region);
-          // Trigger outcome index selection based on region
-          const recommendedIndices = PPC_CONFIG.regionToIndices(intakeData.selected_region, "MSK") as IndexType[];
-          setSelectedIndices(recommendedIndices);
+          // Use selected indices from converter if provided, otherwise calculate from region
+          const indicesToUse = intakeData.selected_indices && intakeData.selected_indices.length > 0
+            ? intakeData.selected_indices as IndexType[]
+            : PPC_CONFIG.regionToIndices(intakeData.selected_region, "MSK") as IndexType[];
+          setSelectedIndices(indicesToUse);
           const scores: Record<string, string> = {};
-          recommendedIndices.forEach((index) => {
+          indicesToUse.forEach((index) => {
             scores[index] = "";
           });
           setBaselineScores(scores);
