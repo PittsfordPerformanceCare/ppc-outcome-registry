@@ -145,8 +145,7 @@ const complaintSchema = z.object({
 });
 
 const intakeFormSchema = z.object({
-  patientName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
-  legalName: z.string().max(100, "Name is too long").optional(),
+  legalName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   episodeType: z.enum(["MSK", "Neurology", "Performance"]).default("MSK"),
   phone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format").min(10, "Phone number must be at least 10 digits").optional().or(z.literal("")),
@@ -285,7 +284,6 @@ export default function PatientIntake() {
     mode: "onBlur", // Validate on blur instead of onChange for better performance
     reValidateMode: "onChange", // Re-validate on change after first validation
     defaultValues: {
-      patientName: "",
       legalName: "",
       dateOfBirth: "",
       episodeType: "MSK",
@@ -426,7 +424,7 @@ export default function PatientIntake() {
       const values = form.getValues();
       
       // Need at least name to save progress
-      if (!values.patientName) {
+      if (!values.legalName) {
         if (!isAutomatic) {
           toast.error("Please enter your name before saving progress");
         }
@@ -439,7 +437,7 @@ export default function PatientIntake() {
 
       const progressData = {
         token,
-        patient_name: values.patientName || null,
+        patient_name: values.legalName || null,
         patient_email: values.email || null,
         patient_phone: values.phone || null,
         form_data: values,
@@ -526,7 +524,7 @@ export default function PatientIntake() {
 
     // Set up auto-save timer if form has changed and has patient name
     const values = form.getValues();
-    if (hasFormChanged && values.patientName) {
+    if (hasFormChanged && values.legalName) {
       autoSaveTimerRef.current = setTimeout(() => {
         saveProgress(true);
       }, 30000); // Auto-save every 30 seconds
@@ -597,7 +595,7 @@ export default function PatientIntake() {
       let totalSections = 8;
 
       // 1. Personal Information (required fields)
-      const personalComplete = !!(values.patientName && values.dateOfBirth);
+      const personalComplete = !!(values.legalName && values.dateOfBirth);
       if (personalComplete) completedSections += 1;
 
       // 2. Insurance Information (at least one field)
@@ -708,7 +706,7 @@ export default function PatientIntake() {
     
     try {
       // Check for duplicates first
-      const duplicates = await checkForDuplicates(data.patientName, data.dateOfBirth);
+      const duplicates = await checkForDuplicates(data.legalName, data.dateOfBirth);
       
       if (duplicates.length > 0) {
         setDuplicateEpisodes(duplicates);
@@ -751,7 +749,7 @@ export default function PatientIntake() {
       // Use edge function for rate limiting and bot protection
       const { data: responseData, error } = await supabase.functions.invoke('submit-intake-form', {
         body: {
-          patient_name: data.patientName,
+          patient_name: data.legalName,
           date_of_birth: data.dateOfBirth,
           phone: data.phone || null,
           email: data.email || null,
@@ -830,7 +828,7 @@ export default function PatientIntake() {
       
       // Send welcome email to patient (non-blocking)
       if (data.email) {
-        const firstName = data.patientName.split(' ')[0];
+        const firstName = data.legalName.split(' ')[0];
         supabase.functions.invoke('send-intake-welcome-email', {
           body: { email: data.email, firstName }
         }).then(({ error }) => {
@@ -995,7 +993,7 @@ export default function PatientIntake() {
     
     switch (stepIndex) {
       case 0: // Patient Info
-        fieldsToValidate = ["patientName", "dateOfBirth", "episodeType"];
+        fieldsToValidate = ["legalName", "dateOfBirth", "episodeType"];
         break;
       case 1: // Medical History
         return true; // All fields optional
@@ -1068,7 +1066,7 @@ export default function PatientIntake() {
       const { generateIntakePDF } = await import('@/components/intake/PDFGenerator');
       
       const pdf = generateIntakePDF(submittedFormData as any, accessCode);
-      pdf.save(`intake-${submittedFormData.patientName.replace(/\s+/g, '-')}-${accessCode}.pdf`);
+      pdf.save(`intake-${submittedFormData.legalName.replace(/\s+/g, '-')}-${accessCode}.pdf`);
       toast.success("PDF downloaded successfully!");
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -1673,51 +1671,13 @@ export default function PatientIntake() {
               <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="patientName"
-                  render={({ field, fieldState }) => {
-                    const isValid = touchedFields.has('patientName') && !fieldState.error && field.value;
-                    const hasError = touchedFields.has('patientName') && fieldState.error;
-                    return (
-                      <FormItem className={hasError ? 'animate-shake' : ''}>
-                        <FormLabel>Full Name *</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input 
-                              {...field}
-                              autoComplete="name"
-                              inputMode="text"
-                              enterKeyHint="next"
-                              onBlur={(e) => {
-                                field.onBlur();
-                                setTouchedFields(prev => new Set(prev).add('patientName'));
-                              }}
-                              className={isValid ? 'border-success focus:ring-success pr-10' : ''}
-                            />
-                            {isValid && (
-                              <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success animate-scale-in" />
-                            )}
-                          </div>
-                        </FormControl>
-                        {fieldState.error && (
-                          <FormMessage className="animate-slide-down" />
-                        )}
-                      </FormItem>
-                    );
-                  }}
-                />
-
-                <FormField
-                  control={form.control}
                   name="legalName"
                   render={({ field, fieldState }) => {
                     const isValid = touchedFields.has('legalName') && !fieldState.error && field.value;
                     const hasError = touchedFields.has('legalName') && fieldState.error;
                     return (
                       <FormItem className={hasError ? 'animate-shake' : ''}>
-                        <FormLabel>Legal Name</FormLabel>
-                        <FormDescription className="text-xs">
-                          Only if different from Full Name above
-                        </FormDescription>
+                        <FormLabel>Legal Name *</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Input 
@@ -1725,7 +1685,6 @@ export default function PatientIntake() {
                               autoComplete="name"
                               inputMode="text"
                               enterKeyHint="next"
-                              placeholder="Leave blank if same as Full Name"
                               onBlur={(e) => {
                                 field.onBlur();
                                 setTouchedFields(prev => new Set(prev).add('legalName'));
@@ -2706,7 +2665,7 @@ export default function PatientIntake() {
                     Personal Information
                   </h4>
                   <div className="grid gap-2 text-sm bg-muted/30 p-4 rounded-lg border">
-                    <div><span className="font-medium">Name:</span> {form.watch("patientName")}</div>
+                    <div><span className="font-medium">Name:</span> {form.watch("legalName")}</div>
                     <div><span className="font-medium">Date of Birth:</span> {form.watch("dateOfBirth")}</div>
                     <div><span className="font-medium">Episode Type:</span> {form.watch("episodeType")}</div>
                     {form.watch("email") && <div><span className="font-medium">Email:</span> {form.watch("email")}</div>}
