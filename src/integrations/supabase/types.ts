@@ -50,6 +50,64 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_coverage: {
+        Row: {
+          admin_id: string
+          clinic_id: string | null
+          coverage_end: string | null
+          coverage_start: string | null
+          covering_for: string | null
+          created_at: string
+          id: string
+          is_on_duty: boolean
+          updated_at: string
+        }
+        Insert: {
+          admin_id: string
+          clinic_id?: string | null
+          coverage_end?: string | null
+          coverage_start?: string | null
+          covering_for?: string | null
+          created_at?: string
+          id?: string
+          is_on_duty?: boolean
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: string
+          clinic_id?: string | null
+          coverage_end?: string | null
+          coverage_start?: string | null
+          covering_for?: string | null
+          created_at?: string
+          id?: string
+          is_on_duty?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_coverage_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_coverage_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_coverage_covering_for_fkey"
+            columns: ["covering_for"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -450,6 +508,13 @@ export type Database = {
             referencedRelation: "communication_tasks"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "communication_task_notes_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "stalled_communication_tasks"
+            referencedColumns: ["id"]
+          },
         ]
       }
       communication_tasks: {
@@ -472,6 +537,8 @@ export type Database = {
           patient_name: string | null
           priority: Database["public"]["Enums"]["task_priority"]
           source: Database["public"]["Enums"]["task_source"]
+          stall_detected_at: string | null
+          stall_threshold_days: number | null
           status: string
           status_changed_at: string | null
           type: Database["public"]["Enums"]["task_type"]
@@ -496,6 +563,8 @@ export type Database = {
           patient_name?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           source: Database["public"]["Enums"]["task_source"]
+          stall_detected_at?: string | null
+          stall_threshold_days?: number | null
           status?: string
           status_changed_at?: string | null
           type: Database["public"]["Enums"]["task_type"]
@@ -520,6 +589,8 @@ export type Database = {
           patient_name?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           source?: Database["public"]["Enums"]["task_source"]
+          stall_detected_at?: string | null
+          stall_threshold_days?: number | null
           status?: string
           status_changed_at?: string | null
           type?: Database["public"]["Enums"]["task_type"]
@@ -942,6 +1013,57 @@ export type Database = {
           },
         ]
       }
+      episode_outcome_tool_locks: {
+        Row: {
+          created_at: string
+          episode_id: string
+          id: string
+          locked_at: string
+          locked_by: string | null
+          outcome_tools: string[]
+          override_at: string | null
+          override_by: string | null
+          override_reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          episode_id: string
+          id?: string
+          locked_at?: string
+          locked_by?: string | null
+          outcome_tools: string[]
+          override_at?: string | null
+          override_by?: string | null
+          override_reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          episode_id?: string
+          id?: string
+          locked_at?: string
+          locked_by?: string | null
+          outcome_tools?: string[]
+          override_at?: string | null
+          override_by?: string | null
+          override_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episode_outcome_tool_locks_locked_by_fkey"
+            columns: ["locked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episode_outcome_tool_locks_override_by_fkey"
+            columns: ["override_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       episodes: {
         Row: {
           allergy_flag: boolean | null
@@ -963,11 +1085,15 @@ export type Database = {
           current_status: Database["public"]["Enums"]["episode_status"] | null
           date_of_birth: string | null
           date_of_service: string
+          decision_context: string | null
+          decision_made_by: string | null
+          decision_timestamp: string | null
           diagnosis: string | null
           discharge_date: string | null
           discharge_outcome: string | null
           emergency_contact: string | null
           emergency_phone: string | null
+          episode_terminal: boolean | null
           episode_type: string | null
           final_closure_date: string | null
           followup_date: string | null
@@ -1034,11 +1160,15 @@ export type Database = {
           current_status?: Database["public"]["Enums"]["episode_status"] | null
           date_of_birth?: string | null
           date_of_service: string
+          decision_context?: string | null
+          decision_made_by?: string | null
+          decision_timestamp?: string | null
           diagnosis?: string | null
           discharge_date?: string | null
           discharge_outcome?: string | null
           emergency_contact?: string | null
           emergency_phone?: string | null
+          episode_terminal?: boolean | null
           episode_type?: string | null
           final_closure_date?: string | null
           followup_date?: string | null
@@ -1105,11 +1235,15 @@ export type Database = {
           current_status?: Database["public"]["Enums"]["episode_status"] | null
           date_of_birth?: string | null
           date_of_service?: string
+          decision_context?: string | null
+          decision_made_by?: string | null
+          decision_timestamp?: string | null
           diagnosis?: string | null
           discharge_date?: string | null
           discharge_outcome?: string | null
           emergency_contact?: string | null
           emergency_phone?: string | null
+          episode_terminal?: boolean | null
           episode_type?: string | null
           final_closure_date?: string | null
           followup_date?: string | null
@@ -1162,6 +1296,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episodes_decision_made_by_fkey"
+            columns: ["decision_made_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -3653,6 +3794,7 @@ export type Database = {
           primary_complaint: string
           source_episode_id: string
           status: string
+          transition_reason: string | null
           updated_at: string
           user_id: string
         }
@@ -3674,6 +3816,7 @@ export type Database = {
           primary_complaint: string
           source_episode_id: string
           status?: string
+          transition_reason?: string | null
           updated_at?: string
           user_id: string
         }
@@ -3695,6 +3838,7 @@ export type Database = {
           primary_complaint?: string
           source_episode_id?: string
           status?: string
+          transition_reason?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -4867,7 +5011,52 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      stalled_communication_tasks: {
+        Row: {
+          admin_acknowledged_at: string | null
+          assigned_clinician_id: string | null
+          cancelled_reason: string | null
+          category: string | null
+          clinician_name: string | null
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          days_in_status: number | null
+          description: string | null
+          due_at: string | null
+          episode_id: string | null
+          id: string | null
+          letter_file_url: string | null
+          letter_subtype: string | null
+          patient_id: string | null
+          patient_message_id: string | null
+          patient_name: string | null
+          priority: Database["public"]["Enums"]["task_priority"] | null
+          source: Database["public"]["Enums"]["task_source"] | null
+          stall_detected_at: string | null
+          stall_threshold_days: number | null
+          status: string | null
+          status_changed_at: string | null
+          type: Database["public"]["Enums"]["task_type"] | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "communication_tasks_assigned_clinician_id_fkey"
+            columns: ["assigned_clinician_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "communication_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       auto_link_patient_episodes: {
@@ -4910,6 +5099,7 @@ export type Database = {
       }
       cleanup_expired_intake_progress: { Args: never; Returns: undefined }
       cleanup_old_sessions: { Args: never; Returns: undefined }
+      detect_stalled_tasks: { Args: never; Returns: undefined }
       generate_referral_code: {
         Args: { p_patient_id: string }
         Returns: string
@@ -4978,6 +5168,11 @@ export type Database = {
         | "PENDING_RETURN_TO_PPC"
         | "FINAL_PPC_ASSESSMENT_COMPLETED"
         | "EPISODE_CLOSED"
+      episode_transition_reason:
+        | "UNRELATED_NEW_COMPLAINT"
+        | "SEQUENTIAL_CARE"
+        | "EMERGED_DURING_TREATMENT"
+        | "PREVENTIVE_OR_PERFORMANCE"
       task_priority: "HIGH" | "NORMAL"
       task_source: "ADMIN" | "CLINICIAN" | "PATIENT_PORTAL"
       task_status: "Open" | "Done"
@@ -5126,6 +5321,12 @@ export const Constants = {
         "PENDING_RETURN_TO_PPC",
         "FINAL_PPC_ASSESSMENT_COMPLETED",
         "EPISODE_CLOSED",
+      ],
+      episode_transition_reason: [
+        "UNRELATED_NEW_COMPLAINT",
+        "SEQUENTIAL_CARE",
+        "EMERGED_DURING_TREATMENT",
+        "PREVENTIVE_OR_PERFORMANCE",
       ],
       task_priority: ["HIGH", "NORMAL"],
       task_source: ["ADMIN", "CLINICIAN", "PATIENT_PORTAL"],
