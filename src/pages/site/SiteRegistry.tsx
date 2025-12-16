@@ -301,7 +301,7 @@ const SiteRegistry = () => {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 We built the Outcome Registry because we believe care should never feel like 
                 guesswork. Patients deserve to know where they started, how far they've come, 
-                and what's next. Clinicians need a framework for reflection and accountability. 
+                and what's next. Clinicians need a framework for reflection and internal clinical consistency. 
                 Families should be able to trust that recovery is being tracked, not assumed.
               </p>
               
