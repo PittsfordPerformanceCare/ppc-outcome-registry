@@ -29,7 +29,7 @@ const SiteHome = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              Specialized care for concussion recovery and musculoskeletal performance, 
+              Specialized care for musculoskeletal performance and concussion recovery, 
               grounded in neurologic evaluation and measured outcomes. We identify 
               the systems driving your symptoms and treat them directly.
             </p>
