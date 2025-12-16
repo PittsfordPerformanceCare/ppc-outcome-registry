@@ -154,9 +154,86 @@ export type Database = {
           },
         ]
       }
+      care_requests: {
+        Row: {
+          admin_owner_id: string | null
+          approval_reason: string | null
+          approved_at: string | null
+          archive_reason: string | null
+          assigned_clinician_id: string | null
+          created_at: string
+          episode_id: string | null
+          id: string
+          intake_payload: Json
+          patient_id: string | null
+          primary_complaint: string | null
+          source: string
+          status: string
+          triage_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_owner_id?: string | null
+          approval_reason?: string | null
+          approved_at?: string | null
+          archive_reason?: string | null
+          assigned_clinician_id?: string | null
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          intake_payload: Json
+          patient_id?: string | null
+          primary_complaint?: string | null
+          source?: string
+          status?: string
+          triage_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_owner_id?: string | null
+          approval_reason?: string | null
+          approved_at?: string | null
+          archive_reason?: string | null
+          assigned_clinician_id?: string | null
+          created_at?: string
+          episode_id?: string | null
+          id?: string
+          intake_payload?: Json
+          patient_id?: string | null
+          primary_complaint?: string | null
+          source?: string
+          status?: string
+          triage_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_requests_admin_owner_id_fkey"
+            columns: ["admin_owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_requests_assigned_clinician_id_fkey"
+            columns: ["assigned_clinician_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_requests_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patient_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinic_settings: {
         Row: {
           address: string | null
+          care_request_mode_enabled: boolean | null
           clinic_name: string
           created_at: string
           discharge_email_subject: string | null
@@ -194,6 +271,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          care_request_mode_enabled?: boolean | null
           clinic_name?: string
           created_at?: string
           discharge_email_subject?: string | null
@@ -231,6 +309,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          care_request_mode_enabled?: boolean | null
           clinic_name?: string
           created_at?: string
           discharge_email_subject?: string | null
@@ -660,6 +739,48 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      episode_intake_snapshots: {
+        Row: {
+          care_request_id: string | null
+          created_at: string
+          created_by: string | null
+          episode_id: string
+          id: string
+          intake_payload: Json
+        }
+        Insert: {
+          care_request_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          episode_id: string
+          id?: string
+          intake_payload: Json
+        }
+        Update: {
+          care_request_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          episode_id?: string
+          id?: string
+          intake_payload?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episode_intake_snapshots_care_request_id_fkey"
+            columns: ["care_request_id"]
+            isOneToOne: false
+            referencedRelation: "care_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episode_intake_snapshots_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       episode_integrity_check_runs: {
         Row: {
@@ -1707,6 +1828,39 @@ export type Database = {
           utm_medium?: string | null
           utm_source?: string | null
           who_is_this_for?: string | null
+        }
+        Relationships: []
+      }
+      lifecycle_events: {
+        Row: {
+          actor_id: string | null
+          actor_type: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          event_type: string
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_type: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          actor_id?: string | null
+          actor_type?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
         }
         Relationships: []
       }
