@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Brain, Activity, Heart, Sparkles } from "lucide-react";
 import { LocalBusinessSchema } from "@/components/site/StructuredData";
+import { CredibilityTicker } from "@/components/site/CredibilityTicker";
 
 const SiteHome = () => {
   return (
@@ -47,6 +48,9 @@ const SiteHome = () => {
           </div>
         </div>
       </section>
+
+      {/* Credibility Stats Ticker */}
+      <CredibilityTicker />
 
       {/* Care Pillars */}
       <section className="py-20 lg:py-28 bg-background">
