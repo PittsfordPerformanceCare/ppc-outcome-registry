@@ -223,7 +223,7 @@ export function CareRequestsQueue() {
         <div>
           <h2 className="text-xl font-semibold">Care Requests</h2>
           <p className="text-sm text-muted-foreground">
-            {pendingCount > 0 ? `${pendingCount} new request${pendingCount > 1 ? "s" : ""} pending` : "No pending requests"}
+            {pendingCount > 0 ? `${pendingCount} request${pendingCount > 1 ? "s" : ""} awaiting review` : "All requests in progress"}
           </p>
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
