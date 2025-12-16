@@ -279,7 +279,7 @@ export default function ClinicalOutcomesReview() {
           
           {/* Introductory Framing */}
           <p className="text-slate-600 leading-relaxed">
-            This review provides patient-specific, episode-level progress and outcome summaries for shared patients to support coordinated clinical decision-making.
+            This review provides patient-specific, episode-level progress and outcome summaries for shared patients to support coordinated clinical decision-making. Outcome data informs clinical reassessment and shared discussion, guided by clinical judgment and patient response.
           </p>
 
           {/* Section 1: Case Context */}

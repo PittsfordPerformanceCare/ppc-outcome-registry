@@ -45,7 +45,7 @@ const SiteRegistry = () => {
             
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
               Clarity Through Measurable Recovery. Every patient deserves to know whether 
-              they're getting better, and we believe the data should prove it.
+              they're getting better—objective data helps contextualize recovery over time.
             </p>
           </div>
         </div>
@@ -55,6 +55,11 @@ const SiteRegistry = () => {
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto space-y-8">
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Registry data is used to support clinical understanding and shared discussion, 
+              not to define eligibility, limit care, or replace individualized medical judgment.
+            </p>
+            
             <p className="text-lg text-muted-foreground leading-relaxed">
               Recovery should not feel confusing. When patients are uncertain about 
               whether they're improving, or why, it erodes confidence and delays healing. 
@@ -209,9 +214,9 @@ const SiteRegistry = () => {
             <div className="space-y-8">
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Many clinics collect outcome data. Fewer actually use it. The difference 
-                at Pittsford Performance Care is that registry data is operationalized, meaning 
-                it directly informs clinical decisions in real time, not just at discharge 
-                or for retrospective review.
+                at Pittsford Performance Care is that registry data is integrated into day-to-day 
+                clinical decision support—informing reassessment and shared discussion 
+                throughout the episode of care, not just at discharge or for retrospective review.
               </p>
               
               <div className="grid gap-6">
@@ -221,10 +226,11 @@ const SiteRegistry = () => {
                       <Activity className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-bold mb-2">Real Time Clinical Adjustment</h3>
+                      <h3 className="font-bold mb-2">Responsive Clinical Adjustment</h3>
                       <p className="text-muted-foreground leading-relaxed">
-                        When progress stalls or trends in an unexpected direction, treatment 
-                        is adjusted promptly. Data drives action, not just documentation.
+                        When progress stalls or trends in an unexpected direction, data 
+                        informs clinical reassessment and shared discussion, guided by 
+                        clinical judgment and patient response.
                       </p>
                     </div>
                   </div>
@@ -236,10 +242,11 @@ const SiteRegistry = () => {
                       <Shield className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-bold mb-2">Support for Safe Return Decisions</h3>
+                      <h3 className="font-bold mb-2">Support for Informed Return Decisions</h3>
                       <p className="text-muted-foreground leading-relaxed">
                         Return to learn, return to play, and return to performance decisions 
-                        are grounded in objective functional data, not symptom reports alone.
+                        are supported by objective functional data alongside clinical judgment 
+                        and patient presentation.
                       </p>
                     </div>
                   </div>
@@ -262,9 +269,10 @@ const SiteRegistry = () => {
               </div>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
-                This operational approach transforms the registry from a passive record 
-                into an active clinical tool, one that shapes care as it unfolds, rather 
-                than simply summarizing it afterward.
+                This approach transforms the registry from a passive record into a clinical 
+                support tool—one that informs care as it unfolds, rather than simply 
+                summarizing it afterward. All care decisions remain grounded in individualized 
+                clinical judgment, patient presentation, and shared decision-making.
               </p>
             </div>
           </div>
@@ -364,10 +372,10 @@ const SiteRegistry = () => {
                 <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
                   <Shield className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold mb-2">Accountability</h3>
+                <h3 className="text-lg font-bold mb-2">Transparency & Consistency</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Clinicians are held to the standard they set for themselves. 
-                  The data holds us accountable to your recovery.
+                  Clinicians maintain the standards they set for themselves. 
+                  Structured observation supports internal clinical reflection and consistency.
                 </p>
               </Card>
               

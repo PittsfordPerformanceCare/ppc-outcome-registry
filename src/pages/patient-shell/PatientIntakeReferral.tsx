@@ -218,14 +218,16 @@ const PatientIntakeReferral = () => {
               Our Clinical Framework
             </h2>
             <p className="text-base text-muted-foreground leading-relaxed mb-4">
-              We use a neurologically informed, outcome-driven clinical model. Patient progress is 
+              We use a neurologically informed, outcome-guided clinical model. Patient progress is 
               documented systematically and tracked over time using structured documentation and 
-              an outcome registry.
+              an outcome registry. Registry data supports clinical understanding and shared discussion, 
+              not to define eligibility, limit care, or replace individualized medical judgment.
             </p>
             <p className="text-base text-muted-foreground leading-relaxed">
-              Care decisions are guided by clinical clarity and patient response. This framework 
-              supports meaningful communication with referring providers and ensures transparency 
-              throughout the care process.
+              Care decisions are guided by clinical clarity and patient response. Care recommendations 
+              are made within the context of the referring provider's clinical oversight and the 
+              patient's broader medical picture. This framework supports meaningful communication 
+              with referring providers and ensures transparency throughout the care process.
             </p>
           </div>
         </section>
@@ -240,7 +242,7 @@ const PatientIntakeReferral = () => {
               To support clarity and continuity, Pittsford Performance Care organizes treatment into 
               defined care episodes. An episode represents a focused period of care aimed at identifying 
               the primary drivers of a patient's symptoms, delivering targeted intervention, and 
-              determining readiness for next steps.
+              supporting informed decisions about next steps.
             </p>
             <p className="text-base text-muted-foreground leading-relaxed">
               Episodes are not visit-limited and do not replace traditional documentation. All visit-level 

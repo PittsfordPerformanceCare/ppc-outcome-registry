@@ -239,10 +239,10 @@ const ProfessionalOutcomesPortal = () => {
                 Clinical Governance and Data Integrity
               </h2>
               <p className="text-slate-700 leading-relaxed mb-4">
-                Aggregate outcomes are derived from PPC's internal Outcome Registry. Outcomes are tracked across defined episodes of care using validated measures and longitudinal tracking protocols designed to support clinical accountability and transparency.
+                Aggregate outcomes are derived from PPC's internal Outcome Registry. Outcomes are tracked across defined episodes of care using validated measures and longitudinal tracking protocols designed to support clinical transparency and consistency.
               </p>
               <p className="text-slate-700 leading-relaxed">
-                Pittsford Performance Care also engages in translational neuroscience research under Institutional Review Board oversight. While this page reflects real world clinical data, it is designed for professional transparency and collaboration, not research publication or individual prediction.
+                Pittsford Performance Care also engages in translational neuroscience research under Institutional Review Board oversight. While this page reflects real world clinical data, it is designed for professional transparency and collaboration, not research publication or individual prediction. Aggregate trends are presented for professional insight and transparency, not as benchmarks, expectations, or standards for individual patient care.
               </p>
             </section>
 
@@ -254,13 +254,13 @@ const ProfessionalOutcomesPortal = () => {
                 How to Interpret Aggregate Outcomes
               </h2>
               <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2">
-                <li>Aggregate outcomes are descriptive, not predictive.</li>
+                <li>Aggregate outcomes are descriptive and contextual, not predictive, and are not intended to guide individual treatment decisions.</li>
                 <li>Distributions and trends matter more than averages.</li>
-                <li>Symptom resolution may precede readiness.</li>
+                <li>Symptom resolution may precede functional readiness.</li>
                 <li>Case mix and referral patterns influence observed outcomes.</li>
               </ul>
               <p className="text-slate-700 leading-relaxed mt-4">
-                Each condition view includes interpretation guidance to support appropriate clinical use.
+                Each condition view includes interpretation guidance to support appropriate clinical use. All care decisions remain grounded in individualized clinical judgment, patient presentation, and shared decision-making.
               </p>
             </section>
 
