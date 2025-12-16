@@ -38,7 +38,7 @@ const AdminDashboard = () => {
             asChild
             className="gap-2"
           >
-            <Link to="/administrator-quick-start">
+            <Link to="/admin-quick-start">
               <BookOpen className="h-4 w-4" />
               Training Guide
             </Link>
