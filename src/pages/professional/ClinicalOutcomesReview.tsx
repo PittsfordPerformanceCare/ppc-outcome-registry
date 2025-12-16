@@ -276,6 +276,11 @@ export default function ClinicalOutcomesReview() {
           <h1 className="text-2xl font-semibold text-slate-900">
             Clinical Outcomes Review
           </h1>
+          
+          {/* Introductory Framing */}
+          <p className="text-slate-600 leading-relaxed">
+            This review provides patient-specific, episode-level progress and outcome summaries for shared patients to support coordinated clinical decision-making.
+          </p>
 
           {/* Section 1: Case Context */}
           <Card className="border-slate-200">
