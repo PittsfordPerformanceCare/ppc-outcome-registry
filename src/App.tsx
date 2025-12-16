@@ -236,6 +236,7 @@ const App = () => (
             <Route path="/patient-intake" element={<PatientIntake />} />
             <Route path="/patient-quick-start" element={<PatientQuickStart />} />
             <Route path="/front-desk-quick-start" element={<FrontDeskQuickStart />} />
+            <Route path="/clinician-quick-start" element={<ClinicianQuickStart />} />
             <Route path="/intake-start" element={<IntakeStart />} />
             <Route path="/staff-login" element={<StaffLogin />} />
             <Route path="/install" element={<AppInstallGuide />} />
