@@ -20,7 +20,8 @@ import {
   Activity,
   Stethoscope,
   Baby,
-  LayoutDashboard
+  LayoutDashboard,
+  BookOpen
 } from "lucide-react";
 import { format, parseISO, isToday, isTomorrow, addDays } from "date-fns";
 
@@ -199,7 +200,7 @@ const ClinicianDashboard = () => {
           <h1 className="text-2xl font-bold">Clinician Dashboard</h1>
           <p className="text-muted-foreground">Your schedule and action queue</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {isAdmin && (
             <Button 
               variant="outline" 
@@ -212,6 +213,16 @@ const ClinicianDashboard = () => {
               </Link>
             </Button>
           )}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            asChild
+          >
+            <Link to="/clinician-quick-start">
+              <BookOpen className="h-4 w-4 mr-2" />
+              Training Guide
+            </Link>
+          </Button>
           <Button 
             variant="outline" 
             size="sm" 
