@@ -10,6 +10,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Brain, ArrowRight, ArrowLeft, CheckCircle2, User, Heart, FileText, Shield } from "lucide-react";
+import { 
+  TraumaHistorySection, 
+  TraumaHistoryItem, 
+  HasTraumaHistory, 
+  validateTraumaHistory 
+} from "@/components/intake/TraumaHistorySection";
 
 const TOTAL_STEPS = 4;
 
@@ -59,6 +65,10 @@ const NeurologicIntakeForm = () => {
     signature: "",
   });
 
+  // Trauma History State (separate for cleaner typing)
+  const [hasTraumaHistory, setHasTraumaHistory] = useState<HasTraumaHistory>("");
+  const [traumaHistoryItems, setTraumaHistoryItems] = useState<TraumaHistoryItem[]>([]);
+
   // Update progress when step changes
   useEffect(() => {
     if (intakeId) {
@@ -71,11 +81,18 @@ const NeurologicIntakeForm = () => {
     if (!intakeId) return;
     
     try {
+      // Include trauma history in form data for progress saving
+      const fullFormData = {
+        ...formData,
+        has_trauma_history: hasTraumaHistory,
+        trauma_history_items: traumaHistoryItems,
+      };
+      
       await supabase
         .from("intakes")
         .update({ 
           progress,
-          form_data: formData,
+          form_data: fullFormData,
         })
         .eq("id", intakeId);
     } catch (error) {
@@ -88,6 +105,15 @@ const NeurologicIntakeForm = () => {
   };
 
   const handleNext = () => {
+    // Validate trauma history when leaving step 2
+    if (currentStep === 2) {
+      const traumaValidation = validateTraumaHistory(hasTraumaHistory, traumaHistoryItems);
+      if (!traumaValidation.valid) {
+        toast({ title: traumaValidation.message, variant: "destructive" });
+        return;
+      }
+    }
+    
     if (currentStep < TOTAL_STEPS) {
       setCurrentStep(prev => prev + 1);
     }
@@ -107,6 +133,13 @@ const NeurologicIntakeForm = () => {
     
     setIsSubmitting(true);
     
+    // Build complete form data with trauma history
+    const completeFormData = {
+      ...formData,
+      has_trauma_history: hasTraumaHistory || "No",
+      trauma_history_items: traumaHistoryItems,
+    };
+    
     try {
       // Update intake as completed
       if (intakeId) {
@@ -119,7 +152,7 @@ const NeurologicIntakeForm = () => {
             patient_name: formData.name,
             patient_email: formData.email,
             patient_phone: formData.phone,
-            form_data: formData,
+            form_data: completeFormData,
           })
           .eq("id", intakeId);
       }
@@ -378,6 +411,14 @@ const NeurologicIntakeForm = () => {
                     placeholder="List any known allergies"
                   />
                 </div>
+
+                {/* Trauma History Section */}
+                <TraumaHistorySection
+                  hasTraumaHistory={hasTraumaHistory}
+                  traumaHistoryItems={traumaHistoryItems}
+                  onHasTraumaHistoryChange={setHasTraumaHistory}
+                  onTraumaHistoryItemsChange={setTraumaHistoryItems}
+                />
               </CardContent>
             </>
           )}
