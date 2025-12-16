@@ -1,4 +1,4 @@
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 
 export interface ExportEpisode {
   id: string;
@@ -22,6 +22,28 @@ export interface ExportEpisode {
   mcidStatus?: 'Met' | 'Partial' | 'Not Met' | 'Insufficient Data';
   visitsToMCID?: number;
   daysToMCID?: number;
+  // Registry-level efficiency metrics
+  total_visits_to_discharge?: number;
+  start_date?: string;
+  episode_duration_days?: number; // Calculated: discharge_date - start_date
+  new_episode_required?: boolean;
+  discharge_decision_by?: string;
+  discharge_decision_timestamp?: string;
+  division?: string;
+  episode_category?: string;
+  primary_complaint?: string;
+  clinician_id?: string;
+  patient_id?: string;
+}
+
+// Helper to calculate episode duration
+export function calculateEpisodeDuration(startDate?: string, dischargeDate?: string): number | undefined {
+  if (!startDate || !dischargeDate) return undefined;
+  try {
+    return differenceInDays(new Date(dischargeDate), new Date(startDate));
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -56,7 +78,11 @@ export function convertToCSV(episodes: ExportEpisode[], includeScores: boolean =
       'MCID % Achieved',
       'MCID Status',
       'Visits to MCID',
-      'Days to MCID'
+      'Days to MCID',
+      // Registry efficiency metrics
+      'Total Visits to Discharge',
+      'Episode Duration (Days)',
+      'New Episode Required'
     );
   }
 
@@ -76,6 +102,7 @@ export function convertToCSV(episodes: ExportEpisode[], includeScores: boolean =
     ];
 
     if (includeScores) {
+      const episodeDuration = calculateEpisodeDuration(episode.start_date || episode.date_of_service, episode.discharge_date);
       baseRow.push(
         episode.indexType || '',
         episode.baselineScore !== undefined ? episode.baselineScore.toString() : '',
@@ -85,7 +112,11 @@ export function convertToCSV(episodes: ExportEpisode[], includeScores: boolean =
         episode.mcidPercentage !== undefined ? episode.mcidPercentage.toFixed(1) + '%' : '',
         episode.mcidStatus || '',
         episode.visitsToMCID !== undefined ? episode.visitsToMCID.toString() : '',
-        episode.daysToMCID !== undefined ? episode.daysToMCID.toString() : ''
+        episode.daysToMCID !== undefined ? episode.daysToMCID.toString() : '',
+        // Registry efficiency metrics
+        episode.total_visits_to_discharge !== undefined ? episode.total_visits_to_discharge.toString() : '',
+        episodeDuration !== undefined ? episodeDuration.toString() : '',
+        episode.new_episode_required !== undefined ? (episode.new_episode_required ? 'true' : 'false') : ''
       );
     }
 
@@ -147,7 +178,11 @@ export function convertToExcel(episodes: ExportEpisode[], includeScores: boolean
       'MCID % Achieved',
       'MCID Status',
       'Visits to MCID',
-      'Days to MCID'
+      'Days to MCID',
+      // Registry efficiency metrics
+      'Total Visits to Discharge',
+      'Episode Duration (Days)',
+      'New Episode Required'
     );
   }
 
@@ -167,6 +202,7 @@ export function convertToExcel(episodes: ExportEpisode[], includeScores: boolean
     ];
 
     if (includeScores) {
+      const episodeDuration = calculateEpisodeDuration(episode.start_date || episode.date_of_service, episode.discharge_date);
       baseRow.push(
         episode.indexType || '',
         episode.baselineScore !== undefined ? episode.baselineScore.toString() : '',
@@ -176,7 +212,11 @@ export function convertToExcel(episodes: ExportEpisode[], includeScores: boolean
         episode.mcidPercentage !== undefined ? episode.mcidPercentage.toFixed(1) + '%' : '',
         episode.mcidStatus || '',
         episode.visitsToMCID !== undefined ? episode.visitsToMCID.toString() : '',
-        episode.daysToMCID !== undefined ? episode.daysToMCID.toString() : ''
+        episode.daysToMCID !== undefined ? episode.daysToMCID.toString() : '',
+        // Registry efficiency metrics
+        episode.total_visits_to_discharge !== undefined ? episode.total_visits_to_discharge.toString() : '',
+        episodeDuration !== undefined ? episodeDuration.toString() : '',
+        episode.new_episode_required !== undefined ? (episode.new_episode_required ? 'true' : 'false') : ''
       );
     }
 

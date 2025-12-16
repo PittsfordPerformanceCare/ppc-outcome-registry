@@ -96,6 +96,8 @@ export function DischargeDecisionDialog({
   const [continuationSource, setContinuationSource] = useState<ContinuationSource | null>(null);
   const [selectedDocumentedComplaint, setSelectedDocumentedComplaint] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [totalVisits, setTotalVisits] = useState<string>("");
+  const [visitError, setVisitError] = useState<string | null>(null);
 
   const form = useForm<NewConcernFormValues>({
     resolver: zodResolver(newConcernSchema),
@@ -111,6 +113,8 @@ export function DischargeDecisionDialog({
     setDischargeOutcome(null);
     setContinuationSource(null);
     setSelectedDocumentedComplaint(null);
+    setTotalVisits("");
+    setVisitError(null);
     form.reset();
   };
 
@@ -143,8 +147,25 @@ export function DischargeDecisionDialog({
     }
   };
 
+  const validateVisitCount = (): boolean => {
+    const visits = parseInt(totalVisits, 10);
+    if (!totalVisits || isNaN(visits)) {
+      setVisitError("Total visits is required");
+      return false;
+    }
+    if (visits < 1) {
+      setVisitError("Visits must be at least 1");
+      return false;
+    }
+    setVisitError(null);
+    return true;
+  };
+
   const handleSubmit = async (formValues?: NewConcernFormValues) => {
     if (!dischargeOutcome) return;
+
+    // Validate visit count for all discharge types
+    if (!validateVisitCount()) return;
 
     setLoading(true);
     try {
@@ -176,7 +197,7 @@ export function DischargeDecisionDialog({
         }
       }
 
-      // Update episode with discharge outcome
+      // Update episode with discharge outcome and visit count
       const { error: episodeError } = await supabase
         .from("episodes")
         .update({
@@ -184,6 +205,7 @@ export function DischargeDecisionDialog({
           discharge_outcome: dischargeOutcome,
           continuation_episode_source: continuationSource,
           continuation_details: continuationDetails,
+          total_visits_to_discharge: parseInt(totalVisits, 10),
         })
         .eq("id", episodeId);
 
@@ -364,13 +386,40 @@ export function DischargeDecisionDialog({
             </div>
 
             {(dischargeOutcome === "care_complete" || dischargeOutcome === "care_paused") && (
-              <div className="flex justify-end gap-3 pt-4 border-t">
-                <Button variant="outline" onClick={handleClose}>
-                  Cancel
-                </Button>
-                <Button onClick={handleCareCompleteOrPaused} disabled={loading}>
-                  {loading ? "Processing..." : "Complete Discharge"}
-                </Button>
+              <div className="space-y-4 pt-4 border-t">
+                {/* Visit Count Input - Required for Discharge */}
+                <div className="space-y-2">
+                  <Label htmlFor="total-visits" className="text-sm font-medium">
+                    Total Visits for This Episode *
+                  </Label>
+                  <Input
+                    id="total-visits"
+                    type="number"
+                    min="1"
+                    placeholder="Enter number of visits (including evaluation)"
+                    value={totalVisits}
+                    onChange={(e) => {
+                      setTotalVisits(e.target.value);
+                      setVisitError(null);
+                    }}
+                    className={cn(visitError && "border-destructive")}
+                  />
+                  {visitError && (
+                    <p className="text-sm text-destructive">{visitError}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Used for quality improvement and outcome tracking. Not shown to patients.
+                  </p>
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <Button variant="outline" onClick={handleClose}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleCareCompleteOrPaused} disabled={loading}>
+                    {loading ? "Processing..." : "Complete Discharge"}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -462,6 +511,31 @@ export function DischargeDecisionDialog({
 
             <Separator />
 
+            {/* Visit Count Input - Required for Discharge */}
+            <div className="space-y-2">
+              <Label htmlFor="total-visits-doc" className="text-sm font-medium">
+                Total Visits for This Episode *
+              </Label>
+              <Input
+                id="total-visits-doc"
+                type="number"
+                min="1"
+                placeholder="Enter number of visits (including evaluation)"
+                value={totalVisits}
+                onChange={(e) => {
+                  setTotalVisits(e.target.value);
+                  setVisitError(null);
+                }}
+                className={cn(visitError && "border-destructive")}
+              />
+              {visitError && (
+                <p className="text-sm text-destructive">{visitError}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Used for quality improvement and outcome tracking. Not shown to patients.
+              </p>
+            </div>
+
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={handleClose}>
                 Cancel
@@ -550,6 +624,31 @@ export function DischargeDecisionDialog({
                   </FormItem>
                 )}
               />
+
+              {/* Visit Count Input - Required for Discharge */}
+              <div className="space-y-2">
+                <Label htmlFor="total-visits-new" className="text-sm font-medium">
+                  Total Visits for This Episode *
+                </Label>
+                <Input
+                  id="total-visits-new"
+                  type="number"
+                  min="1"
+                  placeholder="Enter number of visits (including evaluation)"
+                  value={totalVisits}
+                  onChange={(e) => {
+                    setTotalVisits(e.target.value);
+                    setVisitError(null);
+                  }}
+                  className={cn(visitError && "border-destructive")}
+                />
+                {visitError && (
+                  <p className="text-sm text-destructive">{visitError}</p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Used for quality improvement and outcome tracking. Not shown to patients.
+                </p>
+              </div>
 
               <Separator />
 
