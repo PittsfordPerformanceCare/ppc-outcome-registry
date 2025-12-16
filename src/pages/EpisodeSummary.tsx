@@ -18,6 +18,7 @@ import { OrthoReferralCard } from "@/components/OrthoReferralCard";
 import { OrthoReferralPrint } from "@/components/OrthoReferralPrint";
 import { UpdateEpisodeStatusDialog } from "@/components/UpdateEpisodeStatusDialog";
 import { CareCoordinationPauseControl } from "@/components/CareCoordinationPauseControl";
+import { CareCoordinationContextReminder } from "@/components/CareCoordinationContextReminder";
 import { DischargeDecisionDialog } from "@/components/DischargeDecisionDialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -462,6 +463,11 @@ export default function EpisodeSummary() {
             window.location.reload();
           }}
         />
+      )}
+
+      {/* Care Coordination Context Reminder - Inline reminder when episode is paused */}
+      {episodeId && !isCompleted && (
+        <CareCoordinationContextReminder episodeId={episodeId} />
       )}
 
       {/* Patient Journey Timeline */}

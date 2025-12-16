@@ -2,12 +2,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
-export type PauseReason = 'neuro_exam' | 'imaging' | 'specialist_referral';
+export type PauseReason = 
+  | 'imaging_required'
+  | 'ortho_consult'
+  | 'pcp_consult'
+  | 'outside_records_pending'
+  | 'other';
 
 export interface CareCoordinationPause {
   id: string;
   episode_id: string;
   pause_reason: PauseReason;
+  pause_note?: string;
   is_active: boolean;
   created_at: string;
   created_by_user_id: string | null;
@@ -16,23 +22,38 @@ export interface CareCoordinationPause {
 }
 
 export const PAUSE_REASON_LABELS: Record<PauseReason, string> = {
-  neuro_exam: 'Neuro exam in progress',
-  imaging: 'Imaging requested',
-  specialist_referral: 'Specialist referral in progress',
+  imaging_required: 'Imaging required',
+  ortho_consult: 'Orthopedic consult',
+  pcp_consult: 'PCP consult',
+  outside_records_pending: 'Outside records pending',
+  other: 'Other',
+};
+
+export const PAUSE_REASON_DESCRIPTIONS: Record<PauseReason, string> = {
+  imaging_required: 'MRI, X-ray, or other imaging needed before proceeding',
+  ortho_consult: 'Awaiting orthopedic specialist evaluation',
+  pcp_consult: 'Awaiting primary care physician input',
+  outside_records_pending: 'Waiting for records from external provider',
+  other: 'Specify the reason for pause',
 };
 
 // Map from situation_type in special_situations to our pause reasons
 const SITUATION_TYPE_TO_PAUSE_REASON: Record<string, PauseReason> = {
-  neuro_exam_pivot: 'neuro_exam',
-  imaging_request: 'imaging',
-  ortho_referral: 'specialist_referral',
+  neuro_exam_pivot: 'imaging_required',
+  imaging_request: 'imaging_required',
+  ortho_referral: 'ortho_consult',
+  pcp_consult: 'pcp_consult',
+  outside_records: 'outside_records_pending',
+  other_pause: 'other',
 };
 
 // Map from pause reason to situation_type for creating records
 const PAUSE_REASON_TO_SITUATION_TYPE: Record<PauseReason, string> = {
-  neuro_exam: 'neuro_exam_pivot',
-  imaging: 'imaging_request',
-  specialist_referral: 'ortho_referral',
+  imaging_required: 'imaging_request',
+  ortho_consult: 'ortho_referral',
+  pcp_consult: 'pcp_consult',
+  outside_records_pending: 'outside_records',
+  other: 'other_pause',
 };
 
 interface UseCareCoordinationPauseReturn {
