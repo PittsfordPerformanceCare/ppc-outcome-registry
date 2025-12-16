@@ -5,3 +5,4 @@ export { InterpretationBlock } from "./InterpretationBlock";
 export { GovernanceNote } from "./GovernanceNote";
 export { DispositionChart } from "./DispositionChart";
 export { ClinicalOutcomesWelcome } from "./ClinicalOutcomesWelcome";
+export { TraumaHistorySummary } from "./TraumaHistorySummary";

@@ -3,12 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfessionalAccess } from "@/hooks/useProfessionalAccess";
+import { useTraumaHistory } from "@/hooks/useTraumaHistory";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, User, Calendar, Stethoscope, Activity, FileText, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CareStatusDisplay } from "@/components/CareStatusDisplay";
+import { TraumaHistorySummary } from "@/components/professional-portal";
 
 interface EpisodeData {
   id: string;
@@ -100,6 +102,7 @@ export default function ClinicalOutcomesReview() {
   const { episodeId } = useParams<{ episodeId: string }>();
   const navigate = useNavigate();
   const { isVerifiedProfessional, isAuthenticated, loading: accessLoading } = useProfessionalAccess();
+  const { data: traumaData } = useTraumaHistory(episodeId);
   
   const [episode, setEpisode] = useState<EpisodeData | null>(null);
   const [scores, setScores] = useState<OutcomeScore[]>([]);
@@ -308,6 +311,18 @@ export default function ClinicalOutcomesReview() {
               {episodeId && <CareStatusDisplay episodeId={episodeId} />}
             </CardContent>
           </Card>
+
+          {/* Relevant Trauma History */}
+          {traumaData.hasTraumaHistory && (
+            <Card className="border-slate-200">
+              <CardContent className="py-4">
+                <TraumaHistorySummary 
+                  hasTraumaHistory={traumaData.hasTraumaHistory} 
+                  traumaHistoryItems={traumaData.traumaHistoryItems} 
+                />
+              </CardContent>
+            </Card>
+          )}
 
           {/* Section 2: Outcome Signal */}
           <Card className="border-slate-200">
