@@ -86,11 +86,22 @@ const PatientIntakeReferral = () => {
           // Honeypot fields for bot detection
           website: honeypotWebsite,
           fax: honeypotFax,
-          _formLoadTime: formLoadTime.current,
+          _form_loaded_at: formLoadTime.current,
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        throw new Error(error.message || "Failed to submit referral");
+      }
+
+      // Verify we got a real lead_id back
+      if (!data?.lead_id) {
+        console.error("No lead_id returned:", data);
+        throw new Error("Submission failed - please try again");
+      }
+
+      console.log("Lead created successfully:", data.lead_id);
 
       toast({
         title: "Referral Received",
@@ -98,11 +109,11 @@ const PatientIntakeReferral = () => {
       });
 
       navigate("/patient/thank-you");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error submitting referral:", error);
       toast({
         title: "Submission Error",
-        description: "There was an error submitting your referral. Please try again.",
+        description: error?.message || "There was an error submitting your referral. Please try again.",
         variant: "destructive",
       });
     } finally {
