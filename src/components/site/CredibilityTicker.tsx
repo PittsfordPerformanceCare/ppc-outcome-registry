@@ -116,7 +116,7 @@ export function CredibilityTicker() {
             <AnimatedStat 
               value={92} 
               suffix="%" 
-              label="Report Improvement in 4 Weeks" 
+              label="Report Meaningful Improvement in First 2 Visits" 
               icon={TrendingUp}
               delay={150}
             />
