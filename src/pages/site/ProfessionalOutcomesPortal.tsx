@@ -92,6 +92,12 @@ const ProfessionalOutcomesPortal = () => {
               <p className="text-slate-700 leading-relaxed mt-4">
                 This overview reflects observed trends across defined episodes of care using validated outcome measures and longitudinal tracking. It is designed to offer transparency into how patients progress across common referral conditions managed at PPC, without marketing overlay, selective reporting, or comparative claims.
               </p>
+              <p className="text-slate-700 leading-relaxed mt-4">
+                Aggregate outcomes presented here are derived from defined episodes of care and are intended to provide high-level transparency into observed clinical trends across common referral conditions. These data are not designed to guide individual treatment decisions or predict patient-specific outcomes.
+              </p>
+              <p className="text-slate-700 leading-relaxed mt-4">
+                For patients shared in care, episode-level progress, clinical trajectory, and outcome summaries are communicated separately through PPC's Clinical Outcomes Review, supporting coordinated decision-making between providers.
+              </p>
             </section>
 
             <Separator className="my-10" />
@@ -286,8 +292,11 @@ const ProfessionalOutcomesPortal = () => {
               <h2 className="text-lg font-semibold text-slate-900 mb-4">
                 Looking to Refer a Patient?
               </h2>
-              <p className="text-slate-700 leading-relaxed mb-6">
+              <p className="text-slate-700 leading-relaxed mb-4">
                 Visit our Physician Referral page to initiate coordinated care and access Clinical Outcomes Review for shared patients.
+              </p>
+              <p className="text-slate-600 text-sm mb-6">
+                Referring professionals with shared patients automatically receive access to patient-specific Clinical Outcomes Review summaries.
               </p>
               <div>
                 <Link
