@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Users, FileCheck, Activity, LogOut, Sun, Moon, Cloud, Sparkles } from "lucide-react";
+import { Users, FileCheck, Activity, LogOut, Sun, Moon, Cloud, Sparkles, Inbox } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,7 @@ interface TodayStats {
   intakesCompletedToday: number;
   episodesStartedToday: number;
   episodesDischargedToday: number;
+  newCareRequests?: number;
 }
 
 interface TodayAtAGlanceProps {
@@ -34,6 +35,8 @@ const formatDate = () => {
 
 export function TodayAtAGlance({ stats, loading }: TodayAtAGlanceProps) {
   const [userName, setUserName] = useState<string>("");
+  const [careRequestModeEnabled, setCareRequestModeEnabled] = useState(false);
+  const [careRequestCount, setCareRequestCount] = useState(0);
   const greeting = getGreeting();
   const GreetingIcon = greeting.icon;
 
@@ -48,16 +51,42 @@ export function TodayAtAGlance({ stats, loading }: TodayAtAGlanceProps) {
           .single();
         
         if (profile?.full_name) {
-          // Get first name only
           const firstName = profile.full_name.split(" ")[0];
           setUserName(firstName);
         }
       }
     };
+
+    const checkCareRequestMode = async () => {
+      const { data: settings } = await supabase
+        .from("clinic_settings")
+        .select("care_request_mode_enabled")
+        .limit(1)
+        .single();
+
+      if (settings?.care_request_mode_enabled) {
+        setCareRequestModeEnabled(true);
+        const { count } = await supabase
+          .from("care_requests")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "SUBMITTED");
+        setCareRequestCount(count || 0);
+      }
+    };
+
     fetchUserName();
+    checkCareRequestMode();
   }, []);
 
-  const metrics = [
+  const baseMetrics = [
+    ...(careRequestModeEnabled ? [{
+      label: "Care Requests",
+      value: careRequestCount,
+      icon: Inbox,
+      gradient: "from-rose-500/20 to-rose-500/5",
+      iconColor: "text-rose-600",
+      link: "/intake-review"
+    }] : []),
     {
       label: "New Leads",
       value: stats.newLeadsToday,
@@ -91,6 +120,8 @@ export function TodayAtAGlance({ stats, loading }: TodayAtAGlanceProps) {
       link: "/admin-shell/episodes"
     }
   ];
+
+  const metrics = baseMetrics.slice(0, 4);
 
   return (
     <div className="space-y-6">

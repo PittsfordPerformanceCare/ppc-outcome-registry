@@ -122,6 +122,16 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Check if care_request_mode is enabled
+    const { data: clinicSettings } = await supabase
+      .from("clinic_settings")
+      .select("care_request_mode_enabled")
+      .limit(1)
+      .single();
+
+    const careRequestModeEnabled = clinicSettings?.care_request_mode_enabled === true;
+    console.log("[submit-intake-form] Care request mode:", careRequestModeEnabled);
+
     const accessCode = generateAccessCode();
 
     // Build intake form data (sanitize all string fields)
@@ -195,7 +205,63 @@ Deno.serve(async (req) => {
     console.log("[submit-intake-form] Intake created successfully:", data.id);
     await recordRateLimitUsage(SERVICE_TYPE, true);
 
-    // Handle referral code update if present
+    // If care_request_mode is enabled, create a care_request instead of proceeding with legacy flow
+    if (careRequestModeEnabled) {
+      console.log("[submit-intake-form] Creating care request for intake:", data.id);
+      
+      // Get default admin for owner assignment
+      const { data: adminUser } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "admin")
+        .limit(1)
+        .single();
+
+      // Create care request with full payload snapshot
+      const { data: careRequest, error: crError } = await supabase
+        .from("care_requests")
+        .insert({
+          status: "SUBMITTED",
+          admin_owner_id: adminUser?.user_id || null,
+          source: "WEBSITE",
+          intake_payload: intakeData,
+          primary_complaint: chiefComplaint,
+        })
+        .select("id")
+        .single();
+
+      if (crError) {
+        console.error("[submit-intake-form] Care request creation error:", crError);
+        // Non-fatal - intake was created
+      } else {
+        // Log lifecycle event
+        await supabase.from("lifecycle_events").insert({
+          entity_type: "CARE_REQUEST",
+          entity_id: careRequest.id,
+          event_type: "CARE_REQUEST_SUBMITTED",
+          actor_type: "system",
+          metadata: { intake_id: data.id, source: "website_intake" }
+        });
+
+        console.log("[submit-intake-form] Care request created:", careRequest.id);
+      }
+
+      // Do NOT notify clinicians when care_request_mode is enabled
+      // Admin will be notified via the care requests queue badge
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          intake_id: data.id,
+          access_code: accessCode,
+          care_request_id: careRequest?.id || null,
+          mode: "care_request"
+        }),
+        { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Legacy flow - handle referral code update if present
     const referralCode = sanitizeString(body.referral_code, 50);
     if (referralCode && email) {
       try {
@@ -235,7 +301,8 @@ Deno.serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         intake_id: data.id,
-        access_code: accessCode 
+        access_code: accessCode,
+        mode: "legacy"
       }),
       { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

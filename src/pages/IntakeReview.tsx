@@ -6,13 +6,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
-import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, CheckCircle2, ArrowRight, FileText, CheckSquare, Layers, Loader2 } from "lucide-react";
+import { ClipboardList, Calendar, Phone, Mail, AlertCircle, CheckCircle, CheckCircle2, ArrowRight, FileText, CheckSquare, Layers, Loader2, Inbox } from "lucide-react";
 import { format } from "date-fns";
 import { IntakeToEpisodeConverter } from "@/components/IntakeToEpisodeConverter";
 import { BulkIntakeConverter } from "@/components/BulkIntakeConverter";
 import { validateBulkIntakes, checkForDuplicatePatients } from "@/lib/bulkIntakeValidation";
+import { CareRequestsQueue } from "@/components/care-requests";
 
 interface IntakeForm {
   id: string;
@@ -61,9 +63,15 @@ export default function IntakeReview() {
   const [bulkConvertDialogOpen, setBulkConvertDialogOpen] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
   const [preparingBulkConversion, setPreparingBulkConversion] = useState(false);
+  
+  // Feature flag and care request state
+  const [careRequestModeEnabled, setCareRequestModeEnabled] = useState(false);
+  const [careRequestCount, setCareRequestCount] = useState(0);
+  const [activeTab, setActiveTab] = useState("intakes");
 
   useEffect(() => {
     loadIntakeForms();
+    checkFeatureFlag();
   }, []);
 
   // Auto-select form if coming from notification
@@ -77,6 +85,31 @@ export default function IntakeReview() {
       }
     }
   }, [location.state, intakeForms, navigate, location.pathname]);
+
+  const checkFeatureFlag = async () => {
+    try {
+      const { data: settings } = await supabase
+        .from("clinic_settings")
+        .select("care_request_mode_enabled")
+        .limit(1)
+        .single();
+
+      const enabled = settings?.care_request_mode_enabled === true;
+      setCareRequestModeEnabled(enabled);
+
+      if (enabled) {
+        // Count pending care requests
+        const { count } = await supabase
+          .from("care_requests")
+          .select("*", { count: "exact", head: true })
+          .eq("status", "SUBMITTED");
+
+        setCareRequestCount(count || 0);
+      }
+    } catch (error) {
+      console.error("Failed to check feature flag:", error);
+    }
+  };
 
   const loadIntakeForms = async () => {
     try {
@@ -680,9 +713,97 @@ export default function IntakeReview() {
     </div>
   );
 
+  // If viewing detail, show detail view directly
+  if (selectedForm) {
+    return (
+      <>
+        {detailView}
+        
+        {/* Single Conversion Dialog */}
+        {formToConvert && (
+          <IntakeToEpisodeConverter
+            intakeForm={formToConvert}
+            open={convertDialogOpen}
+            onClose={() => {
+              setConvertDialogOpen(false);
+              setFormToConvert(null);
+            }}
+            onSuccess={handleConversionSuccess}
+          />
+        )}
+      </>
+    );
+  }
+
+  // Show tabbed view when care request mode is enabled
+  if (careRequestModeEnabled) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Patient Intake Management</h1>
+          <p className="text-muted-foreground">Review care requests and process intake submissions</p>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full max-w-md grid-cols-2">
+            <TabsTrigger value="care-requests" className="gap-2">
+              <Inbox className="h-4 w-4" />
+              Care Requests
+              {careRequestCount > 0 && (
+                <Badge variant="destructive" className="ml-1 h-5 px-1.5">
+                  {careRequestCount}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="intakes" className="gap-2">
+              <FileText className="h-4 w-4" />
+              Legacy Intakes
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="care-requests" className="mt-6">
+            <CareRequestsQueue />
+          </TabsContent>
+
+          <TabsContent value="intakes" className="mt-6">
+            {listView}
+          </TabsContent>
+        </Tabs>
+
+        {/* Bulk Conversion Dialog */}
+        {validationResult && (
+          <BulkIntakeConverter
+            intakes={intakeForms.filter(f => selectedIntakes.has(f.id))}
+            validationResult={validationResult}
+            open={bulkConvertDialogOpen}
+            onClose={() => {
+              setBulkConvertDialogOpen(false);
+              setValidationResult(null);
+            }}
+            onSuccess={handleConversionSuccess}
+          />
+        )}
+
+        {/* Single Conversion Dialog */}
+        {formToConvert && (
+          <IntakeToEpisodeConverter
+            intakeForm={formToConvert}
+            open={convertDialogOpen}
+            onClose={() => {
+              setConvertDialogOpen(false);
+              setFormToConvert(null);
+            }}
+            onSuccess={handleConversionSuccess}
+          />
+        )}
+      </div>
+    );
+  }
+
+  // Legacy view (feature flag off)
   return (
     <>
-      {selectedForm ? detailView : listView}
+      {listView}
       
       {/* Single Conversion Dialog */}
       {formToConvert && (

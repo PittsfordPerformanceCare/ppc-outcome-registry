@@ -134,3 +134,6 @@ verify_jwt = false
 
 [functions.submit-intake-form]
 verify_jwt = false
+
+[functions.approve-care-request]
+verify_jwt = false
