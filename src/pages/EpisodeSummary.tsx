@@ -20,6 +20,8 @@ import { UpdateEpisodeStatusDialog } from "@/components/UpdateEpisodeStatusDialo
 import { CareCoordinationPauseControl } from "@/components/CareCoordinationPauseControl";
 import { CareCoordinationContextReminder } from "@/components/CareCoordinationContextReminder";
 import { DischargeDecisionDialog } from "@/components/DischargeDecisionDialog";
+import { TraumaHistoryCard } from "@/components/episode/TraumaHistoryCard";
+import { useTraumaHistory } from "@/hooks/useTraumaHistory";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -625,6 +627,9 @@ export default function EpisodeSummary() {
         </CardContent>
       </Card>
 
+      {/* Trauma History Card */}
+      <TraumaHistoryCardWrapper episodeId={episodeId} />
+
       {/* Treatment Goals */}
       {(episode.goals && episode.goals.length > 0) && (
         <Card>
@@ -974,5 +979,17 @@ export default function EpisodeSummary() {
         onOpenChange={setShowLetterDialog}
       />
     </div>
+  );
+}
+
+// Wrapper component for TraumaHistoryCard to use the hook
+function TraumaHistoryCardWrapper({ episodeId }: { episodeId: string | null }) {
+  const { data } = useTraumaHistory(episodeId);
+  
+  return (
+    <TraumaHistoryCard 
+      hasTraumaHistory={data.hasTraumaHistory} 
+      traumaHistoryItems={data.traumaHistoryItems} 
+    />
   );
 }
