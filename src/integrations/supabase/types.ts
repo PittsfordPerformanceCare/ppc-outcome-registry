@@ -1135,6 +1135,7 @@ export type Database = {
           start_date: string | null
           surgery_date: string | null
           surgery_performed: boolean | null
+          total_visits_to_discharge: number | null
           treatment_goals: Json | null
           updated_at: string
           user_id: string
@@ -1210,6 +1211,7 @@ export type Database = {
           start_date?: string | null
           surgery_date?: string | null
           surgery_performed?: boolean | null
+          total_visits_to_discharge?: number | null
           treatment_goals?: Json | null
           updated_at?: string
           user_id: string
@@ -1285,6 +1287,7 @@ export type Database = {
           start_date?: string | null
           surgery_date?: string | null
           surgery_performed?: boolean | null
+          total_visits_to_discharge?: number | null
           treatment_goals?: Json | null
           updated_at?: string
           user_id?: string
