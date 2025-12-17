@@ -150,11 +150,15 @@ const PatientIntakeReferral = () => {
         {/* Opening Context */}
         <section className="py-16 lg:py-20">
           <div className="container mx-auto px-4 max-w-3xl">
-            <p className="text-base text-muted-foreground leading-relaxed">
+            <p className="text-base text-muted-foreground leading-relaxed mb-4">
               Pittsford Performance Care welcomes referrals from physicians and healthcare providers. 
               We work collaboratively within multidisciplinary care models to support patients with 
               neurologically informed evaluation and treatment. Our commitment is to continuity, 
               clear communication, and clinical respect for the relationships you maintain with your patients.
+            </p>
+            <p className="text-sm text-muted-foreground/80 leading-relaxed p-3 rounded-lg bg-primary/5 border border-primary/10">
+              PPC treats both acute and chronic musculoskeletal injuries — including ankle, knee, hip, 
+              neck, back, and shoulder pain — alongside advanced concussion and neurologic care.
             </p>
           </div>
         </section>

@@ -75,11 +75,15 @@ const SiteMsk = () => {
               Musculoskeletal Care
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-[1.1]">
-              When Imaging Is Normal But You're Still Not Right
+              Common Injuries Treated Uncommonly Well
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
-              Chronic pain, movement heaviness, and "I just don't feel like myself" aren't 
-              imaginary. They're signs of neuromuscular dysfunction that standard tests miss.
+              At Pittsford Performance Care, we treat both acute and chronic musculoskeletal injuries — including 
+              ankle sprains, knee pain, hip pain, back pain, neck pain, and shoulder injuries.
+            </p>
+            <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
+              Whether an injury is new, lingering, or recurrent, our approach goes beyond symptom relief 
+              by evaluating the neurologic coordination that determines healing, load absorption, and long-term durability.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild className="shadow-lg">
@@ -98,7 +102,89 @@ const SiteMsk = () => {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
       </section>
 
-      {/* Section 2: Symptoms - Does This Sound Like You? */}
+      {/* Section: What We Commonly Treat */}
+      <section className="py-20 lg:py-28 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Target className="h-4 w-4" />
+                Conditions We Treat
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                What We Commonly Treat
+              </h2>
+            </div>
+            
+            <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-10">
+              {[
+                "Ankle sprains and foot injuries",
+                "Knee pain (acute, overuse, post-surgical)",
+                "Hip pain and movement restriction",
+                "Neck pain and cervical injuries",
+                "Low back and mid-back pain",
+                "Shoulder pain and instability",
+                "Sports injuries and training-related pain",
+                "Chronic pain not fully resolved with prior care"
+              ].map((item, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border/60 backdrop-blur-sm hover:border-primary/30 transition-all duration-300"
+                >
+                  <CheckCircle2 className="h-5 w-5 text-primary shrink-0" />
+                  <span className="text-sm font-medium">{item}</span>
+                </div>
+              ))}
+            </div>
+            
+            <div className="prose prose-lg dark:prose-invert mx-auto text-center">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                We treat these conditions whether they are acute or long-standing, using a neurologic-first 
+                model designed to restore coordination, control, and long-term durability.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section: What Makes Our MSK Care Different */}
+      <section className="py-20 lg:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+                <Zap className="h-4 w-4" />
+                Our Difference
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                What Makes Our MSK Care Different
+              </h2>
+            </div>
+            
+            <div className="prose prose-lg dark:prose-invert mx-auto">
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Most MSK care focuses on the site of pain — stretching what's tight, strengthening what's weak. 
+                Our approach goes deeper by evaluating how your nervous system coordinates movement, manages load, 
+                and adapts under demand.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                We identify compensation patterns, sequencing deficits, and postural control failures that 
+                often explain why pain persists despite normal imaging and prior treatment. Rather than 
+                chasing short-term symptom relief, we focus on restoring the neurologic coordination that 
+                determines controlled load tolerance and durable recovery.
+              </p>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                This neurologic-first model allows us to address the root drivers of dysfunction — not just 
+                the endpoint symptoms — resulting in outcomes that last.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section: Does This Sound Like You? */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -129,41 +215,6 @@ const SiteMsk = () => {
                 These aren't signs of weakness or aging. They're not in your head. They're signs 
                 of neuromuscular dysfunction, problems with how your nervous system controls movement 
                 that require a different approach.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* NEW: Control and Load Problem Section */}
-      <section className="py-20 lg:py-28 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-100 via-slate-50 to-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" />
-        
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Musculoskeletal Pain Is Often a Control and Load Problem
-              </h2>
-            </div>
-            
-            <div className="prose prose-lg dark:prose-invert mx-auto">
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                Musculoskeletal pain does not always reflect tissue damage. Pain often persists 
-                when the nervous system cannot properly time, coordinate, or distribute load, even 
-                when strength and imaging appear normal.
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                At PPC, our{" "}
-                <LexiconTerm 
-                  term={getLexiconByTerm("MSK evaluation")?.label || "MSK Evaluation"} 
-                  definition={getLexiconByTerm("MSK evaluation")?.definition || ""}
-                >
-                  MSK evaluation
-                </LexiconTerm>
-                {" "}focuses on identifying which neurologic domains 
-                are failing to control movement and load, and how compensatory patterns are driving 
-                pain or performance decline.
               </p>
             </div>
           </div>

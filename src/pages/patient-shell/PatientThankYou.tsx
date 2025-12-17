@@ -37,6 +37,10 @@ const PatientThankYou = () => {
                 <span>Most patients are seen within 1-2 weeks of initial contact.</span>
               </li>
             </ol>
+            <p className="text-xs text-muted-foreground/80 leading-relaxed mt-4 pt-3 border-t border-border/40">
+              PPC treats both acute and chronic musculoskeletal injuries — including ankle, knee, hip, 
+              neck, back, and shoulder pain — alongside advanced concussion and neurologic care.
+            </p>
           </div>
 
           {/* Contact Information */}
