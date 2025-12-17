@@ -1,9 +1,18 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, FileText, Send, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar, FileText, Send, CheckCircle, Clock, AlertTriangle, MessageSquare, Loader2 } from "lucide-react";
 import { format, parseISO, isToday, isTomorrow } from "date-fns";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface UpcomingVisit {
   id: string;
@@ -13,6 +22,7 @@ interface UpcomingVisit {
   intake_form_id: string | null;
   intake_status: 'complete' | 'pending' | 'overdue' | null;
   source?: string;
+  patient_email?: string;
 }
 
 interface PreVisitMomentumPanelProps {
@@ -65,6 +75,145 @@ function formatVisitDate(dateStr: string, timeStr: string): string {
   }
   
   return dayLabel;
+}
+
+interface VisitRowProps {
+  visit: UpcomingVisit;
+}
+
+function VisitRow({ visit }: VisitRowProps) {
+  const [resending, setResending] = useState(false);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [note, setNote] = useState("");
+  const [savingNote, setSavingNote] = useState(false);
+
+  const handleResendForms = async () => {
+    if (!visit.intake_form_id) {
+      toast.error("No intake form found to resend");
+      return;
+    }
+
+    setResending(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-intake-scheduling-reminder", {
+        body: {
+          intakeId: visit.intake_form_id,
+          patientName: visit.patient_name,
+          patientEmail: visit.patient_email,
+          reminderNumber: 1
+        }
+      });
+
+      if (error) throw error;
+      toast.success(`Forms resent to ${visit.patient_name}`);
+    } catch (error) {
+      console.error("Failed to resend forms:", error);
+      toast.error("Failed to resend forms");
+    } finally {
+      setResending(false);
+    }
+  };
+
+  const handleSaveNote = async () => {
+    if (!note.trim()) return;
+
+    setSavingNote(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      await supabase.from("lifecycle_events").insert({
+        entity_type: "INTAKE_APPOINTMENT",
+        entity_id: visit.id,
+        event_type: "ADMIN_NOTE_ADDED",
+        actor_type: "admin",
+        actor_id: user?.id,
+        metadata: { note: note.trim(), patient_name: visit.patient_name }
+      });
+
+      toast.success("Note saved");
+      setNote("");
+      setNoteOpen(false);
+    } catch (error) {
+      console.error("Failed to save note:", error);
+      toast.error("Failed to save note");
+    } finally {
+      setSavingNote(false);
+    }
+  };
+
+  const showResend = visit.intake_status === 'pending' || visit.intake_status === 'overdue';
+
+  return (
+    <div 
+      className="flex items-center justify-between px-6 py-3 hover:bg-muted/50 transition-colors"
+    >
+      <div className="space-y-1">
+        <p className="font-medium">{visit.patient_name}</p>
+        <p className="text-sm text-muted-foreground">
+          {formatVisitDate(visit.scheduled_date, visit.scheduled_time)}
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="text-right">
+          <p className="text-xs text-muted-foreground mb-1">New Patient Forms</p>
+          {getStatusBadge(visit.intake_status)}
+        </div>
+        
+        {showResend && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-1.5"
+            onClick={handleResendForms}
+            disabled={resending}
+          >
+            {resending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Send className="h-3.5 w-3.5" />
+            )}
+            Resend
+          </Button>
+        )}
+
+        <Popover open={noteOpen} onOpenChange={setNoteOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MessageSquare className="h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-72">
+            <div className="space-y-3">
+              <p className="text-sm font-medium">Add Admin Note</p>
+              <Textarea
+                placeholder="Note about this visit..."
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                rows={3}
+              />
+              <div className="flex justify-end gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setNoteOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={handleSaveNote}
+                  disabled={savingNote || !note.trim()}
+                >
+                  {savingNote && <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />}
+                  Save
+                </Button>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+  );
 }
 
 export function PreVisitMomentumPanel({ visits, loading }: PreVisitMomentumPanelProps) {
@@ -121,29 +270,7 @@ export function PreVisitMomentumPanel({ visits, loading }: PreVisitMomentumPanel
       <CardContent className="p-0">
         <div className="divide-y divide-border">
           {visits.slice(0, 5).map((visit) => (
-            <div 
-              key={visit.id} 
-              className="flex items-center justify-between px-6 py-3 hover:bg-muted/50 transition-colors"
-            >
-              <div className="space-y-1">
-                <p className="font-medium">{visit.patient_name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {formatVisitDate(visit.scheduled_date, visit.scheduled_time)}
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground mb-1">New Patient Forms</p>
-                  {getStatusBadge(visit.intake_status)}
-                </div>
-                {visit.intake_status === 'pending' && (
-                  <Button variant="ghost" size="sm" className="gap-1.5">
-                    <Send className="h-3.5 w-3.5" />
-                    Resend
-                  </Button>
-                )}
-              </div>
-            </div>
+            <VisitRow key={visit.id} visit={visit} />
           ))}
         </div>
         {visits.length > 5 && (
