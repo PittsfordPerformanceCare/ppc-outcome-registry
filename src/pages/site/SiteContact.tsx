@@ -52,7 +52,7 @@ const SiteContact = () => {
             </div>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-              Contact Us
+              Contact Pittsford Performance Care
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
