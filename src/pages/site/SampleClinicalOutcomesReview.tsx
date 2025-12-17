@@ -86,6 +86,24 @@ const SampleClinicalOutcomesReview = () => {
 
             <Separator className="my-10" />
 
+            {/* Outcome Assessment Cadence */}
+            <section className="mb-10">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                Outcome Assessment Cadence
+              </h2>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Outcome measures are collected at clinically meaningful points within the episode of care, most commonly at intake and discharge.
+              </p>
+              <p className="text-slate-700 leading-relaxed mb-4">
+                Interim reassessment may be performed when recovery trajectory is unclear, plateaus, or deviates from expectations.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                This approach prioritizes clinical relevance and ensures outcome data supports — rather than distracts from — individualized clinical decision-making.
+              </p>
+            </section>
+
+            <Separator className="my-10" />
+
             {/* Sample Review Card */}
             <Card className="border-slate-200 mb-10">
               <CardHeader className="border-b border-slate-100 bg-slate-50/50">
@@ -105,7 +123,7 @@ const SampleClinicalOutcomesReview = () => {
                   <div className="text-sm text-slate-700 space-y-1">
                     <p><span className="text-slate-500">Patient:</span> [Initials Redacted]</p>
                     <p><span className="text-slate-500">Condition Cluster:</span> Post-Concussion Syndrome</p>
-                    <p><span className="text-slate-500">Episode Phase:</span> Active Care</p>
+                    <p><span className="text-slate-500">Episode Phase:</span> Discharge</p>
                     <p><span className="text-slate-500">Episode Duration:</span> 6 weeks</p>
                   </div>
                 </div>
@@ -116,12 +134,15 @@ const SampleClinicalOutcomesReview = () => {
                 <div className="mb-6">
                   <h3 className="text-sm font-semibold text-slate-900 mb-2">Outcome Signal</h3>
                   <div className="text-sm text-slate-700 space-y-1">
-                    <p><span className="text-slate-500">Primary Measure:</span> PCSS (Post-Concussion Symptom Scale)</p>
-                    <p><span className="text-slate-500">Baseline Score:</span> 42</p>
-                    <p><span className="text-slate-500">Current Score:</span> 18</p>
-                    <p><span className="text-slate-500">Change:</span> -24 points</p>
-                    <p><span className="text-slate-500">MCID Status:</span> Exceeded (threshold: 12.5)</p>
+                    <p><span className="text-slate-500">Primary Measure:</span> RPQ (Rivermead Post-Concussion Symptoms Questionnaire)</p>
+                    <p><span className="text-slate-500">Intake (Baseline):</span> 38</p>
+                    <p><span className="text-slate-500">Discharge:</span> 12</p>
+                    <p><span className="text-slate-500">Change:</span> -26 points</p>
+                    <p><span className="text-slate-500">MCID Status:</span> Exceeded</p>
                   </div>
+                  <p className="text-xs text-slate-500 mt-3">
+                    Scores shown are illustrative only and are presented to demonstrate how outcome data may be used to contextualize recovery across an episode of care. Outcome measures are not collected at every visit and are not used as thresholds for clearance, discharge, or care continuation.
+                  </p>
                 </div>
 
                 <Separator className="my-4" />
@@ -130,7 +151,7 @@ const SampleClinicalOutcomesReview = () => {
                 <div className="mb-6">
                   <h3 className="text-sm font-semibold text-slate-900 mb-2">Trajectory Signal</h3>
                   <p className="text-sm text-slate-700">
-                    Progressive improvement observed across serial assessments. Symptom burden has reduced meaningfully since baseline.
+                    Meaningful reduction in symptom burden observed between intake and discharge. Clinical presentation at discharge was consistent with functional readiness for return to activity.
                   </p>
                 </div>
 
@@ -140,7 +161,7 @@ const SampleClinicalOutcomesReview = () => {
                 <div className="mb-6">
                   <h3 className="text-sm font-semibold text-slate-900 mb-2">Clinical Direction</h3>
                   <p className="text-sm text-slate-700">
-                    Patient is progressing through graduated return-to-activity protocol. Coordination with referring provider continues as appropriate.
+                    Patient completed graduated return-to-activity protocol. Episode closed with coordination to referring provider for ongoing management as appropriate.
                   </p>
                 </div>
 
@@ -149,7 +170,7 @@ const SampleClinicalOutcomesReview = () => {
                 {/* Governance Footer */}
                 <div className="text-xs text-slate-500 mt-4 pt-4 border-t border-slate-100">
                   <p>
-                    This review is provided for coordination purposes only and does not replace independent clinical judgment. All care decisions remain grounded in individualized assessment, patient presentation, and shared decision-making between providers.
+                    This review is provided for coordination purposes only and does not replace independent clinical judgment. Outcome data is interpreted alongside clinical examination, functional tolerance, and patient presentation, and does not replace individualized clinical judgment. All care decisions remain grounded in individualized assessment and shared decision-making between providers.
                   </p>
                 </div>
               </CardContent>
@@ -165,11 +186,14 @@ const SampleClinicalOutcomesReview = () => {
               </p>
               <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2">
                 <li>Case context and episode phase</li>
-                <li>Primary outcome measure and observed change</li>
+                <li>Primary outcome measure with intake and discharge scores</li>
                 <li>Minimal Clinically Important Difference (MCID) status where applicable</li>
-                <li>Brief trajectory and clinical direction summary</li>
+                <li>Brief trajectory summary supporting informed decisions about next steps</li>
                 <li>Governance language preserving clinical judgment</li>
               </ul>
+              <p className="text-slate-700 leading-relaxed mt-4">
+                Outcome data is used to contextualize recovery and support coordination — not to define eligibility, limit care, or replace individualized medical judgment.
+              </p>
             </section>
 
             <Separator className="my-10" />
