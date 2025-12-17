@@ -51,6 +51,10 @@ const SiteAbout = () => {
               fatigue, and cascade into symptoms. PPC's clinician-led evaluation identifies 
               the primary domain driving dysfunction—not just the symptom endpoint.
             </p>
+            <p className="text-base text-muted-foreground leading-relaxed max-w-3xl mx-auto mt-6 p-4 rounded-xl bg-primary/5 border border-primary/10">
+              PPC treats both acute and chronic musculoskeletal injuries — including ankle, knee, hip, 
+              neck, back, and shoulder pain — alongside advanced concussion and neurologic care.
+            </p>
           </div>
         </div>
         
