@@ -4,6 +4,7 @@ export { CareRequestsActionTable } from "./CareRequestsActionTable";
 export { IntakeQueue } from "./IntakeQueue";
 export { LeadsSection } from "./LeadsSection";
 export { CareRequestsSection } from "./CareRequestsSection";
+export { QuickCaptureDialog } from "./QuickCaptureDialog";
 export { ConversionFunnel } from "./ConversionFunnel";
 export { PreVisitMomentumPanel } from "./PreVisitMomentumPanel";
 export { IntelligencePanel } from "./IntelligencePanel";

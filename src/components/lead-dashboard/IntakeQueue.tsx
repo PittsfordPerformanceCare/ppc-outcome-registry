@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Users, ClipboardList, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Users, ClipboardList, AlertCircle, PhoneCall } from "lucide-react";
 import { LeadsSection } from "./LeadsSection";
 import { CareRequestsSection } from "./CareRequestsSection";
+import { QuickCaptureDialog } from "./QuickCaptureDialog";
 
 interface Lead {
   id: string;
@@ -52,6 +54,7 @@ interface IntakeQueueProps {
 
 export function IntakeQueue({ leads, careRequests, loading, onRefresh }: IntakeQueueProps) {
   const [activeTab, setActiveTab] = useState("leads");
+  const [quickCaptureOpen, setQuickCaptureOpen] = useState(false);
   
   // Filter leads that are actionable (not QUALIFIED or CLOSED)
   const actionableLeads = leads.filter(
@@ -70,32 +73,42 @@ export function IntakeQueue({ leads, careRequests, loading, onRefresh }: IntakeQ
   const hasLeadsButNoCareRequests = actionableLeads.length > 0 && actionableCareRequests.length === 0;
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <ClipboardList className="h-5 w-5" />
-              Intake Queue
-            </CardTitle>
-            <CardDescription className="mt-1">
-              Manage new leads and care requests
-            </CardDescription>
+    <>
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <ClipboardList className="h-5 w-5" />
+                Intake Queue
+              </CardTitle>
+              <CardDescription className="mt-1">
+                Manage new leads and care requests
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setQuickCaptureOpen(true)}
+                className="gap-2"
+              >
+                <PhoneCall className="h-4 w-4" />
+                Quick Capture
+              </Button>
+              {newLeadsCount > 0 && (
+                <Badge variant="destructive" className="font-semibold">
+                  {newLeadsCount} New Lead{newLeadsCount !== 1 ? "s" : ""}
+                </Badge>
+              )}
+              {actionableCareRequests.length > 0 && (
+                <Badge variant="secondary" className="font-normal">
+                  {actionableCareRequests.length} Care Request{actionableCareRequests.length !== 1 ? "s" : ""}
+                </Badge>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {newLeadsCount > 0 && (
-              <Badge variant="destructive" className="font-semibold">
-                {newLeadsCount} New Lead{newLeadsCount !== 1 ? "s" : ""}
-              </Badge>
-            )}
-            {actionableCareRequests.length > 0 && (
-              <Badge variant="secondary" className="font-normal">
-                {actionableCareRequests.length} Care Request{actionableCareRequests.length !== 1 ? "s" : ""}
-              </Badge>
-            )}
-          </div>
-        </div>
-      </CardHeader>
+        </CardHeader>
       <CardContent className="p-0">
         {hasNoActivity ? (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-muted-foreground">
@@ -154,6 +167,13 @@ export function IntakeQueue({ leads, careRequests, loading, onRefresh }: IntakeQ
           </Tabs>
         )}
       </CardContent>
-    </Card>
+      </Card>
+
+      <QuickCaptureDialog
+        open={quickCaptureOpen}
+        onOpenChange={setQuickCaptureOpen}
+        onSuccess={onRefresh}
+      />
+    </>
   );
 }
