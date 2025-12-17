@@ -112,6 +112,7 @@ const SampleClinicalOutcomesReview = lazy(() => import("./pages/site/SampleClini
 const ClinicalOutcomesReview = lazy(() => import("./pages/professional/ClinicalOutcomesReview"));
 const SiteClinicalGovernance = lazy(() => import("./pages/site/SiteClinicalGovernance"));
 const SiteWhitePapers = lazy(() => import("./pages/site/SiteWhitePapers"));
+const SiteWhitePaperNeuroCovidWeb = lazy(() => import("./pages/site/SiteWhitePaperNeuroCovidWeb"));
 
 // ========== PHASE 1 SHELL: /patient PAGES ==========
 const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
@@ -182,6 +183,7 @@ const App = () => (
               <Route path="why-not-physical-therapy" element={<SiteWhyNotPhysicalTherapy />} />
               <Route path="clinical-governance" element={<SiteClinicalGovernance />} />
               <Route path="white-papers" element={<SiteWhitePapers />} />
+              <Route path="white-papers/persistent-neurologic-symptoms-after-covid-19" element={<SiteWhitePaperNeuroCovidWeb />} />
               <Route path="privacy" element={<SitePrivacy />} />
               <Route path="terms" element={<SiteTerms />} />
             </Route>
