@@ -285,20 +285,20 @@ export function BookNPVisitDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleDialogOpenChange} modal={true}>
-      <DialogContent className="sm:max-w-[520px]">
-        <DialogHeader>
-          <DialogTitle>Book NP Visit & Send Intake Forms</DialogTitle>
+      <DialogContent className="sm:max-w-[520px] max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0 pb-4 border-b">
+          <DialogTitle className="text-xl">Book NP Visit & Send Intake Forms</DialogTitle>
           <DialogDescription>
             Schedule the new patient visit and send legal intake forms to begin care.
           </DialogDescription>
         </DialogHeader>
 
         {currentStep === "scheduling" ? (
-          <>
+          <div className="flex-1 overflow-y-auto pr-2 -mr-2">
             <div className="space-y-4 py-4">
               {/* Patient Info Summary */}
-              <div className="rounded-lg border bg-muted/50 p-3 space-y-1">
-                <div className="font-medium">{patientName}</div>
+              <div className="rounded-lg border bg-gradient-to-br from-primary/5 to-primary/10 p-4 space-y-1">
+                <div className="font-semibold text-lg">{patientName}</div>
                 <div className="text-sm text-muted-foreground">
                   {patientEmail || patientPhone || "No contact info"}
                 </div>
@@ -311,7 +311,7 @@ export function BookNPVisitDialog({
 
               {/* Visit Type */}
               <div className="space-y-2">
-                <Label>Visit Type *</Label>
+                <Label className="font-medium">Visit Type *</Label>
                 <Select value={visitType} onValueChange={setVisitType}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select visit type" />
@@ -393,7 +393,7 @@ export function BookNPVisitDialog({
               </div>
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="flex-shrink-0 pt-4 border-t mt-4">
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
@@ -408,7 +408,7 @@ export function BookNPVisitDialog({
                 )}
               </Button>
             </DialogFooter>
-          </>
+          </div>
         ) : (
           <div className="py-6 space-y-3">
             {processingStatus.map((status, index) => (
