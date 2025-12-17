@@ -37,12 +37,12 @@ const SiteClinicalGovernance = () => {
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-foreground">Care Model Overview</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Pittsford Performance Care delivers neurologic-driven concussion and musculoskeletal care 
-                within a structured, episode-based clinical model designed to support medical necessity, 
+                Pittsford Performance Care delivers neurologically driven concussion and musculoskeletal care 
+                within a structured, episode based clinical model designed to support medical necessity, 
                 utilization integrity, and audit defensibility.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                Care is time-bounded, clinician-owned, and outcome-guided rather than open-ended.
+                Care is time bounded, clinician owned, and outcome guided rather than open ended.
               </p>
             </div>
 
@@ -73,7 +73,7 @@ const SiteClinicalGovernance = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-slate-400 mt-1.5">•</span>
-                  <span>Clear discharge or care-coordination criteria</span>
+                  <span>Clear discharge or care coordination criteria</span>
                 </li>
               </ul>
               <p className="text-muted-foreground leading-relaxed">
@@ -93,8 +93,8 @@ const SiteClinicalGovernance = () => {
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-foreground">Clinical Governance</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Access to clinical data is governed by role-based access controls, assignment-restricted 
-                documentation privileges, and least-privilege administrative oversight.
+                Access to clinical data is governed by role based access controls, assignment restricted 
+                documentation privileges, and least privilege administrative oversight.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Only clinicians assigned to an episode may author or modify clinical records, preserving 
@@ -109,7 +109,7 @@ const SiteClinicalGovernance = () => {
               <h2 className="text-xl font-semibold text-foreground">Objective Outcomes & Utilization Discipline</h2>
               <p className="text-muted-foreground leading-relaxed">
                 Patient progress is tracked using validated outcome instruments selected based on clinical 
-                presentation. These may include RPQ, ODI, QuickDASH, LEFS, and system-specific neurologic measures.
+                presentation. These may include RPQ, ODI, QuickDASH, LEFS, and system specific neurologic measures.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 Care progression is guided by objective response to intervention, functional improvement, 
@@ -123,12 +123,12 @@ const SiteClinicalGovernance = () => {
 
             <Separator className="bg-slate-200 dark:bg-slate-700" />
 
-            {/* Neurologic Domain-Based Care */}
+            {/* Neurologic Domain Based Care */}
             <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-foreground">Neurologic Domain-Based Care</h2>
+              <h2 className="text-xl font-semibold text-foreground">Neurologic Domain Based Care</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Care is guided by a domain-based neurologic framework that identifies the primary system 
-                driving symptoms, improving efficiency and avoiding symptom-only treatment.
+                Care is guided by a domain based neurologic framework that identifies the primary system 
+                driving symptoms, improving efficiency and avoiding symptom only treatment.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 The eight neurologic domains evaluated within this framework include:
@@ -179,7 +179,7 @@ const SiteClinicalGovernance = () => {
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-foreground">Data Stewardship</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Patient data is protected through encrypted connections, role-restricted access, and 
+                Patient data is protected through encrypted connections, role restricted access, and 
                 documented governance practices.
               </p>
               <p className="text-muted-foreground leading-relaxed">
@@ -194,7 +194,7 @@ const SiteClinicalGovernance = () => {
             <div className="space-y-4">
               <p className="text-muted-foreground leading-relaxed">
                 Pittsford Performance Care is committed to delivering neurologic care that is clinically 
-                appropriate, outcome-driven, and responsibly utilized within the healthcare system.
+                appropriate, outcome driven, and responsibly utilized within the healthcare system.
               </p>
             </div>
 
