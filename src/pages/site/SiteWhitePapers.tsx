@@ -24,7 +24,7 @@ const whitePapers: WhitePaper[] = [
     authorTitle: "Clinic Director, Pittsford Performance Care",
     year: "2025",
     description: "A clinically grounded overview of persistent neurologic symptoms following SARS-CoV-2 infection, with emphasis on functional neurologic disruption, autonomic involvement, and systems based models of post viral recovery.",
-    pdfUrl: "/white-papers/persistent-neurologic-symptoms-after-covid-19.pdf",
+    // pdfUrl will be added when PDF is uploaded: "/white-papers/persistent-neurologic-symptoms-after-covid-19.pdf"
     webUrl: "/site/white-papers/persistent-neurologic-symptoms-after-covid-19"
   }
 ];
@@ -153,7 +153,7 @@ const SiteWhitePapers = () => {
                     {paper.description}
                   </p>
                   <div className="flex flex-col gap-1 pt-2">
-                    {paper.pdfUrl && (
+                    {paper.pdfUrl ? (
                       <a 
                         href={paper.pdfUrl}
                         target="_blank"
@@ -162,6 +162,8 @@ const SiteWhitePapers = () => {
                       >
                         View White Paper PDF
                       </a>
+                    ) : (
+                      <span className="text-sm text-muted-foreground italic">PDF coming soon</span>
                     )}
                     {paper.webUrl && (
                       <Link 
