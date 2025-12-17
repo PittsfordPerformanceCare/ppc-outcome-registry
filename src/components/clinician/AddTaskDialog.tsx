@@ -157,15 +157,16 @@ export function AddTaskDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Add Action Item</DialogTitle>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0 pb-4 border-b">
+          <DialogTitle className="text-xl">Add Action Item</DialogTitle>
           <DialogDescription>
             Create a new task for the action queue.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
+        <div className="flex-1 overflow-y-auto pr-2 -mr-2">
+          <div className="grid gap-4 py-4">
           {/* Owner Type (Admin only) */}
           {isAdmin && source === "ADMIN" && (
             <div className="grid gap-2">
@@ -364,9 +365,10 @@ export function AddTaskDialog({
               </SelectContent>
             </Select>
           </div>
+          </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0 pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
