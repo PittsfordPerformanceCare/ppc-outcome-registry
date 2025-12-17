@@ -154,8 +154,22 @@ const ProfessionalOutcomesPortal = () => {
               <p className="text-slate-700 leading-relaxed mb-4">
                 Patient specific progress, episode level outcomes, and clinical trajectory for shared patients are provided separately through PPC Clinical Outcomes Review.
               </p>
-              <p className="text-slate-700 leading-relaxed">
+              <p className="text-slate-700 leading-relaxed mb-4">
                 Clinical Outcomes Review is a complimentary service made available automatically to referring professionals for shared patients to support coordinated care and informed decision making throughout the episode of care.
+              </p>
+              <p className="text-slate-700 leading-relaxed mb-2">
+                Want to see how patient-specific updates are shared?
+              </p>
+              <p className="text-slate-700 leading-relaxed mb-2">
+                For shared patients, referring professionals receive concise, episode-level summaries focused on progress, care status, and next steps.
+              </p>
+              <p className="text-slate-700 leading-relaxed mb-2">
+                <Link to="/resources/professional-outcomes/sample-review" className="text-slate-700 underline hover:text-slate-900">
+                  → View a sample Clinical Outcomes Review (example)
+                </Link>
+              </p>
+              <p className="text-slate-500 text-xs">
+                Sample shown is illustrative only. No patient-identifiable data are included.
               </p>
             </section>
 
