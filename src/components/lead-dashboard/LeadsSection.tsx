@@ -368,73 +368,76 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
                 <TableCell>{getSLAIndicator(lead.created_at)}</TableCell>
                 <TableCell>{getLeadStatusBadge(lead.lead_status)}</TableCell>
                 <TableCell>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled={isUpdating || isQualifying}>
-                        {isQualifying ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <MoreHorizontal className="h-4 w-4" />
+                  <div className="flex items-center gap-1">
+                    {/* Primary Action Button - Always Visible */}
+                    <Button
+                      size="sm"
+                      onClick={() => handleBookNPVisit(lead)}
+                      className="gap-1 whitespace-nowrap"
+                    >
+                      <Calendar className="h-3.5 w-3.5" />
+                      Book NP Visit
+                    </Button>
+                    
+                    {/* Secondary Actions Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled={isUpdating || isQualifying}>
+                          {isQualifying ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <MoreHorizontal className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-popover border shadow-md z-50">
+                        {/* Secondary Actions */}
+                        <DropdownMenuItem onClick={() => handleSendFormsOnly(lead)}>
+                          <FileText className="h-4 w-4 mr-2" />
+                          Send Intake Forms Only
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleQualifyLead(lead)}>
+                          <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-600" />
+                          Qualify Lead (No Scheduling)
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        
+                        {/* Contact Actions */}
+                        {lead.phone && (
+                          <DropdownMenuItem onClick={() => handleContact(lead, "phone")}>
+                            <Phone className="h-4 w-4 mr-2" />
+                            Call
+                          </DropdownMenuItem>
                         )}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {/* Primary Action */}
-                      <DropdownMenuItem 
-                        onClick={() => handleBookNPVisit(lead)}
-                        className="font-medium"
-                      >
-                        <Calendar className="h-4 w-4 mr-2 text-primary" />
-                        Book NP Visit & Send Intake Forms
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      
-                      {/* Secondary Actions */}
-                      <DropdownMenuItem onClick={() => handleSendFormsOnly(lead)}>
-                        <FileText className="h-4 w-4 mr-2" />
-                        Send Intake Forms Only
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleQualifyLead(lead)}>
-                        <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-600" />
-                        Qualify Lead (No Scheduling)
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      
-                      {/* Contact Actions */}
-                      {lead.phone && (
-                        <DropdownMenuItem onClick={() => handleContact(lead, "phone")}>
-                          <Phone className="h-4 w-4 mr-2" />
-                          Call
+                        {lead.phone && (
+                          <DropdownMenuItem onClick={() => handleContact(lead, "sms")}>
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Text
+                          </DropdownMenuItem>
+                        )}
+                        {lead.email && (
+                          <DropdownMenuItem onClick={() => handleContact(lead, "email")}>
+                            <Mail className="h-4 w-4 mr-2" />
+                            Email
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
+                        
+                        {/* Status Actions */}
+                        <DropdownMenuItem onClick={() => handleUpdateStatus(lead.id, "NURTURE")}>
+                          <Clock className="h-4 w-4 mr-2 text-amber-600" />
+                          Nurture
                         </DropdownMenuItem>
-                      )}
-                      {lead.phone && (
-                        <DropdownMenuItem onClick={() => handleContact(lead, "sms")}>
-                          <MessageSquare className="h-4 w-4 mr-2" />
-                          Text
+                        <DropdownMenuItem 
+                          onClick={() => handleUpdateStatus(lead.id, "CLOSED")}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <XCircle className="h-4 w-4 mr-2" />
+                          Close Lead
                         </DropdownMenuItem>
-                      )}
-                      {lead.email && (
-                        <DropdownMenuItem onClick={() => handleContact(lead, "email")}>
-                          <Mail className="h-4 w-4 mr-2" />
-                          Email
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuSeparator />
-                      
-                      {/* Status Actions */}
-                      <DropdownMenuItem onClick={() => handleUpdateStatus(lead.id, "NURTURE")}>
-                        <Clock className="h-4 w-4 mr-2 text-amber-600" />
-                        Nurture
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => handleUpdateStatus(lead.id, "CLOSED")}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        Close Lead
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             );

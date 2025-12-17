@@ -243,64 +243,67 @@ export function CareRequestsSection({
                 </TableCell>
                 <TableCell>{getSLAIndicator(request.created_at)}</TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {/* Primary Action */}
-                      <DropdownMenuItem 
-                        onClick={(e) => handleBookNPVisit(request, e)}
-                        className="font-medium"
-                      >
-                        <Calendar className="h-4 w-4 mr-2 text-primary" />
-                        Book NP Visit & Send Intake Forms
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      
-                      {/* Secondary Actions */}
-                      <DropdownMenuItem onClick={(e) => handleSendFormsOnly(request, e)}>
-                        <FileText className="h-4 w-4 mr-2" />
-                        Send Intake Forms Only
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/intake-review?selected=${request.id}`);
-                      }}>
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Review
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Assign Clinician
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Approve
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={(e) => {
-                        e.stopPropagation();
-                        navigate("/admin-shell/registry");
-                      }}>
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Schedule
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                        <HelpCircle className="h-4 w-4 mr-2" />
-                        Request Clarification
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-destructive focus:text-destructive"
-                      >
-                        <Archive className="h-4 w-4 mr-2" />
-                        Archive
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    {/* Primary Action Button - Always Visible */}
+                    <Button
+                      size="sm"
+                      onClick={(e) => handleBookNPVisit(request, e)}
+                      className="gap-1 whitespace-nowrap"
+                    >
+                      <Calendar className="h-3.5 w-3.5" />
+                      Book NP Visit
+                    </Button>
+                    
+                    {/* Secondary Actions Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-popover border shadow-md z-50">
+                        {/* Secondary Actions */}
+                        <DropdownMenuItem onClick={(e) => handleSendFormsOnly(request, e)}>
+                          <FileText className="h-4 w-4 mr-2" />
+                          Send Intake Forms Only
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/intake-review?selected=${request.id}`);
+                        }}>
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Review
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Assign Clinician
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Approve
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          navigate("/admin-shell/registry");
+                        }}>
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Schedule
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                          <HelpCircle className="h-4 w-4 mr-2" />
+                          Request Clarification
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-destructive focus:text-destructive"
+                        >
+                          <Archive className="h-4 w-4 mr-2" />
+                          Archive
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             );
