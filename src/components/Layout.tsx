@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { useDarkMode } from "@/hooks/useDarkMode";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { SessionTimeoutWarning } from "./SessionTimeoutWarning";
 import { IntakeNotificationsPanel } from "./IntakeNotificationsPanel";
 import { FloatingActionButton } from "./FloatingActionButton";
@@ -44,6 +45,9 @@ export function Layout({ children }: LayoutProps) {
   const { isDark, toggleDarkMode } = useDarkMode();
   const { isAdmin } = useUserRole();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Press 'H' to return to admin dashboard from anywhere
+  useNavigationShortcuts({ homePath: "/admin" });
 
   const primaryNav = [
     { name: "Dashboard", href: "/", icon: Home },
