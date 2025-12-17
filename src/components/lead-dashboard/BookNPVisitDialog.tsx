@@ -263,13 +263,28 @@ export function BookNPVisitDialog({
     }
   };
 
+  // Prevent dialog from closing during any active interaction
+  const handleDialogOpenChange = (newOpen: boolean) => {
+    // Only allow closing if not submitting and user explicitly requests close
+    if (isSubmitting) {
+      console.log("Preventing dialog close - submission in progress");
+      return;
+    }
+    
+    if (currentStep === "processing") {
+      console.log("Preventing dialog close - processing step active");
+      return;
+    }
+    
+    console.log("Dialog onOpenChange:", newOpen);
+    if (!newOpen) {
+      resetForm();
+    }
+    onOpenChange(newOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(v) => {
-      if (!isSubmitting) {
-        if (!v) resetForm();
-        onOpenChange(v);
-      }
-    }}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange} modal={true}>
       <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
           <DialogTitle>Book NP Visit & Send Intake Forms</DialogTitle>
