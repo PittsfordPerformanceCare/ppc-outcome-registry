@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { MedicalConditionSchema, BreadcrumbSchema } from "@/components/site/StructuredData";
+import LexiconTerm from "@/components/patient/LexiconTerm";
+import { getLexiconByTerm } from "@/data/patientLexicon";
 
 const SiteConcussion = () => {
   return (
@@ -74,7 +76,14 @@ const SiteConcussion = () => {
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
               Persistent post concussion symptoms aren't just "in your head." They're real 
-              neurologic deficits that require a domain based evaluation, not just rest and time.
+              neurologic deficits that require a{" "}
+              <LexiconTerm 
+                term={getLexiconByTerm("neurologic evaluation")?.label || "Neurologic Evaluation"} 
+                definition={getLexiconByTerm("neurologic evaluation")?.definition || ""}
+              >
+                neurologic evaluation
+              </LexiconTerm>
+              , not just rest and time.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" asChild>
@@ -149,7 +158,14 @@ const SiteConcussion = () => {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Concussion recovery does not fail randomly. Symptoms persist when one or more 
                 neurologic domains fail to reintegrate after injury, forcing other domains to 
-                compensate. Over time, these compensations fatigue, amplify symptoms, and stall recovery.
+                compensate. This often creates{" "}
+                <LexiconTerm 
+                  term={getLexiconByTerm("sensory mismatch")?.label || "Sensory Mismatch"} 
+                  definition={getLexiconByTerm("sensory mismatch")?.definition || ""}
+                >
+                  sensory mismatch
+                </LexiconTerm>
+                —where conflicting signals amplify symptoms and stall recovery.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 At PPC, concussion evaluation focuses on identifying which neurologic domain is 
@@ -178,7 +194,21 @@ const SiteConcussion = () => {
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   At Pittsford Performance Care, concussion recovery is approached through the same 
                   domain based neurologic framework used across all conditions, with emphasis on 
-                  restoring tolerance, integration, and efficiency across systems rather than chasing isolated symptoms.
+                  restoring tolerance, integration, and efficiency across systems—including the{" "}
+                  <LexiconTerm 
+                    term={getLexiconByTerm("vestibular system")?.label || "Vestibular System"} 
+                    definition={getLexiconByTerm("vestibular system")?.definition || ""}
+                  >
+                    vestibular system
+                  </LexiconTerm>
+                  {" "}and{" "}
+                  <LexiconTerm 
+                    term={getLexiconByTerm("autonomic nervous system")?.label || "Autonomic Nervous System"} 
+                    definition={getLexiconByTerm("autonomic nervous system")?.definition || ""}
+                  >
+                    autonomic nervous system
+                  </LexiconTerm>
+                  —rather than chasing isolated symptoms.
                 </p>
               </div>
             </div>

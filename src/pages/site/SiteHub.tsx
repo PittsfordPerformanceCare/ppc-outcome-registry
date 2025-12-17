@@ -12,6 +12,8 @@ import {
   Sparkles,
   Network
 } from "lucide-react";
+import LexiconTerm from "@/components/patient/LexiconTerm";
+import { getLexiconByTerm } from "@/data/patientLexicon";
 
 const SiteHub = () => {
   return (
@@ -39,7 +41,14 @@ const SiteHub = () => {
               At Pittsford Performance Care, we use a single neurologic domain map to evaluate 
               and treat symptoms across concussion recovery and chronic musculoskeletal 
               conditions. Whether you're recovering from a recent injury or stuck with persistent 
-              symptoms others couldn't resolve—our approach finds what's wrong and fixes it.
+              symptoms others couldn't resolve—our{" "}
+              <LexiconTerm 
+                term={getLexiconByTerm("neuro-based care")?.label || "Neuro-Based Care"} 
+                definition={getLexiconByTerm("neuro-based care")?.definition || ""}
+              >
+                neuro-based approach
+              </LexiconTerm>{" "}
+              finds what's wrong and fixes it.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -211,8 +220,14 @@ const SiteHub = () => {
                 </div>
                 
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Tired of hearing "you should feel better" without any proof? We track your 
-                  progress with validated clinical measures from day one. You'll see exactly 
+                  Tired of hearing "you should feel better" without any proof? Our{" "}
+                  <LexiconTerm 
+                    term={getLexiconByTerm("outcome registry")?.label || "Outcome Registry"} 
+                    definition={getLexiconByTerm("outcome registry")?.definition || ""}
+                  >
+                    outcome registry
+                  </LexiconTerm>{" "}
+                  tracks your progress with validated clinical measures from day one. You'll see exactly 
                   how much you've improved—not just how you feel on a good day.
                 </p>
                 
