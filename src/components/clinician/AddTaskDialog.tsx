@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useCommunicationTasks, useClinicians, TaskType, TaskSource, TaskPriority, TaskCategory } from "@/hooks/useCommunicationTasks";
+import { useCommunicationTasks, useClinicians, TaskType, TaskSource, TaskPriority, TaskCategory, TaskOwnerType } from "@/hooks/useCommunicationTasks";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
 import {
@@ -26,11 +26,28 @@ interface AddTaskDialogProps {
   prefillEpisodeId?: string;
 }
 
-const TYPE_OPTIONS: { value: TaskType; label: string }[] = [
+const CLINICIAN_TYPE_OPTIONS: { value: TaskType; label: string }[] = [
   { value: "CALL_BACK", label: "Call Back" },
   { value: "EMAIL_REPLY", label: "Email Reply" },
   { value: "IMAGING_REPORT", label: "Imaging Report" },
   { value: "LETTER", label: "Letter" },
+  { value: "OTHER_ACTION", label: "Other" },
+];
+
+const ADMIN_TYPE_OPTIONS: { value: TaskType; label: string }[] = [
+  { value: "PATIENT_CALLBACK", label: "Patient Call Back" },
+  { value: "PATIENT_EMAIL_RESPONSE", label: "Email Response" },
+  { value: "PORTAL_MESSAGE_RESPONSE", label: "Portal Message Response" },
+  { value: "RESEND_INTAKE_FORMS", label: "Resend Intake Forms" },
+  { value: "FOLLOWUP_INCOMPLETE_FORMS", label: "Follow Up on Incomplete Forms" },
+  { value: "SEND_RECEIPT", label: "Send Receipt to Patient" },
+  { value: "ORDER_IMAGING", label: "Order Imaging (Clinician-Requested)" },
+  { value: "SCHEDULE_APPOINTMENT", label: "Schedule / Reschedule Appointment" },
+  { value: "CONFIRM_APPOINTMENT", label: "Confirm Appointment" },
+  { value: "REQUEST_OUTSIDE_RECORDS", label: "Request Outside Records" },
+  { value: "SEND_RECORDS_TO_PATIENT", label: "Send Records to Patient" },
+  { value: "UPDATE_PATIENT_CONTACT", label: "Update Patient Contact Info" },
+  { value: "DOCUMENT_PATIENT_REQUEST", label: "Document Patient Request" },
   { value: "OTHER_ACTION", label: "Other" },
 ];
 
@@ -49,6 +66,11 @@ const CATEGORY_OPTIONS: { value: TaskCategory; label: string }[] = [
   { value: "COORDINATION", label: "Coordination" },
 ];
 
+const OWNER_TYPE_OPTIONS: { value: TaskOwnerType; label: string }[] = [
+  { value: "ADMIN", label: "Admin Task" },
+  { value: "CLINICIAN", label: "Clinician Task" },
+];
+
 export function AddTaskDialog({
   open,
   onOpenChange,
@@ -62,7 +84,8 @@ export function AddTaskDialog({
   const { createTask } = useCommunicationTasks();
   const { data: clinicians = [] } = useClinicians();
 
-  const [type, setType] = useState<TaskType>("CALL_BACK");
+  const [ownerType, setOwnerType] = useState<TaskOwnerType>(source === "ADMIN" ? "ADMIN" : "CLINICIAN");
+  const [type, setType] = useState<TaskType>(ownerType === "ADMIN" ? "PATIENT_CALLBACK" : "CALL_BACK");
   const [description, setDescription] = useState("");
   const [patientName, setPatientName] = useState(prefillPatientName || "");
   const [episodeId, setEpisodeId] = useState(prefillEpisodeId || "");
@@ -73,6 +96,18 @@ export function AddTaskDialog({
   const [letterSubtype, setLetterSubtype] = useState("");
   const [category, setCategory] = useState<TaskCategory>("CLINICAL_EXECUTION");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const typeOptions = ownerType === "ADMIN" ? ADMIN_TYPE_OPTIONS : CLINICIAN_TYPE_OPTIONS;
+
+  const handleOwnerTypeChange = (newOwnerType: TaskOwnerType) => {
+    setOwnerType(newOwnerType);
+    // Reset type to first option of new owner type
+    if (newOwnerType === "ADMIN") {
+      setType("PATIENT_CALLBACK");
+    } else {
+      setType("CALL_BACK");
+    }
+  };
 
   const handleSubmit = async () => {
     if (!description.trim() || !assignedClinicianId) return;
@@ -91,10 +126,12 @@ export function AddTaskDialog({
         due_at: `${dueDate}T${dueTime}:00`,
         letter_subtype: type === "LETTER" ? letterSubtype : null,
         category,
+        owner_type: ownerType,
       });
 
       // Reset form
-      setType("CALL_BACK");
+      setOwnerType(source === "ADMIN" ? "ADMIN" : "CLINICIAN");
+      setType(source === "ADMIN" ? "PATIENT_CALLBACK" : "CALL_BACK");
       setDescription("");
       setPatientName(prefillPatientName || "");
       setEpisodeId(prefillEpisodeId || "");
@@ -115,18 +152,37 @@ export function AddTaskDialog({
         <DialogHeader>
           <DialogTitle>Add Action Item</DialogTitle>
           <DialogDescription>
-            Create a new task for the clinician action queue.
+            Create a new task for the action queue.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
+          {/* Owner Type (Admin only) */}
+          {isAdmin && source === "ADMIN" && (
+            <div className="grid gap-2">
+              <Label htmlFor="owner-type">Task Owner Type *</Label>
+              <Select value={ownerType} onValueChange={(v) => handleOwnerTypeChange(v as TaskOwnerType)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {OWNER_TYPE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
           {/* Assigned Clinician (Admin only) */}
           {isAdmin && source === "ADMIN" && (
             <div className="grid gap-2">
-              <Label htmlFor="clinician">Assigned Clinician *</Label>
+              <Label htmlFor="clinician">Assigned To *</Label>
               <Select value={assignedClinicianId} onValueChange={setAssignedClinicianId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select clinician" />
+                  <SelectValue placeholder="Select person" />
                 </SelectTrigger>
                 <SelectContent>
                   {clinicians.map((c) => (
@@ -169,7 +225,7 @@ export function AddTaskDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {TYPE_OPTIONS.map((opt) => (
+                {typeOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </SelectItem>

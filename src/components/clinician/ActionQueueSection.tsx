@@ -18,7 +18,13 @@ import {
   MoreHorizontal,
   AlertTriangle,
   Plus,
-  ExternalLink
+  ExternalLink,
+  Send,
+  Calendar,
+  Receipt,
+  FileSearch,
+  UserCog,
+  ClipboardList,
 } from "lucide-react";
 import { format, isPast, isToday } from "date-fns";
 import { useNavigate } from "react-router-dom";
@@ -35,6 +41,20 @@ const TYPE_LABELS: Record<TaskType, string> = {
   PATIENT_MESSAGE: "Portal Message",
   LETTER: "Letter",
   OTHER_ACTION: "Other",
+  // Admin task types
+  PATIENT_CALLBACK: "Patient Callback",
+  PATIENT_EMAIL_RESPONSE: "Email Response",
+  PORTAL_MESSAGE_RESPONSE: "Portal Response",
+  RESEND_INTAKE_FORMS: "Resend Forms",
+  FOLLOWUP_INCOMPLETE_FORMS: "Follow-up Forms",
+  SEND_RECEIPT: "Send Receipt",
+  ORDER_IMAGING: "Order Imaging",
+  SCHEDULE_APPOINTMENT: "Schedule Appt",
+  CONFIRM_APPOINTMENT: "Confirm Appt",
+  REQUEST_OUTSIDE_RECORDS: "Request Records",
+  SEND_RECORDS_TO_PATIENT: "Send Records",
+  UPDATE_PATIENT_CONTACT: "Update Contact",
+  DOCUMENT_PATIENT_REQUEST: "Document Request",
 };
 
 const SOURCE_LABELS = {
@@ -50,6 +70,20 @@ const TYPE_ICONS: Record<TaskType, React.ReactNode> = {
   PATIENT_MESSAGE: <MessageSquare className="h-4 w-4" />,
   LETTER: <FileText className="h-4 w-4" />,
   OTHER_ACTION: <MoreHorizontal className="h-4 w-4" />,
+  // Admin task types
+  PATIENT_CALLBACK: <Phone className="h-4 w-4" />,
+  PATIENT_EMAIL_RESPONSE: <Mail className="h-4 w-4" />,
+  PORTAL_MESSAGE_RESPONSE: <MessageSquare className="h-4 w-4" />,
+  RESEND_INTAKE_FORMS: <Send className="h-4 w-4" />,
+  FOLLOWUP_INCOMPLETE_FORMS: <FileSearch className="h-4 w-4" />,
+  SEND_RECEIPT: <Receipt className="h-4 w-4" />,
+  ORDER_IMAGING: <Image className="h-4 w-4" />,
+  SCHEDULE_APPOINTMENT: <Calendar className="h-4 w-4" />,
+  CONFIRM_APPOINTMENT: <Calendar className="h-4 w-4" />,
+  REQUEST_OUTSIDE_RECORDS: <FileSearch className="h-4 w-4" />,
+  SEND_RECORDS_TO_PATIENT: <FileText className="h-4 w-4" />,
+  UPDATE_PATIENT_CONTACT: <UserCog className="h-4 w-4" />,
+  DOCUMENT_PATIENT_REQUEST: <ClipboardList className="h-4 w-4" />,
 };
 
 export function ActionQueueSection() {
