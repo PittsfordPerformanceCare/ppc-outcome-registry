@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -417,12 +417,12 @@ const PatientIntakeReferral = () => {
               Want to see how we communicate outcomes and care status?
             </p>
             <div className="space-y-2 mb-4">
-              <a 
-                href="/professional/sample-summary" 
+              <Link 
+                to="/resources/professional-outcomes/sample-review" 
                 className="block text-primary hover:text-primary/80 transition-colors"
               >
                 → View a sample physician care summary
-              </a>
+              </Link>
               <a 
                 href="mailto:info@pittsfordperformance.com" 
                 className="block text-primary hover:text-primary/80 transition-colors"
