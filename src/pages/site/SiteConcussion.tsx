@@ -32,7 +32,7 @@ const SiteConcussion = () => {
         <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/concussion" />
       </Helmet>
       <MedicalConditionSchema
-        name="Post-Concussion Syndrome"
+        name="Post Concussion Syndrome"
         description="Persistent symptoms following concussion or mild traumatic brain injury, including headaches, dizziness, cognitive difficulties, and visual disturbances."
         url="https://muse-meadow-app.lovable.app/site/concussion"
         signOrSymptom={[
@@ -529,7 +529,7 @@ const SiteConcussion = () => {
         <div className="h-24 lg:h-32 bg-gradient-to-b from-slate-900 via-slate-800/50 dark:via-slate-800/50 to-background" />
       </section>
 
-      {/* Why Domain-Based Evaluation Matters */}
+      {/* Why Domain Based Evaluation Matters */}
       <section className="py-20 lg:py-28 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
@@ -789,13 +789,13 @@ const SiteConcussion = () => {
                 neuroscience and rehabilitation medicine. Our methodology is designed to address 
                 neurologic dysfunction—not symptom suppression—and is grounded in the understanding 
                 that concussion represents a physiologic and metabolic injury requiring targeted, 
-                domain-based intervention.
+                domain based intervention.
               </p>
               
               <p className="text-lg text-muted-foreground leading-relaxed">
                 Validated outcome measures are integrated throughout our concussion care process. 
                 Progression and treatment decisions are guided by objective change over time, not 
-                symptom resolution alone. This approach ensures that clinical decision-making is 
+                symptom resolution alone. This approach ensures that clinical decision making is 
                 based on measured neurologic and functional response—tracking longitudinal 
                 recovery rather than subjective improvement.
               </p>
@@ -826,7 +826,7 @@ const SiteConcussion = () => {
               <li className="flex items-start gap-4">
                 <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-1" />
                 <span className="text-muted-foreground leading-relaxed">
-                  Research demonstrating persistent metabolic and cerebral blood-flow disruption after concussion
+                  Research demonstrating persistent metabolic and cerebral blood flow disruption after concussion
                 </span>
               </li>
               <li className="flex items-start gap-4">
@@ -864,7 +864,7 @@ const SiteConcussion = () => {
                 Not Sure Which Neurologic Domain Is Limiting Your Recovery?
               </h3>
               <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-                A clinician-led neurologic and musculoskeletal evaluation can help identify 
+                A clinician led neurologic and musculoskeletal evaluation can help identify 
                 where the cascade began—and what to address first.
               </p>
               <Button size="lg" asChild>
