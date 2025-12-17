@@ -204,10 +204,12 @@ export const MedicalWebPageSchema = ({
       name: topic,
     })),
     publisher: {
+      "@type": "MedicalBusiness",
       "@id": CANONICAL_IDS.organization,
     },
     author: {
-      "@id": CANONICAL_IDS.organization,
+      "@type": "Person",
+      "@id": CANONICAL_IDS.physician,
     },
     mainContentOfPage: {
       "@type": "WebPageElement",
@@ -303,7 +305,7 @@ export const ArticleSchema = ({
 }: ArticleProps) => {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "MedicalWebPage",
+    "@type": "Article",
     headline,
     description,
     url,
@@ -319,7 +321,7 @@ export const ArticleSchema = ({
     },
     image,
     mainEntityOfPage: {
-      "@type": "WebPage",
+      "@type": "MedicalWebPage",
       "@id": url,
     },
     inLanguage: "en-US",
