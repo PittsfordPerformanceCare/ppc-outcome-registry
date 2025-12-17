@@ -225,6 +225,12 @@ const SiteClinicalGovernance = () => {
               <p className="text-sm text-muted-foreground">Related pages:</p>
               <div className="flex flex-col gap-2">
                 <Link 
+                  to="/site/white-papers" 
+                  className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                >
+                  PPC Clinical White Paper Series
+                </Link>
+                <Link 
                   to="/resources/professional-outcomes/sample-review" 
                   className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
                 >
