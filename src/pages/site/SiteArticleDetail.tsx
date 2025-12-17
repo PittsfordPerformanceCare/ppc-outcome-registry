@@ -5,6 +5,8 @@ import { ArrowLeft, Clock, Brain, Activity, Users, Trophy } from "lucide-react";
 import { getArticleBySlug, getRelatedArticles, ArticleSection } from "@/data/siteArticles";
 import { ArticleCTA, SymptomCallout, RelatedArticles } from "@/components/site/ArticleCTA";
 import { ArticleSchema } from "@/components/site/StructuredData";
+import { processTextWithLexicon, resetArticleLexiconTracking, getArticleLexiconTerms } from "@/utils/lexiconTextProcessor";
+import { useEffect } from "react";
 
 // Category icon mapping
 const categoryIcons: Record<string, React.ElementType> = {
@@ -15,7 +17,10 @@ const categoryIcons: Record<string, React.ElementType> = {
 };
 
 // Render article section based on type
-const renderSection = (section: ArticleSection, index: number, primaryRoute: string) => {
+const renderSection = (section: ArticleSection, index: number, primaryRoute: string, articleSlug?: string) => {
+  // Check if this article has lexicon terms enabled
+  const hasLexiconTerms = articleSlug && getArticleLexiconTerms(articleSlug).length > 0;
+  
   switch (section.type) {
     case "heading":
       return (
@@ -27,7 +32,7 @@ const renderSection = (section: ArticleSection, index: number, primaryRoute: str
     case "paragraph":
       return (
         <p key={index} className="text-muted-foreground leading-relaxed mb-4">
-          {section.content}
+          {hasLexiconTerms ? processTextWithLexicon(section.content, articleSlug) : section.content}
         </p>
       );
     
@@ -74,6 +79,11 @@ const SiteArticleDetail = () => {
   const { category, slug } = useParams();
   const article = category && slug ? getArticleBySlug(category, slug) : undefined;
   const relatedArticles = article ? getRelatedArticles(article) : [];
+
+  // Reset lexicon tracking when article changes
+  useEffect(() => {
+    resetArticleLexiconTracking();
+  }, [slug]);
 
   // Not found state
   if (!article) {
@@ -201,7 +211,7 @@ const SiteArticleDetail = () => {
         <div className="container mx-auto px-4">
           <article className="max-w-3xl mx-auto">
             {article.sections.map((section, index) => 
-              renderSection(section, index, article.primaryCTA.route)
+              renderSection(section, index, article.primaryCTA.route, slug)
             )}
           </article>
         </div>

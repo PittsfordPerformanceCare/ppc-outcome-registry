@@ -24,6 +24,8 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { MedicalConditionSchema, BreadcrumbSchema } from "@/components/site/StructuredData";
+import LexiconTerm from "@/components/patient/LexiconTerm";
+import { getLexiconByTerm } from "@/data/patientLexicon";
 
 const SiteMsk = () => {
   return (
@@ -152,7 +154,14 @@ const SiteMsk = () => {
                 when strength and imaging appear normal.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                At PPC, musculoskeletal evaluation focuses on identifying which neurologic domains 
+                At PPC, our{" "}
+                <LexiconTerm 
+                  term={getLexiconByTerm("MSK evaluation")?.label || "MSK Evaluation"} 
+                  definition={getLexiconByTerm("MSK evaluation")?.definition || ""}
+                >
+                  MSK evaluation
+                </LexiconTerm>
+                {" "}focuses on identifying which neurologic domains 
                 are failing to control movement and load, and how compensatory patterns are driving 
                 pain or performance decline.
               </p>
@@ -175,7 +184,13 @@ const SiteMsk = () => {
                 <p className="text-muted-foreground leading-relaxed">
                   Musculoskeletal pain does not arise from a single structure or tissue. It reflects 
                   how multiple neurologic control systems manage load, timing, stability, energy, 
-                  and perception during movement.
+                  and perception during movement—including{" "}
+                  <LexiconTerm 
+                    term={getLexiconByTerm("postural control")?.label || "Postural Control"} 
+                    definition={getLexiconByTerm("postural control")?.definition || ""}
+                  >
+                    postural control
+                  </LexiconTerm>.
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
                   At Pittsford Performance Care, chronic and recurrent MSK pain is evaluated through 
