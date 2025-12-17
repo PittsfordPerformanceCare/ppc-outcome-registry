@@ -151,7 +151,7 @@ const SiteArticleDetail = () => {
         description={article.excerpt}
         url={canonicalUrl}
         datePublished="2025-01-01"
-        author="Dr. Seth Asser, DC"
+        author="Dr. C. Robert Luckey, DC"
       />
       {/* Article Header */}
       <section className="py-16 bg-gradient-to-b from-primary/5 to-background">
@@ -183,7 +183,7 @@ const SiteArticleDetail = () => {
               {/* Author Attribution */}
               <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
                 <span>By</span>
-                <span className="font-medium text-foreground">Dr. Seth Asser, DC</span>
+                <span className="font-medium text-foreground">Dr. C. Robert Luckey, DC</span>
                 <span className="text-muted-foreground">—</span>
                 <span>Pittsford Performance Care, Pittsford, NY</span>
               </div>
@@ -241,7 +241,7 @@ const SiteArticleDetail = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              This article was written by <span className="font-medium text-foreground">Dr. Seth Asser, DC</span>, 
+              This article was written by <span className="font-medium text-foreground">Dr. C. Robert Luckey, DC</span>, 
               a clinician specializing in functional neurology and clinical neuroscience at Pittsford Performance Care 
               in Pittsford, NY. For questions about your specific situation, please{" "}
               <Link to="/site/contact" className="text-primary hover:underline">
