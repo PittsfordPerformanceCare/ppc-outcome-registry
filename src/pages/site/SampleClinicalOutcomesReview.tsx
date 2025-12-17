@@ -83,6 +83,9 @@ const SampleClinicalOutcomesReview = () => {
               <p className="mt-2 text-slate-500 text-sm">
                 Illustrative Example Only
               </p>
+              <p className="mt-3 text-slate-600 text-sm">
+                See: <Link to="/site/clinical-governance" className="underline hover:text-slate-900 transition-colors">Clinical Governance & Outcomes</Link>
+              </p>
             </div>
           </div>
         </div>
