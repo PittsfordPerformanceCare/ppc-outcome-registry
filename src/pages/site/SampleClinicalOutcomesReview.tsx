@@ -12,6 +12,30 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Info } from "lucide-react";
+import OutcomeAnalytics_RPQ from "@/components/professional/OutcomeAnalytics_RPQ";
+
+// Sample timepoints data for the RPQ component
+const sampleRPQTimepoints = [
+  {
+    label: "Intake (Baseline)",
+    date: "2024-01-15",
+    score: 32,
+    context: "High symptom burden including headache, dizziness, cognitive fatigue, and visual intolerance"
+  },
+  {
+    label: "Interim Reassessment",
+    date: "2024-02-05",
+    score: 24,
+    context: "Performed due to slower-than-expected symptom resolution under increased academic demand",
+    clinically_indicated: true
+  },
+  {
+    label: "Discharge",
+    date: "2024-02-26",
+    score: 11,
+    context: "Residual symptoms only with prolonged screen time; functional tolerance restored"
+  }
+];
 
 const SampleClinicalOutcomesReview = () => {
   return (
@@ -198,148 +222,11 @@ const SampleClinicalOutcomesReview = () => {
 
             <Separator className="my-10" />
 
-            {/* RPQ Outcome Analytics Section */}
-            <section className="mb-10">
-              <h2 className="text-lg font-semibold text-slate-900 mb-2">
-                Outcome Analytics (Example)
-              </h2>
-              <p className="text-slate-500 text-sm mb-6">
-                Rivermead Post-Concussion Symptoms Questionnaire (RPQ)
-              </p>
-
-              {/* Outcome Measure Overview */}
-              <div className="mb-8">
-                <h3 className="text-base font-semibold text-slate-900 mb-3">Outcome Measure Overview</h3>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  The Rivermead Post-Concussion Symptoms Questionnaire (RPQ) is a validated patient-reported outcome measure used to characterize post-concussive symptom burden across physical, cognitive, and emotional domains.
-                </p>
-                <p className="text-slate-700 leading-relaxed">
-                  Within PPC's episode-based concussion care framework, RPQ data is used to contextualize symptom trajectory over time, not to determine eligibility, clearance, or care duration.
-                </p>
-              </div>
-
-              {/* Outcome Assessment Cadence */}
-              <div className="mb-8">
-                <h3 className="text-base font-semibold text-slate-900 mb-3">Outcome Assessment Cadence</h3>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  Outcome measures are collected at clinically meaningful milestones within an episode of care, most commonly at intake and discharge.
-                </p>
-                <p className="text-slate-700 leading-relaxed">
-                  Interim reassessment may be performed only when recovery trajectory is unclear, plateaus, or deviates from expectations. Outcome measures are not collected at every visit.
-                </p>
-              </div>
-
-              {/* Example RPQ Tracking Table */}
-              <div className="mb-8">
-                <h3 className="text-base font-semibold text-slate-900 mb-3">Example RPQ Tracking Across an Episode of Care</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm border border-slate-200 rounded-lg">
-                    <thead className="bg-slate-50">
-                      <tr>
-                        <th className="text-left px-4 py-3 font-semibold text-slate-900 border-b border-slate-200">Timepoint</th>
-                        <th className="text-left px-4 py-3 font-semibold text-slate-900 border-b border-slate-200">RPQ Total Score</th>
-                        <th className="text-left px-4 py-3 font-semibold text-slate-900 border-b border-slate-200">Clinical Context</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-slate-100">
-                        <td className="px-4 py-3 text-slate-700">Intake (Baseline)</td>
-                        <td className="px-4 py-3 text-slate-700">32</td>
-                        <td className="px-4 py-3 text-slate-600 text-xs">High symptom burden including headache, dizziness, cognitive fatigue, and visual intolerance</td>
-                      </tr>
-                      <tr className="border-b border-slate-100 bg-slate-50/50">
-                        <td className="px-4 py-3 text-slate-700">Interim Reassessment<br /><span className="text-xs text-slate-500">(clinically indicated)</span></td>
-                        <td className="px-4 py-3 text-slate-700">24</td>
-                        <td className="px-4 py-3 text-slate-600 text-xs">Performed due to slower-than-expected symptom resolution under increased academic demand</td>
-                      </tr>
-                      <tr>
-                        <td className="px-4 py-3 text-slate-700">Discharge</td>
-                        <td className="px-4 py-3 text-slate-700">11</td>
-                        <td className="px-4 py-3 text-slate-600 text-xs">Residual symptoms only with prolonged screen time; functional tolerance restored</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <p className="text-xs text-slate-500 mt-3">
-                  Scores shown are example data for illustrative purposes only.
-                </p>
-              </div>
-
-              {/* Observed Trend Interpretation */}
-              <div className="mb-8">
-                <h3 className="text-base font-semibold text-slate-900 mb-3">Observed Trend Interpretation</h3>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  Across this episode, RPQ scores demonstrate a meaningful reduction in overall symptom burden between intake and discharge.
-                </p>
-                <p className="text-slate-700 leading-relaxed mb-2">Key considerations:</p>
-                <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2 mb-4">
-                  <li>Symptom improvement was non-linear, consistent with typical concussion recovery patterns</li>
-                  <li>Interim reassessment was used to clarify trajectory, not to gate care</li>
-                  <li>Residual symptoms at discharge were interpreted in the context of functional tolerance and neurologic examination</li>
-                </ul>
-                <p className="text-slate-700 leading-relaxed">
-                  RPQ data is used to support understanding of recovery, not to dictate clinical decisions.
-                </p>
-              </div>
-
-              {/* Clinical Use of RPQ Data */}
-              <div className="mb-8">
-                <h3 className="text-base font-semibold text-slate-900 mb-3">Clinical Use of RPQ Data</h3>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  Within PPC's concussion care model, RPQ analytics are used to:
-                </p>
-                <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2 mb-4">
-                  <li>Establish baseline symptom context at intake</li>
-                  <li>Identify when recovery trajectory warrants closer observation</li>
-                  <li>Support patient and family understanding of symptom change</li>
-                  <li>Facilitate clear communication with referring providers</li>
-                </ul>
-                <p className="text-slate-700 leading-relaxed">
-                  RPQ scores are never used in isolation and do not replace clinical judgment.
-                </p>
-              </div>
-
-              {/* Relation to Functional Readiness */}
-              <div className="mb-8">
-                <h3 className="text-base font-semibold text-slate-900 mb-3">Relation to Functional Readiness</h3>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  Changes in RPQ score may precede, follow, or occur independently of functional readiness.
-                </p>
-                <p className="text-slate-700 leading-relaxed mb-2">Accordingly:</p>
-                <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2">
-                  <li>Symptom improvement alone does not imply full neurologic recovery</li>
-                  <li>Return-to-learn and return-to-play decisions are based on clinical presentation, functional tolerance, and shared decision-making</li>
-                  <li>Outcome data informs discussion but does not determine clearance</li>
-                </ul>
-              </div>
-
-              {/* Why This Data Is Shared */}
-              <div className="mb-8">
-                <h3 className="text-base font-semibold text-slate-900 mb-3">Why This Data Is Shared</h3>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  For shared patients, RPQ trends are included to provide:
-                </p>
-                <ul className="list-disc list-inside text-slate-700 leading-relaxed space-y-2 ml-2 mb-4">
-                  <li>Transparency into symptom trajectory</li>
-                  <li>Clinical context for recovery pacing</li>
-                  <li>A shared reference point for interdisciplinary coordination</li>
-                </ul>
-                <p className="text-slate-700 leading-relaxed">
-                  This information supports collaboration, not prediction.
-                </p>
-              </div>
-
-              {/* Important Interpretation Note */}
-              <div className="border border-slate-200 rounded-lg p-5 bg-slate-50/50">
-                <h3 className="text-base font-semibold text-slate-900 mb-3">Important Interpretation Note</h3>
-                <p className="text-slate-700 leading-relaxed mb-4">
-                  RPQ scores reflect patient-reported symptom experience at specific timepoints.
-                </p>
-                <p className="text-slate-700 leading-relaxed">
-                  They are descriptive, not predictive, and are not intended to serve as thresholds, benchmarks, or clearance criteria.
-                </p>
-              </div>
-            </section>
+            {/* RPQ Outcome Analytics Component */}
+            <OutcomeAnalytics_RPQ 
+              timepoints={sampleRPQTimepoints}
+              is_sample={true}
+            />
 
             <Separator className="my-10" />
 
