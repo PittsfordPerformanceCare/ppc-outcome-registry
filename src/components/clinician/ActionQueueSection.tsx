@@ -314,6 +314,25 @@ export function ActionQueueSection() {
                     <p className="text-sm text-muted-foreground truncate mt-0.5">
                       {task.description}
                     </p>
+                    {/* Contact Info */}
+                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                      {(task.guardian_phone || task.patient_phone) && (
+                        <span className="flex items-center gap-1">
+                          <Phone className="h-3 w-3" />
+                          {task.guardian_phone ? (
+                            <span title="Parent/Guardian">{task.guardian_phone} (Parent)</span>
+                          ) : (
+                            task.patient_phone
+                          )}
+                        </span>
+                      )}
+                      {task.patient_email && (
+                        <span className="flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          {task.patient_email}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge variant="outline" className="text-xs">
                         {TYPE_LABELS[task.type]}

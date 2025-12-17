@@ -529,13 +529,16 @@ export type Database = {
           description: string
           due_at: string
           episode_id: string | null
+          guardian_phone: string | null
           id: string
           letter_file_url: string | null
           letter_subtype: string | null
           owner_type: Database["public"]["Enums"]["task_owner_type"]
+          patient_email: string | null
           patient_id: string | null
           patient_message_id: string | null
           patient_name: string | null
+          patient_phone: string | null
           priority: Database["public"]["Enums"]["task_priority"]
           source: Database["public"]["Enums"]["task_source"]
           stall_detected_at: string | null
@@ -556,13 +559,16 @@ export type Database = {
           description: string
           due_at?: string
           episode_id?: string | null
+          guardian_phone?: string | null
           id?: string
           letter_file_url?: string | null
           letter_subtype?: string | null
           owner_type?: Database["public"]["Enums"]["task_owner_type"]
+          patient_email?: string | null
           patient_id?: string | null
           patient_message_id?: string | null
           patient_name?: string | null
+          patient_phone?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           source: Database["public"]["Enums"]["task_source"]
           stall_detected_at?: string | null
@@ -583,13 +589,16 @@ export type Database = {
           description?: string
           due_at?: string
           episode_id?: string | null
+          guardian_phone?: string | null
           id?: string
           letter_file_url?: string | null
           letter_subtype?: string | null
           owner_type?: Database["public"]["Enums"]["task_owner_type"]
+          patient_email?: string | null
           patient_id?: string | null
           patient_message_id?: string | null
           patient_name?: string | null
+          patient_phone?: string | null
           priority?: Database["public"]["Enums"]["task_priority"]
           source?: Database["public"]["Enums"]["task_source"]
           stall_detected_at?: string | null
