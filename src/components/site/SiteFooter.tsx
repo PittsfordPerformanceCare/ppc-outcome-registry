@@ -97,6 +97,12 @@ const SiteFooter = memo(() => {
                 >
                   Clinical Governance & Outcomes
                 </Link>
+                <Link 
+                  to="/site/white-papers" 
+                  className="text-slate-400 hover:text-white transition-colors duration-200"
+                >
+                  Clinical White Paper Series
+                </Link>
               </nav>
             </div>
 

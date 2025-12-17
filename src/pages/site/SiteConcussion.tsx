@@ -601,6 +601,16 @@ const SiteConcussion = () => {
                 Our approach includes carefully dosed neurologic exercise to rebuild capacity without 
                 triggering symptom flares, restoring your brain's ability to meet the demands of daily life.
               </p>
+              <p className="text-base text-muted-foreground leading-relaxed mt-6">
+                Clinical reference:{" "}
+                <Link 
+                  to="/site/white-papers/persistent-neurologic-symptoms-after-covid-19" 
+                  className="underline underline-offset-2 hover:text-foreground transition-colors"
+                >
+                  Persistent Neurologic Symptoms After COVID-19
+                </Link>
+                , PPC Clinical White Paper Series.
+              </p>
             </div>
             
             <div className="flex justify-center mt-10">

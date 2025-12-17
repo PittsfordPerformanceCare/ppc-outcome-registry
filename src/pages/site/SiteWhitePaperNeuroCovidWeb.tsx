@@ -63,14 +63,7 @@ const SiteWhitePaperNeuroCovidWeb = () => {
             {/* Download Section */}
             <div className="space-y-2">
               <p className="text-sm font-medium text-foreground">Download</p>
-              <a 
-                href="/white-papers/persistent-neurologic-symptoms-after-covid-19.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
-              >
-                Download PDF
-              </a>
+              <p className="text-sm text-muted-foreground italic">PDF coming soon</p>
             </div>
 
             <Separator className="bg-slate-200 dark:bg-slate-700" />
