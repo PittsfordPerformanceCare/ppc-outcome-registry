@@ -706,6 +706,10 @@ const SiteAbout = () => {
                 observations contribute responsibly to the broader scientific understanding of 
                 neurologic rehabilitation.
               </p>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Our <Link to="/site/clinical-governance" className="underline hover:text-foreground transition-colors">clinical governance and outcomes framework</Link> is available for professional and payor review.
+              </p>
             </div>
             
             <ul className="space-y-3 mb-10">
