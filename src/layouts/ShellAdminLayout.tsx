@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -301,6 +302,9 @@ function AdminHeader() {
 }
 
 const ShellAdminLayout = () => {
+  // Press 'H' to return to admin dashboard from anywhere
+  useNavigationShortcuts({ homePath: "/admin" });
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">

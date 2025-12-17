@@ -5,6 +5,7 @@ interface UseNavigationShortcutsOptions {
   onShowHelp?: () => void;
   onPrint?: () => void;
   onExport?: () => void;
+  homePath?: string;
 }
 
 /**
@@ -36,7 +37,7 @@ export function useNavigationShortcuts(options?: UseNavigationShortcutsOptions) 
           navigate(-1);
           break;
         case "h":
-          navigate("/dashboard");
+          navigate(options?.homePath || "/dashboard");
           break;
         case "?":
           if (options?.onShowHelp) {
