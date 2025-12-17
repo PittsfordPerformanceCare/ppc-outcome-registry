@@ -110,6 +110,7 @@ const ProfessionalConditionView = lazy(() => import("./pages/site/ProfessionalCo
 const ProfessionalVerificationRequest = lazy(() => import("./pages/site/ProfessionalVerificationRequest"));
 const SampleClinicalOutcomesReview = lazy(() => import("./pages/site/SampleClinicalOutcomesReview"));
 const ClinicalOutcomesReview = lazy(() => import("./pages/professional/ClinicalOutcomesReview"));
+const SiteClinicalGovernance = lazy(() => import("./pages/site/SiteClinicalGovernance"));
 
 // ========== PHASE 1 SHELL: /patient PAGES ==========
 const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
@@ -178,6 +179,7 @@ const App = () => (
               <Route path="performance/speed-of-recovery-as-a-performance-metric" element={<SiteSpeedOfRecovery />} />
               <Route path="works-cited" element={<SiteWorksCited />} />
               <Route path="why-not-physical-therapy" element={<SiteWhyNotPhysicalTherapy />} />
+              <Route path="clinical-governance" element={<SiteClinicalGovernance />} />
               <Route path="privacy" element={<SitePrivacy />} />
               <Route path="terms" element={<SiteTerms />} />
             </Route>
