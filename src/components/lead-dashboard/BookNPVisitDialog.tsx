@@ -103,10 +103,25 @@ export function BookNPVisitDialog({
       if (lead && !careRequest) {
         addStatus("Creating care request...");
         
+        // Determine valid source from lead data
+        const validSources = ['WEBSITE', 'PHYSICIAN_REFERRAL', 'SCHOOL', 'ATHLETE_PROGRAM', 'INTERNAL'];
+        let source = 'WEBSITE'; // default
+        
+        const leadSource = (lead.origin_cta || lead.utm_source || '').toUpperCase();
+        if (leadSource.includes('PHYSICIAN') || leadSource.includes('REFERRAL') || leadSource.includes('DOCTOR')) {
+          source = 'PHYSICIAN_REFERRAL';
+        } else if (leadSource.includes('SCHOOL') || leadSource.includes('COMMUNITY')) {
+          source = 'SCHOOL';
+        } else if (leadSource.includes('ATHLETE') || leadSource.includes('SPORT')) {
+          source = 'ATHLETE_PROGRAM';
+        } else if (leadSource.includes('INTERNAL') || leadSource.includes('STAFF') || leadSource.includes('PHONE')) {
+          source = 'INTERNAL';
+        }
+        
         const { data: newCareRequest, error: crError } = await supabase
           .from("care_requests")
           .insert({
-            source: lead.origin_cta || lead.utm_source || "Booked NP Visit",
+            source,
             primary_complaint: lead.primary_concern,
             status: "SUBMITTED",
             intake_payload: {
