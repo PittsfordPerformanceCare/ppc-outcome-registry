@@ -151,7 +151,7 @@ const SiteArticleDetail = () => {
         description={article.excerpt}
         url={canonicalUrl}
         datePublished="2025-01-01"
-        author="Pittsford Performance Care"
+        author="Dr. Seth Asser, DC"
       />
       {/* Article Header */}
       <section className="py-16 bg-gradient-to-b from-primary/5 to-background">
@@ -179,6 +179,14 @@ const SiteArticleDetail = () => {
               <h1 className="text-3xl md:text-4xl font-bold leading-tight">
                 {article.title}
               </h1>
+              
+              {/* Author Attribution */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
+                <span>By</span>
+                <span className="font-medium text-foreground">Dr. Seth Asser, DC</span>
+                <span className="text-muted-foreground">—</span>
+                <span>Pittsford Performance Care, Pittsford, NY</span>
+              </div>
             </div>
           </div>
         </div>
@@ -228,6 +236,22 @@ const SiteArticleDetail = () => {
         category={article.category}
       />
 
+      {/* Author Note */}
+      <section className="py-8 bg-background border-t border-border/40">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              This article was written by <span className="font-medium text-foreground">Dr. Seth Asser, DC</span>, 
+              a clinician specializing in functional neurology and clinical neuroscience at Pittsford Performance Care 
+              in Pittsford, NY. For questions about your specific situation, please{" "}
+              <Link to="/site/contact" className="text-primary hover:underline">
+                contact our office
+              </Link>.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Internal Links Section */}
       <section className="py-12 bg-muted/10">
         <div className="container mx-auto px-4">
@@ -254,6 +278,12 @@ const SiteArticleDetail = () => {
                 className="text-primary hover:underline text-sm"
               >
                 Browse All Resources
+              </Link>
+              <Link 
+                to="/site/contact" 
+                className="text-primary hover:underline text-sm"
+              >
+                Contact Us
               </Link>
             </div>
           </div>
