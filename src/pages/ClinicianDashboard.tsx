@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useClinicianAppointments, ClinicianAppointment } from "@/hooks/useClinicianAppointments";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { CasePreviewPanel } from "@/components/CasePreviewPanel";
 import { ActionQueueSection } from "@/components/clinician/ActionQueueSection";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -26,6 +28,7 @@ import {
 import { format, parseISO, isToday, isTomorrow, addDays } from "date-fns";
 
 const ClinicianDashboard = () => {
+  const { user } = useAuth();
   const { 
     todayAppointments, 
     upcomingAppointments, 
@@ -34,6 +37,7 @@ const ClinicianDashboard = () => {
   } = useClinicianAppointments();
   const { isAdmin } = useUserRole();
   
+  const [userName, setUserName] = useState<string>("");
   const [selectedAppointment, setSelectedAppointment] = useState<ClinicianAppointment | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -42,6 +46,22 @@ const ClinicianDashboard = () => {
   const [dateFilter, setDateFilter] = useState<"today" | "7days" | "14days">("7days");
   const [conditionFilter, setConditionFilter] = useState<"all" | "neuro" | "msk" | "pediatric">("all");
   const [referralFilter, setReferralFilter] = useState<"all" | "yes" | "no">("all");
+
+  // Fetch user profile for greeting
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+      if (data?.full_name) {
+        setUserName(data.full_name);
+      }
+    };
+    fetchProfile();
+  }, [user]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -197,7 +217,9 @@ const ClinicianDashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Clinician Dashboard</h1>
+          <h1 className="text-2xl font-bold">
+            {userName ? `Hello, ${userName.startsWith('Dr.') ? 'Dr. ' + userName.split(' ').pop() : userName.split(' ')[0]}` : "Clinician Dashboard"}
+          </h1>
           <p className="text-muted-foreground">Your schedule and action queue</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
