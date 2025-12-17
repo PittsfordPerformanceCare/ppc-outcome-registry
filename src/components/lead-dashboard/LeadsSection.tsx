@@ -193,11 +193,24 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
     
     setQualifyingLeadId(selectedLead.id);
     try {
+      // Determine valid source from lead data
+      let source = 'WEBSITE'; // default
+      const leadSource = (selectedLead.origin_cta || selectedLead.utm_source || '').toUpperCase();
+      if (leadSource.includes('PHYSICIAN') || leadSource.includes('REFERRAL') || leadSource.includes('DOCTOR')) {
+        source = 'PHYSICIAN_REFERRAL';
+      } else if (leadSource.includes('SCHOOL') || leadSource.includes('COMMUNITY')) {
+        source = 'SCHOOL';
+      } else if (leadSource.includes('ATHLETE') || leadSource.includes('SPORT')) {
+        source = 'ATHLETE_PROGRAM';
+      } else if (leadSource.includes('INTERNAL') || leadSource.includes('STAFF') || leadSource.includes('PHONE')) {
+        source = 'INTERNAL';
+      }
+
       // Create care request from lead
       const { error: crError } = await supabase
         .from("care_requests")
         .insert({
-          source: selectedLead.origin_cta || selectedLead.utm_source || "Lead Qualified",
+          source,
           primary_complaint: selectedLead.primary_concern,
           status: "SUBMITTED",
           intake_payload: {
