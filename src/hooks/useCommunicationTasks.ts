@@ -35,6 +35,9 @@ export interface CommunicationTask {
   id: string;
   patient_id: string | null;
   patient_name: string | null;
+  patient_email: string | null;
+  patient_phone: string | null;
+  guardian_phone: string | null;
   episode_id: string | null;
   assigned_clinician_id: string;
   type: TaskType;
@@ -79,6 +82,9 @@ export interface TaskNote {
 export interface CreateTaskInput {
   patient_id?: string | null;
   patient_name?: string | null;
+  patient_email?: string | null;
+  patient_phone?: string | null;
+  guardian_phone?: string | null;
   episode_id?: string | null;
   assigned_clinician_id: string;
   type: TaskType;

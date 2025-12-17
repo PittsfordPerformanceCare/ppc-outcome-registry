@@ -88,6 +88,9 @@ export function AddTaskDialog({
   const [type, setType] = useState<TaskType>(ownerType === "ADMIN" ? "PATIENT_CALLBACK" : "CALL_BACK");
   const [description, setDescription] = useState("");
   const [patientName, setPatientName] = useState(prefillPatientName || "");
+  const [patientEmail, setPatientEmail] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
+  const [guardianPhone, setGuardianPhone] = useState("");
   const [episodeId, setEpisodeId] = useState(prefillEpisodeId || "");
   const [assignedClinicianId, setAssignedClinicianId] = useState(user?.id || "");
   const [priority, setPriority] = useState<TaskPriority>("NORMAL");
@@ -117,6 +120,9 @@ export function AddTaskDialog({
       await createTask.mutateAsync({
         patient_id: prefillPatientId || null,
         patient_name: patientName || null,
+        patient_email: patientEmail || null,
+        patient_phone: patientPhone || null,
+        guardian_phone: guardianPhone || null,
         episode_id: episodeId || null,
         assigned_clinician_id: assignedClinicianId,
         type,
@@ -134,6 +140,9 @@ export function AddTaskDialog({
       setType(source === "ADMIN" ? "PATIENT_CALLBACK" : "CALL_BACK");
       setDescription("");
       setPatientName(prefillPatientName || "");
+      setPatientEmail("");
+      setPatientPhone("");
+      setGuardianPhone("");
       setEpisodeId(prefillEpisodeId || "");
       setPriority("NORMAL");
       setDueDate(format(addDays(new Date(), 1), "yyyy-MM-dd"));
@@ -203,6 +212,42 @@ export function AddTaskDialog({
               value={patientName}
               onChange={(e) => setPatientName(e.target.value)}
               placeholder="Enter patient name"
+            />
+          </div>
+
+          {/* Patient Contact Info */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="patient-phone">Patient Phone</Label>
+              <Input
+                id="patient-phone"
+                type="tel"
+                value={patientPhone}
+                onChange={(e) => setPatientPhone(e.target.value)}
+                placeholder="(555) 123-4567"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="patient-email">Patient Email</Label>
+              <Input
+                id="patient-email"
+                type="email"
+                value={patientEmail}
+                onChange={(e) => setPatientEmail(e.target.value)}
+                placeholder="patient@email.com"
+              />
+            </div>
+          </div>
+
+          {/* Guardian Phone (for minors) */}
+          <div className="grid gap-2">
+            <Label htmlFor="guardian-phone">Parent/Guardian Phone (if minor)</Label>
+            <Input
+              id="guardian-phone"
+              type="tel"
+              value={guardianPhone}
+              onChange={(e) => setGuardianPhone(e.target.value)}
+              placeholder="(555) 123-4567"
             />
           </div>
 

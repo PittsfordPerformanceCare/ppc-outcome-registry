@@ -79,6 +79,9 @@ interface Task {
   id: string;
   assigned_clinician_id: string;
   patient_name: string | null;
+  patient_email: string | null;
+  patient_phone: string | null;
+  guardian_phone: string | null;
   episode_id: string | null;
   type: string;
   source: string;
@@ -785,6 +788,27 @@ const AdminClinicianQueues = () => {
                       <TableCell className="text-xs">
                         <div>
                           <p className="font-medium">{task.patient_name || '—'}</p>
+                          {/* Contact Info */}
+                          {(task.guardian_phone || task.patient_phone || task.patient_email) && (
+                            <div className="flex flex-wrap gap-2 text-[10px] text-muted-foreground mt-0.5">
+                              {(task.guardian_phone || task.patient_phone) && (
+                                <span className="flex items-center gap-0.5">
+                                  <Phone className="h-3 w-3" />
+                                  {task.guardian_phone ? (
+                                    <span>{task.guardian_phone} (Parent)</span>
+                                  ) : (
+                                    task.patient_phone
+                                  )}
+                                </span>
+                              )}
+                              {task.patient_email && (
+                                <span className="flex items-center gap-0.5">
+                                  <Mail className="h-3 w-3" />
+                                  {task.patient_email}
+                                </span>
+                              )}
+                            </div>
+                          )}
                           <p className="text-[10px] text-muted-foreground truncate max-w-[250px]">
                             {task.description}
                           </p>
