@@ -297,7 +297,7 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
             <TableHead>Concern</TableHead>
             <TableHead>Waiting</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead className="w-[50px]"></TableHead>
+            <TableHead className="w-[200px] text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -368,7 +368,7 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
                 <TableCell>{getSLAIndicator(lead.created_at)}</TableCell>
                 <TableCell>{getLeadStatusBadge(lead.lead_status)}</TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 justify-end">
                     {/* Primary Action Button - Always Visible */}
                     <Button
                       size="sm"

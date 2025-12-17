@@ -209,7 +209,7 @@ export function CareRequestsSection({
             <TableHead>Status</TableHead>
             <TableHead>Assigned</TableHead>
             <TableHead>SLA</TableHead>
-            <TableHead className="w-[50px]"></TableHead>
+            <TableHead className="w-[200px] text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -243,7 +243,7 @@ export function CareRequestsSection({
                 </TableCell>
                 <TableCell>{getSLAIndicator(request.created_at)}</TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center gap-1 justify-end" onClick={(e) => e.stopPropagation()}>
                     {/* Primary Action Button - Always Visible */}
                     <Button
                       size="sm"
