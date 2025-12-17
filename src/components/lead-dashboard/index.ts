@@ -5,6 +5,8 @@ export { IntakeQueue } from "./IntakeQueue";
 export { LeadsSection } from "./LeadsSection";
 export { CareRequestsSection } from "./CareRequestsSection";
 export { QuickCaptureDialog } from "./QuickCaptureDialog";
+export { BookNPVisitDialog } from "./BookNPVisitDialog";
+export { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
 export { ConversionFunnel } from "./ConversionFunnel";
 export { PreVisitMomentumPanel } from "./PreVisitMomentumPanel";
 export { IntelligencePanel } from "./IntelligencePanel";

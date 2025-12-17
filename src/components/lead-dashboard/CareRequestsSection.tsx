@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,10 +28,13 @@ import {
   Calendar,
   Loader2,
   Users,
-  Inbox
+  Inbox,
+  FileText
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import { BookNPVisitDialog } from "./BookNPVisitDialog";
+import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
 
 interface CareRequest {
   id: string;
@@ -138,12 +142,27 @@ export function CareRequestsSection({
   hasLeadsAwaitingIntake
 }: CareRequestsSectionProps) {
   const navigate = useNavigate();
+  const [selectedCareRequest, setSelectedCareRequest] = useState<CareRequest | null>(null);
+  const [bookNPVisitOpen, setBookNPVisitOpen] = useState(false);
+  const [sendFormsOpen, setSendFormsOpen] = useState(false);
   
   const sortedRequests = [...careRequests].sort(
     (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
 
   const oldestId = sortedRequests[0]?.id;
+
+  const handleBookNPVisit = (request: CareRequest, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedCareRequest(request);
+    setBookNPVisitOpen(true);
+  };
+
+  const handleSendFormsOnly = (request: CareRequest, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedCareRequest(request);
+    setSendFormsOpen(true);
+  };
 
   if (loading) {
     return (
@@ -176,100 +195,136 @@ export function CareRequestsSection({
     );
   }
 
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow className="hover:bg-transparent">
-          <TableHead className="w-[200px]">Patient</TableHead>
-          <TableHead>Source</TableHead>
-          <TableHead>Time</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Assigned</TableHead>
-          <TableHead>SLA</TableHead>
-          <TableHead className="w-[50px]"></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sortedRequests.map((request) => {
-          const patientName = request.intake_payload?.patient_name || 
-                              request.intake_payload?.name || 
-                              "Unknown";
-          const isOldest = request.id === oldestId;
+  const patientNameFromRequest = (request: CareRequest) => 
+    request.intake_payload?.patient_name || request.intake_payload?.name || "Unknown";
 
-          return (
-            <TableRow 
-              key={request.id}
-              className={`cursor-pointer ${isOldest ? "bg-amber-50/50 dark:bg-amber-950/20" : ""}`}
-              onClick={() => navigate(`/intake-review?selected=${request.id}`)}
-            >
-              <TableCell className="font-medium">
-                <div className="flex items-center gap-2">
-                  {isOldest && (
-                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+  return (
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="w-[200px]">Patient</TableHead>
+            <TableHead>Source</TableHead>
+            <TableHead>Time</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Assigned</TableHead>
+            <TableHead>SLA</TableHead>
+            <TableHead className="w-[50px]"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedRequests.map((request) => {
+            const patientName = patientNameFromRequest(request);
+            const isOldest = request.id === oldestId;
+
+            return (
+              <TableRow 
+                key={request.id}
+                className={`cursor-pointer ${isOldest ? "bg-amber-50/50 dark:bg-amber-950/20" : ""}`}
+                onClick={() => navigate(`/intake-review?selected=${request.id}`)}
+              >
+                <TableCell className="font-medium">
+                  <div className="flex items-center gap-2">
+                    {isOldest && (
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    )}
+                    {patientName}
+                  </div>
+                </TableCell>
+                <TableCell>{getSourceBadge(request.source)}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
+                </TableCell>
+                <TableCell>{getStatusBadge(request.status)}</TableCell>
+                <TableCell className="text-sm">
+                  {request.clinician?.full_name || (
+                    <span className="text-muted-foreground">—</span>
                   )}
-                  {patientName}
-                </div>
-              </TableCell>
-              <TableCell>{getSourceBadge(request.source)}</TableCell>
-              <TableCell className="text-muted-foreground text-sm">
-                {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
-              </TableCell>
-              <TableCell>{getStatusBadge(request.status)}</TableCell>
-              <TableCell className="text-sm">
-                {request.clinician?.full_name || (
-                  <span className="text-muted-foreground">—</span>
-                )}
-              </TableCell>
-              <TableCell>{getSLAIndicator(request.created_at)}</TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/intake-review?selected=${request.id}`);
-                    }}>
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Review
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Assign Clinician
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Approve
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={(e) => {
-                      e.stopPropagation();
-                      navigate("/admin-shell/registry");
-                    }}>
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Schedule
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                      <HelpCircle className="h-4 w-4 mr-2" />
-                      Request Clarification
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      onClick={(e) => e.stopPropagation()}
-                      className="text-destructive focus:text-destructive"
-                    >
-                      <Archive className="h-4 w-4 mr-2" />
-                      Archive
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                </TableCell>
+                <TableCell>{getSLAIndicator(request.created_at)}</TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {/* Primary Action */}
+                      <DropdownMenuItem 
+                        onClick={(e) => handleBookNPVisit(request, e)}
+                        className="font-medium"
+                      >
+                        <Calendar className="h-4 w-4 mr-2 text-primary" />
+                        Book NP Visit & Send Intake Forms
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      
+                      {/* Secondary Actions */}
+                      <DropdownMenuItem onClick={(e) => handleSendFormsOnly(request, e)}>
+                        <FileText className="h-4 w-4 mr-2" />
+                        Send Intake Forms Only
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/intake-review?selected=${request.id}`);
+                      }}>
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Review
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Assign Clinician
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        Approve
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/admin-shell/registry");
+                      }}>
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Schedule
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                        <HelpCircle className="h-4 w-4 mr-2" />
+                        Request Clarification
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Archive className="h-4 w-4 mr-2" />
+                        Archive
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+
+      {/* Book NP Visit Dialog */}
+      <BookNPVisitDialog
+        open={bookNPVisitOpen}
+        onOpenChange={setBookNPVisitOpen}
+        onSuccess={onRefresh}
+        careRequest={selectedCareRequest}
+      />
+
+      {/* Send Forms Only Dialog */}
+      <SendIntakeFormsDialog
+        open={sendFormsOpen}
+        onOpenChange={setSendFormsOpen}
+        onSuccess={onRefresh}
+        patientName={selectedCareRequest ? patientNameFromRequest(selectedCareRequest) : ""}
+        patientEmail={selectedCareRequest?.intake_payload?.email || null}
+        careRequestId={selectedCareRequest?.id}
+      />
+    </>
   );
 }

@@ -35,11 +35,15 @@ import {
   AlertTriangle,
   Loader2,
   ArrowRight,
-  Inbox
+  Inbox,
+  Calendar,
+  FileText
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { BookNPVisitDialog } from "./BookNPVisitDialog";
+import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
 
 interface Lead {
   id: string;
@@ -141,6 +145,9 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
   const [confirmQualifyOpen, setConfirmQualifyOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [bookNPVisitOpen, setBookNPVisitOpen] = useState(false);
+  const [sendFormsOpen, setSendFormsOpen] = useState(false);
+  const [formsLead, setFormsLead] = useState<Lead | null>(null);
 
   const sortedLeads = [...leads].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -250,6 +257,16 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
     handleUpdateStatus(lead.id, "CONTACTED");
   };
 
+  const handleBookNPVisit = (lead: Lead) => {
+    setSelectedLead(lead);
+    setBookNPVisitOpen(true);
+  };
+
+  const handleSendFormsOnly = (lead: Lead) => {
+    setFormsLead(lead);
+    setSendFormsOpen(true);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-48 text-muted-foreground">
@@ -351,7 +368,7 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
                 <TableCell>{getSLAIndicator(lead.created_at)}</TableCell>
                 <TableCell>{getLeadStatusBadge(lead.lead_status)}</TableCell>
                 <TableCell>
-                  <DropdownMenu>
+                <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8" disabled={isUpdating || isQualifying}>
                         {isQualifying ? (
@@ -362,11 +379,28 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleQualifyLead(lead)}>
-                        <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-600" />
-                        Qualify Lead → Create Care Request
+                      {/* Primary Action */}
+                      <DropdownMenuItem 
+                        onClick={() => handleBookNPVisit(lead)}
+                        className="font-medium"
+                      >
+                        <Calendar className="h-4 w-4 mr-2 text-primary" />
+                        Book NP Visit & Send Intake Forms
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
+                      
+                      {/* Secondary Actions */}
+                      <DropdownMenuItem onClick={() => handleSendFormsOnly(lead)}>
+                        <FileText className="h-4 w-4 mr-2" />
+                        Send Intake Forms Only
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleQualifyLead(lead)}>
+                        <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-600" />
+                        Qualify Lead (No Scheduling)
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      
+                      {/* Contact Actions */}
                       {lead.phone && (
                         <DropdownMenuItem onClick={() => handleContact(lead, "phone")}>
                           <Phone className="h-4 w-4 mr-2" />
@@ -386,6 +420,8 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
                         </DropdownMenuItem>
                       )}
                       <DropdownMenuSeparator />
+                      
+                      {/* Status Actions */}
                       <DropdownMenuItem onClick={() => handleUpdateStatus(lead.id, "NURTURE")}>
                         <Clock className="h-4 w-4 mr-2 text-amber-600" />
                         Nurture
@@ -410,9 +446,9 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
       <Dialog open={confirmQualifyOpen} onOpenChange={setConfirmQualifyOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Qualify Lead & Create Care Request</DialogTitle>
+            <DialogTitle>Qualify Lead (No Scheduling)</DialogTitle>
             <DialogDescription>
-              This will create a new Care Request for {selectedLead?.name || selectedLead?.email} and move them into the intake processing workflow.
+              This will create a new Care Request for {selectedLead?.name || selectedLead?.email} without scheduling an appointment.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
@@ -455,6 +491,24 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Book NP Visit Dialog */}
+      <BookNPVisitDialog
+        open={bookNPVisitOpen}
+        onOpenChange={setBookNPVisitOpen}
+        onSuccess={onRefresh}
+        lead={selectedLead}
+      />
+
+      {/* Send Forms Only Dialog */}
+      <SendIntakeFormsDialog
+        open={sendFormsOpen}
+        onOpenChange={setSendFormsOpen}
+        onSuccess={onRefresh}
+        patientName={formsLead?.name || ""}
+        patientEmail={formsLead?.email || null}
+        leadId={formsLead?.id}
+      />
     </>
   );
 }
