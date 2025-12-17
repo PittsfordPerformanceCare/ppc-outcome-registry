@@ -9,12 +9,27 @@ export type TaskType =
   | "IMAGING_REPORT" 
   | "PATIENT_MESSAGE" 
   | "LETTER" 
-  | "OTHER_ACTION";
+  | "OTHER_ACTION"
+  // Admin task types
+  | "PATIENT_CALLBACK"
+  | "PATIENT_EMAIL_RESPONSE"
+  | "PORTAL_MESSAGE_RESPONSE"
+  | "RESEND_INTAKE_FORMS"
+  | "FOLLOWUP_INCOMPLETE_FORMS"
+  | "SEND_RECEIPT"
+  | "ORDER_IMAGING"
+  | "SCHEDULE_APPOINTMENT"
+  | "CONFIRM_APPOINTMENT"
+  | "REQUEST_OUTSIDE_RECORDS"
+  | "SEND_RECORDS_TO_PATIENT"
+  | "UPDATE_PATIENT_CONTACT"
+  | "DOCUMENT_PATIENT_REQUEST";
 
 export type TaskSource = "ADMIN" | "CLINICIAN" | "PATIENT_PORTAL";
 export type TaskPriority = "HIGH" | "NORMAL";
 export type TaskStatus = "OPEN" | "IN_PROGRESS" | "WAITING_ON_CLINICIAN" | "WAITING_ON_PATIENT" | "BLOCKED" | "COMPLETED" | "CANCELLED";
 export type TaskCategory = "CLINICAL_EXECUTION" | "ADMIN_EXECUTION" | "COORDINATION";
+export type TaskOwnerType = "ADMIN" | "CLINICIAN";
 
 export interface CommunicationTask {
   id: string;
@@ -28,6 +43,7 @@ export interface CommunicationTask {
   priority: TaskPriority;
   status: TaskStatus;
   category: TaskCategory;
+  owner_type: TaskOwnerType;
   due_at: string;
   created_by: string | null;
   created_at: string;
@@ -72,6 +88,7 @@ export interface CreateTaskInput {
   due_at?: string;
   letter_subtype?: string | null;
   category?: TaskCategory;
+  owner_type?: TaskOwnerType;
 }
 
 export function useCommunicationTasks() {
@@ -134,6 +151,7 @@ export function useCommunicationTasks() {
           ...input,
           created_by: user?.id,
           category: input.category || "CLINICAL_EXECUTION",
+          owner_type: input.owner_type || "CLINICIAN",
         })
         .select()
         .single();

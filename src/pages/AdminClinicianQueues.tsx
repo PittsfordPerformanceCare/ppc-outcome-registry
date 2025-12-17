@@ -56,6 +56,14 @@ import {
   ArrowRight,
   MessageCircle,
   UserPlus,
+  Send,
+  Calendar,
+  Receipt,
+  FileSearch,
+  UserCog,
+  ClipboardList,
+  Shield,
+  Stethoscope,
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { AddTaskDialog } from "@/components/clinician/AddTaskDialog";
@@ -77,6 +85,7 @@ interface Task {
   priority: string;
   status: string;
   category: string;
+  owner_type: string;
   due_at: string;
   completed_at: string | null;
   description: string;
@@ -92,6 +101,20 @@ const TYPE_ICONS: Record<string, React.ReactNode> = {
   'IMAGING_REPORT': <Image className="h-4 w-4" />,
   'PATIENT_MESSAGE': <MessageSquare className="h-4 w-4" />,
   'OTHER_ACTION': <MoreHorizontal className="h-4 w-4" />,
+  // Admin task types
+  'PATIENT_CALLBACK': <Phone className="h-4 w-4" />,
+  'PATIENT_EMAIL_RESPONSE': <Mail className="h-4 w-4" />,
+  'PORTAL_MESSAGE_RESPONSE': <MessageSquare className="h-4 w-4" />,
+  'RESEND_INTAKE_FORMS': <Send className="h-4 w-4" />,
+  'FOLLOWUP_INCOMPLETE_FORMS': <FileSearch className="h-4 w-4" />,
+  'SEND_RECEIPT': <Receipt className="h-4 w-4" />,
+  'ORDER_IMAGING': <Image className="h-4 w-4" />,
+  'SCHEDULE_APPOINTMENT': <Calendar className="h-4 w-4" />,
+  'CONFIRM_APPOINTMENT': <Calendar className="h-4 w-4" />,
+  'REQUEST_OUTSIDE_RECORDS': <FileSearch className="h-4 w-4" />,
+  'SEND_RECORDS_TO_PATIENT': <FileText className="h-4 w-4" />,
+  'UPDATE_PATIENT_CONTACT': <UserCog className="h-4 w-4" />,
+  'DOCUMENT_PATIENT_REQUEST': <ClipboardList className="h-4 w-4" />,
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -101,7 +124,27 @@ const TYPE_LABELS: Record<string, string> = {
   'IMAGING_REPORT': 'Imaging',
   'PATIENT_MESSAGE': 'Portal',
   'OTHER_ACTION': 'Other',
+  // Admin task types
+  'PATIENT_CALLBACK': 'Callback',
+  'PATIENT_EMAIL_RESPONSE': 'Email',
+  'PORTAL_MESSAGE_RESPONSE': 'Portal',
+  'RESEND_INTAKE_FORMS': 'Resend Forms',
+  'FOLLOWUP_INCOMPLETE_FORMS': 'Form F/U',
+  'SEND_RECEIPT': 'Receipt',
+  'ORDER_IMAGING': 'Order Imaging',
+  'SCHEDULE_APPOINTMENT': 'Schedule',
+  'CONFIRM_APPOINTMENT': 'Confirm',
+  'REQUEST_OUTSIDE_RECORDS': 'Req Records',
+  'SEND_RECORDS_TO_PATIENT': 'Send Records',
+  'UPDATE_PATIENT_CONTACT': 'Update Contact',
+  'DOCUMENT_PATIENT_REQUEST': 'Doc Request',
 };
+
+const OWNER_TYPE_OPTIONS = [
+  { value: 'ALL', label: 'All Tasks' },
+  { value: 'ADMIN', label: 'Admin Tasks' },
+  { value: 'CLINICIAN', label: 'Clinician Tasks' },
+];
 
 const STATUS_OPTIONS = [
   { value: 'ALL', label: 'All Statuses' },
@@ -356,6 +399,9 @@ const AdminClinicianQueues = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>(
     searchParams.get('status') || 'ALL'
   );
+  const [selectedOwnerType, setSelectedOwnerType] = useState<string>(
+    searchParams.get('ownerType') || 'ALL'
+  );
   const [timeWindow, setTimeWindow] = useState<string>(
     searchParams.get('timeWindow') || '7d'
   );
@@ -398,9 +444,10 @@ const AdminClinicianQueues = () => {
     const params = new URLSearchParams();
     if (selectedClinician !== 'ALL') params.set('clinician', selectedClinician);
     if (selectedStatus !== 'ALL') params.set('status', selectedStatus);
+    if (selectedOwnerType !== 'ALL') params.set('ownerType', selectedOwnerType);
     if (timeWindow !== '7d') params.set('timeWindow', timeWindow);
     setSearchParams(params);
-  }, [selectedClinician, selectedStatus, timeWindow, setSearchParams]);
+  }, [selectedClinician, selectedStatus, selectedOwnerType, timeWindow, setSearchParams]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -485,6 +532,11 @@ const AdminClinicianQueues = () => {
         return false;
       }
 
+      // Owner type filter
+      if (selectedOwnerType !== 'ALL' && task.owner_type !== selectedOwnerType) {
+        return false;
+      }
+
       // Time window filter for completed/cancelled tasks
       if (task.status === 'COMPLETED' || task.status === 'CANCELLED') {
         const endDate = task.completed_at || task.status_changed_at;
@@ -518,7 +570,7 @@ const AdminClinicianQueues = () => {
       
       return new Date(a.due_at).getTime() - new Date(b.due_at).getTime();
     });
-  }, [tasks, selectedClinician, selectedStatus, timeWindow]);
+  }, [tasks, selectedClinician, selectedStatus, selectedOwnerType, timeWindow]);
 
   const getClinicianName = (clinicianId: string) => {
     return clinicians.find(c => c.id === clinicianId)?.name || 'Unknown';
@@ -581,7 +633,7 @@ const AdminClinicianQueues = () => {
             Communication Tasks
           </h1>
           <p className="text-muted-foreground text-sm">
-            Manage and track action items across all clinicians
+            Central hub for admin and clinician tasks — filter by owner type to focus your work
           </p>
         </div>
         <div className="flex gap-2">
@@ -655,6 +707,20 @@ const AdminClinicianQueues = () => {
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="w-[160px]">
+              <label className="text-xs text-muted-foreground mb-1 block">Owner Type</label>
+              <Select value={selectedOwnerType} onValueChange={setSelectedOwnerType}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {OWNER_TYPE_OPTIONS.map(opt => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -681,9 +747,10 @@ const AdminClinicianQueues = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[130px]">Clinician</TableHead>
+                    <TableHead className="w-[70px]">Owner</TableHead>
+                    <TableHead className="w-[130px]">Assigned To</TableHead>
                     <TableHead>Patient / Description</TableHead>
-                    <TableHead className="w-[70px]">Type</TableHead>
+                    <TableHead className="w-[90px]">Type</TableHead>
                     <TableHead className="w-[100px]">Due</TableHead>
                     <TableHead className="w-[120px]">Status</TableHead>
                     <TableHead className="w-[90px]">In Status</TableHead>
@@ -696,6 +763,22 @@ const AdminClinicianQueues = () => {
                       key={task.id} 
                       className={task.status === 'BLOCKED' ? 'bg-amber-500/5' : ''}
                     >
+                      <TableCell>
+                        <Badge 
+                          variant="outline" 
+                          className={`text-[10px] ${
+                            task.owner_type === 'ADMIN' 
+                              ? 'bg-purple-500/10 text-purple-700 border-purple-200' 
+                              : 'bg-blue-500/10 text-blue-700 border-blue-200'
+                          }`}
+                        >
+                          {task.owner_type === 'ADMIN' ? (
+                            <><Shield className="h-3 w-3 mr-1" /> Admin</>
+                          ) : (
+                            <><Stethoscope className="h-3 w-3 mr-1" /> Clinician</>
+                          )}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="font-medium text-xs">
                         {getClinicianName(task.assigned_clinician_id)}
                       </TableCell>

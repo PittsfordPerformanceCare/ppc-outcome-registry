@@ -532,6 +532,7 @@ export type Database = {
           id: string
           letter_file_url: string | null
           letter_subtype: string | null
+          owner_type: Database["public"]["Enums"]["task_owner_type"]
           patient_id: string | null
           patient_message_id: string | null
           patient_name: string | null
@@ -558,6 +559,7 @@ export type Database = {
           id?: string
           letter_file_url?: string | null
           letter_subtype?: string | null
+          owner_type?: Database["public"]["Enums"]["task_owner_type"]
           patient_id?: string | null
           patient_message_id?: string | null
           patient_name?: string | null
@@ -584,6 +586,7 @@ export type Database = {
           id?: string
           letter_file_url?: string | null
           letter_subtype?: string | null
+          owner_type?: Database["public"]["Enums"]["task_owner_type"]
           patient_id?: string | null
           patient_message_id?: string | null
           patient_name?: string | null
@@ -5176,6 +5179,7 @@ export type Database = {
         | "SEQUENTIAL_CARE"
         | "EMERGED_DURING_TREATMENT"
         | "PREVENTIVE_OR_PERFORMANCE"
+      task_owner_type: "ADMIN" | "CLINICIAN"
       task_priority: "HIGH" | "NORMAL"
       task_source: "ADMIN" | "CLINICIAN" | "PATIENT_PORTAL"
       task_status: "Open" | "Done"
@@ -5186,6 +5190,19 @@ export type Database = {
         | "PATIENT_MESSAGE"
         | "LETTER"
         | "OTHER_ACTION"
+        | "PATIENT_CALLBACK"
+        | "PATIENT_EMAIL_RESPONSE"
+        | "PORTAL_MESSAGE_RESPONSE"
+        | "RESEND_INTAKE_FORMS"
+        | "FOLLOWUP_INCOMPLETE_FORMS"
+        | "SEND_RECEIPT"
+        | "ORDER_IMAGING"
+        | "SCHEDULE_APPOINTMENT"
+        | "CONFIRM_APPOINTMENT"
+        | "REQUEST_OUTSIDE_RECORDS"
+        | "SEND_RECORDS_TO_PATIENT"
+        | "UPDATE_PATIENT_CONTACT"
+        | "DOCUMENT_PATIENT_REQUEST"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -5331,6 +5348,7 @@ export const Constants = {
         "EMERGED_DURING_TREATMENT",
         "PREVENTIVE_OR_PERFORMANCE",
       ],
+      task_owner_type: ["ADMIN", "CLINICIAN"],
       task_priority: ["HIGH", "NORMAL"],
       task_source: ["ADMIN", "CLINICIAN", "PATIENT_PORTAL"],
       task_status: ["Open", "Done"],
@@ -5341,6 +5359,19 @@ export const Constants = {
         "PATIENT_MESSAGE",
         "LETTER",
         "OTHER_ACTION",
+        "PATIENT_CALLBACK",
+        "PATIENT_EMAIL_RESPONSE",
+        "PORTAL_MESSAGE_RESPONSE",
+        "RESEND_INTAKE_FORMS",
+        "FOLLOWUP_INCOMPLETE_FORMS",
+        "SEND_RECEIPT",
+        "ORDER_IMAGING",
+        "SCHEDULE_APPOINTMENT",
+        "CONFIRM_APPOINTMENT",
+        "REQUEST_OUTSIDE_RECORDS",
+        "SEND_RECORDS_TO_PATIENT",
+        "UPDATE_PATIENT_CONTACT",
+        "DOCUMENT_PATIENT_REQUEST",
       ],
     },
   },
