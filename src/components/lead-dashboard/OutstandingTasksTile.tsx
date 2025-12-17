@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useTaskSummary } from "@/hooks/useCommunicationTasks";
+import { Badge } from "@/components/ui/badge";
+import { useTaskSummary, useAllCommunicationTasks } from "@/hooks/useCommunicationTasks";
 import { 
   ClipboardList, 
   ChevronRight, 
@@ -9,107 +10,120 @@ import {
   Clock, 
   Plus, 
   CheckCircle2,
-  Eye,
-  EyeOff,
   UserCheck,
   Hourglass,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  Phone,
+  Mail,
+  FileText,
+  MessageSquare
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AddTaskDialog } from "@/components/clinician/AddTaskDialog";
+import { formatDistanceToNow } from "date-fns";
 
 const statusConfig = {
-  waitingOnClinician: { 
+  WAITING_ON_CLINICIAN: { 
     label: "Waiting on Clinician", 
     icon: UserCheck, 
-    color: "text-muted-foreground",
-    bg: "bg-muted/50"
+    color: "text-amber-600",
+    bg: "bg-amber-50 dark:bg-amber-950/30"
   },
-  waitingOnPatient: { 
+  WAITING_ON_PATIENT: { 
     label: "Waiting on Patient", 
     icon: Hourglass, 
-    color: "text-muted-foreground",
-    bg: "bg-muted/50"
+    color: "text-blue-600",
+    bg: "bg-blue-50 dark:bg-blue-950/30"
   },
-  inProgress: { 
+  IN_PROGRESS: { 
     label: "In Progress", 
     icon: Loader2, 
-    color: "text-muted-foreground",
-    bg: "bg-muted/50"
+    color: "text-sky-600",
+    bg: "bg-sky-50 dark:bg-sky-950/30"
   },
-  blocked: { 
+  BLOCKED: { 
     label: "Blocked", 
     icon: AlertTriangle, 
     color: "text-destructive",
     bg: "bg-destructive/10"
   },
-  open: { 
+  OPEN: { 
     label: "Open", 
     icon: ClipboardList, 
-    color: "text-muted-foreground",
-    bg: "bg-muted/50"
+    color: "text-primary",
+    bg: "bg-primary/10"
   },
 };
+
+const taskTypeIcons: Record<string, typeof Phone> = {
+  CALL_BACK: Phone,
+  EMAIL_REPLY: Mail,
+  PATIENT_MESSAGE: MessageSquare,
+  LETTER: FileText,
+  OTHER_ACTION: Clock,
+  IMAGING_REPORT: FileText,
+};
+
+function getTaskTypeIcon(type: string) {
+  return taskTypeIcons[type] || ClipboardList;
+}
+
+function getStatusBadge(status: string) {
+  const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.OPEN;
+  return (
+    <Badge variant="outline" className={`${config.bg} ${config.color} border-0 text-xs`}>
+      {config.label}
+    </Badge>
+  );
+}
 
 export function OutstandingTasksTile() {
   const navigate = useNavigate();
   const { summary, isLoading } = useTaskSummary();
-  const [isExpanded, setIsExpanded] = useState(false); // Collapsed by default
-  const [isHidden, setIsHidden] = useState(false);
+  const { data: allTasks = [], isLoading: tasksLoading } = useAllCommunicationTasks();
   const [showAddTask, setShowAddTask] = useState(false);
 
-  if (isHidden) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsHidden(false)}
-        className="gap-2 text-muted-foreground"
-      >
-        <Eye className="h-4 w-4" />
-        Show Communication Tasks
-      </Button>
-    );
-  }
-
-  const groups = [
-    { key: "waitingOnClinician", count: summary.waitingOnClinician },
-    { key: "waitingOnPatient", count: summary.waitingOnPatient },
-    { key: "inProgress", count: summary.inProgress },
-    { key: "blocked", count: summary.blocked },
-    { key: "open", count: summary.open },
-  ].filter(g => g.count > 0) as { key: keyof typeof statusConfig; count: number }[];
-
   const hasOutstanding = summary.total > 0;
+  
+  // Auto-expand when there are tasks
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  // Filter to only show open/active tasks, sorted by due date
+  const activeTasks = allTasks
+    .filter(t => 
+      ['OPEN', 'IN_PROGRESS', 'WAITING_ON_CLINICIAN', 'WAITING_ON_PATIENT', 'BLOCKED'].includes(t.status)
+    )
+    .sort((a, b) => new Date(a.due_at).getTime() - new Date(b.due_at).getTime());
 
   return (
     <>
-      <Card className="overflow-hidden">
+      <Card className={`overflow-hidden ${hasOutstanding ? 'border-primary/30 shadow-sm' : ''}`}>
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <CollapsibleTrigger asChild>
                 <button className="flex items-center gap-2 hover:text-primary transition-colors text-left">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <ClipboardList className="h-4 w-4 text-primary" />
+                  <div className={`p-2 rounded-lg ${hasOutstanding ? 'bg-primary text-primary-foreground' : 'bg-primary/10'}`}>
+                    <ClipboardList className={`h-4 w-4 ${hasOutstanding ? '' : 'text-primary'}`} />
                   </div>
                   <div>
                     <CardTitle className="text-base font-medium flex items-center gap-2">
-                      Communication Tasks
+                      Outstanding Communication Tasks
                       {hasOutstanding && (
-                        <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-semibold rounded-full bg-primary/10 text-primary">
+                        <span className="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-bold rounded-full bg-primary text-primary-foreground">
                           {summary.total}
                         </span>
                       )}
                     </CardTitle>
-                    {!isExpanded && hasOutstanding && (
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {groups.length} status group{groups.length !== 1 ? 's' : ''} active
-                      </p>
-                    )}
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {hasOutstanding 
+                        ? "Tasks requiring action today"
+                        : "All tasks complete"
+                      }
+                    </p>
                   </div>
                   {isExpanded ? (
                     <ChevronDown className="h-4 w-4 text-muted-foreground ml-1" />
@@ -119,54 +133,91 @@ export function OutstandingTasksTile() {
                 </button>
               </CollapsibleTrigger>
               
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                  onClick={() => setIsHidden(true)}
-                  title="Hide this section"
-                >
-                  <EyeOff className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={() => setShowAddTask(true)}
+              >
+                <Plus className="h-4 w-4" />
+                Add Task
+              </Button>
             </div>
           </CardHeader>
 
           <CollapsibleContent>
             <CardContent className="pt-0">
-              {isLoading ? (
+              {isLoading || tasksLoading ? (
                 <div className="space-y-3">
-                  <Skeleton className="h-12 w-full" />
-                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
                 </div>
               ) : hasOutstanding ? (
                 <div className="space-y-4">
-                  {/* Status Groups */}
-                  <div className="grid gap-2">
-                    {groups.map((group) => {
-                      const config = statusConfig[group.key];
-                      const Icon = config.icon;
+                  {/* Individual Task List */}
+                  <div className="divide-y divide-border rounded-lg border overflow-hidden">
+                    {activeTasks.slice(0, 5).map((task) => {
+                      const TaskIcon = getTaskTypeIcon(task.type);
                       return (
                         <button
-                          key={group.key}
+                          key={task.id}
                           onClick={() => navigate("/admin/clinician-queues")}
-                          className={`flex items-center justify-between p-3 rounded-lg ${config.bg} hover:opacity-80 transition-opacity text-left w-full`}
+                          className="flex items-start gap-3 p-3 hover:bg-muted/50 transition-colors text-left w-full"
                         >
-                          <div className="flex items-center gap-3">
-                            <Icon className={`h-4 w-4 ${config.color}`} />
-                            <span className="text-sm font-medium">{config.label}</span>
+                          <div className="p-1.5 rounded bg-muted mt-0.5">
+                            <TaskIcon className="h-4 w-4 text-muted-foreground" />
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className={`text-lg font-semibold ${config.color}`}>
-                              {group.count}
-                            </span>
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="font-medium text-sm truncate">
+                                {task.patient_name || "Unknown Patient"}
+                              </span>
+                              {getStatusBadge(task.status)}
+                            </div>
+                            <p className="text-sm text-muted-foreground truncate">
+                              {task.description}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Due {formatDistanceToNow(new Date(task.due_at), { addSuffix: true })}
+                            </p>
                           </div>
+                          <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
                         </button>
                       );
                     })}
                   </div>
+
+                  {/* Summary by Status */}
+                  <div className="flex flex-wrap gap-2">
+                    {summary.open > 0 && (
+                      <Badge variant="outline" className="bg-primary/10 text-primary border-0">
+                        {summary.open} Open
+                      </Badge>
+                    )}
+                    {summary.waitingOnClinician > 0 && (
+                      <Badge variant="outline" className="bg-amber-50 text-amber-600 border-0 dark:bg-amber-950/30">
+                        {summary.waitingOnClinician} Waiting on Clinician
+                      </Badge>
+                    )}
+                    {summary.blocked > 0 && (
+                      <Badge variant="outline" className="bg-destructive/10 text-destructive border-0">
+                        {summary.blocked} Blocked
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* View All Link */}
+                  {activeTasks.length > 5 && (
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2"
+                      onClick={() => navigate("/admin/clinician-queues")}
+                    >
+                      <ClipboardList className="h-4 w-4" />
+                      View All {summary.total} Tasks
+                    </Button>
+                  )}
 
                   {/* Recently Completed */}
                   {summary.recentlyCompleted > 0 && (
@@ -175,28 +226,6 @@ export function OutstandingTasksTile() {
                       <span>{summary.recentlyCompleted} completed in last 24h</span>
                     </div>
                   )}
-
-                  {/* Quick Actions */}
-                  <div className="flex gap-2 pt-2 border-t">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 gap-2"
-                      onClick={() => setShowAddTask(true)}
-                    >
-                      <Plus className="h-4 w-4" />
-                      Create Task
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="flex-1 gap-2"
-                      onClick={() => navigate("/admin/clinician-queues")}
-                    >
-                      <ClipboardList className="h-4 w-4" />
-                      View All
-                    </Button>
-                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -220,24 +249,15 @@ export function OutstandingTasksTile() {
                   )}
 
                   {/* Quick Actions */}
-                  <div className="flex gap-2 pt-2 border-t">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 gap-2"
-                      onClick={() => setShowAddTask(true)}
-                    >
-                      <Plus className="h-4 w-4" />
-                      Create Task
-                    </Button>
+                  <div className="pt-2 border-t">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="flex-1 gap-2"
+                      className="w-full gap-2"
                       onClick={() => navigate("/admin/clinician-queues")}
                     >
                       <ClipboardList className="h-4 w-4" />
-                      View History
+                      View Task History
                     </Button>
                   </div>
                 </div>
