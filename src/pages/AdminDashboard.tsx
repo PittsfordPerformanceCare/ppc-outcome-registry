@@ -20,7 +20,7 @@ const AdminDashboard = () => {
   return (
     <div className="space-y-6 pb-12 max-w-7xl mx-auto">
       {/* Header */}
-      <DashboardHeader />
+      <DashboardHeader onRefresh={refetch} />
 
       {/* Lead Health Banner */}
       <LeadHealthBanner

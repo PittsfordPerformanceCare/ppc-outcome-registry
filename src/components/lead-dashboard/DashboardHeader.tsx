@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { PhoneIntakeDialog } from "@/components/admin-dashboard/PhoneIntakeDialog";
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onRefresh?: () => void;
+}
+
+export function DashboardHeader({ onRefresh }: DashboardHeaderProps) {
   const [userName, setUserName] = useState<string>("");
   const [clinicName, setClinicName] = useState<string>("Pittsford Performance Care");
 
@@ -49,9 +54,12 @@ export function DashboardHeader() {
         <p className="text-sm text-muted-foreground">{formatDate()}</p>
         <h1 className="text-xl font-semibold tracking-tight">{clinicName}</h1>
       </div>
-      <div className="text-right">
-        <p className="text-sm font-medium">{userName || "Admin"}</p>
-        <p className="text-xs text-muted-foreground">Clinic Admin</p>
+      <div className="flex items-center gap-4">
+        <PhoneIntakeDialog onSuccess={onRefresh} />
+        <div className="text-right">
+          <p className="text-sm font-medium">{userName || "Admin"}</p>
+          <p className="text-xs text-muted-foreground">Clinic Admin</p>
+        </div>
       </div>
     </header>
   );
