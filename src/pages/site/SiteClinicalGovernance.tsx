@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Separator } from "@/components/ui/separator";
+import { MedicalWebPageSchema, BreadcrumbSchema } from "@/components/site/StructuredData";
 
 const SiteClinicalGovernance = () => {
   return (
@@ -9,10 +10,29 @@ const SiteClinicalGovernance = () => {
         <title>Clinical Governance & Outcomes | Pittsford Performance Care</title>
         <meta 
           name="description" 
-          content="Clinical governance, episode-based care, and outcome tracking framework used by Pittsford Performance Care to support medical necessity, utilization integrity, and audit defensibility." 
+          content="Clinical governance, episode based care, and outcome tracking framework used by Pittsford Performance Care to support medical necessity, utilization integrity, and audit defensibility." 
         />
         <link rel="canonical" href="https://muse-meadow-app.lovable.app/site/clinical-governance" />
       </Helmet>
+      <MedicalWebPageSchema
+        name="Clinical Governance & Outcomes"
+        description="Clinical governance, episode based care, and outcome tracking framework used by Pittsford Performance Care to support medical necessity, utilization integrity, and audit defensibility."
+        url="https://muse-meadow-app.lovable.app/site/clinical-governance"
+        about={[
+          "Clinical Governance",
+          "Episode Based Care",
+          "Outcome Tracking",
+          "Medical Necessity",
+          "Utilization Review",
+          "Neurologic Domain Based Care"
+        ]}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: "https://muse-meadow-app.lovable.app/site/home" },
+          { name: "Clinical Governance & Outcomes", url: "https://muse-meadow-app.lovable.app/site/clinical-governance" }
+        ]}
+      />
 
       {/* Header Section */}
       <section className="py-16 lg:py-20 bg-gradient-to-b from-slate-50 to-background dark:from-slate-900 dark:to-background">
