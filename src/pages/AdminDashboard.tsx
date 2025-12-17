@@ -2,7 +2,7 @@ import { useLeadCentricDashboard } from "@/hooks/useLeadCentricDashboard";
 import {
   DashboardHeader,
   LeadHealthBanner,
-  CareRequestsActionTable,
+  IntakeQueue,
   ConversionFunnel,
   PreVisitMomentumPanel,
   IntelligencePanel,
@@ -50,7 +50,8 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Primary Action Zone - 2 columns */}
         <div className="lg:col-span-2 space-y-6">
-          <CareRequestsActionTable
+          <IntakeQueue
+            leads={data.leads}
             careRequests={data.careRequests}
             loading={loading}
             onRefresh={refetch}

@@ -1,6 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
+interface Lead {
+  id: string;
+  created_at: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  lead_status: string | null;
+  primary_concern: string | null;
+  origin_cta: string | null;
+  origin_page: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  contact_attempt_count: number | null;
+  last_contacted_at: string | null;
+  preferred_contact_method: string | null;
+}
+
 interface CareRequest {
   id: string;
   created_at: string;
@@ -59,6 +77,7 @@ interface PCPSummaryStats {
 }
 
 export interface LeadCentricDashboardData {
+  leads: Lead[];
   careRequests: CareRequest[];
   newLast24Hours: number;
   newLast24HoursPrior: number;
@@ -71,6 +90,7 @@ export interface LeadCentricDashboardData {
 }
 
 const initialData: LeadCentricDashboardData = {
+  leads: [],
   careRequests: [],
   newLast24Hours: 0,
   newLast24HoursPrior: 0,
@@ -117,6 +137,15 @@ export function useLeadCentricDashboard() {
       const last48Hours = new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString();
       const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const next72Hours = new Date(now.getTime() + 72 * 60 * 60 * 1000).toISOString();
+
+      // Fetch all leads (actionable ones - not QUALIFIED or CLOSED)
+      const { data: leads, error: leadsError } = await supabase
+        .from("leads")
+        .select("*")
+        .not("lead_status", "in", "(QUALIFIED,CLOSED)")
+        .order("created_at", { ascending: false });
+
+      if (leadsError) throw leadsError;
 
       // Fetch all care requests with clinician info
       const { data: careRequests, error: crError } = await supabase
@@ -277,6 +306,7 @@ export function useLeadCentricDashboard() {
       }
 
       setData({
+        leads: (leads || []) as Lead[],
         careRequests: (careRequests || []) as CareRequest[],
         newLast24Hours: newLast24Hours || 0,
         newLast24HoursPrior: newLast24HoursPrior || 0,
