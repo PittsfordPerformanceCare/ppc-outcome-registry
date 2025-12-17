@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,15 +21,18 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Phone, Loader2 } from "lucide-react";
+import { Plus, Phone, Loader2, CheckCircle, Calendar, Mail, ArrowRight } from "lucide-react";
 
 interface PhoneIntakeDialogProps {
   onSuccess?: () => void;
 }
 
 export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [createdRequestId, setCreatedRequestId] = useState<string | null>(null);
+  const [createdPatientName, setCreatedPatientName] = useState("");
   
   // Form state
   const [patientName, setPatientName] = useState("");
@@ -47,6 +51,8 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
     setChiefComplaint("");
     setNotes("");
     setSource("PHONE_CALL");
+    setCreatedRequestId(null);
+    setCreatedPatientName("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,9 +104,9 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
         metadata: { source, patient_name: patientName }
       });
 
-      toast.success("Care request created successfully");
-      resetForm();
-      setOpen(false);
+      // Show success state with next steps
+      setCreatedRequestId(careRequest.id);
+      setCreatedPatientName(patientName.trim());
       onSuccess?.();
     } catch (error) {
       console.error("Failed to create care request:", error);
@@ -109,6 +115,76 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
       setLoading(false);
     }
   };
+
+  const handleGoToReview = () => {
+    setOpen(false);
+    navigate(`/intake-review?selected=${createdRequestId}`);
+    resetForm();
+  };
+
+  const handleCreateAnother = () => {
+    resetForm();
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    resetForm();
+  };
+
+  // Success state after creation
+  if (createdRequestId) {
+    return (
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogTrigger asChild>
+          <Button size="sm" className="gap-2">
+            <Plus className="h-4 w-4" />
+            Create Care Request
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[450px]">
+          <div className="flex flex-col items-center text-center py-6">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
+              <CheckCircle className="h-8 w-8 text-emerald-600" />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">Care Request Created</h3>
+            <p className="text-muted-foreground text-sm mb-6">
+              {createdPatientName} has been added to the queue.
+            </p>
+
+            <div className="w-full space-y-3">
+              <div className="bg-muted/50 rounded-lg p-4 text-left">
+                <h4 className="font-medium text-sm mb-2">Next Steps:</h4>
+                <ol className="text-sm text-muted-foreground space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">1</span>
+                    <span>Assign a clinician & approve for care</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">2</span>
+                    <span>Schedule the New Patient Exam (NPE)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-medium">3</span>
+                    <span>Send intake forms via email</span>
+                  </li>
+                </ol>
+              </div>
+
+              <Button onClick={handleGoToReview} className="w-full gap-2">
+                <Calendar className="h-4 w-4" />
+                Review & Schedule NPE
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+              
+              <Button variant="outline" onClick={handleCreateAnother} className="w-full">
+                Create Another Request
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

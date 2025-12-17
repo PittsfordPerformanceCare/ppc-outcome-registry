@@ -25,11 +25,12 @@ import {
   HelpCircle, 
   Archive,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  Calendar,
+  Mail
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
-
 interface CareRequest {
   id: string;
   created_at: string;
@@ -243,6 +244,13 @@ export function CareRequestsActionTable({
                         <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
                           <CheckCircle className="h-4 w-4 mr-2" />
                           Approve for Care
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={(e) => {
+                          e.stopPropagation();
+                          navigate("/admin-shell/registry");
+                        }}>
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Schedule NPE & Send Forms
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
                           <HelpCircle className="h-4 w-4 mr-2" />
