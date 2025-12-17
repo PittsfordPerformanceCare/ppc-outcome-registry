@@ -1,5 +1,12 @@
 import { Helmet } from "react-helmet";
 
+// Canonical IDs for consistent entity references
+export const CANONICAL_IDS = {
+  organization: "https://muse-meadow-app.lovable.app/#organization",
+  physician: "https://muse-meadow-app.lovable.app/#physician-dr-luckey",
+  website: "https://muse-meadow-app.lovable.app/#website",
+};
+
 interface LocalBusinessProps {
   type?: "MedicalBusiness" | "Physician" | "HealthAndBeautyBusiness";
   name?: string;
@@ -33,15 +40,15 @@ export const LocalBusinessSchema = ({
   telephone = "+1-585-203-1050",
   email = "info@pittsfordperformance.com",
   address = {
-    streetAddress: "3349 Monroe Avenue, Suite 330",
-    addressLocality: "Rochester",
+    streetAddress: "3800 Monroe Ave, Suite 22",
+    addressLocality: "Pittsford",
     addressRegion: "NY",
-    postalCode: "14618",
+    postalCode: "14534",
     addressCountry: "US",
   },
   geo = {
-    latitude: 43.1156,
-    longitude: -77.5047,
+    latitude: 43.0962,
+    longitude: -77.5147,
   },
   openingHours = ["Mo-Fr 08:00-17:00"],
   priceRange = "$$",
@@ -52,6 +59,7 @@ export const LocalBusinessSchema = ({
   const schema = {
     "@context": "https://schema.org",
     "@type": type,
+    "@id": CANONICAL_IDS.organization,
     name,
     description,
     url,
@@ -105,7 +113,7 @@ export const LocalBusinessSchema = ({
           itemOffered: {
             "@type": "Service",
             name: "Concussion Evaluation & Treatment",
-            description: "Comprehensive neurologic evaluation for post-concussion symptoms including vestibular, oculomotor, and cognitive assessment.",
+            description: "Comprehensive neurologic evaluation for post concussion symptoms including vestibular, oculomotor, and cognitive assessment.",
           },
         },
         {
@@ -113,7 +121,7 @@ export const LocalBusinessSchema = ({
           itemOffered: {
             "@type": "Service",
             name: "Musculoskeletal Performance Care",
-            description: "Neurologically-informed evaluation and treatment for chronic pain and movement dysfunction.",
+            description: "Neurologically informed evaluation and treatment for chronic pain and movement dysfunction.",
           },
         },
         {
@@ -125,6 +133,89 @@ export const LocalBusinessSchema = ({
           },
         },
       ],
+    },
+  };
+
+  return (
+    <Helmet>
+      <script type="application/ld+json">{JSON.stringify(schema)}</script>
+    </Helmet>
+  );
+};
+
+// Canonical Physician schema for Dr. C. Robert Luckey
+export const PhysicianSchema = () => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Physician",
+    "@id": CANONICAL_IDS.physician,
+    name: "Dr. C. Robert Luckey, DC",
+    givenName: "C. Robert",
+    familyName: "Luckey",
+    honorificSuffix: "DC",
+    jobTitle: "Clinical Director",
+    worksFor: {
+      "@id": CANONICAL_IDS.organization,
+    },
+    medicalSpecialty: ["Neurology", "Sports Medicine", "Chiropractic"],
+    description: "Clinical director at Pittsford Performance Care specializing in neurologic driven concussion recovery and musculoskeletal performance care.",
+  };
+
+  return (
+    <Helmet>
+      <script type="application/ld+json">{JSON.stringify(schema)}</script>
+    </Helmet>
+  );
+};
+
+// MedicalWebPage schema for authority/governance pages
+interface MedicalWebPageProps {
+  name: string;
+  description: string;
+  url: string;
+  datePublished?: string;
+  dateModified?: string;
+  about?: string[];
+}
+
+export const MedicalWebPageSchema = ({
+  name,
+  description,
+  url,
+  datePublished = "2025-01-01",
+  dateModified = new Date().toISOString().split("T")[0],
+  about = [],
+}: MedicalWebPageProps) => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    "@id": url,
+    name,
+    description,
+    url,
+    datePublished,
+    dateModified,
+    inLanguage: "en-US",
+    isPartOf: {
+      "@id": CANONICAL_IDS.website,
+    },
+    about: about.map((topic) => ({
+      "@type": "Thing",
+      name: topic,
+    })),
+    publisher: {
+      "@id": CANONICAL_IDS.organization,
+    },
+    author: {
+      "@id": CANONICAL_IDS.organization,
+    },
+    mainContentOfPage: {
+      "@type": "WebPageElement",
+      cssSelector: "main",
+    },
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", "h2", "p"],
     },
   };
 
