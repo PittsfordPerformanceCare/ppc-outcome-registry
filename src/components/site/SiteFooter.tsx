@@ -91,6 +91,12 @@ const SiteFooter = memo(() => {
                 >
                   Physician Referral
                 </Link>
+                <Link 
+                  to="/site/clinical-governance" 
+                  className="text-slate-400 hover:text-white transition-colors duration-200"
+                >
+                  Clinical Governance & Outcomes
+                </Link>
               </nav>
             </div>
 
