@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, Brain, Activity, Users, Trophy } from "lucide-react";
 import { getArticleBySlug, getRelatedArticles, ArticleSection } from "@/data/siteArticles";
 import { ArticleCTA, SymptomCallout, RelatedArticles } from "@/components/site/ArticleCTA";
-import { ArticleSchema } from "@/components/site/StructuredData";
+import { ArticleSchema, PhysicianSchema } from "@/components/site/StructuredData";
 import { processTextWithLexicon, resetArticleLexiconTracking, getArticleLexiconTerms } from "@/utils/lexiconTextProcessor";
 import { useEffect } from "react";
 
@@ -151,8 +151,8 @@ const SiteArticleDetail = () => {
         description={article.excerpt}
         url={canonicalUrl}
         datePublished="2025-01-01"
-        author="Dr. C. Robert Luckey, DC"
       />
+      <PhysicianSchema />
       {/* Article Header */}
       <section className="py-16 bg-gradient-to-b from-primary/5 to-background">
         <div className="container mx-auto px-4">

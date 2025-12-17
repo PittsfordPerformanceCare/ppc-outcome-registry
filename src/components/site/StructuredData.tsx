@@ -290,7 +290,6 @@ interface ArticleProps {
   url: string;
   datePublished?: string;
   dateModified?: string;
-  author?: string;
   image?: string;
 }
 
@@ -300,33 +299,32 @@ export const ArticleSchema = ({
   url,
   datePublished = "2025-01-01",
   dateModified = "2025-12-12",
-  author = "Pittsford Performance Care",
   image = "https://muse-meadow-app.lovable.app/og-image.png",
 }: ArticleProps) => {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "MedicalWebPage",
     headline,
     description,
     url,
     datePublished,
     dateModified,
     author: {
-      "@type": "Organization",
-      name: author,
+      "@type": "Person",
+      "@id": CANONICAL_IDS.physician,
     },
     publisher: {
-      "@type": "Organization",
-      name: "Pittsford Performance Care",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://muse-meadow-app.lovable.app/icon-512x512.png",
-      },
+      "@type": "MedicalBusiness",
+      "@id": CANONICAL_IDS.organization,
     },
     image,
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": url,
+    },
+    inLanguage: "en-US",
+    isPartOf: {
+      "@id": CANONICAL_IDS.website,
     },
   };
 
