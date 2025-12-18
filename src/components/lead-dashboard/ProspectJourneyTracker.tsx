@@ -18,8 +18,14 @@ import { BookNPVisitDialog } from "./BookNPVisitDialog";
 import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
 import { useNavigate } from "react-router-dom";
 
-// The 6 journey stages per UX spec
-type JourneyStage = "lead" | "approved" | "scheduled" | "forms_sent" | "forms_received" | "episode_active";
+// The 6 journey stages per UX spec - FIXED, never add more
+type JourneyStage = 
+  | "lead_submitted" 
+  | "approved_for_care" 
+  | "visit_scheduled" 
+  | "forms_sent" 
+  | "forms_received" 
+  | "episode_active";
 
 // What action Jennifer needs to take at each stage
 type JenniferAction = "approve" | "schedule" | "send_forms" | "convert" | "waiting" | "done";
@@ -33,9 +39,11 @@ interface ProspectJourney {
   createdAt: string;
   currentStage: JourneyStage;
   jenniferAction: JenniferAction;
-  patientCompleted: boolean; // Patient did their part (forms received)
+  patientCompleted: boolean;
   daysInPipeline: number;
+  isStalled: boolean; // Time-based urgency
   appointmentDate?: string;
+  sourceType: "lead" | "care_request";
   leadId?: string;
   careRequestData?: {
     id: string;
@@ -49,24 +57,33 @@ interface ProspectJourneyTrackerProps {
   className?: string;
 }
 
-// Stage labels for display
+// Stage labels - exact terminology per spec
 const STAGE_LABELS: Record<JourneyStage, string> = {
-  lead: "New Lead",
-  approved: "Approved",
-  scheduled: "Visit Scheduled",
-  forms_sent: "Forms Sent",
+  lead_submitted: "Lead Submitted",
+  approved_for_care: "Approved for Care",
+  visit_scheduled: "NP Visit Scheduled",
+  forms_sent: "Legal Forms Sent",
   forms_received: "Forms Received",
   episode_active: "Episode Active",
 };
 
-// Action button config - what Jennifer sees
-const ACTION_CONFIG: Record<JenniferAction, { label: string; icon: typeof Calendar; variant: "default" | "secondary" | "outline" }> = {
-  approve: { label: "Approve", icon: CheckCircle2, variant: "default" },
-  schedule: { label: "Schedule Visit", icon: Calendar, variant: "default" },
-  send_forms: { label: "Send Forms", icon: Mail, variant: "default" },
-  convert: { label: "Convert to Episode", icon: PlayCircle, variant: "default" },
-  waiting: { label: "Waiting", icon: Clock, variant: "outline" },
-  done: { label: "Complete", icon: CheckCircle2, variant: "secondary" },
+// Stall thresholds per stage (in days)
+const STALL_THRESHOLDS: Partial<Record<JourneyStage, number>> = {
+  lead_submitted: 2,
+  approved_for_care: 3,
+  visit_scheduled: 1,
+  forms_sent: 5,
+  forms_received: 1,
+};
+
+// Action button config - verb-first labels per spec
+const ACTION_CONFIG: Record<JenniferAction, { label: string; icon: typeof Calendar }> = {
+  approve: { label: "Approve", icon: CheckCircle2 },
+  schedule: { label: "Schedule Visit", icon: Calendar },
+  send_forms: { label: "Send Forms", icon: Mail },
+  convert: { label: "Convert to Episode", icon: PlayCircle },
+  waiting: { label: "Waiting", icon: Clock },
+  done: { label: "Complete", icon: CheckCircle2 },
 };
 
 export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProps) {
@@ -85,35 +102,84 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
     setError(null);
     
     try {
-      // Get care requests (main pipeline)
-      const { data: careRequests, error: crError } = await supabase
-        .from("care_requests")
-        .select("*")
-        .not("status", "in", '("archived","declined","ARCHIVED","DECLINED","CONVERTED")')
-        .is("episode_id", null)
-        .order("created_at", { ascending: false });
+      // Fetch all data in parallel for efficiency
+      const [leadsResult, careRequestsResult, pendingEpisodesResult, intakeFormsResult] = await Promise.all([
+        // Get leads that haven't been converted to care requests
+        supabase
+          .from("leads")
+          .select("*")
+          .not("funnel_stage", "in", '("converted","closed_lost")')
+          .order("created_at", { ascending: false }),
+        // Get care requests (main pipeline)
+        supabase
+          .from("care_requests")
+          .select("*")
+          .not("status", "in", '("archived","declined","ARCHIVED","DECLINED","CONVERTED")')
+          .is("episode_id", null)
+          .order("created_at", { ascending: false }),
+        // Get pending episodes (for scheduled visits)
+        supabase
+          .from("pending_episodes")
+          .select("*")
+          .in("status", ["pending", "scheduled", "ready_for_conversion"]),
+        // Get intake forms
+        supabase
+          .from("intake_forms")
+          .select("*"),
+      ]);
 
-      if (crError) throw crError;
+      if (leadsResult.error) throw leadsResult.error;
+      if (careRequestsResult.error) throw careRequestsResult.error;
+      if (pendingEpisodesResult.error) throw pendingEpisodesResult.error;
+      if (intakeFormsResult.error) throw intakeFormsResult.error;
 
-      // Get pending episodes (for scheduled visits)
-      const { data: pendingEpisodes, error: peError } = await supabase
-        .from("pending_episodes")
-        .select("*")
-        .in("status", ["pending", "scheduled", "ready_for_conversion"]);
+      const leads = leadsResult.data || [];
+      const careRequests = careRequestsResult.data || [];
+      const pendingEpisodes = pendingEpisodesResult.data || [];
+      const intakeForms = intakeFormsResult.data || [];
 
-      if (peError) throw peError;
-
-      // Get intake forms
-      const { data: intakeForms, error: ifError } = await supabase
-        .from("intake_forms")
-        .select("*");
-
-      if (ifError) throw ifError;
-
-      // Build prospect journeys
       const journeys: ProspectJourney[] = [];
 
-      for (const cr of careRequests || []) {
+      // Helper to calculate stall status
+      const isStalled = (stage: JourneyStage, daysInStage: number): boolean => {
+        const threshold = STALL_THRESHOLDS[stage];
+        return threshold !== undefined && daysInStage >= threshold;
+      };
+
+      // Process leads that don't have a care request yet
+      const leadEmailsWithCR = new Set(
+        careRequests
+          .map(cr => ((cr.intake_payload as Record<string, unknown>)?.email as string)?.toLowerCase())
+          .filter(Boolean)
+      );
+
+      for (const lead of leads) {
+        // Skip leads that already have a care request
+        if (lead.email && leadEmailsWithCR.has(lead.email.toLowerCase())) continue;
+        if (lead.funnel_stage === "qualified") continue; // Already converted
+
+        const createdDate = new Date(lead.created_at);
+        const daysInPipeline = Math.floor((Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+
+        journeys.push({
+          id: lead.id,
+          name: lead.name || "Unknown",
+          email: lead.email || "",
+          phone: lead.phone || null,
+          primaryConcern: lead.primary_concern || lead.symptom_summary || null,
+          createdAt: lead.created_at,
+          currentStage: "lead_submitted",
+          jenniferAction: "approve",
+          patientCompleted: false,
+          daysInPipeline,
+          isStalled: isStalled("lead_submitted", daysInPipeline),
+          sourceType: "lead",
+          leadId: lead.id,
+        });
+      }
+
+      // Process care requests
+      for (const cr of careRequests) {
         const payload = cr.intake_payload as Record<string, unknown> || {};
         const patientName = (payload.name as string) || (payload.patient_name as string) || "Unknown";
         const email = (payload.email as string) || "";
@@ -121,12 +187,12 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const primaryConcern = cr.primary_complaint || (payload.chief_complaint as string) || null;
 
         // Find matching pending episode
-        const pendingEp = pendingEpisodes?.find(pe => 
+        const pendingEp = pendingEpisodes.find(pe => 
           pe.patient_name?.toLowerCase() === patientName.toLowerCase()
         );
 
         // Find matching intake form
-        const intakeForm = intakeForms?.find(f => 
+        const intakeForm = intakeForms.find(f => 
           f.patient_name?.toLowerCase() === patientName.toLowerCase() ||
           (email && f.email?.toLowerCase() === email.toLowerCase())
         );
@@ -141,22 +207,22 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const episodeActive = !!cr.episode_id;
 
         // Determine current stage
-        let currentStage: JourneyStage = "lead";
+        let currentStage: JourneyStage = "lead_submitted";
         if (episodeActive) currentStage = "episode_active";
         else if (formsReceived) currentStage = "forms_received";
         else if (formsSent) currentStage = "forms_sent";
-        else if (isScheduled) currentStage = "scheduled";
-        else if (isApproved) currentStage = "approved";
+        else if (isScheduled) currentStage = "visit_scheduled";
+        else if (isApproved) currentStage = "approved_for_care";
 
         // Determine Jennifer's action - the KEY UX decision
         let jenniferAction: JenniferAction = "approve";
         let patientCompleted = false;
 
-        if (currentStage === "lead") {
+        if (currentStage === "lead_submitted") {
           jenniferAction = "approve";
-        } else if (currentStage === "approved") {
+        } else if (currentStage === "approved_for_care") {
           jenniferAction = "schedule";
-        } else if (currentStage === "scheduled") {
+        } else if (currentStage === "visit_scheduled") {
           jenniferAction = "send_forms";
         } else if (currentStage === "forms_sent") {
           jenniferAction = "waiting"; // Waiting on patient
@@ -183,7 +249,9 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           jenniferAction,
           patientCompleted,
           daysInPipeline,
+          isStalled: isStalled(currentStage, daysInPipeline),
           appointmentDate: pendingEp?.scheduled_date,
+          sourceType: "care_request",
           careRequestData: {
             id: cr.id,
             intake_payload: payload,
@@ -193,13 +261,21 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         });
       }
 
-      // Sort: action required first (not "waiting" or "done"), then by days in pipeline
+      // Sort: stalled first, then action required, then by days in pipeline
       journeys.sort((a, b) => {
+        // Stalled items with action required come first
+        const aUrgent = a.isStalled && !["waiting", "done"].includes(a.jenniferAction);
+        const bUrgent = b.isStalled && !["waiting", "done"].includes(b.jenniferAction);
+        if (aUrgent && !bUrgent) return -1;
+        if (!aUrgent && bUrgent) return 1;
+
+        // Then action required
         const aActionRequired = !["waiting", "done"].includes(a.jenniferAction);
         const bActionRequired = !["waiting", "done"].includes(b.jenniferAction);
-        
         if (aActionRequired && !bActionRequired) return -1;
         if (!aActionRequired && bActionRequired) return 1;
+
+        // Then by days
         return b.daysInPipeline - a.daysInPipeline;
       });
 
@@ -222,16 +298,45 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
 
     switch (prospect.jenniferAction) {
       case "approve":
-        // Quick approve - update status
         try {
-          await supabase
-            .from("care_requests")
-            .update({ 
-              status: "APPROVED",
-              approved_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            })
-            .eq("id", prospect.id);
+          if (prospect.sourceType === "lead") {
+            // For leads: Create a care request and mark lead as qualified
+            const { error: crError } = await supabase
+              .from("care_requests")
+              .insert({
+                intake_payload: {
+                  name: prospect.name,
+                  email: prospect.email,
+                  phone: prospect.phone,
+                  primary_concern: prospect.primaryConcern,
+                },
+                primary_complaint: prospect.primaryConcern,
+                source: "lead",
+                status: "APPROVED",
+                approved_at: new Date().toISOString(),
+              });
+            
+            if (crError) throw crError;
+
+            // Update lead funnel stage
+            await supabase
+              .from("leads")
+              .update({ 
+                funnel_stage: "qualified",
+                updated_at: new Date().toISOString()
+              })
+              .eq("id", prospect.id);
+          } else {
+            // For care requests: Just approve
+            await supabase
+              .from("care_requests")
+              .update({ 
+                status: "APPROVED",
+                approved_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              })
+              .eq("id", prospect.id);
+          }
           loadProspects();
         } catch (err) {
           console.error("Error approving:", err);
@@ -245,7 +350,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         break;
       case "convert":
         // Navigate to episode creation
-        navigate(`/new-episode?care_request=${prospect.id}`);
+        navigate(`/new-episode?care_request=${prospect.careRequestData?.id || prospect.id}`);
         break;
       default:
         break;
@@ -332,16 +437,19 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                 const actionConfig = ACTION_CONFIG[prospect.jenniferAction];
                 const ActionIcon = actionConfig.icon;
                 const isActionRequired = !["waiting", "done"].includes(prospect.jenniferAction);
+                const showUrgency = prospect.isStalled && isActionRequired;
 
                 return (
                   <div
                     key={prospect.id}
                     className={`p-4 rounded-lg border transition-all ${
-                      isActionRequired 
-                        ? 'border-orange-300 bg-orange-50/50 dark:border-orange-800 dark:bg-orange-950/20' 
-                        : prospect.patientCompleted
-                          ? 'border-green-200 bg-green-50/30 dark:border-green-900 dark:bg-green-950/20'
-                          : 'border-border bg-card'
+                      showUrgency
+                        ? 'border-orange-400 bg-orange-100/60 dark:border-orange-700 dark:bg-orange-950/30 ring-1 ring-orange-400/30'
+                        : isActionRequired 
+                          ? 'border-orange-300 bg-orange-50/50 dark:border-orange-800 dark:bg-orange-950/20' 
+                          : prospect.patientCompleted
+                            ? 'border-green-200 bg-green-50/30 dark:border-green-900 dark:bg-green-950/20'
+                            : 'border-border bg-card'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-4">
@@ -351,6 +459,11 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                           <h4 className="font-semibold text-base truncate">{prospect.name}</h4>
                           {prospect.patientCompleted && (
                             <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
+                          )}
+                          {showUrgency && (
+                            <Badge variant="outline" className="text-orange-600 border-orange-400 text-xs px-1.5 py-0">
+                              {prospect.daysInPipeline}d
+                            </Badge>
                           )}
                         </div>
                         <div className="flex items-center gap-3 text-sm text-muted-foreground">
