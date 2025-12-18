@@ -153,15 +153,20 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
       };
 
       // Process leads that don't have a care request yet
-      const leadEmailsWithCR = new Set(
-        careRequests
-          .map(cr => ((cr.intake_payload as Record<string, unknown>)?.email as string)?.toLowerCase())
-          .filter(Boolean)
+      // Match by both name AND email to avoid filtering out different people with same email
+      const careRequestPatients = new Set(
+        careRequests.map(cr => {
+          const payload = cr.intake_payload as Record<string, unknown>;
+          const name = ((payload?.name as string) || (payload?.patient_name as string) || "").toLowerCase().trim();
+          const email = ((payload?.email as string) || "").toLowerCase().trim();
+          return `${name}::${email}`;
+        }).filter(key => key !== "::")
       );
 
       for (const lead of leads) {
-        // Skip leads that already have a care request
-        if (lead.email && leadEmailsWithCR.has(lead.email.toLowerCase())) continue;
+        // Skip leads that already have a care request (match on name + email)
+        const leadKey = `${(lead.name || "").toLowerCase().trim()}::${(lead.email || "").toLowerCase().trim()}`;
+        if (careRequestPatients.has(leadKey)) continue;
         if (lead.funnel_stage === "qualified") continue; // Already converted
 
         const createdDate = new Date(lead.created_at);
