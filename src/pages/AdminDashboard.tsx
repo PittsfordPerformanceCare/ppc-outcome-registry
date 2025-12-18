@@ -8,6 +8,7 @@ import {
   IntelligencePanel,
   PCPSummaryTile,
   OutstandingTasksTile,
+  ProspectJourneyTracker,
 } from "@/components/lead-dashboard";
 import { PendingEpisodeContinuationsPanel } from "@/components/PendingEpisodeContinuationsPanel";
 import { PausedEpisodesSignal } from "@/components/admin-dashboard";
@@ -36,6 +37,9 @@ const AdminDashboard = () => {
         oldestDays={data.pcpSummaries.oldestDays}
         resendCount={data.pcpSummaries.resendCount}
       />
+
+      {/* PROSPECTIVE PATIENT JOURNEY - Primary visibility for Jennifer */}
+      <ProspectJourneyTracker className="border-2 border-primary/20" />
 
       {/* Pending Episode Continuations - Episodes requiring follow-on setup */}
       <PendingEpisodeContinuationsPanel />
