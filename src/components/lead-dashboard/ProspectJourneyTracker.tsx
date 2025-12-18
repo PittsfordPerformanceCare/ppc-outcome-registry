@@ -211,10 +211,14 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const statusUpper = cr.status?.toUpperCase() || "";
         
         // Determine stage completion
-        const isApproved = ["APPROVED", "APPROVED_FOR_CARE", "SCHEDULED", "SUBMITTED", "IN_REVIEW", "ASSIGNED"].includes(statusUpper) || !!cr.approved_at;
+        const isApproved = ["APPROVED", "APPROVED_FOR_CARE", "SCHEDULED", "IN_REVIEW", "ASSIGNED"].includes(statusUpper) || !!cr.approved_at;
         const isScheduled = !!pendingEp?.scheduled_date || statusUpper === "SCHEDULED";
-        const formsSent = !!intakeForm || isScheduled;
-        const formsReceived = intakeForm?.status === "submitted" || !!intakeForm?.submitted_at || statusUpper === "SUBMITTED";
+        // Only check intake forms that match this specific care request, not just by email
+        const matchedIntakeForm = intakeForms.find(f => 
+          f.patient_name?.toLowerCase().trim() === patientName.toLowerCase().trim()
+        );
+        const formsSent = !!matchedIntakeForm && isScheduled;
+        const formsReceived = matchedIntakeForm?.status === "submitted" || !!matchedIntakeForm?.submitted_at;
         const episodeActive = !!cr.episode_id;
 
         // Determine current stage
