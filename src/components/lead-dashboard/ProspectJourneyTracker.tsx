@@ -320,9 +320,10 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                   email: prospect.email,
                   phone: prospect.phone,
                   primary_concern: prospect.primaryConcern,
+                  lead_id: prospect.leadId,
                 },
                 primary_complaint: prospect.primaryConcern,
-                source: "lead",
+                source: "WEBSITE",
                 status: "APPROVED",
                 approved_at: new Date().toISOString(),
               });
