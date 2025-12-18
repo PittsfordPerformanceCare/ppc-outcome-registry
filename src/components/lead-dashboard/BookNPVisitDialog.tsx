@@ -6,11 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Loader2, CheckCircle2 } from "lucide-react";
+import { CalendarIcon, Loader2, CheckCircle2, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface BookNPVisitDialogProps {
   open: boolean;
@@ -41,9 +42,8 @@ interface BookNPVisitDialogProps {
 }
 
 const VISIT_TYPES = [
-  { value: "np_neuro", label: "New Patient - Neurologic" },
-  { value: "np_msk", label: "New Patient - MSK" },
-  { value: "np_pediatric", label: "New Patient - Pediatric" },
+  { value: "np_neuro", label: "Neuro New Patient" },
+  { value: "np_msk", label: "MSK New Patient" },
 ];
 
 const TIME_SLOTS = [
@@ -63,7 +63,9 @@ export function BookNPVisitDialog({
   const [appointmentDate, setAppointmentDate] = useState<Date | undefined>();
   const [appointmentTime, setAppointmentTime] = useState("");
   const [provider, setProvider] = useState("");
+  const [sendEmail, setSendEmail] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [currentStep, setCurrentStep] = useState<"scheduling" | "processing">("scheduling");
   const [processingStatus, setProcessingStatus] = useState<string[]>([]);
 
@@ -78,8 +80,47 @@ export function BookNPVisitDialog({
     setAppointmentDate(undefined);
     setAppointmentTime("");
     setProvider("");
+    setSendEmail(true);
     setCurrentStep("scheduling");
     setProcessingStatus([]);
+  };
+
+  // Standalone send email function
+  const handleSendEmailOnly = async () => {
+    if (!patientEmail) {
+      toast.error("No email address on file");
+      return;
+    }
+    if (!visitType) {
+      toast.error("Please select a visit type first");
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      const templateType = visitType.includes("neuro") ? "neuro" : "msk";
+      
+      const { error: emailError } = await supabase.functions.invoke("send-onboarding-email", {
+        body: {
+          email: patientEmail,
+          patientName: patientName,
+          leadId: lead?.id || careRequest?.id,
+          templateType,
+        },
+      });
+
+      if (emailError) {
+        console.error("Failed to send intake forms:", emailError);
+        toast.error("Failed to send email. Please try again.");
+      } else {
+        toast.success(`Intake forms sent to ${patientEmail}`);
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast.error("Failed to send email");
+    } finally {
+      setIsSendingEmail(false);
+    }
   };
 
   const addStatus = (status: string) => {
@@ -163,8 +204,8 @@ export function BookNPVisitDialog({
 
       addStatus("✓ NP visit scheduled for " + format(appointmentDate, "MMM d, yyyy") + " at " + appointmentTime);
 
-      // Step 3: Send legal intake forms
-      if (patientEmail) {
+      // Step 3: Send legal intake forms (only if checkbox is checked)
+      if (sendEmail && patientEmail) {
         addStatus("Sending intake forms...");
         
         const templateType = visitType.includes("neuro") ? "neuro" : "msk";
@@ -184,8 +225,10 @@ export function BookNPVisitDialog({
         } else {
           addStatus("✓ Legal intake forms sent to " + patientEmail);
         }
-      } else {
+      } else if (sendEmail && !patientEmail) {
         addStatus("⚠ No email on file - intake forms must be sent manually");
+      } else {
+        addStatus("✓ Email skipped (you can send manually later)");
       }
 
       // Step 4: Approve care request and create episode
@@ -381,13 +424,53 @@ export function BookNPVisitDialog({
                 />
               </div>
 
+              {/* Email Options */}
+              <div className="rounded-lg border p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="sendEmail"
+                      checked={sendEmail}
+                      onCheckedChange={(checked) => setSendEmail(checked === true)}
+                    />
+                    <Label htmlFor="sendEmail" className="font-medium cursor-pointer">
+                      Send intake forms via email
+                    </Label>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSendEmailOnly}
+                    disabled={!patientEmail || !visitType || isSendingEmail}
+                  >
+                    {isSendingEmail ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Mail className="h-4 w-4 mr-2" />
+                    )}
+                    Send Email Now
+                  </Button>
+                </div>
+                {patientEmail && (
+                  <p className="text-xs text-muted-foreground ml-6">
+                    Will send to: {patientEmail}
+                  </p>
+                )}
+                {!patientEmail && (
+                  <p className="text-xs text-amber-600 ml-6">
+                    No email on file - add email or send forms manually
+                  </p>
+                )}
+              </div>
+
               {/* What will happen */}
               <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 space-y-2 dark:border-blue-800 dark:bg-blue-950/30">
                 <div className="text-sm font-medium text-blue-900 dark:text-blue-100">What happens when you confirm:</div>
                 <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
                   {lead && <li>Care Request will be created</li>}
                   <li>NP appointment will be booked</li>
-                  <li>Legal intake forms will be sent via email</li>
+                  {sendEmail && patientEmail && <li>Legal intake forms will be sent via email</li>}
                   <li>Patient Episode will be created</li>
                 </ul>
               </div>
