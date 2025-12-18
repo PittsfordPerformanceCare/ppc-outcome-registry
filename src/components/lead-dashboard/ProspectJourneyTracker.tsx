@@ -324,7 +324,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                 },
                 primary_complaint: prospect.primaryConcern,
                 source: "WEBSITE",
-                status: "APPROVED",
+                status: "APPROVED_FOR_CARE",
                 approved_at: new Date().toISOString(),
               });
             
@@ -343,7 +343,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
             await supabase
               .from("care_requests")
               .update({ 
-                status: "APPROVED",
+                status: "APPROVED_FOR_CARE",
                 approved_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
               })
