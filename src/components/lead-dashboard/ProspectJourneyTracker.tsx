@@ -211,7 +211,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const statusUpper = cr.status?.toUpperCase() || "";
         
         // Determine stage completion
-        const isApproved = ["APPROVED", "SCHEDULED", "SUBMITTED", "IN_REVIEW", "ASSIGNED"].includes(statusUpper) || !!cr.approved_at;
+        const isApproved = ["APPROVED", "APPROVED_FOR_CARE", "SCHEDULED", "SUBMITTED", "IN_REVIEW", "ASSIGNED"].includes(statusUpper) || !!cr.approved_at;
         const isScheduled = !!pendingEp?.scheduled_date || statusUpper === "SCHEDULED";
         const formsSent = !!intakeForm || isScheduled;
         const formsReceived = intakeForm?.status === "submitted" || !!intakeForm?.submitted_at || statusUpper === "SUBMITTED";
