@@ -64,10 +64,12 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
     
     try {
       // Get care requests (main source of prospects in the pipeline)
+      // Get care requests - include all active statuses (case insensitive matching)
       const { data: careRequests, error: crError } = await supabase
         .from("care_requests")
         .select("*")
-        .in("status", ["pending", "approved", "scheduled", "in_progress"])
+        .not("status", "in", '("archived","declined","ARCHIVED","DECLINED")')
+        .is("episode_id", null) // Only prospects not yet converted to episodes
         .order("created_at", { ascending: false });
 
       if (crError) throw crError;
@@ -109,10 +111,12 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           f.email?.toLowerCase() === email.toLowerCase()
         );
 
-        const isApproved = cr.status !== "pending" && !!cr.approved_at;
-        const isScheduled = !!pendingEp?.scheduled_date || cr.status === "scheduled";
-        const formsSent = !!intakeForm || isScheduled; // Forms are sent when scheduled
-        const formsReceived = intakeForm?.status === "submitted" || !!intakeForm?.submitted_at;
+        const statusUpper = cr.status?.toUpperCase() || "";
+        const isApproved = !["PENDING", "NEW"].includes(statusUpper) && (!!cr.approved_at || statusUpper === "APPROVED");
+        const isScheduled = !!pendingEp?.scheduled_date || ["SCHEDULED", "SUBMITTED"].includes(statusUpper);
+        const formsSent = !!intakeForm || isScheduled; // Forms are sent when visit is scheduled
+        // Forms received if: intake_form is submitted OR care_request status is SUBMITTED
+        const formsReceived = intakeForm?.status === "submitted" || !!intakeForm?.submitted_at || statusUpper === "SUBMITTED";
         const episodeActive = !!cr.episode_id;
 
         // Determine current stage
