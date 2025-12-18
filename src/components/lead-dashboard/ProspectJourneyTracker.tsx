@@ -11,8 +11,14 @@ import {
   Calendar,
   Mail,
   PlayCircle,
-  ArrowRight
+  ArrowRight,
+  HelpCircle
 } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { formatDistanceToNow, format } from "date-fns";
 import { BookNPVisitDialog } from "./BookNPVisitDialog";
 import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
@@ -395,16 +401,86 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
       <Card className={className}>
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                Prospect Journey
-              </CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                {activeProspects.length === 0 
-                  ? "No active prospects" 
-                  : `${activeProspects.length} prospect${activeProspects.length !== 1 ? 's' : ''} in pipeline`
-                }
-              </p>
+            <div className="flex items-center gap-2">
+              <div>
+                <CardTitle className="text-xl font-semibold flex items-center gap-2">
+                  Prospect Journey
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {activeProspects.length === 0 
+                    ? "No active prospects" 
+                    : `${activeProspects.length} prospect${activeProspects.length !== 1 ? 's' : ''} in pipeline`
+                  }
+                </p>
+              </div>
+              {/* Help tooltip with checklist */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground">
+                    <HelpCircle className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-96 p-0" align="start">
+                  <div className="p-4 border-b bg-muted/30">
+                    <h4 className="font-semibold text-sm">Lead → Episode Checklist</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">Your step-by-step guide</p>
+                  </div>
+                  <div className="p-3 space-y-2 text-sm">
+                    <div className="flex gap-3 items-start p-2 rounded-md bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900">
+                      <span className="font-mono text-xs bg-orange-500 text-white rounded px-1.5 py-0.5">1</span>
+                      <div>
+                        <p className="font-medium">Lead Submitted</p>
+                        <p className="text-xs text-muted-foreground">Click <strong>Approve</strong> to confirm valid patient</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 items-start p-2 rounded-md bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900">
+                      <span className="font-mono text-xs bg-orange-500 text-white rounded px-1.5 py-0.5">2</span>
+                      <div>
+                        <p className="font-medium">Approved for Care</p>
+                        <p className="text-xs text-muted-foreground">Click <strong>Schedule Visit</strong> → book NP appointment</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 items-start p-2 rounded-md bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900">
+                      <span className="font-mono text-xs bg-orange-500 text-white rounded px-1.5 py-0.5">3</span>
+                      <div>
+                        <p className="font-medium">NP Visit Scheduled</p>
+                        <p className="text-xs text-muted-foreground">Click <strong>Send Forms</strong> → triggers intake email</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 items-start p-2 rounded-md border">
+                      <span className="font-mono text-xs bg-muted text-muted-foreground rounded px-1.5 py-0.5">4</span>
+                      <div>
+                        <p className="font-medium">Legal Forms Sent</p>
+                        <p className="text-xs text-muted-foreground">Wait for patient — ✓ appears when done</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 items-start p-2 rounded-md bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900">
+                      <span className="font-mono text-xs bg-green-600 text-white rounded px-1.5 py-0.5">5</span>
+                      <div>
+                        <p className="font-medium">Forms Received ✓</p>
+                        <p className="text-xs text-muted-foreground">Click <strong>Convert to Episode</strong> → create episode</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 items-start p-2 rounded-md border bg-muted/30">
+                      <span className="font-mono text-xs bg-muted-foreground text-white rounded px-1.5 py-0.5">6</span>
+                      <div>
+                        <p className="font-medium">Episode Active</p>
+                        <p className="text-xs text-muted-foreground">Done! Card disappears — patient in care</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-3 border-t bg-muted/20 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-orange-500" />
+                      <span>Orange = your action needed</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <CheckCircle2 className="h-3 w-3 text-green-600" />
+                      <span>Checkmark = patient completed</span>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="flex items-center gap-3">
               {actionRequiredCount > 0 && (
