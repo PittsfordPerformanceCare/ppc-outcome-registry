@@ -194,11 +194,20 @@ export function useLeadCentricDashboard() {
         .select("*", { count: "exact", head: true })
         .not("episode_id", "is", null);
 
-      // Count completed intake forms
-      const { count: formsComplete } = await supabase
+      // Count completed forms - from both intake_forms AND care_requests with SUBMITTED status
+      const { count: intakeFormsComplete } = await supabase
         .from("intake_forms")
         .select("*", { count: "exact", head: true })
         .eq("status", "submitted");
+
+      // Also count care_requests with SUBMITTED status (legal forms submitted)
+      const { count: careRequestFormsComplete } = await supabase
+        .from("care_requests")
+        .select("*", { count: "exact", head: true })
+        .eq("status", "SUBMITTED");
+
+      // Combine both counts (deduplicate would require more complex query, but this gives visibility)
+      const formsComplete = (intakeFormsComplete || 0) + (careRequestFormsComplete || 0);
 
       // Count active episodes
       const { count: episodeActive } = await supabase
