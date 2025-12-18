@@ -144,6 +144,14 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
       const pendingEpisodes = pendingEpisodesResult.data || [];
       const intakeForms = intakeFormsResult.data || [];
 
+      console.log("[ProspectJourney] Fetched data:", {
+        leads: leads.length,
+        careRequests: careRequests.length,
+        careRequestStatuses: careRequests.map(cr => ({ name: (cr.intake_payload as any)?.name, status: cr.status })),
+        pendingEpisodes: pendingEpisodes.length,
+        intakeForms: intakeForms.length
+      });
+
       const journeys: ProspectJourney[] = [];
 
       // Helper to calculate stall status
@@ -254,6 +262,8 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         // Calculate days in pipeline
         const createdDate = new Date(cr.created_at);
         const daysInPipeline = Math.floor((Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+
+        console.log(`[ProspectJourney] ${patientName}: status=${statusUpper}, isApproved=${isApproved}, currentStage=${currentStage}, jenniferAction=${jenniferAction}`);
 
         journeys.push({
           id: cr.id,
