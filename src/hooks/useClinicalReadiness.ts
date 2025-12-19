@@ -12,9 +12,18 @@ export interface ReadyPatient {
   systemFocus?: string;
   intakeCompletedAt: string;
   isNewPatient: boolean;
+  isInternalReferral?: boolean;
   priorEpisodeContext?: string;
   leadId?: string;
   source: 'care_request' | 'intake_form';
+}
+
+export interface ClinicalReadinessData {
+  newNeuroPatients: ReadyPatient[];
+  newMskPatients: ReadyPatient[];
+  returningNeuroPatients: ReadyPatient[];
+  returningMskPatients: ReadyPatient[];
+  internalNeuroPatients: ReadyPatient[];
 }
 
 // Classify complaint into Neurologic or MSK
@@ -85,7 +94,7 @@ async function checkPriorEpisodes(patientName: string, email?: string): Promise<
 export function useClinicalReadiness() {
   return useQuery({
     queryKey: ['clinical-readiness'],
-    queryFn: async (): Promise<{ newPatients: ReadyPatient[]; returningPatients: ReadyPatient[] }> => {
+    queryFn: async (): Promise<ClinicalReadinessData> => {
       // Fetch care requests that are approved but not yet converted to episodes
       const { data: careRequests, error: crError } = await supabase
         .from('care_requests')
@@ -115,6 +124,11 @@ export function useClinicalReadiness() {
         const { classification, systemFocus } = classifyComplaint(complaint);
         const priorCheck = await checkPriorEpisodes(patientName, payload?.email as string);
         
+        // Detect internal referrals (from clinic staff or other clinicians)
+        const isInternal = cr.source === 'internal' || 
+          (payload?.referral_source as string)?.toLowerCase()?.includes('internal') ||
+          (payload?.referral_source as string)?.toLowerCase()?.includes('clinician');
+        
         readyPatients.push({
           id: cr.id,
           patientName,
@@ -126,6 +140,7 @@ export function useClinicalReadiness() {
           systemFocus,
           intakeCompletedAt: cr.approved_at || cr.created_at,
           isNewPatient: !priorCheck.hasPrior,
+          isInternalReferral: isInternal,
           priorEpisodeContext: priorCheck.context,
           leadId: (payload?.lead_id as string) || undefined,
           source: 'care_request'
@@ -158,17 +173,37 @@ export function useClinicalReadiness() {
           systemFocus,
           intakeCompletedAt: intake.timestamp_completed || intake.created_at,
           isNewPatient: !priorCheck.hasPrior,
+          isInternalReferral: false,
           priorEpisodeContext: priorCheck.context,
           leadId: intake.lead_id || undefined,
-          source: 'care_request' // Using care_request as source type since intakes feed into care requests
+          source: 'care_request'
         });
       }
       
-      // Separate into new vs returning patients
-      const newPatients = readyPatients.filter(p => p.isNewPatient);
-      const returningPatients = readyPatients.filter(p => !p.isNewPatient);
+      // Categorize patients into 5 groups
+      const newNeuroPatients = readyPatients.filter(p => 
+        p.isNewPatient && p.complaintClassification === 'Neurologic' && !p.isInternalReferral
+      );
+      const newMskPatients = readyPatients.filter(p => 
+        p.isNewPatient && p.complaintClassification === 'MSK' && !p.isInternalReferral
+      );
+      const returningNeuroPatients = readyPatients.filter(p => 
+        !p.isNewPatient && p.complaintClassification === 'Neurologic' && !p.isInternalReferral
+      );
+      const returningMskPatients = readyPatients.filter(p => 
+        !p.isNewPatient && p.complaintClassification === 'MSK' && !p.isInternalReferral
+      );
+      const internalNeuroPatients = readyPatients.filter(p => 
+        p.isInternalReferral && p.complaintClassification === 'Neurologic'
+      );
       
-      return { newPatients, returningPatients };
+      return { 
+        newNeuroPatients, 
+        newMskPatients, 
+        returningNeuroPatients, 
+        returningMskPatients, 
+        internalNeuroPatients 
+      };
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
