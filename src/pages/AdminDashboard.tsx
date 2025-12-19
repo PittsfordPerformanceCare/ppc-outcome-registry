@@ -10,7 +10,6 @@ import {
   OutstandingTasksTile,
   ProspectJourneyTracker,
 } from "@/components/lead-dashboard";
-import { PendingEpisodeContinuationsPanel } from "@/components/PendingEpisodeContinuationsPanel";
 import IntakesReviewQueue from "@/components/IntakesReviewQueue";
 import { PausedEpisodesSignal, ContactMessagesSection } from "@/components/admin-dashboard";
 import { Button } from "@/components/ui/button";
@@ -54,8 +53,6 @@ const AdminDashboard = () => {
           oldestDays={data.pcpSummaries.oldestDays}
           resendCount={data.pcpSummaries.resendCount}
         />
-        
-        <PendingEpisodeContinuationsPanel />
         
         <PausedEpisodesSignal />
         
