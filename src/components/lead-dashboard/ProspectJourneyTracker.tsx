@@ -109,7 +109,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
     
     try {
       // Fetch all data in parallel for efficiency
-      const [leadsResult, careRequestsResult, pendingEpisodesResult, intakeFormsResult] = await Promise.all([
+      const [leadsResult, careRequestsResult, pendingEpisodesResult, intakeFormsResult, intakesResult] = await Promise.all([
         // Get leads that haven't been converted to care requests
         supabase
           .from("leads")
@@ -128,28 +128,37 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           .from("pending_episodes")
           .select("*")
           .in("status", ["pending", "scheduled", "ready_for_conversion"]),
-        // Get intake forms
+        // Get intake forms (legacy)
         supabase
           .from("intake_forms")
           .select("*"),
+        // Get intakes (neurologic intake forms with legal docs)
+        supabase
+          .from("intakes")
+          .select("*")
+          .in("status", ["completed", "approved"]),
       ]);
 
       if (leadsResult.error) throw leadsResult.error;
       if (careRequestsResult.error) throw careRequestsResult.error;
       if (pendingEpisodesResult.error) throw pendingEpisodesResult.error;
       if (intakeFormsResult.error) throw intakeFormsResult.error;
+      if (intakesResult.error) throw intakesResult.error;
 
       const leads = leadsResult.data || [];
       const careRequests = careRequestsResult.data || [];
       const pendingEpisodes = pendingEpisodesResult.data || [];
       const intakeForms = intakeFormsResult.data || [];
+      const intakes = intakesResult.data || [];
 
       console.log("[ProspectJourney] Fetched data:", {
         leads: leads.length,
         careRequests: careRequests.length,
         careRequestStatuses: careRequests.map(cr => ({ name: (cr.intake_payload as any)?.name, status: cr.status })),
         pendingEpisodes: pendingEpisodes.length,
-        intakeForms: intakeForms.length
+        intakeForms: intakeForms.length,
+        intakes: intakes.length,
+        intakesData: intakes.map(i => ({ name: i.patient_name, status: i.status }))
       });
 
       const journeys: ProspectJourney[] = [];
@@ -221,14 +230,30 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         // Determine stage completion
         const isApproved = ["APPROVED", "APPROVED_FOR_CARE", "SCHEDULED", "IN_REVIEW", "ASSIGNED"].includes(statusUpper) || !!cr.approved_at;
         const isScheduled = !!pendingEp?.scheduled_date || statusUpper === "SCHEDULED";
-        // Only check intake forms created AFTER this care request (part of this journey)
+        
+        // Check intake_forms table (legacy) - only forms created AFTER this care request
         const matchedIntakeForm = intakeForms.find(f => 
           f.patient_name?.toLowerCase().trim() === patientName.toLowerCase().trim() &&
           new Date(f.created_at || 0) >= new Date(cr.created_at) &&
           !f.converted_to_episode_id // Not already converted to an episode
         );
-        const formsSent = !!matchedIntakeForm && isScheduled;
-        const formsReceived = matchedIntakeForm?.status === "submitted" || (!!matchedIntakeForm?.submitted_at && matchedIntakeForm?.status !== "pending");
+        
+        // Check intakes table (neurologic intake with legal docs) - match by name or lead_id
+        const leadId = (payload.lead_id as string) || null;
+        const matchedIntake = intakes.find(i => 
+          (i.patient_name?.toLowerCase().trim() === patientName.toLowerCase().trim()) ||
+          (leadId && i.lead_id === leadId) ||
+          (email && i.patient_email?.toLowerCase().trim() === email.toLowerCase().trim())
+        );
+        
+        // Forms sent if either intake system has a record after scheduling
+        const formsSent = (!!matchedIntakeForm || !!matchedIntake) && isScheduled;
+        
+        // Forms received if either system shows completed/submitted status
+        const intakeFormsReceived = matchedIntakeForm?.status === "submitted" || (!!matchedIntakeForm?.submitted_at && matchedIntakeForm?.status !== "pending");
+        const neurologicIntakeReceived = matchedIntake?.status === "completed" || matchedIntake?.status === "approved";
+        const formsReceived = intakeFormsReceived || neurologicIntakeReceived;
+        
         const episodeActive = !!cr.episode_id;
 
         // Determine current stage
@@ -263,7 +288,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const createdDate = new Date(cr.created_at);
         const daysInPipeline = Math.floor((Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
 
-        console.log(`[ProspectJourney] ${patientName}: status=${statusUpper}, isApproved=${isApproved}, currentStage=${currentStage}, jenniferAction=${jenniferAction}`);
+        console.log(`[ProspectJourney] ${patientName}: status=${statusUpper}, isApproved=${isApproved}, formsReceived=${formsReceived}, matchedIntake=${!!matchedIntake}, currentStage=${currentStage}, jenniferAction=${jenniferAction}`);
 
         journeys.push({
           id: cr.id,
