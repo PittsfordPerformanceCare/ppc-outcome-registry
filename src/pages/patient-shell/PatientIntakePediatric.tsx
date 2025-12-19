@@ -302,6 +302,8 @@ const PatientIntakePediatric = () => {
                     <SelectItem value="balance">Balance / Dizziness</SelectItem>
                     <SelectItem value="fatigue">Fatigue / Energy Issues</SelectItem>
                     <SelectItem value="sports-injury">Sports-Related Symptoms</SelectItem>
+                    <SelectItem value="chronic-injury">Unresolved Chronic Injury</SelectItem>
+                    <SelectItem value="growth-pain">Growth Related Pain Syndrome</SelectItem>
                     <SelectItem value="other">Other</SelectItem>
                   </SelectContent>
                 </Select>
