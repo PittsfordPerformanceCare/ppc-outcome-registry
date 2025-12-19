@@ -1,6 +1,6 @@
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun, ExternalLink, LogOut } from "lucide-react";
+import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun, ExternalLink, LogOut, Stethoscope } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { TeamChatPanel } from "@/components/TeamChatPanel";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: Home },
   { href: "/admin/my-day", label: "My Day", icon: Sun },
+  { href: "/admin/clinical", label: "Episode Readiness", icon: Stethoscope },
   { href: "/admin/clinician", label: "My Schedule", icon: Calendar },
   { href: "/admin/director", label: "Director View", icon: TrendingUp },
   { href: "/admin/clinician-queues", label: "Clinician Queues", icon: ClipboardList },
