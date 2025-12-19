@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useTaskSummary, useAllCommunicationTasks } from "@/hooks/useCommunicationTasks";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useTaskSummary, useAllCommunicationTasks, type CommunicationTask } from "@/hooks/useCommunicationTasks";
 import { 
   ClipboardList, 
   ChevronRight, 
@@ -17,13 +20,31 @@ import {
   Phone,
   Mail,
   FileText,
-  MessageSquare
+  MessageSquare,
+  Pencil
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { AddTaskDialog } from "@/components/clinician/AddTaskDialog";
 import { formatDistanceToNow } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const statusConfig = {
   WAITING_ON_CLINICIAN: { 
@@ -83,8 +104,14 @@ function getStatusBadge(status: string) {
 export function OutstandingTasksTile() {
   const navigate = useNavigate();
   const { summary, isLoading } = useTaskSummary();
-  const { data: allTasks = [], isLoading: tasksLoading } = useAllCommunicationTasks();
+  const { data: allTasks = [], isLoading: tasksLoading, refetch: refetchTasks } = useAllCommunicationTasks();
   const [showAddTask, setShowAddTask] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<CommunicationTask | null>(null);
+  const [editDescription, setEditDescription] = useState("");
+  const [editStatus, setEditStatus] = useState("");
+  const [editPriority, setEditPriority] = useState<"HIGH" | "NORMAL">("NORMAL");
+  const [updating, setUpdating] = useState(false);
 
   const hasOutstanding = summary.total > 0;
   
@@ -97,6 +124,45 @@ export function OutstandingTasksTile() {
       ['OPEN', 'IN_PROGRESS', 'WAITING_ON_CLINICIAN', 'WAITING_ON_PATIENT', 'BLOCKED'].includes(t.status)
     )
     .sort((a, b) => new Date(a.due_at).getTime() - new Date(b.due_at).getTime());
+
+  const openEditDialog = (task: CommunicationTask, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedTask(task);
+    setEditDescription(task.description || "");
+    setEditStatus(task.status);
+    setEditPriority(task.priority);
+    setShowEditDialog(true);
+  };
+
+  const handleEditTask = async () => {
+    if (!selectedTask) return;
+    
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from("communication_tasks")
+        .update({
+          description: editDescription,
+          status: editStatus,
+          priority: editPriority,
+          updated_at: new Date().toISOString(),
+          status_changed_at: editStatus !== selectedTask.status ? new Date().toISOString() : undefined,
+        })
+        .eq("id", selectedTask.id);
+
+      if (error) throw error;
+
+      toast.success("Task updated");
+      setShowEditDialog(false);
+      setSelectedTask(null);
+      refetchTasks();
+    } catch (error: any) {
+      console.error("Error updating task:", error);
+      toast.error("Failed to update task");
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   return (
     <>
@@ -160,9 +226,8 @@ export function OutstandingTasksTile() {
                     {activeTasks.slice(0, 5).map((task) => {
                       const TaskIcon = getTaskTypeIcon(task.type);
                       return (
-                        <button
+                        <div
                           key={task.id}
-                          onClick={() => navigate("/admin/clinician-queues")}
                           className="flex items-start gap-3 p-3 hover:bg-muted/50 transition-colors text-left w-full"
                         >
                           <div className="p-1.5 rounded bg-muted mt-0.5">
@@ -174,6 +239,9 @@ export function OutstandingTasksTile() {
                                 {task.patient_name || "Unknown Patient"}
                               </span>
                               {getStatusBadge(task.status)}
+                              {task.priority === "HIGH" && (
+                                <Badge variant="destructive" className="text-xs">High</Badge>
+                              )}
                             </div>
                             <p className="text-sm text-muted-foreground truncate">
                               {task.description}
@@ -182,8 +250,25 @@ export function OutstandingTasksTile() {
                               Due {formatDistanceToNow(new Date(task.due_at), { addSuffix: true })}
                             </p>
                           </div>
-                          <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-1" />
-                        </button>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={(e) => openEditDialog(task, e)}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0"
+                              onClick={() => navigate("/admin/clinician-queues")}
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
                       );
                     })}
                   </div>
@@ -273,6 +358,78 @@ export function OutstandingTasksTile() {
         onOpenChange={setShowAddTask}
         source="ADMIN"
       />
+
+      {/* Edit Task Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Task</DialogTitle>
+            <DialogDescription>
+              Update task for {selectedTask?.patient_name || "Unknown Patient"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="editDescription">Description</Label>
+              <Textarea
+                id="editDescription"
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select value={editStatus} onValueChange={setEditStatus}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="OPEN">Open</SelectItem>
+                    <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                    <SelectItem value="WAITING_ON_CLINICIAN">Waiting on Clinician</SelectItem>
+                    <SelectItem value="WAITING_ON_PATIENT">Waiting on Patient</SelectItem>
+                    <SelectItem value="BLOCKED">Blocked</SelectItem>
+                    <SelectItem value="COMPLETED">Completed</SelectItem>
+                    <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Priority</Label>
+                <Select 
+                  value={editPriority} 
+                  onValueChange={(v) => setEditPriority(v as "HIGH" | "NORMAL")}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NORMAL">Normal</SelectItem>
+                    <SelectItem value="HIGH">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowEditDialog(false);
+                setSelectedTask(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleEditTask} disabled={updating}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
