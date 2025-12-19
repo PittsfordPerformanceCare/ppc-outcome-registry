@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Checkbox } from "@/components/ui/checkbox";
+
 
 interface BookNPVisitDialogProps {
   open: boolean;
@@ -63,9 +63,9 @@ export function BookNPVisitDialog({
   const [appointmentDate, setAppointmentDate] = useState<Date | undefined>();
   const [appointmentTime, setAppointmentTime] = useState("");
   const [provider, setProvider] = useState("");
-  const [sendEmail, setSendEmail] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const [currentStep, setCurrentStep] = useState<"scheduling" | "processing">("scheduling");
   const [processingStatus, setProcessingStatus] = useState<string[]>([]);
 
@@ -80,7 +80,7 @@ export function BookNPVisitDialog({
     setAppointmentDate(undefined);
     setAppointmentTime("");
     setProvider("");
-    setSendEmail(true);
+    setEmailSent(false);
     setCurrentStep("scheduling");
     setProcessingStatus([]);
   };
@@ -113,6 +113,7 @@ export function BookNPVisitDialog({
         console.error("Failed to send intake forms:", emailError);
         toast.error("Failed to send email. Please try again.");
       } else {
+        setEmailSent(true);
         toast.success(`Intake forms sent to ${patientEmail}`);
       }
     } catch (error) {
@@ -204,32 +205,7 @@ export function BookNPVisitDialog({
 
       addStatus("✓ NP visit scheduled for " + format(appointmentDate, "MMM d, yyyy") + " at " + appointmentTime);
 
-      // Step 3: Send legal intake forms (only if checkbox is checked)
-      if (sendEmail && patientEmail) {
-        addStatus("Sending intake forms...");
-        
-        const templateType = visitType.includes("neuro") ? "neuro" : "msk";
-        
-        const { error: emailError } = await supabase.functions.invoke("send-onboarding-email", {
-          body: {
-            email: patientEmail,
-            patientName: patientName,
-            leadId: lead?.id || careRequestId,
-            templateType,
-          },
-        });
-
-        if (emailError) {
-          console.error("Failed to send intake forms:", emailError);
-          addStatus("⚠ Intake forms email failed - please send manually");
-        } else {
-          addStatus("✓ Legal intake forms sent to " + patientEmail);
-        }
-      } else if (sendEmail && !patientEmail) {
-        addStatus("⚠ No email on file - intake forms must be sent manually");
-      } else {
-        addStatus("✓ Email skipped (you can send manually later)");
-      }
+      // Note: Email is sent separately via the "Send Email" button - not during submit
 
       // Step 4: Approve care request and create episode
       addStatus("Creating patient episode...");
@@ -424,44 +400,38 @@ export function BookNPVisitDialog({
                 />
               </div>
 
-              {/* Email Options */}
+              {/* Send Email Section */}
               <div className="rounded-lg border p-4 space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="sendEmail"
-                      checked={sendEmail}
-                      onCheckedChange={(checked) => setSendEmail(checked === true)}
-                    />
-                    <Label htmlFor="sendEmail" className="font-medium cursor-pointer">
-                      Send intake forms via email
-                    </Label>
+                  <div>
+                    <Label className="font-medium">Send Intake Forms</Label>
+                    {patientEmail ? (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Send to: {patientEmail}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-amber-600 mt-1">
+                        No email on file
+                      </p>
+                    )}
                   </div>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant={emailSent ? "outline" : "secondary"}
                     size="sm"
                     onClick={handleSendEmailOnly}
                     disabled={!patientEmail || !visitType || isSendingEmail}
                   >
                     {isSendingEmail ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : emailSent ? (
+                      <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-600" />
                     ) : (
                       <Mail className="h-4 w-4 mr-2" />
                     )}
-                    Send Email Now
+                    {emailSent ? "Email Sent" : "Send Email"}
                   </Button>
                 </div>
-                {patientEmail && (
-                  <p className="text-xs text-muted-foreground ml-6">
-                    Will send to: {patientEmail}
-                  </p>
-                )}
-                {!patientEmail && (
-                  <p className="text-xs text-amber-600 ml-6">
-                    No email on file - add email or send forms manually
-                  </p>
-                )}
               </div>
 
               {/* What will happen */}
@@ -470,7 +440,6 @@ export function BookNPVisitDialog({
                 <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
                   {lead && <li>Care Request will be created</li>}
                   <li>NP appointment will be booked</li>
-                  {sendEmail && patientEmail && <li>Legal intake forms will be sent via email</li>}
                   <li>Patient Episode will be created</li>
                 </ul>
               </div>
