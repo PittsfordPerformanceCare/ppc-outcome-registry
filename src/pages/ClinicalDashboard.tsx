@@ -55,11 +55,11 @@ export default function ClinicalDashboard() {
     navigate(`/new-episode?care_request=${selectedPatient.id}`);
   };
 
-  const totalReady = (data?.newNeuroPatients.length || 0) + 
-    (data?.newMskPatients.length || 0) + 
-    (data?.returningNeuroPatients.length || 0) + 
-    (data?.returningMskPatients.length || 0) + 
-    (data?.internalNeuroPatients.length || 0);
+  const totalReady = (data?.newNeuroPatients?.length || 0) + 
+    (data?.newMskPatients?.length || 0) + 
+    (data?.returningNeuroPatients?.length || 0) + 
+    (data?.returningMskPatients?.length || 0) + 
+    (data?.internalNeuroPatients?.length || 0);
 
   return (
     <div className="min-h-screen bg-background">
