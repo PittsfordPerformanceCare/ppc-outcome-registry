@@ -12,10 +12,12 @@ import {
   Clock,
   ArrowRight,
   MessageSquare,
-  Sparkles
+  Sparkles,
+  Loader2
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const SiteContact = () => {
   const [formData, setFormData] = useState({
@@ -24,15 +26,39 @@ const SiteContact = () => {
     phone: "",
     message: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder - would integrate with backend
-    toast({
-      title: "Message Sent",
-      description: "We'll get back to you within 1 business day."
-    });
-    setFormData({ name: "", email: "", phone: "", message: "" });
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          message: formData.message
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Message Sent",
+        description: "We'll get back to you within 1 business day."
+      });
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again or call us directly.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -222,9 +248,18 @@ const SiteContact = () => {
                   />
                 </div>
                 
-                <Button type="submit" size="lg" className="w-full h-12 text-base rounded-xl">
-                  Send Message
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                <Button type="submit" size="lg" className="w-full h-12 text-base rounded-xl" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send Message
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </>
+                  )}
                 </Button>
               </form>
             </Card>
