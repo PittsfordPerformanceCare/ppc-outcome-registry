@@ -47,7 +47,7 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [visitType, setVisitType] = useState("");
   const [notes, setNotes] = useState("");
-  const [source, setSource] = useState("PHONE_CALL");
+  const [source, setSource] = useState("WEBSITE");
   
   // Email state
   const [isSendingEmail, setIsSendingEmail] = useState(false);
@@ -60,7 +60,7 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
     setDateOfBirth("");
     setVisitType("");
     setNotes("");
-    setSource("PHONE_CALL");
+    setSource("WEBSITE");
     setCreatedRequestId(null);
     setCreatedPatientName("");
     setCreatedEmail("");
@@ -349,9 +349,8 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="PHONE_CALL">Phone Call</SelectItem>
+                <SelectItem value="WEBSITE">Website/Phone Call</SelectItem>
                 <SelectItem value="PHYSICIAN_REFERRAL">Physician Referral</SelectItem>
-                <SelectItem value="SELF_REFERRAL">Self-Referral</SelectItem>
                 <SelectItem value="ATHLETE_PROGRAM">Athlete Program</SelectItem>
                 <SelectItem value="SCHOOL">School/Community</SelectItem>
                 <SelectItem value="INTERNAL">Internal</SelectItem>
