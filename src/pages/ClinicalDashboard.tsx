@@ -20,9 +20,7 @@ import {
   Bone,
   Clock,
   CheckCircle2,
-  ArrowRightLeft,
-  Users,
-  ExternalLink
+  ArrowRightLeft
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { IntakeFormSummaryDialog } from "@/components/lead-dashboard/IntakeFormSummaryDialog";
@@ -100,16 +98,6 @@ export default function ClinicalDashboard() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate('/admin/dashboard')}
-                className="gap-2"
-              >
-                <Users className="h-4 w-4" />
-                Prospect Journey
-                <ExternalLink className="h-3 w-3" />
-              </Button>
               <Button
                 variant="outline"
                 size="sm"
