@@ -11,7 +11,8 @@ import {
   Users,
   Trophy,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  FileText
 } from "lucide-react";
 import { useState } from "react";
 import { articleCategories, ArticleData } from "@/data/siteArticles";
@@ -176,21 +177,20 @@ const SiteArticles = () => {
               </p>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-3 gap-6">
               <Link to="/site/concussion" className="group">
-                <Card className="h-full p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-start gap-5">
-                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
-                      <Brain className="h-7 w-7 text-primary" />
+                <Card className="h-full p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  <div className="flex flex-col gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <Brain className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                      <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">
                         Concussion Care
                       </h3>
-                      <p className="text-muted-foreground leading-relaxed">
+                      <p className="text-muted-foreground leading-relaxed text-sm">
                         Comprehensive neurologic evaluation and treatment for persistent 
-                        post-concussion symptoms. We identify which systems are affected 
-                        and target treatment accordingly.
+                        post-concussion symptoms.
                       </p>
                       <span className="inline-flex items-center gap-2 text-sm font-medium text-primary mt-4 group-hover:gap-3 transition-all">
                         Learn More <ArrowRight className="h-4 w-4" />
@@ -201,22 +201,43 @@ const SiteArticles = () => {
               </Link>
               
               <Link to="/site/msk" className="group">
-                <Card className="h-full p-8 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-start gap-5">
-                    <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
-                      <Activity className="h-7 w-7 text-primary" />
+                <Card className="h-full p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  <div className="flex flex-col gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                      <Activity className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                      <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">
                         MSK Care
                       </h3>
-                      <p className="text-muted-foreground leading-relaxed">
+                      <p className="text-muted-foreground leading-relaxed text-sm">
                         Neuromuscular assessment and treatment for chronic pain and 
-                        movement dysfunction. We evaluate the neurologic drivers behind 
-                        persistent musculoskeletal issues.
+                        movement dysfunction.
                       </p>
                       <span className="inline-flex items-center gap-2 text-sm font-medium text-primary mt-4 group-hover:gap-3 transition-all">
                         Learn More <ArrowRight className="h-4 w-4" />
+                      </span>
+                    </div>
+                  </div>
+                </Card>
+              </Link>
+
+              <Link to="/site/white-papers" className="group">
+                <Card className="h-full p-6 rounded-2xl border border-border/60 bg-card/50 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+                  <div className="flex flex-col gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center shrink-0">
+                      <FileText className="h-6 w-6 text-accent" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors">
+                        White Paper Series
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed text-sm">
+                        Evidence-informed clinical reviews on neurologic recovery and 
+                        complex presentations.
+                      </p>
+                      <span className="inline-flex items-center gap-2 text-sm font-medium text-primary mt-4 group-hover:gap-3 transition-all">
+                        View Papers <ArrowRight className="h-4 w-4" />
                       </span>
                     </div>
                   </div>
