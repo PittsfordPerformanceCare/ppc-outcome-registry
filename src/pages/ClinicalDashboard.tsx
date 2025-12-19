@@ -19,7 +19,8 @@ import {
   Brain,
   Bone,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  ArrowRightLeft
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 
@@ -51,10 +52,14 @@ export default function ClinicalDashboard() {
     
     sessionStorage.setItem('newEpisodeFromClinical', JSON.stringify(episodeData));
     setShowEpisodeDialog(false);
-    navigate('/new-episode');
+    navigate(`/new-episode?care_request=${selectedPatient.id}`);
   };
 
-  const totalReady = (data?.newPatients.length || 0) + (data?.returningPatients.length || 0);
+  const totalReady = (data?.newNeuroPatients.length || 0) + 
+    (data?.newMskPatients.length || 0) + 
+    (data?.returningNeuroPatients.length || 0) + 
+    (data?.returningMskPatients.length || 0) + 
+    (data?.internalNeuroPatients.length || 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -98,104 +103,67 @@ export default function ClinicalDashboard() {
       </div>
 
       <div className="container mx-auto px-6 py-8 space-y-10">
-        {/* Section 1: New Patients */}
-        <section>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-              <UserPlus className="h-4 w-4 text-primary" />
-            </div>
-            <div>
-              <h2 className="text-lg font-medium text-foreground">
-                New Patients — Ready for Initial Episode
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                First-time presentations, intake complete
-              </p>
-            </div>
-          </div>
+        {/* Section 1: New Neuro Patients */}
+        <PatientSection
+          icon={<Brain className="h-4 w-4 text-primary" />}
+          iconBgClass="bg-primary/10"
+          title="New Neuro Patients"
+          subtitle="First-time neurologic presentations, intake complete"
+          patients={data?.newNeuroPatients || []}
+          isLoading={isLoading}
+          onCreateEpisode={handleCreateEpisode}
+          emptyMessage="No new neuro patients awaiting episodes"
+        />
 
-          {isLoading ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3].map(i => (
-                <Card key={i} className="border border-border">
-                  <CardContent className="p-5">
-                    <Skeleton className="h-5 w-32 mb-3" />
-                    <Skeleton className="h-4 w-48 mb-2" />
-                    <Skeleton className="h-4 w-24 mb-4" />
-                    <Skeleton className="h-9 w-full" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : data?.newPatients.length === 0 ? (
-            <Card className="border border-dashed border-border bg-muted/30">
-              <CardContent className="py-8 text-center">
-                <CheckCircle2 className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-muted-foreground">No new patients awaiting initial episodes</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {data?.newPatients.map(patient => (
-                <PatientCard
-                  key={patient.id}
-                  patient={patient}
-                  onCreateEpisode={handleCreateEpisode}
-                />
-              ))}
-            </div>
-          )}
-        </section>
+        {/* Section 2: New MSK Patients */}
+        <PatientSection
+          icon={<Bone className="h-4 w-4 text-accent" />}
+          iconBgClass="bg-accent/10"
+          title="New MSK Patients"
+          subtitle="First-time musculoskeletal presentations, intake complete"
+          patients={data?.newMskPatients || []}
+          isLoading={isLoading}
+          onCreateEpisode={handleCreateEpisode}
+          emptyMessage="No new MSK patients awaiting episodes"
+        />
 
-        {/* Section 2: Returning Patients */}
-        <section>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-8 w-8 rounded-full bg-accent/10 flex items-center justify-center">
-              <RefreshCw className="h-4 w-4 text-accent" />
-            </div>
-            <div>
-              <h2 className="text-lg font-medium text-foreground">
-                Returning Patients — New Episode Required
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Previously discharged, presenting with new complaint
-              </p>
-            </div>
-          </div>
+        {/* Section 3: Returning Neuro Patients */}
+        <PatientSection
+          icon={<Brain className="h-4 w-4 text-primary" />}
+          iconBgClass="bg-primary/10"
+          title="Returning Neuro Patients"
+          subtitle="Previously discharged, presenting with new neurologic complaint"
+          patients={data?.returningNeuroPatients || []}
+          isLoading={isLoading}
+          onCreateEpisode={handleCreateEpisode}
+          emptyMessage="No returning neuro patients awaiting episodes"
+          showPriorContext
+        />
 
-          {isLoading ? (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2].map(i => (
-                <Card key={i} className="border border-border">
-                  <CardContent className="p-5">
-                    <Skeleton className="h-5 w-32 mb-3" />
-                    <Skeleton className="h-4 w-48 mb-2" />
-                    <Skeleton className="h-4 w-24 mb-4" />
-                    <Skeleton className="h-9 w-full" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : data?.returningPatients.length === 0 ? (
-            <Card className="border border-dashed border-border bg-muted/30">
-              <CardContent className="py-8 text-center">
-                <CheckCircle2 className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-muted-foreground">No returning patients awaiting new episodes</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {data?.returningPatients.map(patient => (
-                <PatientCard
-                  key={patient.id}
-                  patient={patient}
-                  onCreateEpisode={handleCreateEpisode}
-                  showPriorContext
-                />
-              ))}
-            </div>
-          )}
-        </section>
+        {/* Section 4: Returning MSK Patients */}
+        <PatientSection
+          icon={<Bone className="h-4 w-4 text-accent" />}
+          iconBgClass="bg-accent/10"
+          title="Returning MSK Patients"
+          subtitle="Previously discharged, presenting with new MSK complaint"
+          patients={data?.returningMskPatients || []}
+          isLoading={isLoading}
+          onCreateEpisode={handleCreateEpisode}
+          emptyMessage="No returning MSK patients awaiting episodes"
+          showPriorContext
+        />
+
+        {/* Section 5: Internal Neuro Referrals */}
+        <PatientSection
+          icon={<ArrowRightLeft className="h-4 w-4 text-chart-3" />}
+          iconBgClass="bg-chart-3/10"
+          title="Internal Neuro Referrals"
+          subtitle="Referred internally for neurologic evaluation"
+          patients={data?.internalNeuroPatients || []}
+          isLoading={isLoading}
+          onCreateEpisode={handleCreateEpisode}
+          emptyMessage="No internal neuro referrals awaiting episodes"
+        />
       </div>
 
       {/* Episode Type Selection Dialog */}
@@ -252,6 +220,87 @@ export default function ClinicalDashboard() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+// Patient Section Component
+interface PatientSectionProps {
+  icon: React.ReactNode;
+  iconBgClass: string;
+  title: string;
+  subtitle: string;
+  patients: ReadyPatient[];
+  isLoading: boolean;
+  onCreateEpisode: (patient: ReadyPatient) => void;
+  emptyMessage: string;
+  showPriorContext?: boolean;
+}
+
+function PatientSection({ 
+  icon, 
+  iconBgClass, 
+  title, 
+  subtitle, 
+  patients, 
+  isLoading, 
+  onCreateEpisode, 
+  emptyMessage,
+  showPriorContext 
+}: PatientSectionProps) {
+  return (
+    <section>
+      <div className="flex items-center gap-3 mb-4">
+        <div className={`h-8 w-8 rounded-full ${iconBgClass} flex items-center justify-center`}>
+          {icon}
+        </div>
+        <div>
+          <h2 className="text-lg font-medium text-foreground">
+            {title}
+            {!isLoading && patients.length > 0 && (
+              <span className="ml-2 text-sm text-muted-foreground font-normal">
+                ({patients.length})
+              </span>
+            )}
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {subtitle}
+          </p>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2].map(i => (
+            <Card key={i} className="border border-border">
+              <CardContent className="p-5">
+                <Skeleton className="h-5 w-32 mb-3" />
+                <Skeleton className="h-4 w-48 mb-2" />
+                <Skeleton className="h-4 w-24 mb-4" />
+                <Skeleton className="h-9 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : patients.length === 0 ? (
+        <Card className="border border-dashed border-border bg-muted/30">
+          <CardContent className="py-6 text-center">
+            <CheckCircle2 className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+            <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {patients.map(patient => (
+            <PatientCard
+              key={patient.id}
+              patient={patient}
+              onCreateEpisode={onCreateEpisode}
+              showPriorContext={showPriorContext}
+            />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
