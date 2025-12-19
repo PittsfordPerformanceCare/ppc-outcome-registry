@@ -40,6 +40,7 @@ const PatientIntakePediatric = () => {
     primaryConcern: "",
     symptomDuration: "",
     schoolSymptoms: "",
+    athleticSymptoms: "",
     symptomDescription: "",
     previousEvaluation: "",
     consentToContact: false,
@@ -102,7 +103,7 @@ const PatientIntakePediatric = () => {
           who_is_this_for: "child",
           funnel_stage: "lead_intake",
           checkpoint_status: "lead_intake_completed",
-          notes: `Child age: ${formData.childAge}. Grade: ${formData.childGrade}. Duration: ${formData.symptomDuration}. School symptoms: ${formData.schoolSymptoms}. Previous evaluation: ${formData.previousEvaluation}`,
+          notes: `Child age: ${formData.childAge}. Grade: ${formData.childGrade}. Duration: ${formData.symptomDuration}. School symptoms: ${formData.schoolSymptoms}. Athletic symptoms: ${formData.athleticSymptoms}. Previous evaluation: ${formData.previousEvaluation}`,
           origin_page: originPage,
           origin_cta: originCta,
           pillar_origin: pillarOrigin,
@@ -347,6 +348,32 @@ const PatientIntakePediatric = () => {
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="unsure" id="school-unsure" />
                     <Label htmlFor="school-unsure" className="font-normal">Unsure</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Are symptoms affecting athletic performance?</Label>
+                <RadioGroup
+                  value={formData.athleticSymptoms}
+                  onValueChange={(value) => handleChange("athleticSymptoms", value)}
+                  className="flex gap-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="yes" id="athletic-yes" />
+                    <Label htmlFor="athletic-yes" className="font-normal">Yes</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="no" id="athletic-no" />
+                    <Label htmlFor="athletic-no" className="font-normal">No</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="unsure" id="athletic-unsure" />
+                    <Label htmlFor="athletic-unsure" className="font-normal">Unsure</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="na" id="athletic-na" />
+                    <Label htmlFor="athletic-na" className="font-normal">N/A</Label>
                   </div>
                 </RadioGroup>
               </div>
