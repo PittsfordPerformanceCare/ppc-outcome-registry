@@ -20,10 +20,14 @@ import {
   Bone,
   Clock,
   CheckCircle2,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Users,
+  ExternalLink
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { IntakeFormSummaryDialog } from "@/components/lead-dashboard/IntakeFormSummaryDialog";
+import { OutstandingTasksTile } from "@/components/lead-dashboard";
+import { ActionQueueSection } from "@/components/clinician/ActionQueueSection";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function ClinicalDashboard() {
@@ -89,106 +93,141 @@ export default function ClinicalDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-                Episode Readiness
+                Clinical Dashboard
               </h1>
               <p className="text-muted-foreground mt-1">
-                Patients requiring clinical episode creation
+                Communication, tasks, and episode readiness
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
-              disabled={isRefetching}
-              className="gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
-          </div>
-          
-          {/* Summary stat */}
-          {!isLoading && (
-            <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-              <ClipboardCheck className="h-4 w-4" />
-              <span>
-                {totalReady === 0 
-                  ? "No patients awaiting episodes" 
-                  : `${totalReady} patient${totalReady !== 1 ? 's' : ''} ready for episode creation`
-                }
-              </span>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/admin/dashboard')}
+                className="gap-2"
+              >
+                <Users className="h-4 w-4" />
+                Prospect Journey
+                <ExternalLink className="h-3 w-3" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                disabled={isRefetching}
+                className="gap-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8 space-y-10">
-        {/* Section 1: New Neuro Patients */}
-        <PatientSection
-          icon={<Brain className="h-4 w-4 text-primary" />}
-          iconBgClass="bg-primary/10"
-          title="New Neuro Patients"
-          subtitle="First-time neurologic presentations, intake complete"
-          patients={data?.newNeuroPatients || []}
-          isLoading={isLoading}
-          onCreateEpisode={handleCreateEpisode}
-          onViewIntakeSummary={handleViewIntakeSummary}
-          emptyMessage="No new neuro patients awaiting episodes"
-        />
+      <div className="container mx-auto px-6 py-8 space-y-8">
+        {/* Top Row: Communication Log and Task Manager */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Communication Log */}
+          <div>
+            <ActionQueueSection />
+          </div>
+          
+          {/* Task Manager */}
+          <div>
+            <OutstandingTasksTile />
+          </div>
+        </div>
 
-        {/* Section 2: New MSK Patients */}
-        <PatientSection
-          icon={<Bone className="h-4 w-4 text-accent" />}
-          iconBgClass="bg-accent/10"
-          title="New MSK Patients"
-          subtitle="First-time musculoskeletal presentations, intake complete"
-          patients={data?.newMskPatients || []}
-          isLoading={isLoading}
-          onCreateEpisode={handleCreateEpisode}
-          onViewIntakeSummary={handleViewIntakeSummary}
-          emptyMessage="No new MSK patients awaiting episodes"
-        />
+        {/* Episode Readiness Section */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <ClipboardCheck className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-lg font-medium text-foreground">Episode Readiness</h2>
+                <p className="text-sm text-muted-foreground">
+                  {totalReady === 0 
+                    ? "No patients awaiting episodes" 
+                    : `${totalReady} patient${totalReady !== 1 ? 's' : ''} ready for episode creation`
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
 
-        {/* Section 3: Returning Neuro Patients */}
-        <PatientSection
-          icon={<Brain className="h-4 w-4 text-primary" />}
-          iconBgClass="bg-primary/10"
-          title="Returning Neuro Patients"
-          subtitle="Previously discharged, presenting with new neurologic complaint"
-          patients={data?.returningNeuroPatients || []}
-          isLoading={isLoading}
-          onCreateEpisode={handleCreateEpisode}
-          onViewIntakeSummary={handleViewIntakeSummary}
-          emptyMessage="No returning neuro patients awaiting episodes"
-          showPriorContext
-        />
+          {/* Episode Readiness Sections */}
+          <div className="space-y-8">
+            {/* Section 1: New Neuro Patients */}
+            <PatientSection
+              icon={<Brain className="h-4 w-4 text-primary" />}
+              iconBgClass="bg-primary/10"
+              title="New Neuro Patients"
+              subtitle="First-time neurologic presentations, intake complete"
+              patients={data?.newNeuroPatients || []}
+              isLoading={isLoading}
+              onCreateEpisode={handleCreateEpisode}
+              onViewIntakeSummary={handleViewIntakeSummary}
+              emptyMessage="No new neuro patients awaiting episodes"
+            />
 
-        {/* Section 4: Returning MSK Patients */}
-        <PatientSection
-          icon={<Bone className="h-4 w-4 text-accent" />}
-          iconBgClass="bg-accent/10"
-          title="Returning MSK Patients"
-          subtitle="Previously discharged, presenting with new MSK complaint"
-          patients={data?.returningMskPatients || []}
-          isLoading={isLoading}
-          onCreateEpisode={handleCreateEpisode}
-          onViewIntakeSummary={handleViewIntakeSummary}
-          emptyMessage="No returning MSK patients awaiting episodes"
-          showPriorContext
-        />
+            {/* Section 2: New MSK Patients */}
+            <PatientSection
+              icon={<Bone className="h-4 w-4 text-accent" />}
+              iconBgClass="bg-accent/10"
+              title="New MSK Patients"
+              subtitle="First-time musculoskeletal presentations, intake complete"
+              patients={data?.newMskPatients || []}
+              isLoading={isLoading}
+              onCreateEpisode={handleCreateEpisode}
+              onViewIntakeSummary={handleViewIntakeSummary}
+              emptyMessage="No new MSK patients awaiting episodes"
+            />
 
-        {/* Section 5: Internal Neuro Referrals */}
-        <PatientSection
-          icon={<ArrowRightLeft className="h-4 w-4 text-chart-3" />}
-          iconBgClass="bg-chart-3/10"
-          title="Internal Neuro Referrals"
-          subtitle="Referred internally for neurologic evaluation"
-          patients={data?.internalNeuroPatients || []}
-          isLoading={isLoading}
-          onCreateEpisode={handleCreateEpisode}
-          onViewIntakeSummary={handleViewIntakeSummary}
-          emptyMessage="No internal neuro referrals awaiting episodes"
-        />
+            {/* Section 3: Returning Neuro Patients */}
+            <PatientSection
+              icon={<Brain className="h-4 w-4 text-primary" />}
+              iconBgClass="bg-primary/10"
+              title="Returning Neuro Patients"
+              subtitle="Previously discharged, presenting with new neurologic complaint"
+              patients={data?.returningNeuroPatients || []}
+              isLoading={isLoading}
+              onCreateEpisode={handleCreateEpisode}
+              onViewIntakeSummary={handleViewIntakeSummary}
+              emptyMessage="No returning neuro patients awaiting episodes"
+              showPriorContext
+            />
+
+            {/* Section 4: Returning MSK Patients */}
+            <PatientSection
+              icon={<Bone className="h-4 w-4 text-accent" />}
+              iconBgClass="bg-accent/10"
+              title="Returning MSK Patients"
+              subtitle="Previously discharged, presenting with new MSK complaint"
+              patients={data?.returningMskPatients || []}
+              isLoading={isLoading}
+              onCreateEpisode={handleCreateEpisode}
+              onViewIntakeSummary={handleViewIntakeSummary}
+              emptyMessage="No returning MSK patients awaiting episodes"
+              showPriorContext
+            />
+
+            {/* Section 5: Internal Neuro Referrals */}
+            <PatientSection
+              icon={<ArrowRightLeft className="h-4 w-4 text-chart-3" />}
+              iconBgClass="bg-chart-3/10"
+              title="Internal Neuro Referrals"
+              subtitle="Referred internally for neurologic evaluation"
+              patients={data?.internalNeuroPatients || []}
+              isLoading={isLoading}
+              onCreateEpisode={handleCreateEpisode}
+              onViewIntakeSummary={handleViewIntakeSummary}
+              emptyMessage="No internal neuro referrals awaiting episodes"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Episode Type Selection Dialog */}
