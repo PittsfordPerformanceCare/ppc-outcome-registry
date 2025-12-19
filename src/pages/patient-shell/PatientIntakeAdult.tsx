@@ -30,7 +30,9 @@ const PatientIntakeAdult = () => {
     email: "",
     phone: "",
     preferredContact: "email",
-    symptomCategory: "",
+    primaryReason: "",
+    otherReason: "",
+    priorConcussionCare: "",
     symptomDuration: "",
     symptomDescription: "",
     previousTreatment: "",
@@ -45,10 +47,19 @@ const PatientIntakeAdult = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.symptomCategory) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.primaryReason) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.primaryReason === "other" && !formData.otherReason.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please specify your reason for visit.",
         variant: "destructive",
       });
       return;
@@ -81,6 +92,23 @@ const PatientIntakeAdult = () => {
       const originCta = searchParams.get("origin_cta") || storedTracking.origin_cta || null;
       const pillarOrigin = searchParams.get("pillar_origin") || storedTracking.pillar_origin || null;
 
+      // Map primary reason to system category
+      const reasonToCategory: Record<string, string> = {
+        "acute": "msk",
+        "concussion": "concussion",
+        "dizziness": "balance",
+        "headaches": "concussion",
+        "neck": "msk",
+        "chronic": "msk",
+        "neurologic": "cognitive",
+        "sports": "msk",
+        "other": "other",
+      };
+
+      const primaryReasonDisplay = formData.primaryReason === "other" 
+        ? `Other: ${formData.otherReason}` 
+        : formData.primaryReason;
+
       // Submit via edge function with bot protection
       const { data, error } = await supabase.functions.invoke("create-lead", {
         body: {
@@ -88,13 +116,13 @@ const PatientIntakeAdult = () => {
           email: formData.email,
           phone: formData.phone || null,
           preferred_contact_method: formData.preferredContact,
-          system_category: formData.symptomCategory,
-          primary_concern: formData.symptomCategory,
+          system_category: reasonToCategory[formData.primaryReason] || "other",
+          primary_concern: primaryReasonDisplay,
           symptom_summary: formData.symptomDescription || null,
           who_is_this_for: "self",
           funnel_stage: "lead_intake",
           checkpoint_status: "lead_intake_completed",
-          notes: `Duration: ${formData.symptomDuration}. Previous treatment: ${formData.previousTreatment}. Has referral: ${formData.hasReferral}`,
+          notes: `Primary reason: ${primaryReasonDisplay}. ${formData.priorConcussionCare ? `Prior concussion care: ${formData.priorConcussionCare}. ` : ''}Duration: ${formData.symptomDuration}. Previous treatment: ${formData.previousTreatment}. Has referral: ${formData.hasReferral}`,
           origin_page: originPage,
           origin_cta: originCta,
           pillar_origin: pillarOrigin,
@@ -227,29 +255,84 @@ const PatientIntakeAdult = () => {
               </div>
             </div>
 
-            {/* Symptom Information */}
+            {/* Primary Reason for Visit */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">Your Symptoms</h3>
+              <h3 className="font-semibold text-lg border-b pb-2">Primary Reason for Visit</h3>
 
               <div className="space-y-2">
-                <Label htmlFor="symptomCategory">Primary Symptom Category *</Label>
+                <Label htmlFor="primaryReason">What best describes your main concern? *</Label>
+                <p className="text-sm text-muted-foreground">(Select one)</p>
                 <Select
-                  value={formData.symptomCategory}
-                  onValueChange={(value) => handleChange("symptomCategory", value)}
+                  value={formData.primaryReason}
+                  onValueChange={(value) => {
+                    handleChange("primaryReason", value);
+                    // Clear prior care if not concussion
+                    if (value !== "concussion") {
+                      handleChange("priorConcussionCare", "");
+                    }
+                  }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder="Select your main concern" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="concussion">Concussion / Post-Concussion Symptoms</SelectItem>
-                    <SelectItem value="msk">Musculoskeletal / Movement Issues</SelectItem>
-                    <SelectItem value="cognitive">Cognitive / Brain Fog</SelectItem>
-                    <SelectItem value="fatigue">Fatigue / Energy Issues</SelectItem>
-                    <SelectItem value="balance">Balance / Dizziness</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="acute">Recent Injury / Acute Symptoms (Rapid Evaluation Needed)</SelectItem>
+                    <SelectItem value="concussion">Concussion / Head Injury (recent or past)</SelectItem>
+                    <SelectItem value="dizziness">Dizziness / Vertigo / Balance Issues</SelectItem>
+                    <SelectItem value="headaches">Headaches / Migraines</SelectItem>
+                    <SelectItem value="neck">Neck Pain / Whiplash</SelectItem>
+                    <SelectItem value="chronic">Chronic Pain or Unresolved Injury</SelectItem>
+                    <SelectItem value="neurologic">Neurologic Symptoms (brain fog, fatigue, coordination, vision issues)</SelectItem>
+                    <SelectItem value="sports">Sports Performance / Return-to-Play Clearance</SelectItem>
+                    <SelectItem value="other">Other (please specify)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Other reason text field */}
+              {formData.primaryReason === "other" && (
+                <div className="space-y-2">
+                  <Label htmlFor="otherReason">Please specify *</Label>
+                  <Input
+                    id="otherReason"
+                    value={formData.otherReason}
+                    onChange={(e) => handleChange("otherReason", e.target.value)}
+                    placeholder="Describe your main concern..."
+                  />
+                </div>
+              )}
+
+              {/* Conditional Prior Care question for concussion patients */}
+              {formData.primaryReason === "concussion" && (
+                <div className="space-y-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                  <div className="space-y-2">
+                    <Label className="font-medium">Prior Care (for coordination purposes only)</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Have you previously been evaluated by another provider for this concussion or head injury?
+                    </p>
+                    <p className="text-sm text-muted-foreground">(Select one)</p>
+                  </div>
+                  <Select
+                    value={formData.priorConcussionCare}
+                    onValueChange={(value) => handleChange("priorConcussionCare", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select an option" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pcp">Yes — Primary Care Provider (PCP)</SelectItem>
+                      <SelectItem value="neurologist">Yes — Neurologist</SelectItem>
+                      <SelectItem value="other-provider">Yes — Other provider</SelectItem>
+                      <SelectItem value="no">No</SelectItem>
+                      <SelectItem value="not-sure">Not sure</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground italic mt-2">
+                    All concussion and head injury patients receive a comprehensive neurologic evaluation at Pittsford Performance Care. 
+                    This question helps us understand prior care and coordinate appropriately.
+                  </p>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="symptomDuration">How long have you had these symptoms?</Label>
