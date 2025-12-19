@@ -5,7 +5,7 @@
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^[\d\s\-\+\(\)\.]{7,20}$/;
-const NAME_REGEX = /^[a-zA-Z\s\-'\.]{1,100}$/;
+const NAME_REGEX = /^[a-zA-Z\s\-'\.:\(\)]{1,100}$/;
 const SAFE_TEXT_REGEX = /^[^<>]*$/; // No HTML tags
 
 // Honeypot field names - bots often fill these automatically
