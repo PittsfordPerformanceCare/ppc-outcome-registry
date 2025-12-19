@@ -12,7 +12,7 @@ import {
 } from "@/components/lead-dashboard";
 import { PendingEpisodeContinuationsPanel } from "@/components/PendingEpisodeContinuationsPanel";
 import IntakesReviewQueue from "@/components/IntakesReviewQueue";
-import { PausedEpisodesSignal } from "@/components/admin-dashboard";
+import { PausedEpisodesSignal, ContactMessagesSection } from "@/components/admin-dashboard";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -58,6 +58,8 @@ const AdminDashboard = () => {
         <PendingEpisodeContinuationsPanel />
         
         <PausedEpisodesSignal />
+        
+        <ContactMessagesSection />
         
         <OutstandingTasksTile />
       </div>
