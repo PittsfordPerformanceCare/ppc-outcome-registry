@@ -624,8 +624,8 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                             className="font-semibold text-base truncate cursor-pointer hover:text-primary hover:underline transition-colors"
                             onClick={async () => {
                               setSelectedProspect(prospect);
-                              // If at forms_received stage, show intake form summary
-                              if (prospect.currentStage === "forms_received") {
+                              // If at forms_received or episode_active stage, show intake form summary
+                              if (prospect.currentStage === "forms_received" || prospect.currentStage === "episode_active") {
                                 // Fetch intake form data
                                 const { data: intakeForm } = await supabase
                                   .from("intake_forms")
