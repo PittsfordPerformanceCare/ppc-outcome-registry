@@ -240,6 +240,33 @@ export default function Discharge() {
         // Don't fail the discharge if notification fails
       }
 
+      // Create PCP summary task for admin queue
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("clinic_id")
+          .eq("id", user?.id || "")
+          .single();
+
+        await supabase.from("pcp_summary_tasks").insert({
+          episode_id: episodeId,
+          patient_name: patientName,
+          user_id: user?.id,
+          clinic_id: profile?.clinic_id,
+          discharge_date: new Date().toISOString().split("T")[0],
+          clinician_name: clinician,
+          region: region,
+          pcp_name: pcpName,
+          pcp_contact: pcpContact,
+          status: "READY",
+        });
+        console.log('PCP summary task created for admin queue');
+      } catch (taskError: any) {
+        console.error('Failed to create PCP summary task:', taskError);
+        // Don't fail the discharge if task creation fails
+      }
+
       // Check for pending complaints
       const { data: pendingComplaints } = await supabase
         .from("pending_episodes")
