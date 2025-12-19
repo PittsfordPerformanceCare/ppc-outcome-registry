@@ -22,7 +22,8 @@ import {
   CheckCircle2,
   ArrowRightLeft,
   UserMinus,
-  Calendar
+  Calendar,
+  RotateCcw
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { IntakeFormSummaryDialog } from "@/components/lead-dashboard/IntakeFormSummaryDialog";
@@ -100,6 +101,15 @@ export default function ClinicalDashboard() {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/returning-patient")}
+                className="gap-2"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Returning Patient
+              </Button>
               <Button
                 variant="outline"
                 size="sm"

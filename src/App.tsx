@@ -79,6 +79,7 @@ const SpecialSituations = lazy(() => import("./pages/SpecialSituations"));
 const ClinicianDashboard = lazy(() => import("./pages/ClinicianDashboard"));
 const MyDay = lazy(() => import("./pages/MyDay"));
 const ClinicalDashboard = lazy(() => import("./pages/ClinicalDashboard"));
+const ReturningPatientPage = lazy(() => import("./pages/ReturningPatientPage"));
 const ProspectJourney = lazy(() => import("./pages/ProspectJourney"));
 
 // ========== PHASE 1 SHELL: NEW LAYOUTS ==========
@@ -282,6 +283,18 @@ const App = () => (
               <Route path="prospect-journey" element={<ProspectJourney />} />
               <Route path="clinician" element={<ClinicianDashboard />} />
             </Route>
+
+            {/* RETURNING PATIENT ROUTE */}
+            <Route
+              path="/returning-patient"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <ReturningPatientPage />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
 
             {/* ========== CLINICIAN DASHBOARD ROUTE ========== */}
             <Route
