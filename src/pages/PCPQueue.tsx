@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
@@ -22,7 +23,8 @@ import {
   Printer,
   AlertTriangle,
   RefreshCw,
-  XCircle
+  XCircle,
+  Pencil
 } from "lucide-react";
 import { toast } from "sonner";
 import { format, parseISO, formatDistanceToNow } from "date-fns";
@@ -97,12 +99,19 @@ const PCPQueue = () => {
   const [showSkipDialog, setShowSkipDialog] = useState(false);
   const [showSendDialog, setShowSendDialog] = useState(false);
   const [showFailDialog, setShowFailDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const [skipReason, setSkipReason] = useState("");
   const [failReason, setFailReason] = useState("");
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>("FAX");
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [updating, setUpdating] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("actionable");
+  
+  // Edit form state
+  const [editPcpName, setEditPcpName] = useState("");
+  const [editPcpContact, setEditPcpContact] = useState("");
+  const [editPreferredMethod, setEditPreferredMethod] = useState<DeliveryMethod | "">("");
+  const [editNotes, setEditNotes] = useState("");
 
   useEffect(() => {
     fetchTasks();
@@ -289,6 +298,45 @@ const PCPQueue = () => {
     } catch (error: any) {
       console.error("Error skipping task:", error);
       toast.error("Failed to skip task");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const openEditDialog = (task: PCPSummaryTask) => {
+    setSelectedTask(task);
+    setEditPcpName(task.pcp_name || "");
+    setEditPcpContact(task.pcp_contact || "");
+    setEditPreferredMethod(task.preferred_delivery_method || "");
+    setEditNotes(task.notes || "");
+    setShowEditDialog(true);
+  };
+
+  const handleEditTask = async () => {
+    if (!selectedTask) return;
+    
+    setUpdating(true);
+    try {
+      const { error } = await supabase
+        .from("pcp_summary_tasks")
+        .update({
+          pcp_name: editPcpName || null,
+          pcp_contact: editPcpContact || null,
+          preferred_delivery_method: editPreferredMethod || null,
+          notes: editNotes || null,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", selectedTask.id);
+
+      if (error) throw error;
+
+      toast.success("Task updated");
+      setShowEditDialog(false);
+      setSelectedTask(null);
+      fetchTasks();
+    } catch (error: any) {
+      console.error("Error updating task:", error);
+      toast.error("Failed to update task");
     } finally {
       setUpdating(false);
     }
@@ -500,6 +548,16 @@ const PCPQueue = () => {
                         >
                           <Eye className="h-3.5 w-3.5" />
                           View
+                        </Button>
+                        
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => openEditDialog(task)}
+                          className="gap-1.5"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          Edit
                         </Button>
                         
                         {(task.status === "READY" || task.status === "RESEND_REQUIRED") && (
@@ -718,6 +776,79 @@ const PCPQueue = () => {
             <Button variant="secondary" onClick={handleSkip} disabled={updating}>
               <SkipForward className="h-4 w-4 mr-2" />
               Skip This Summary
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit PCP Summary Task</DialogTitle>
+            <DialogDescription>
+              Update details for {selectedTask?.patient_name}'s PCP summary delivery.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="editPcpName">PCP Name</Label>
+              <Input
+                id="editPcpName"
+                placeholder="Dr. Smith"
+                value={editPcpName}
+                onChange={(e) => setEditPcpName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="editPcpContact">PCP Contact (Fax/Email)</Label>
+              <Input
+                id="editPcpContact"
+                placeholder="555-123-4567 or doctor@clinic.com"
+                value={editPcpContact}
+                onChange={(e) => setEditPcpContact(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Preferred Delivery Method</Label>
+              <Select 
+                value={editPreferredMethod} 
+                onValueChange={(v) => setEditPreferredMethod(v as DeliveryMethod)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select method..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="FAX">Fax</SelectItem>
+                  <SelectItem value="SECURE_EMAIL">Secure Email</SelectItem>
+                  <SelectItem value="PORTAL_UPLOAD">Portal Upload</SelectItem>
+                  <SelectItem value="MANUAL_EXPORT">Manual Export/Print</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="editNotes">Notes</Label>
+              <Textarea
+                id="editNotes"
+                placeholder="Any additional notes..."
+                value={editNotes}
+                onChange={(e) => setEditNotes(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowEditDialog(false);
+                setSelectedTask(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleEditTask} disabled={updating}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Save Changes
             </Button>
           </DialogFooter>
         </DialogContent>
