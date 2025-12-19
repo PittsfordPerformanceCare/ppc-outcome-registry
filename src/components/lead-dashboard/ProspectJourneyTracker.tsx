@@ -238,13 +238,18 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           !f.converted_to_episode_id // Not already converted to an episode
         );
         
-        // Check intakes table (neurologic intake with legal docs) - match by name or lead_id
+        // Check intakes table (neurologic intake with legal docs) - match by lead_id, name, or email
         const leadId = (payload.lead_id as string) || null;
-        const matchedIntake = intakes.find(i => 
-          (i.patient_name?.toLowerCase().trim() === patientName.toLowerCase().trim()) ||
-          (leadId && i.lead_id === leadId) ||
-          (email && i.patient_email?.toLowerCase().trim() === email.toLowerCase().trim())
-        );
+        // Normalize names by collapsing multiple spaces
+        const normalizedPatientName = patientName.toLowerCase().replace(/\s+/g, ' ').trim();
+        const matchedIntake = intakes.find(i => {
+          const normalizedIntakeName = (i.patient_name || '').toLowerCase().replace(/\s+/g, ' ').trim();
+          return (
+            (leadId && i.lead_id === leadId) || // Match by lead_id first (most reliable)
+            (normalizedIntakeName === normalizedPatientName) || // Match by normalized name
+            (email && i.patient_email?.toLowerCase().trim() === email.toLowerCase().trim()) // Match by email
+          );
+        });
         
         // Forms sent if either intake system has a record after scheduling
         const formsSent = (!!matchedIntakeForm || !!matchedIntake) && isScheduled;
