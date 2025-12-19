@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { createEpisode, saveOutcomeScore } from "@/lib/dbOperations";
 import { PPC_CONFIG, IndexType } from "@/lib/ppcConfig";
@@ -28,6 +28,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [patientName, setPatientName] = useState("");
   const [episodeType, setEpisodeType] = useState<"MSK" | "Neurology" | "Performance">("MSK");
   const [region, setRegion] = useState<string>("");
@@ -61,6 +62,8 @@ export default function NewEpisode() {
   const [painPost, setPainPost] = useState<number | null>(null);
   // Track if this episode is being created from an intake form
   const [sourceIntakeFormId, setSourceIntakeFormId] = useState<string | null>(null);
+  // Track the source care request ID
+  const [sourceCareRequestId, setSourceCareRequestId] = useState<string | null>(null);
   // Track form completion status for each index
   const [formCompletionStatus, setFormCompletionStatus] = useState<Record<string, boolean>>({});
   // Auto-populate clinician from logged-in user
@@ -82,6 +85,87 @@ export default function NewEpisode() {
     };
     loadClinicianInfo();
   }, []);
+
+  // Load care request data from query parameter
+  useEffect(() => {
+    const careRequestId = searchParams.get('care_request');
+    if (!careRequestId) return;
+
+    const loadCareRequest = async () => {
+      const { data: careRequest, error } = await supabase
+        .from('care_requests')
+        .select('*')
+        .eq('id', careRequestId)
+        .single();
+
+      if (error || !careRequest) {
+        console.error('Failed to load care request:', error);
+        toast.error('Failed to load patient data');
+        return;
+      }
+
+      // Store the care request ID for linking after episode creation
+      setSourceCareRequestId(careRequestId);
+
+      const payload = careRequest.intake_payload as Record<string, unknown>;
+      
+      // Populate form fields from care request
+      const name = (payload?.patientName || payload?.name || payload?.patient_name || '') as string;
+      setPatientName(name);
+      setDob((payload?.date_of_birth || payload?.dateOfBirth || '') as string);
+      
+      // Determine episode type from complaint
+      const complaint = (careRequest.primary_complaint || payload?.primary_concern || payload?.chiefComplaint || '') as string;
+      const lowerComplaint = complaint.toLowerCase();
+      const neuroKeywords = ['concussion', 'headache', 'dizziness', 'vestibular', 'brain', 'neuro', 'tbi', 'cognitive'];
+      const isNeuro = neuroKeywords.some(kw => lowerComplaint.includes(kw));
+      
+      if (isNeuro) {
+        setEpisodeType('Neurology');
+        setSelectedIndices(['RPQ']);
+        setBaselineScores({ RPQ: '' });
+      } else {
+        setEpisodeType('MSK');
+      }
+      
+      // Set diagnosis from complaint
+      if (complaint) {
+        setDiagnosis(complaint);
+      }
+      
+      // Set pain level if available
+      if (payload?.pain_level) {
+        setPainPre(Number(payload.pain_level));
+      }
+      
+      // Set contact info
+      if (payload?.phone) {
+        setEmergencyPhone((payload.phone as string) || '');
+      }
+
+      // Check for clinical data from newEpisodeFromClinical sessionStorage (from ClinicalDashboard)
+      const clinicalDataStr = sessionStorage.getItem('newEpisodeFromClinical');
+      if (clinicalDataStr) {
+        try {
+          const clinicalData = JSON.parse(clinicalDataStr);
+          if (clinicalData.episodeType === 'Neurologic') {
+            setEpisodeType('Neurology');
+            setSelectedIndices(['RPQ']);
+            setBaselineScores({ RPQ: '' });
+          } else if (clinicalData.episodeType === 'MSK') {
+            setEpisodeType('MSK');
+          }
+          sessionStorage.removeItem('newEpisodeFromClinical');
+        } catch (e) {
+          console.error('Failed to parse clinical data:', e);
+        }
+      }
+
+      toast.success(`Patient data loaded: ${name}`);
+    };
+
+    loadCareRequest();
+  }, [searchParams]);
 
   const handlePatientSelect = (patient: any) => {
     // Get the most recent episode for this patient
@@ -373,6 +457,17 @@ export default function NewEpisode() {
             reviewed_by: user?.id
           })
           .eq("id", sourceIntakeFormId);
+      }
+
+      // If this episode was created from a care request, link it
+      if (sourceCareRequestId) {
+        await supabase
+          .from("care_requests")
+          .update({
+            episode_id: createdEpisode.id,
+            status: 'CONVERTED'
+          })
+          .eq("id", sourceCareRequestId);
       }
 
       toast.success("Episode created successfully!");
