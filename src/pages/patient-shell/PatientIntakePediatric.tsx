@@ -295,6 +295,7 @@ const PatientIntakePediatric = () => {
                     <SelectValue placeholder="Select primary concern" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="acute-injury">Acute Injury (Recent)</SelectItem>
                     <SelectItem value="concussion">Concussion / Head Injury</SelectItem>
                     <SelectItem value="school-symptoms">School Performance Issues</SelectItem>
                     <SelectItem value="motor-issues">Motor / Coordination Issues</SelectItem>
