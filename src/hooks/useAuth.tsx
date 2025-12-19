@@ -82,8 +82,28 @@ export function useAuth() {
   };
 
   const signOut = async () => {
+    // Check if user is a patient before signing out
+    const currentUser = user;
+    let isPatient = false;
+    
+    if (currentUser) {
+      const { data: patientAccount } = await supabase
+        .from("patient_accounts")
+        .select("id")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+      
+      isPatient = !!patientAccount;
+    }
+    
     await supabase.auth.signOut();
-    navigate("/auth");
+    
+    // Redirect to appropriate login page
+    if (isPatient) {
+      navigate("/patient-auth", { replace: true });
+    } else {
+      navigate("/staff-login", { replace: true });
+    }
   };
 
   return { user, session, loading, signOut };
