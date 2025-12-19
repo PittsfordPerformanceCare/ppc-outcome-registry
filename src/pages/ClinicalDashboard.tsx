@@ -23,12 +23,32 @@ import {
   ArrowRightLeft
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
+import { IntakeFormSummaryDialog } from "@/components/lead-dashboard/IntakeFormSummaryDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function ClinicalDashboard() {
   const navigate = useNavigate();
   const { data, isLoading, refetch, isRefetching } = useClinicalReadiness();
   const [selectedPatient, setSelectedPatient] = useState<ReadyPatient | null>(null);
   const [showEpisodeDialog, setShowEpisodeDialog] = useState(false);
+  const [intakeFormSummaryOpen, setIntakeFormSummaryOpen] = useState(false);
+  const [selectedIntakeForm, setSelectedIntakeForm] = useState<any>(null);
+
+  const handleViewIntakeSummary = async (patient: ReadyPatient) => {
+    // Fetch intake form data
+    const { data: intakeForm } = await supabase
+      .from("intake_forms")
+      .select("*")
+      .or(`patient_name.ilike.${patient.patientName},email.ilike.${patient.email || ''}`)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    
+    if (intakeForm) {
+      setSelectedIntakeForm(intakeForm);
+      setIntakeFormSummaryOpen(true);
+    }
+  };
 
   const handleCreateEpisode = (patient: ReadyPatient) => {
     setSelectedPatient(patient);
@@ -112,6 +132,7 @@ export default function ClinicalDashboard() {
           patients={data?.newNeuroPatients || []}
           isLoading={isLoading}
           onCreateEpisode={handleCreateEpisode}
+          onViewIntakeSummary={handleViewIntakeSummary}
           emptyMessage="No new neuro patients awaiting episodes"
         />
 
@@ -124,6 +145,7 @@ export default function ClinicalDashboard() {
           patients={data?.newMskPatients || []}
           isLoading={isLoading}
           onCreateEpisode={handleCreateEpisode}
+          onViewIntakeSummary={handleViewIntakeSummary}
           emptyMessage="No new MSK patients awaiting episodes"
         />
 
@@ -136,6 +158,7 @@ export default function ClinicalDashboard() {
           patients={data?.returningNeuroPatients || []}
           isLoading={isLoading}
           onCreateEpisode={handleCreateEpisode}
+          onViewIntakeSummary={handleViewIntakeSummary}
           emptyMessage="No returning neuro patients awaiting episodes"
           showPriorContext
         />
@@ -149,6 +172,7 @@ export default function ClinicalDashboard() {
           patients={data?.returningMskPatients || []}
           isLoading={isLoading}
           onCreateEpisode={handleCreateEpisode}
+          onViewIntakeSummary={handleViewIntakeSummary}
           emptyMessage="No returning MSK patients awaiting episodes"
           showPriorContext
         />
@@ -162,6 +186,7 @@ export default function ClinicalDashboard() {
           patients={data?.internalNeuroPatients || []}
           isLoading={isLoading}
           onCreateEpisode={handleCreateEpisode}
+          onViewIntakeSummary={handleViewIntakeSummary}
           emptyMessage="No internal neuro referrals awaiting episodes"
         />
       </div>
@@ -219,6 +244,12 @@ export default function ClinicalDashboard() {
           )}
         </DialogContent>
       </Dialog>
+      {/* Intake Form Summary Dialog */}
+      <IntakeFormSummaryDialog
+        open={intakeFormSummaryOpen}
+        onOpenChange={setIntakeFormSummaryOpen}
+        intakeForm={selectedIntakeForm}
+      />
     </div>
   );
 }
@@ -232,6 +263,7 @@ interface PatientSectionProps {
   patients: ReadyPatient[];
   isLoading: boolean;
   onCreateEpisode: (patient: ReadyPatient) => void;
+  onViewIntakeSummary: (patient: ReadyPatient) => void;
   emptyMessage: string;
   showPriorContext?: boolean;
 }
@@ -243,7 +275,8 @@ function PatientSection({
   subtitle, 
   patients, 
   isLoading, 
-  onCreateEpisode, 
+  onCreateEpisode,
+  onViewIntakeSummary,
   emptyMessage,
   showPriorContext 
 }: PatientSectionProps) {
@@ -295,6 +328,7 @@ function PatientSection({
               key={patient.id}
               patient={patient}
               onCreateEpisode={onCreateEpisode}
+              onViewIntakeSummary={onViewIntakeSummary}
               showPriorContext={showPriorContext}
             />
           ))}
@@ -308,17 +342,23 @@ function PatientSection({
 interface PatientCardProps {
   patient: ReadyPatient;
   onCreateEpisode: (patient: ReadyPatient) => void;
+  onViewIntakeSummary: (patient: ReadyPatient) => void;
   showPriorContext?: boolean;
 }
 
-function PatientCard({ patient, onCreateEpisode, showPriorContext }: PatientCardProps) {
+function PatientCard({ patient, onCreateEpisode, onViewIntakeSummary, showPriorContext }: PatientCardProps) {
   return (
     <Card className="border border-border hover:border-border/80 transition-colors">
       <CardContent className="p-5">
         {/* Patient Name & Badge */}
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="font-medium text-foreground">{patient.patientName}</h3>
+            <h3 
+              className="font-medium text-foreground cursor-pointer hover:text-primary hover:underline transition-colors"
+              onClick={() => onViewIntakeSummary(patient)}
+            >
+              {patient.patientName}
+            </h3>
             {showPriorContext && patient.priorEpisodeContext && (
               <p className="text-xs text-muted-foreground mt-0.5">
                 {patient.priorEpisodeContext}
