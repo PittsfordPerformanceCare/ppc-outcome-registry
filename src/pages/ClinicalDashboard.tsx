@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useClinicalReadiness, ReadyPatient } from "@/hooks/useClinicalReadiness";
+import { useClinicalReadiness, ReadyPatient, DischargeReadyPatient } from "@/hooks/useClinicalReadiness";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,9 @@ import {
   Bone,
   Clock,
   CheckCircle2,
-  ArrowRightLeft
+  ArrowRightLeft,
+  UserMinus,
+  Calendar
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { IntakeFormSummaryDialog } from "@/components/lead-dashboard/IntakeFormSummaryDialog";
@@ -215,6 +217,30 @@ export default function ClinicalDashboard() {
               emptyMessage="No internal neuro referrals awaiting episodes"
             />
           </div>
+        </div>
+
+        {/* Patients Awaiting Discharge Section */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-full bg-orange-500/10 flex items-center justify-center">
+              <UserMinus className="h-4 w-4 text-orange-600" />
+            </div>
+            <div>
+              <h2 className="text-lg font-medium text-foreground">Patients Awaiting Discharge</h2>
+              <p className="text-sm text-muted-foreground">
+                {(data?.dischargeReadyPatients?.length || 0) === 0 
+                  ? "No active patients" 
+                  : `${data?.dischargeReadyPatients?.length} active episode${(data?.dischargeReadyPatients?.length || 0) !== 1 ? 's' : ''}`
+                }
+              </p>
+            </div>
+          </div>
+
+          <DischargeSection
+            patients={data?.dischargeReadyPatients || []}
+            isLoading={isLoading}
+            onDischarge={(patient) => navigate(`/discharge/${patient.id}`)}
+          />
         </div>
       </div>
 
@@ -431,6 +457,122 @@ function PatientCard({ patient, onCreateEpisode, onViewIntakeSummary, showPriorC
           size="sm"
         >
           Create Episode
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Discharge Section Component
+interface DischargeSectionProps {
+  patients: DischargeReadyPatient[];
+  isLoading: boolean;
+  onDischarge: (patient: DischargeReadyPatient) => void;
+}
+
+function DischargeSection({ patients, isLoading, onDischarge }: DischargeSectionProps) {
+  if (isLoading) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3].map(i => (
+          <Card key={i} className="border border-border">
+            <CardContent className="p-5">
+              <Skeleton className="h-5 w-32 mb-3" />
+              <Skeleton className="h-4 w-48 mb-2" />
+              <Skeleton className="h-4 w-24 mb-4" />
+              <Skeleton className="h-9 w-full" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (patients.length === 0) {
+    return (
+      <Card className="border border-dashed border-border bg-muted/30">
+        <CardContent className="py-6 text-center">
+          <CheckCircle2 className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">No active episodes awaiting discharge</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {patients.map(patient => (
+        <DischargePatientCard
+          key={patient.id}
+          patient={patient}
+          onDischarge={onDischarge}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Discharge Patient Card Component
+interface DischargePatientCardProps {
+  patient: DischargeReadyPatient;
+  onDischarge: (patient: DischargeReadyPatient) => void;
+}
+
+function DischargePatientCard({ patient, onDischarge }: DischargePatientCardProps) {
+  const isLongEpisode = patient.daysSinceStart > 90;
+  
+  return (
+    <Card className={`border transition-colors ${isLongEpisode ? 'border-orange-300 bg-orange-50/30 dark:bg-orange-950/10' : 'border-border hover:border-border/80'}`}>
+      <CardContent className="p-5">
+        {/* Patient Name & Episode Type Badge */}
+        <div className="flex items-start justify-between mb-3">
+          <h3 className="font-medium text-foreground">
+            {patient.patientName}
+          </h3>
+          <Badge 
+            variant="secondary" 
+            className="text-xs font-normal bg-muted"
+          >
+            {patient.episodeType}
+          </Badge>
+        </div>
+        
+        {/* Region */}
+        <p className="text-sm text-foreground/80 mb-1">
+          {patient.region}
+        </p>
+        
+        {/* Days Active */}
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+          <Calendar className="h-3 w-3" />
+          <span>
+            Active for {patient.daysSinceStart} day{patient.daysSinceStart !== 1 ? 's' : ''}
+          </span>
+        </div>
+        
+        {/* Visit count if available */}
+        {patient.totalVisits && (
+          <p className="text-xs text-muted-foreground mb-3">
+            {patient.totalVisits} visit{patient.totalVisits !== 1 ? 's' : ''} completed
+          </p>
+        )}
+        
+        {/* Terminal flag */}
+        {patient.isTerminal && (
+          <Badge variant="outline" className="mb-3 text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400">
+            Marked for discharge
+          </Badge>
+        )}
+        
+        {/* Action */}
+        <Button
+          onClick={() => onDischarge(patient)}
+          variant="outline"
+          className="w-full gap-2"
+          size="sm"
+        >
+          <UserMinus className="h-4 w-4" />
+          Discharge
         </Button>
       </CardContent>
     </Card>

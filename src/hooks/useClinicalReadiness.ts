@@ -18,12 +18,25 @@ export interface ReadyPatient {
   source: 'care_request' | 'intake_form';
 }
 
+export interface DischargeReadyPatient {
+  id: string;
+  patientName: string;
+  episodeType: string;
+  region: string;
+  startDate: string;
+  daysSinceStart: number;
+  lastVisitDate?: string;
+  totalVisits?: number;
+  isTerminal: boolean;
+}
+
 export interface ClinicalReadinessData {
   newNeuroPatients: ReadyPatient[];
   newMskPatients: ReadyPatient[];
   returningNeuroPatients: ReadyPatient[];
   returningMskPatients: ReadyPatient[];
   internalNeuroPatients: ReadyPatient[];
+  dischargeReadyPatients: DischargeReadyPatient[];
 }
 
 // Classify complaint into Neurologic or MSK
@@ -180,6 +193,37 @@ export function useClinicalReadiness() {
         });
       }
       
+      // Fetch active episodes that may be ready for discharge
+      const { data: activeEpisodes, error: episodesError } = await supabase
+        .from('episodes')
+        .select('id, patient_name, episode_type, region, start_date, date_of_service, visits, episode_terminal, created_at')
+        .is('discharge_date', null)
+        .order('created_at', { ascending: true });
+      
+      if (episodesError) throw episodesError;
+      
+      // Process active episodes into discharge-ready patients
+      const dischargeReadyPatients: DischargeReadyPatient[] = (activeEpisodes || [])
+        .map(ep => {
+          const startDate = ep.start_date || ep.date_of_service || ep.created_at;
+          const daysSinceStart = Math.floor(
+            (Date.now() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)
+          );
+          
+          return {
+            id: ep.id,
+            patientName: ep.patient_name,
+            episodeType: ep.episode_type || 'Unknown',
+            region: ep.region || 'General',
+            startDate,
+            daysSinceStart,
+            totalVisits: ep.visits ? parseInt(ep.visits) : undefined,
+            isTerminal: ep.episode_terminal || false
+          };
+        })
+        .filter(p => p.daysSinceStart >= 0) // Only show valid episodes
+        .sort((a, b) => b.daysSinceStart - a.daysSinceStart); // Oldest first
+      
       // Categorize patients into 5 groups
       const newNeuroPatients = readyPatients.filter(p => 
         p.isNewPatient && p.complaintClassification === 'Neurologic' && !p.isInternalReferral
@@ -202,7 +246,8 @@ export function useClinicalReadiness() {
         newMskPatients, 
         returningNeuroPatients, 
         returningMskPatients, 
-        internalNeuroPatients 
+        internalNeuroPatients,
+        dischargeReadyPatients
       };
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
