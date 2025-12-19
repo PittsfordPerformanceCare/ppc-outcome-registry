@@ -5,8 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Phone, Mail, Loader2 } from "lucide-react";
+import { Phone, Mail, Loader2, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -16,31 +15,63 @@ interface QuickCaptureDialogProps {
   onSuccess: () => void;
 }
 
-const PRIMARY_CONCERNS = [
-  { value: "neuro", label: "Neurologic" },
-  { value: "msk", label: "MSK (Musculoskeletal)" },
-  { value: "pediatric", label: "Pediatric" },
-  { value: "other", label: "Other" },
+const VISIT_TYPES = [
+  { value: "neuro", label: "Neuro New Patient" },
+  { value: "msk", label: "MSK New Patient" },
 ];
 
 export function QuickCaptureDialog({ open, onOpenChange, onSuccess }: QuickCaptureDialogProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [primaryConcern, setPrimaryConcern] = useState("");
+  const [visitType, setVisitType] = useState("");
   const [notes, setNotes] = useState("");
-  const [sendOnboarding, setSendOnboarding] = useState(false);
-  const [templateType, setTemplateType] = useState<"neuro" | "msk">("neuro");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const resetForm = () => {
     setName("");
     setPhone("");
     setEmail("");
-    setPrimaryConcern("");
+    setVisitType("");
     setNotes("");
-    setSendOnboarding(false);
-    setTemplateType("neuro");
+    setEmailSent(false);
+  };
+
+  const handleSendEmail = async () => {
+    if (!email.trim()) {
+      toast.error("Email is required to send intake forms");
+      return;
+    }
+    if (!visitType) {
+      toast.error("Please select a visit type first");
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      const { error: emailError } = await supabase.functions.invoke("send-onboarding-email", {
+        body: {
+          email: email.trim(),
+          patientName: name.trim() || "Patient",
+          templateType: visitType,
+        },
+      });
+
+      if (emailError) {
+        console.error("Failed to send intake forms:", emailError);
+        toast.error("Failed to send email. Please try again.");
+      } else {
+        setEmailSent(true);
+        toast.success(`Intake forms sent to ${email.trim()}`);
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+      toast.error("Failed to send email");
+    } finally {
+      setIsSendingEmail(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -50,11 +81,6 @@ export function QuickCaptureDialog({ open, onOpenChange, onSuccess }: QuickCaptu
     }
     if (!phone.trim()) {
       toast.error("Phone is required");
-      return;
-    }
-
-    if (sendOnboarding && !email.trim()) {
-      toast.error("Email is required to send onboarding forms");
       return;
     }
 
@@ -68,7 +94,7 @@ export function QuickCaptureDialog({ open, onOpenChange, onSuccess }: QuickCaptu
           name: name.trim(),
           phone: phone.trim(),
           email: email.trim() || null,
-          primary_concern: primaryConcern || null,
+          primary_concern: visitType || null,
           notes: notes.trim() || null,
           lead_status: "NEW",
           origin_cta: "Phone Intake",
@@ -81,27 +107,7 @@ export function QuickCaptureDialog({ open, onOpenChange, onSuccess }: QuickCaptu
 
       if (leadError) throw leadError;
 
-      // Send onboarding email if requested
-      if (sendOnboarding && email.trim()) {
-        const { error: emailError } = await supabase.functions.invoke("send-onboarding-email", {
-          body: {
-            email: email.trim(),
-            patientName: name.trim(),
-            leadId: lead.id,
-            templateType,
-          },
-        });
-
-        if (emailError) {
-          console.error("Failed to send onboarding email:", emailError);
-          toast.warning("Lead created, but onboarding email failed to send");
-        } else {
-          toast.success("Lead created and onboarding email sent");
-        }
-      } else {
-        toast.success("Lead created successfully");
-      }
-
+      toast.success("Lead created successfully");
       resetForm();
       onOpenChange(false);
       onSuccess();
@@ -160,15 +166,15 @@ export function QuickCaptureDialog({ open, onOpenChange, onSuccess }: QuickCaptu
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="primaryConcern">Primary Concern</Label>
-            <Select value={primaryConcern} onValueChange={setPrimaryConcern}>
+            <Label htmlFor="visitType">Visit Type *</Label>
+            <Select value={visitType} onValueChange={setVisitType}>
               <SelectTrigger>
-                <SelectValue placeholder="Select concern type" />
+                <SelectValue placeholder="Select Neuro or MSK" />
               </SelectTrigger>
               <SelectContent>
-                {PRIMARY_CONCERNS.map((concern) => (
-                  <SelectItem key={concern.value} value={concern.value}>
-                    {concern.label}
+                {VISIT_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -186,40 +192,38 @@ export function QuickCaptureDialog({ open, onOpenChange, onSuccess }: QuickCaptu
             />
           </div>
 
-          <div className="border-t pt-4 space-y-3">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="sendOnboarding"
-                checked={sendOnboarding}
-                onCheckedChange={(checked) => setSendOnboarding(checked === true)}
-                disabled={!email.trim()}
-              />
-              <Label htmlFor="sendOnboarding" className="text-sm font-normal cursor-pointer">
-                <Mail className="h-4 w-4 inline mr-1" />
-                Send onboarding email with intake forms now
-              </Label>
-            </div>
-
-            {sendOnboarding && (
-              <div className="pl-6 space-y-2">
-                <Label className="text-sm text-muted-foreground">Select intake type:</Label>
-                <Select value={templateType} onValueChange={(v) => setTemplateType(v as "neuro" | "msk")}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="neuro">Neurologic Evaluation</SelectItem>
-                    <SelectItem value="msk">MSK Evaluation</SelectItem>
-                  </SelectContent>
-                </Select>
+          {/* Send Email Section */}
+          <div className="rounded-lg border p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="font-medium">Send Intake Forms</Label>
+                {email.trim() ? (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Send to: {email.trim()}
+                  </p>
+                ) : (
+                  <p className="text-xs text-amber-600 mt-1">
+                    Enter email above to enable
+                  </p>
+                )}
               </div>
-            )}
-
-            {!email.trim() && (
-              <p className="text-xs text-muted-foreground pl-6">
-                Enter an email address to enable onboarding email
-              </p>
-            )}
+              <Button
+                type="button"
+                variant={emailSent ? "outline" : "secondary"}
+                size="sm"
+                onClick={handleSendEmail}
+                disabled={!email.trim() || !visitType || isSendingEmail}
+              >
+                {isSendingEmail ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : emailSent ? (
+                  <CheckCircle2 className="h-4 w-4 mr-2 text-emerald-600" />
+                ) : (
+                  <Mail className="h-4 w-4 mr-2" />
+                )}
+                {emailSent ? "Email Sent" : "Send Email"}
+              </Button>
+            </div>
           </div>
         </div>
 
