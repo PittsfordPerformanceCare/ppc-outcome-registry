@@ -24,6 +24,7 @@ import {
 import { formatDistanceToNow, format } from "date-fns";
 import { BookNPVisitDialog } from "./BookNPVisitDialog";
 import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
+import { LeadDetailsDialog } from "./LeadDetailsDialog";
 import { useNavigate } from "react-router-dom";
 import { getSuggestedEpisodeType, getRoutingBadgeConfig, type EpisodeTypeRoute } from "@/lib/routingSuggestion";
 
@@ -56,6 +57,11 @@ interface ProspectJourney {
   appointmentDate?: string;
   sourceType: "lead" | "care_request";
   leadId?: string;
+  // Extended lead details for the popup
+  notes?: string;
+  symptomSummary?: string;
+  whoIsThisFor?: string;
+  preferredContactMethod?: string;
   careRequestData?: {
     id: string;
     intake_payload: Record<string, unknown>;
@@ -106,6 +112,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
   // Dialog states
   const [bookVisitOpen, setBookVisitOpen] = useState(false);
   const [sendFormsOpen, setSendFormsOpen] = useState(false);
+  const [leadDetailsOpen, setLeadDetailsOpen] = useState(false);
   const [selectedProspect, setSelectedProspect] = useState<ProspectJourney | null>(null);
 
   const loadProspects = async () => {
@@ -213,6 +220,11 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           isStalled: isStalled("lead_submitted", daysInPipeline),
           sourceType: "lead",
           leadId: lead.id,
+          // Extended fields for popup
+          notes: lead.notes || undefined,
+          symptomSummary: lead.symptom_summary || undefined,
+          whoIsThisFor: lead.who_is_this_for || undefined,
+          preferredContactMethod: lead.preferred_contact_method || undefined,
         });
       }
 
@@ -325,6 +337,11 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           isStalled: isStalled(currentStage, daysInPipeline),
           appointmentDate: pendingEp?.scheduled_date,
           sourceType: "care_request",
+          // Extended fields from payload (if came from lead)
+          notes: (payload.notes as string) || undefined,
+          symptomSummary: (payload.symptom_summary as string) || (payload.chief_complaint as string) || undefined,
+          whoIsThisFor: (payload.who_is_this_for as string) || undefined,
+          preferredContactMethod: (payload.preferred_contact_method as string) || undefined,
           careRequestData: {
             id: cr.id,
             intake_payload: payload,
@@ -600,7 +617,15 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                       {/* Left: Patient Info + Stage */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-base truncate">{prospect.name}</h4>
+                          <h4 
+                            className="font-semibold text-base truncate cursor-pointer hover:text-primary hover:underline transition-colors"
+                            onClick={() => {
+                              setSelectedProspect(prospect);
+                              setLeadDetailsOpen(true);
+                            }}
+                          >
+                            {prospect.name}
+                          </h4>
                           {/* Routing suggestion badge */}
                           {prospect.suggestedRoute !== "UNKNOWN" && (
                             <Badge 
@@ -693,6 +718,24 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           )}
         </CardContent>
       </Card>
+
+      {/* Lead Details Dialog - works for any prospect */}
+      <LeadDetailsDialog
+        open={leadDetailsOpen}
+        onOpenChange={setLeadDetailsOpen}
+        lead={selectedProspect ? {
+          name: selectedProspect.name,
+          email: selectedProspect.email,
+          phone: selectedProspect.phone,
+          primaryConcern: selectedProspect.primaryConcern,
+          systemCategory: selectedProspect.systemCategory,
+          createdAt: selectedProspect.createdAt,
+          notes: selectedProspect.notes,
+          symptomSummary: selectedProspect.symptomSummary,
+          whoIsThisFor: selectedProspect.whoIsThisFor,
+          preferredContactMethod: selectedProspect.preferredContactMethod,
+        } : null}
+      />
 
       {/* Dialogs */}
       {selectedProspect?.careRequestData && (
