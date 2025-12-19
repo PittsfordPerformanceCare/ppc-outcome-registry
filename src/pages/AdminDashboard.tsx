@@ -11,6 +11,7 @@ import {
   ProspectJourneyTracker,
 } from "@/components/lead-dashboard";
 import { PendingEpisodeContinuationsPanel } from "@/components/PendingEpisodeContinuationsPanel";
+import IntakesReviewQueue from "@/components/IntakesReviewQueue";
 import { PausedEpisodesSignal } from "@/components/admin-dashboard";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -42,6 +43,9 @@ const AdminDashboard = () => {
         inMotion={data.inMotion}
         loading={loading}
       />
+
+      {/* Completed Intakes Awaiting Review */}
+      <IntakesReviewQueue />
 
       {/* Action-required tiles - Only show when count > 0 */}
       <div className="space-y-4">
