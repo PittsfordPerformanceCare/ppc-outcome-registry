@@ -38,6 +38,7 @@ const PatientIntakePediatric = () => {
     childGrade: "",
     // Symptoms
     primaryConcern: "",
+    headInjuryEvaluation: "",
     symptomDuration: "",
     schoolSymptoms: "",
     athleticSymptoms: "",
@@ -103,7 +104,7 @@ const PatientIntakePediatric = () => {
           who_is_this_for: "child",
           funnel_stage: "lead_intake",
           checkpoint_status: "lead_intake_completed",
-          notes: `Child age: ${formData.childAge}. Grade: ${formData.childGrade}. Duration: ${formData.symptomDuration}. School symptoms: ${formData.schoolSymptoms}. Athletic symptoms: ${formData.athleticSymptoms}. Previous evaluation: ${formData.previousEvaluation}`,
+          notes: `Child age: ${formData.childAge}. Grade: ${formData.childGrade}. Duration: ${formData.symptomDuration}. School symptoms: ${formData.schoolSymptoms}. Athletic symptoms: ${formData.athleticSymptoms}.${formData.headInjuryEvaluation ? ` Head injury evaluation: ${formData.headInjuryEvaluation}.` : ''} Previous evaluation: ${formData.previousEvaluation}`,
           origin_page: originPage,
           origin_cta: originCta,
           pillar_origin: pillarOrigin,
@@ -310,6 +311,34 @@ const PatientIntakePediatric = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              {formData.primaryConcern === "concussion" && (
+                <div className="space-y-2 pl-4 border-l-2 border-emerald-200 dark:border-emerald-800">
+                  <Label>Have they been evaluated for this by their Pediatrician or Neurologist?</Label>
+                  <RadioGroup
+                    value={formData.headInjuryEvaluation}
+                    onValueChange={(value) => handleChange("headInjuryEvaluation", value)}
+                    className="flex gap-4"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="yes-pediatrician" id="head-eval-ped" />
+                      <Label htmlFor="head-eval-ped" className="font-normal">Yes, Pediatrician</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="yes-neurologist" id="head-eval-neuro" />
+                      <Label htmlFor="head-eval-neuro" className="font-normal">Yes, Neurologist</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="yes-both" id="head-eval-both" />
+                      <Label htmlFor="head-eval-both" className="font-normal">Yes, Both</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="no" id="head-eval-no" />
+                      <Label htmlFor="head-eval-no" className="font-normal">No</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="symptomDuration">How long have symptoms been present?</Label>
