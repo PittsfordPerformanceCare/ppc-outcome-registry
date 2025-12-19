@@ -25,6 +25,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { BookNPVisitDialog } from "./BookNPVisitDialog";
 import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
 import { LeadDetailsDialog } from "./LeadDetailsDialog";
+import { IntakeFormSummaryDialog } from "./IntakeFormSummaryDialog";
 import { useNavigate } from "react-router-dom";
 import { getSuggestedEpisodeType, getRoutingBadgeConfig, type EpisodeTypeRoute } from "@/lib/routingSuggestion";
 
@@ -113,7 +114,9 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
   const [bookVisitOpen, setBookVisitOpen] = useState(false);
   const [sendFormsOpen, setSendFormsOpen] = useState(false);
   const [leadDetailsOpen, setLeadDetailsOpen] = useState(false);
+  const [intakeFormSummaryOpen, setIntakeFormSummaryOpen] = useState(false);
   const [selectedProspect, setSelectedProspect] = useState<ProspectJourney | null>(null);
+  const [selectedIntakeForm, setSelectedIntakeForm] = useState<any>(null);
 
   const loadProspects = async () => {
     setLoading(true);
@@ -619,9 +622,29 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                         <div className="flex items-center gap-2 mb-1">
                           <h4 
                             className="font-semibold text-base truncate cursor-pointer hover:text-primary hover:underline transition-colors"
-                            onClick={() => {
+                            onClick={async () => {
                               setSelectedProspect(prospect);
-                              setLeadDetailsOpen(true);
+                              // If at forms_received stage, show intake form summary
+                              if (prospect.currentStage === "forms_received") {
+                                // Fetch intake form data
+                                const { data: intakeForm } = await supabase
+                                  .from("intake_forms")
+                                  .select("*")
+                                  .or(`patient_name.ilike.${prospect.name},email.ilike.${prospect.email || ''}`)
+                                  .order("created_at", { ascending: false })
+                                  .limit(1)
+                                  .maybeSingle();
+                                
+                                if (intakeForm) {
+                                  setSelectedIntakeForm(intakeForm);
+                                  setIntakeFormSummaryOpen(true);
+                                } else {
+                                  // Fallback to lead details if no intake form found
+                                  setLeadDetailsOpen(true);
+                                }
+                              } else {
+                                setLeadDetailsOpen(true);
+                              }
                             }}
                           >
                             {prospect.name}
@@ -737,6 +760,12 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         } : null}
       />
 
+      {/* Intake Form Summary Dialog - for forms_received stage */}
+      <IntakeFormSummaryDialog
+        open={intakeFormSummaryOpen}
+        onOpenChange={setIntakeFormSummaryOpen}
+        intakeForm={selectedIntakeForm}
+      />
       {/* Dialogs */}
       {selectedProspect?.careRequestData && (
         <>
