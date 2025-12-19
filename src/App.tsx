@@ -79,6 +79,7 @@ const SpecialSituations = lazy(() => import("./pages/SpecialSituations"));
 const ClinicianDashboard = lazy(() => import("./pages/ClinicianDashboard"));
 const MyDay = lazy(() => import("./pages/MyDay"));
 const ClinicalDashboard = lazy(() => import("./pages/ClinicalDashboard"));
+const ProspectJourney = lazy(() => import("./pages/ProspectJourney"));
 
 // ========== PHASE 1 SHELL: NEW LAYOUTS ==========
 const SiteLayout = lazy(() => import("./layouts/SiteLayout"));
@@ -278,6 +279,8 @@ const App = () => (
               <Route path="utm-health" element={<UTMHealth />} />
               <Route path="special-situations" element={<SpecialSituations />} />
               <Route path="clinical" element={<ClinicalDashboard />} />
+              <Route path="prospect-journey" element={<ProspectJourney />} />
+              <Route path="clinician" element={<ClinicianDashboard />} />
             </Route>
 
             {/* ========== CLINICIAN DASHBOARD ROUTE ========== */}
