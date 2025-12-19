@@ -12,7 +12,9 @@ import {
   Mail,
   PlayCircle,
   ArrowRight,
-  HelpCircle
+  HelpCircle,
+  Brain,
+  Activity
 } from "lucide-react";
 import {
   Popover,
@@ -23,6 +25,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { BookNPVisitDialog } from "./BookNPVisitDialog";
 import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
 import { useNavigate } from "react-router-dom";
+import { getSuggestedEpisodeType, getRoutingBadgeConfig, type EpisodeTypeRoute } from "@/lib/routingSuggestion";
 
 // The 6 journey stages per UX spec - FIXED, never add more
 type JourneyStage = 
@@ -42,6 +45,8 @@ interface ProspectJourney {
   email: string;
   phone: string | null;
   primaryConcern: string | null;
+  systemCategory: string | null;
+  suggestedRoute: EpisodeTypeRoute;
   createdAt: string;
   currentStage: JourneyStage;
   jenniferAction: JenniferAction;
@@ -189,12 +194,17 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const createdDate = new Date(lead.created_at);
         const daysInPipeline = Math.floor((Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
 
+        const systemCategory = lead.system_category || null;
+        const suggestedRoute = getSuggestedEpisodeType(systemCategory, lead.primary_concern);
+
         journeys.push({
           id: lead.id,
           name: lead.name || "Unknown",
           email: lead.email || "",
           phone: lead.phone || null,
           primaryConcern: lead.primary_concern || lead.symptom_summary || null,
+          systemCategory,
+          suggestedRoute,
           createdAt: lead.created_at,
           currentStage: "lead_submitted",
           jenniferAction: "approve",
@@ -295,12 +305,18 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
 
         console.log(`[ProspectJourney] ${patientName}: status=${statusUpper}, isApproved=${isApproved}, formsReceived=${formsReceived}, matchedIntake=${!!matchedIntake}, currentStage=${currentStage}, jenniferAction=${jenniferAction}`);
 
+        // Get system category from payload
+        const systemCategory = (payload.system_category as string) || null;
+        const suggestedRoute = getSuggestedEpisodeType(systemCategory, primaryConcern);
+
         journeys.push({
           id: cr.id,
           name: patientName,
           email,
           phone,
           primaryConcern,
+          systemCategory,
+          suggestedRoute,
           createdAt: cr.created_at,
           currentStage,
           jenniferAction,
@@ -585,6 +601,20 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold text-base truncate">{prospect.name}</h4>
+                          {/* Routing suggestion badge */}
+                          {prospect.suggestedRoute !== "UNKNOWN" && (
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs px-1.5 py-0 flex items-center gap-1 ${getRoutingBadgeConfig(prospect.suggestedRoute).className}`}
+                            >
+                              {prospect.suggestedRoute === "NEURO" ? (
+                                <Brain className="h-3 w-3" />
+                              ) : (
+                                <Activity className="h-3 w-3" />
+                              )}
+                              {getRoutingBadgeConfig(prospect.suggestedRoute).label}
+                            </Badge>
+                          )}
                           {prospect.patientCompleted && (
                             <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
                           )}

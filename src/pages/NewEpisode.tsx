@@ -25,6 +25,7 @@ import { SmartOutcomeMeasureSelector } from "@/components/SmartOutcomeMeasureSel
 import { PatientSearch } from "@/components/PatientSearch";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { getSuggestedEpisodeType } from "@/lib/routingSuggestion";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -114,18 +115,19 @@ export default function NewEpisode() {
       setPatientName(name);
       setDob((payload?.date_of_birth || payload?.dateOfBirth || '') as string);
       
-      // Determine episode type from complaint
+      // Use centralized routing logic to determine episode type
+      const systemCategory = (payload?.system_category as string) || null;
       const complaint = (careRequest.primary_complaint || payload?.primary_concern || payload?.chiefComplaint || '') as string;
-      const lowerComplaint = complaint.toLowerCase();
-      const neuroKeywords = ['concussion', 'headache', 'dizziness', 'vestibular', 'brain', 'neuro', 'tbi', 'cognitive'];
-      const isNeuro = neuroKeywords.some(kw => lowerComplaint.includes(kw));
+      const suggestedRoute = getSuggestedEpisodeType(systemCategory, complaint);
       
-      if (isNeuro) {
+      if (suggestedRoute === "NEURO") {
         setEpisodeType('Neurology');
         setSelectedIndices(['RPQ']);
         setBaselineScores({ RPQ: '' });
-      } else {
+        toast.info('Episode type auto-set to Neurology based on intake data');
+      } else if (suggestedRoute === "MSK") {
         setEpisodeType('MSK');
+        toast.info('Episode type auto-set to MSK based on intake data');
       }
       
       // Set diagnosis from complaint
