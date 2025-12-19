@@ -27,39 +27,78 @@ interface PhoneIntakeDialogProps {
   onSuccess?: () => void;
 }
 
+const VISIT_TYPES = [
+  { value: "neuro_new_patient", label: "Neuro New Patient" },
+  { value: "msk_new_patient", label: "MSK New Patient" },
+];
+
 export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [createdRequestId, setCreatedRequestId] = useState<string | null>(null);
   const [createdPatientName, setCreatedPatientName] = useState("");
+  const [createdEmail, setCreatedEmail] = useState("");
   
   // Form state
   const [patientName, setPatientName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
-  const [chiefComplaint, setChiefComplaint] = useState("");
+  const [visitType, setVisitType] = useState("");
   const [notes, setNotes] = useState("");
   const [source, setSource] = useState("PHONE_CALL");
+  
+  // Email state
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const resetForm = () => {
     setPatientName("");
     setPhone("");
     setEmail("");
     setDateOfBirth("");
-    setChiefComplaint("");
+    setVisitType("");
     setNotes("");
     setSource("PHONE_CALL");
     setCreatedRequestId(null);
     setCreatedPatientName("");
+    setCreatedEmail("");
+    setEmailSent(false);
+  };
+
+  const handleSendEmail = async () => {
+    if (!createdEmail) {
+      toast.error("No email address available");
+      return;
+    }
+
+    setIsSendingEmail(true);
+    try {
+      const { error } = await supabase.functions.invoke("send-onboarding-email", {
+        body: {
+          email: createdEmail,
+          patientName: createdPatientName,
+        },
+      });
+
+      if (error) throw error;
+
+      toast.success("Intake forms email sent successfully");
+      setEmailSent(true);
+    } catch (error) {
+      console.error("Failed to send email:", error);
+      toast.error("Failed to send intake forms email");
+    } finally {
+      setIsSendingEmail(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!patientName.trim() || !chiefComplaint.trim()) {
-      toast.error("Patient name and chief complaint are required");
+    if (!patientName.trim() || !visitType) {
+      toast.error("Patient name and visit type are required");
       return;
     }
 
@@ -67,13 +106,14 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      const visitTypeLabel = VISIT_TYPES.find(v => v.value === visitType)?.label || visitType;
       
       const intakePayload = {
         patient_name: patientName.trim(),
         phone: phone.trim() || null,
         email: email.trim() || null,
         date_of_birth: dateOfBirth || null,
-        chief_complaint: chiefComplaint.trim(),
+        visit_type: visitType,
         admin_notes: notes.trim() || null,
         intake_method: "phone_call",
         collected_by: user?.id,
@@ -85,7 +125,7 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
         .insert({
           source,
           status: "SUBMITTED",
-          primary_complaint: chiefComplaint.trim(),
+          primary_complaint: visitTypeLabel,
           intake_payload: intakePayload,
           admin_owner_id: user?.id,
         })
@@ -107,6 +147,7 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
       // Show success state with next steps
       setCreatedRequestId(careRequest.id);
       setCreatedPatientName(patientName.trim());
+      setCreatedEmail(email.trim());
       onSuccess?.();
     } catch (error) {
       console.error("Failed to create care request:", error);
@@ -170,13 +211,39 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
                 </ol>
               </div>
 
-              <Button onClick={handleGoToReview} className="w-full gap-2">
+              {createdEmail && (
+                <Button 
+                  onClick={handleSendEmail} 
+                  variant={emailSent ? "outline" : "default"}
+                  className="w-full gap-2"
+                  disabled={isSendingEmail || emailSent}
+                >
+                  {isSendingEmail ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : emailSent ? (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Email Sent
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="h-4 w-4" />
+                      Send Email
+                    </>
+                  )}
+                </Button>
+              )}
+
+              <Button onClick={handleGoToReview} variant={createdEmail ? "outline" : "default"} className="w-full gap-2">
                 <Calendar className="h-4 w-4" />
                 Review & Schedule NPE
                 <ArrowRight className="h-4 w-4" />
               </Button>
               
-              <Button variant="outline" onClick={handleCreateAnother} className="w-full">
+              <Button variant="ghost" onClick={handleCreateAnother} className="w-full">
                 Create Another Request
               </Button>
             </div>
@@ -255,18 +322,23 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
             />
           </div>
 
-          {/* Chief Complaint - Required */}
+          {/* Visit Type - Required */}
           <div className="space-y-2">
-            <Label htmlFor="complaint">
-              Chief Complaint <span className="text-destructive">*</span>
+            <Label htmlFor="visitType">
+              Visit Type <span className="text-destructive">*</span>
             </Label>
-            <Input
-              id="complaint"
-              value={chiefComplaint}
-              onChange={(e) => setChiefComplaint(e.target.value)}
-              placeholder="e.g., Neck pain, concussion symptoms, knee injury"
-              required
-            />
+            <Select value={visitType} onValueChange={setVisitType} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select visit type" />
+              </SelectTrigger>
+              <SelectContent>
+                {VISIT_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Source */}
