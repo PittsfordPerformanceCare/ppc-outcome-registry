@@ -55,6 +55,7 @@ import { CSS } from "@dnd-kit/utilities";
 const SignatureField = lazy(() => import("@/components/intake/SignatureField").then(m => ({ default: m.SignatureField })));
 
 const COMPLAINT_CATEGORIES = [
+  "Brain/Head",
   "Neck/Cervical",
   "Upper Back/Thoracic", 
   "Lower Back/Lumbar",
@@ -64,7 +65,6 @@ const COMPLAINT_CATEGORIES = [
   "Hip",
   "Knee",
   "Ankle/Foot",
-  "Brain/Head",
   "Other"
 ] as const;
 
