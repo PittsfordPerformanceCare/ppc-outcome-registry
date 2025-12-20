@@ -238,7 +238,7 @@ export function BookNPVisitDialog({
         region: primaryConcern || "General",
         date_of_service: format(appointmentDate, "yyyy-MM-dd"),
         start_date: format(appointmentDate, "yyyy-MM-dd"),
-        episode_type: visitType.replace("np_", "").toUpperCase(),
+        episode_type: visitType === "np_neuro" ? "Neurology" : "MSK",
         current_status: "ACTIVE_CONSERVATIVE_CARE" as const,
         clinical_impression: `New Patient - ${visitType.includes("neuro") ? "Neurologic" : visitType.includes("msk") ? "MSK" : "Pediatric"} Evaluation`,
       };
