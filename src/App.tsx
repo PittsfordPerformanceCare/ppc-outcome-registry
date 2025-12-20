@@ -10,6 +10,7 @@ import { DevToolbar } from "./components/DevToolbar";
 import { DashboardSkeleton } from "./components/skeletons/DashboardSkeleton";
 import { AdminLayout } from "./components/AdminLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { DischargeRedirect } from "./components/DischargeRedirect";
 
 // Lazy load all pages for better initial load performance
 const Index = lazy(() => import("./pages/Index"));
@@ -319,6 +320,7 @@ const App = () => (
                         <Route path="/new-episode" element={<NewEpisode />} />
                         <Route path="/follow-up" element={<FollowUp />} />
                         <Route path="/discharge" element={<Discharge />} />
+                        <Route path="/discharge/:episodeId" element={<DischargeRedirect />} />
                         <Route path="/dashboards" element={<Dashboards />} />
                         <Route path="/pcp-summary" element={<PCPSummary />} />
                         <Route path="/pcp-queue" element={
