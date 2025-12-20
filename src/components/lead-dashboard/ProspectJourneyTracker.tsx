@@ -14,13 +14,25 @@ import {
   ArrowRight,
   HelpCircle,
   Brain,
-  Activity
+  Activity,
+  Trash2
 } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow, format } from "date-fns";
 import { BookNPVisitDialog } from "./BookNPVisitDialog";
 import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
@@ -106,6 +118,7 @@ const ACTION_CONFIG: Record<JenniferAction, { label: string; icon: typeof Calend
 
 export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProps) {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [prospects, setProspects] = useState<ProspectJourney[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -117,6 +130,9 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
   const [intakeFormSummaryOpen, setIntakeFormSummaryOpen] = useState(false);
   const [selectedProspect, setSelectedProspect] = useState<ProspectJourney | null>(null);
   const [selectedIntakeForm, setSelectedIntakeForm] = useState<any>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [prospectToDelete, setProspectToDelete] = useState<ProspectJourney | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const loadProspects = async () => {
     setLoading(true);
@@ -451,6 +467,54 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
     }
   };
 
+  // Handle deleting a prospect (patient cancelled)
+  const handleDeleteProspect = async () => {
+    if (!prospectToDelete) return;
+    
+    setDeleting(true);
+    try {
+      if (prospectToDelete.sourceType === "lead") {
+        // Delete from leads table
+        const { error } = await supabase
+          .from("leads")
+          .delete()
+          .eq("id", prospectToDelete.id);
+        
+        if (error) throw error;
+      } else {
+        // Archive the care request instead of deleting
+        const { error } = await supabase
+          .from("care_requests")
+          .update({ 
+            status: "ARCHIVED",
+            archive_reason: "Patient cancelled",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", prospectToDelete.id);
+        
+        if (error) throw error;
+      }
+      
+      toast({
+        title: "Prospect removed",
+        description: `${prospectToDelete.name} has been removed from the journey.`,
+      });
+      
+      loadProspects();
+    } catch (err) {
+      console.error("Error deleting prospect:", err);
+      toast({
+        title: "Error",
+        description: "Failed to remove prospect. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDeleting(false);
+      setDeleteDialogOpen(false);
+      setProspectToDelete(null);
+    }
+  };
+
   const activeProspects = prospects.filter(p => p.currentStage !== "episode_active");
   const actionRequiredCount = activeProspects.filter(p => !["waiting", "done"].includes(p.jenniferAction)).length;
   const waitingOnPatientCount = activeProspects.filter(p => p.jenniferAction === "waiting").length;
@@ -695,8 +759,8 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                         )}
                       </div>
 
-                      {/* Right: Action Button */}
-                      <div className="flex-shrink-0">
+                      {/* Right: Action Button + Delete */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         {isActionRequired ? (
                           <Button
                             size="sm"
@@ -713,6 +777,20 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                             <span>Waiting on patient</span>
                           </div>
                         ) : null}
+                        
+                        {/* Delete button */}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => {
+                            setProspectToDelete(prospect);
+                            setDeleteDialogOpen(true);
+                          }}
+                          title="Remove prospect (patient cancelled)"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -796,6 +874,32 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           />
         </>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove prospect?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove <strong>{prospectToDelete?.name}</strong> from the prospect journey.
+              {prospectToDelete?.sourceType === "care_request" 
+                ? " The care request will be archived."
+                : " This action cannot be undone."
+              }
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteProspect}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting ? "Removing..." : "Remove"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
