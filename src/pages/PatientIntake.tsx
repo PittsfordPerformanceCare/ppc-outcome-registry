@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1773,21 +1774,19 @@ export default function PatientIntake() {
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Input 
-                              type="tel" 
-                              placeholder="(555) 123-4567" 
-                              {...field} 
-                              autoComplete="tel"
-                              inputMode="tel"
-                              enterKeyHint="next"
-                              onBlur={(e) => {
+                            <PhoneInput
+                              value={field.value}
+                              onChange={field.onChange}
+                              onBlur={() => {
                                 field.onBlur();
                                 setTouchedFields(prev => new Set(prev).add('phone'));
                               }}
-                              className={isValid ? 'border-success focus:ring-success pr-10' : ''}
+                              showCountryCode={true}
+                              defaultCountry="US"
+                              className={isValid ? 'border-success focus:ring-success' : ''}
                             />
                             {isValid && (
-                              <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success animate-scale-in" />
+                              <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-success animate-scale-in z-10" />
                             )}
                           </div>
                         </FormControl>
@@ -1861,14 +1860,15 @@ export default function PatientIntake() {
                     <FormItem>
                       <FormLabel>Parent/Guardian Phone (if under 18)</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="tel" 
-                          placeholder="Required if patient is under 18" 
-                          {...field} 
-                          inputMode="tel"
-                          enterKeyHint="next"
+                        <PhoneInput
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          showCountryCode={true}
+                          defaultCountry="US"
                         />
                       </FormControl>
+                      <FormDescription className="text-xs">Required if patient is under 18</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -1997,11 +1997,12 @@ export default function PatientIntake() {
                       <FormItem>
                         <FormLabel>Contact Phone</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="tel" 
-                            {...field} 
-                            inputMode="tel"
-                            enterKeyHint="next"
+                          <PhoneInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            showCountryCode={true}
+                            defaultCountry="US"
                           />
                         </FormControl>
                         <FormMessage />
@@ -2120,11 +2121,12 @@ export default function PatientIntake() {
                       <FormItem>
                         <FormLabel>PCP Phone</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="tel" 
-                            {...field} 
-                            inputMode="tel"
-                            enterKeyHint="next"
+                          <PhoneInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            showCountryCode={true}
+                            defaultCountry="US"
                           />
                         </FormControl>
                         <FormMessage />
@@ -2138,11 +2140,12 @@ export default function PatientIntake() {
                       <FormItem>
                         <FormLabel>PCP Fax</FormLabel>
                         <FormControl>
-                          <Input 
-                            type="tel" 
-                            {...field} 
-                            inputMode="tel"
-                            enterKeyHint="next"
+                          <PhoneInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            showCountryCode={true}
+                            defaultCountry="US"
                           />
                         </FormControl>
                         <FormMessage />
