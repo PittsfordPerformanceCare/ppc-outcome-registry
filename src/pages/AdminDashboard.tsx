@@ -43,7 +43,15 @@ const AdminDashboard = () => {
         loading={loading}
       />
 
-      {/* Completed Intakes Awaiting Review */}
+      {/* Care Requests & Leads Queue - Primary intake management */}
+      <IntakeQueue
+        leads={data.leads}
+        careRequests={data.careRequests}
+        loading={loading}
+        onRefresh={refetch}
+      />
+
+      {/* Completed Intakes Awaiting Review (Prospect Journey flow) */}
       <IntakesReviewQueue />
 
       {/* Action-required tiles - Only show when count > 0 */}
@@ -84,13 +92,6 @@ const AdminDashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Task-oriented views */}
             <div className="lg:col-span-2 space-y-6">
-              <IntakeQueue
-                leads={data.leads}
-                careRequests={data.careRequests}
-                loading={loading}
-                onRefresh={refetch}
-              />
-
               <PreVisitMomentumPanel
                 visits={data.upcomingVisits}
                 loading={loading}
