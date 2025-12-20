@@ -140,3 +140,30 @@ verify_jwt = false
 
 [functions.lookup-pcp-contact]
 verify_jwt = false
+
+[functions.send-onboarding-email]
+verify_jwt = true
+
+[functions.send-intake-welcome]
+verify_jwt = false
+
+[functions.convert-intake-to-episode]
+verify_jwt = true
+
+[functions.check-intake-scheduling]
+verify_jwt = false
+
+[functions.send-intake-scheduling-reminder]
+verify_jwt = false
+
+[functions.send-intake-scheduling-alert]
+verify_jwt = false
+
+[functions.sync-calendar-appointments]
+verify_jwt = true
+
+[functions.google-calendar-oauth]
+verify_jwt = false
+
+[functions.get-google-client-id]
+verify_jwt = false
