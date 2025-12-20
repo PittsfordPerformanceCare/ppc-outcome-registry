@@ -51,7 +51,7 @@ export function QuickCaptureDialog({ open, onOpenChange, onSuccess }: QuickCaptu
 
     setIsSendingEmail(true);
     try {
-      const { error: emailError } = await supabase.functions.invoke("send-onboarding-email", {
+      const { data, error: emailError } = await supabase.functions.invoke("send-onboarding-email", {
         body: {
           email: email.trim(),
           patientName: name.trim() || "Patient",
@@ -59,8 +59,10 @@ export function QuickCaptureDialog({ open, onOpenChange, onSuccess }: QuickCaptu
         },
       });
 
-      if (emailError) {
-        console.error("Failed to send intake forms:", emailError);
+      // Check for function invocation error or error in response body
+      if (emailError || data?.error) {
+        const errMsg = emailError?.message || data?.error || "Unknown error";
+        console.error("Failed to send intake forms:", errMsg);
         toast.error("Failed to send email. Please try again.");
       } else {
         setEmailSent(true);

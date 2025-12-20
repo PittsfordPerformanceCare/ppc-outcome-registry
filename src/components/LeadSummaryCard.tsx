@@ -117,7 +117,9 @@ export function LeadSummaryCard({ lead, open, onClose, onUpdate }: LeadSummaryCa
         }
       });
 
+      // Check for function invocation error or error in response body
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       // Log a contact attempt for the email
       const newAttemptCount = (lead.contact_attempt_count || 0) + 1;

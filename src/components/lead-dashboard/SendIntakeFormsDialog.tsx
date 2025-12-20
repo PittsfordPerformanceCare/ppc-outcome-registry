@@ -40,7 +40,7 @@ export function SendIntakeFormsDialog({
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase.functions.invoke("send-onboarding-email", {
+      const { data, error } = await supabase.functions.invoke("send-onboarding-email", {
         body: {
           email: email.trim(),
           patientName,
@@ -49,7 +49,13 @@ export function SendIntakeFormsDialog({
         },
       });
 
+      // Check for function invocation error
       if (error) throw error;
+      
+      // Check for error returned in the response body
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
       toast.success("Intake forms sent successfully");
       onOpenChange(false);

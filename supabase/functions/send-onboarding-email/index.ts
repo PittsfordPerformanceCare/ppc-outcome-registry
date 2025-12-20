@@ -259,6 +259,8 @@ Deno.serve(async (req) => {
       ? getNeuroTemplate(displayName, intakeFormUrl)
       : getMskTemplate(displayName, intakeFormUrl);
 
+    console.log("Attempting to send email to:", email);
+    
     const emailResponse = await resend.emails.send({
       from: "Pittsford Performance Care <onboarding@resend.dev>",
       to: [email],
@@ -266,9 +268,29 @@ Deno.serve(async (req) => {
       html,
     });
 
-    console.log("Onboarding email sent successfully:", emailResponse);
+    console.log("Resend API response:", JSON.stringify(emailResponse));
 
-    return new Response(JSON.stringify({ success: true, data: emailResponse }), {
+    // Check if Resend returned an error in the response
+    if (emailResponse.error) {
+      console.error("Resend returned an error:", emailResponse.error);
+      return new Response(
+        JSON.stringify({ error: emailResponse.error.message || "Email send failed" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Verify we got an ID back (indicates successful send)
+    if (!emailResponse.data?.id) {
+      console.error("Resend did not return an email ID - send may have failed");
+      return new Response(
+        JSON.stringify({ error: "Email send failed - no confirmation received" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log("Onboarding email sent successfully, ID:", emailResponse.data.id);
+
+    return new Response(JSON.stringify({ success: true, emailId: emailResponse.data.id }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

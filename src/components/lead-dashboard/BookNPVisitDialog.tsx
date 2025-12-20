@@ -100,7 +100,7 @@ export function BookNPVisitDialog({
     try {
       const templateType = visitType.includes("neuro") ? "neuro" : "msk";
       
-      const { error: emailError } = await supabase.functions.invoke("send-onboarding-email", {
+      const { data, error: emailError } = await supabase.functions.invoke("send-onboarding-email", {
         body: {
           email: patientEmail,
           patientName: patientName,
@@ -109,8 +109,10 @@ export function BookNPVisitDialog({
         },
       });
 
-      if (emailError) {
-        console.error("Failed to send intake forms:", emailError);
+      // Check for function invocation error or error in response body
+      if (emailError || data?.error) {
+        const errMsg = emailError?.message || data?.error || "Unknown error";
+        console.error("Failed to send intake forms:", errMsg);
         toast.error("Failed to send email. Please try again.");
       } else {
         setEmailSent(true);
