@@ -199,6 +199,9 @@ const intakeFormSchema = z.object({
   hipaaDate: z.string().min(1, "Date is required"),
   consentClinicUpdates: z.boolean().default(false),
   optOutNewsletter: z.boolean().default(false),
+  preferredContactMethod: z.enum(["phone", "email", "text", "no_preference"]).default("no_preference"),
+  bestTimeToContact: z.enum(["morning", "afternoon", "evening", "anytime"]).default("anytime"),
+  languagePreference: z.string().default("English"),
 });
 
 type IntakeFormValues = z.infer<typeof intakeFormSchema>;
@@ -324,6 +327,9 @@ export default function PatientIntake() {
       hipaaDate: new Date().toISOString().split('T')[0],
       consentClinicUpdates: false,
       optOutNewsletter: false,
+      preferredContactMethod: "no_preference",
+      bestTimeToContact: "anytime",
+      languagePreference: "English",
     },
   });
 
@@ -789,6 +795,9 @@ export default function PatientIntake() {
           hipaa_date: data.hipaaDate,
           consent_clinic_updates: data.consentClinicUpdates,
           opt_out_newsletter: data.optOutNewsletter,
+          preferred_contact_method: data.preferredContactMethod,
+          best_time_to_contact: data.bestTimeToContact,
+          language_preference: data.languagePreference,
           referral_code: referralCode,
           // Bot detection fields
           website: honeypot.website,
@@ -3019,52 +3028,203 @@ export default function PatientIntake() {
             </Card>
 
             {/* Communication Preferences */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Communication Preferences</CardTitle>
+            <Card className="border-primary/20 shadow-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-primary" />
+                  Communication Preferences
+                </CardTitle>
+                <CardDescription>
+                  Help us reach you in the way that works best for you
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
+                {/* Preferred Contact Method */}
                 <FormField
                   control={form.control}
-                  name="consentClinicUpdates"
+                  name="preferredContactMethod"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
+                    <FormItem className="space-y-3">
+                      <FormLabel className="text-base font-medium">Preferred Contact Method</FormLabel>
                       <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="mt-0.5"
-                        />
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+                        >
+                          <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="phone" id="contact-phone" />
+                            </FormControl>
+                            <FormLabel htmlFor="contact-phone" className="font-normal cursor-pointer">
+                              📞 Phone Call
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="text" id="contact-text" />
+                            </FormControl>
+                            <FormLabel htmlFor="contact-text" className="font-normal cursor-pointer">
+                              💬 Text/SMS
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="email" id="contact-email" />
+                            </FormControl>
+                            <FormLabel htmlFor="contact-email" className="font-normal cursor-pointer">
+                              ✉️ Email
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="no_preference" id="contact-any" />
+                            </FormControl>
+                            <FormLabel htmlFor="contact-any" className="font-normal cursor-pointer">
+                              Any
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="cursor-pointer">
-                          Yes, I would like to receive clinic updates and appointment reminders
-                        </FormLabel>
-                      </div>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
 
+                {/* Best Time to Contact */}
                 <FormField
                   control={form.control}
-                  name="optOutNewsletter"
+                  name="bestTimeToContact"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-3">
+                    <FormItem className="space-y-3">
+                      <FormLabel className="text-base font-medium">Best Time to Reach You</FormLabel>
                       <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          className="mt-0.5"
-                        />
+                        <RadioGroup
+                          onValueChange={field.onChange}
+                          value={field.value}
+                          className="grid grid-cols-2 gap-3 sm:grid-cols-4"
+                        >
+                          <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="morning" id="time-morning" />
+                            </FormControl>
+                            <FormLabel htmlFor="time-morning" className="font-normal cursor-pointer">
+                              🌅 Morning
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="afternoon" id="time-afternoon" />
+                            </FormControl>
+                            <FormLabel htmlFor="time-afternoon" className="font-normal cursor-pointer">
+                              ☀️ Afternoon
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="evening" id="time-evening" />
+                            </FormControl>
+                            <FormLabel htmlFor="time-evening" className="font-normal cursor-pointer">
+                              🌙 Evening
+                            </FormLabel>
+                          </FormItem>
+                          <FormItem className="flex items-center space-x-2 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value="anytime" id="time-anytime" />
+                            </FormControl>
+                            <FormLabel htmlFor="time-anytime" className="font-normal cursor-pointer">
+                              Anytime
+                            </FormLabel>
+                          </FormItem>
+                        </RadioGroup>
                       </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel className="cursor-pointer">
-                          I do not wish to receive newsletters or promotional materials
-                        </FormLabel>
-                      </div>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {/* Language Preference */}
+                <FormField
+                  control={form.control}
+                  name="languagePreference"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-base font-medium">Language Preference</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="w-full sm:w-[240px]">
+                            <SelectValue placeholder="Select your preferred language" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="English">English</SelectItem>
+                          <SelectItem value="Spanish">Español (Spanish)</SelectItem>
+                          <SelectItem value="Chinese">中文 (Chinese)</SelectItem>
+                          <SelectItem value="Vietnamese">Tiếng Việt (Vietnamese)</SelectItem>
+                          <SelectItem value="Korean">한국어 (Korean)</SelectItem>
+                          <SelectItem value="Tagalog">Tagalog</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Divider */}
+                <div className="border-t border-border pt-4">
+                  <p className="text-sm text-muted-foreground mb-4">Notification Settings</p>
+                  
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="consentClinicUpdates"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-muted/30">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="cursor-pointer font-medium">
+                              Receive clinic updates & reminders
+                            </FormLabel>
+                            <FormDescription className="text-sm">
+                              Get appointment reminders, health tips, and important clinic updates
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="optOutNewsletter"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-lg border border-border p-4 bg-muted/30">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                            <FormLabel className="cursor-pointer font-medium">
+                              Opt out of newsletters
+                            </FormLabel>
+                            <FormDescription className="text-sm">
+                              Check this if you do not wish to receive newsletters or promotional materials
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
