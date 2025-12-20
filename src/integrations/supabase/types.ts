@@ -1673,6 +1673,7 @@ export type Database = {
           access_code: string
           address: string | null
           allergies: string | null
+          best_time_to_contact: string | null
           bill_responsible_party: string | null
           chief_complaint: string
           complaints: Json | null
@@ -1698,6 +1699,7 @@ export type Database = {
           injury_mechanism: string | null
           insurance_id: string | null
           insurance_provider: string | null
+          language_preference: string | null
           medical_history: string | null
           opt_out_newsletter: boolean | null
           pain_level: number | null
@@ -1706,6 +1708,7 @@ export type Database = {
           pcp_fax: string | null
           pcp_phone: string | null
           phone: string | null
+          preferred_contact_method: string | null
           primary_care_physician: string | null
           referral_code: string | null
           referral_source: string | null
@@ -1724,6 +1727,7 @@ export type Database = {
           access_code: string
           address?: string | null
           allergies?: string | null
+          best_time_to_contact?: string | null
           bill_responsible_party?: string | null
           chief_complaint: string
           complaints?: Json | null
@@ -1749,6 +1753,7 @@ export type Database = {
           injury_mechanism?: string | null
           insurance_id?: string | null
           insurance_provider?: string | null
+          language_preference?: string | null
           medical_history?: string | null
           opt_out_newsletter?: boolean | null
           pain_level?: number | null
@@ -1757,6 +1762,7 @@ export type Database = {
           pcp_fax?: string | null
           pcp_phone?: string | null
           phone?: string | null
+          preferred_contact_method?: string | null
           primary_care_physician?: string | null
           referral_code?: string | null
           referral_source?: string | null
@@ -1775,6 +1781,7 @@ export type Database = {
           access_code?: string
           address?: string | null
           allergies?: string | null
+          best_time_to_contact?: string | null
           bill_responsible_party?: string | null
           chief_complaint?: string
           complaints?: Json | null
@@ -1800,6 +1807,7 @@ export type Database = {
           injury_mechanism?: string | null
           insurance_id?: string | null
           insurance_provider?: string | null
+          language_preference?: string | null
           medical_history?: string | null
           opt_out_newsletter?: boolean | null
           pain_level?: number | null
@@ -1808,6 +1816,7 @@ export type Database = {
           pcp_fax?: string | null
           pcp_phone?: string | null
           phone?: string | null
+          preferred_contact_method?: string | null
           primary_care_physician?: string | null
           referral_code?: string | null
           referral_source?: string | null
