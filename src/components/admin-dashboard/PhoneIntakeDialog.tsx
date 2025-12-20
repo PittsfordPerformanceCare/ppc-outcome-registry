@@ -39,6 +39,7 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
   const [createdRequestId, setCreatedRequestId] = useState<string | null>(null);
   const [createdPatientName, setCreatedPatientName] = useState("");
   const [createdEmail, setCreatedEmail] = useState("");
+  const [createdVisitType, setCreatedVisitType] = useState("");
   
   // Form state
   const [patientName, setPatientName] = useState("");
@@ -64,6 +65,7 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
     setCreatedRequestId(null);
     setCreatedPatientName("");
     setCreatedEmail("");
+    setCreatedVisitType("");
     setEmailSent(false);
   };
 
@@ -75,10 +77,14 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
 
     setIsSendingEmail(true);
     try {
+      // Determine template type from visit type
+      const templateType = createdVisitType.includes("neuro") ? "neuro" : "msk";
+      
       const { error } = await supabase.functions.invoke("send-onboarding-email", {
         body: {
           email: createdEmail,
           patientName: createdPatientName,
+          templateType,
         },
       });
 
@@ -148,6 +154,7 @@ export function PhoneIntakeDialog({ onSuccess }: PhoneIntakeDialogProps) {
       setCreatedRequestId(careRequest.id);
       setCreatedPatientName(patientName.trim());
       setCreatedEmail(email.trim());
+      setCreatedVisitType(visitType);
       onSuccess?.();
     } catch (error) {
       console.error("Failed to create care request:", error);
