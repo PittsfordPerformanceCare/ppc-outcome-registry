@@ -217,12 +217,12 @@ export function BookNPVisitDialog({
         throw new Error("Not authenticated");
       }
 
-      // Update care request to APPROVED
+      // Update care request to APPROVED_FOR_CARE
       if (careRequestId) {
         await supabase
           .from("care_requests")
           .update({
-            status: "APPROVED",
+            status: "APPROVED_FOR_CARE",
             approved_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })
@@ -249,12 +249,11 @@ export function BookNPVisitDialog({
 
       if (episodeError) throw episodeError;
 
-      // Link care request to episode
+      // Link care request to episode (keep as APPROVED_FOR_CARE since CONVERTED is not a valid status)
       if (careRequestId) {
         await supabase
           .from("care_requests")
           .update({
-            status: "CONVERTED",
             episode_id: episodeId,
             updated_at: new Date().toISOString()
           })
