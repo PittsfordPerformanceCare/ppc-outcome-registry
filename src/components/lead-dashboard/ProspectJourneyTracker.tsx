@@ -844,14 +844,21 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         onOpenChange={setIntakeFormSummaryOpen}
         intakeForm={selectedIntakeForm}
       />
-      {/* Dialogs */}
-      {selectedProspect?.careRequestData && (
+      {/* Dialogs - render for both leads and care requests */}
+      {selectedProspect && (
         <>
           <BookNPVisitDialog
             open={bookVisitOpen}
             onOpenChange={setBookVisitOpen}
             onSuccess={loadProspects}
-            careRequest={{
+            lead={selectedProspect.sourceType === "lead" ? {
+              id: selectedProspect.id,
+              name: selectedProspect.name,
+              email: selectedProspect.email,
+              phone: selectedProspect.phone,
+              primary_concern: selectedProspect.primaryConcern,
+            } : null}
+            careRequest={selectedProspect.careRequestData ? {
               id: selectedProspect.careRequestData.id,
               intake_payload: selectedProspect.careRequestData.intake_payload as {
                 patient_name?: string;
@@ -862,7 +869,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
               },
               primary_complaint: selectedProspect.careRequestData.primary_complaint,
               assigned_clinician_id: selectedProspect.careRequestData.assigned_clinician_id,
-            }}
+            } : null}
           />
           <SendIntakeFormsDialog
             open={sendFormsOpen}
@@ -870,7 +877,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
             onSuccess={loadProspects}
             patientName={selectedProspect.name}
             patientEmail={selectedProspect.email}
-            careRequestId={selectedProspect.id}
+            careRequestId={selectedProspect.careRequestData?.id || selectedProspect.id}
           />
         </>
       )}
