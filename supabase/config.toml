@@ -137,3 +137,6 @@ verify_jwt = false
 
 [functions.approve-care-request]
 verify_jwt = false
+
+[functions.lookup-pcp-contact]
+verify_jwt = false
