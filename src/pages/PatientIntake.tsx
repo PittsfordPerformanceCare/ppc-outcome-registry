@@ -14,7 +14,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock, ChevronRight, ChevronLeft, Loader2, Moon, Sun, Smartphone } from "lucide-react";
+import { ClipboardCheck, Plus, X, Printer, Copy, CheckCircle2, PartyPopper, Download, Home, AlertCircle, Activity, GripVertical, Save, Clock, ChevronRight, ChevronLeft, Loader2, Moon, Sun, Smartphone, Sparkles } from "lucide-react";
+import { usePCPLookup } from "@/hooks/usePCPLookup";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -270,6 +271,7 @@ export default function PatientIntake() {
   const { isDark, toggleDarkMode } = useDarkMode();
   const isMobile = useIsMobile();
   const { isOnline } = useNetworkStatus();
+  const { debouncedLookup, isLooking: isPCPLooking, clearLookup: clearPCPLookup } = usePCPLookup();
 
   // Drag and drop sensors
   const sensors = useSensors(
@@ -2115,10 +2117,72 @@ export default function PatientIntake() {
                     name="primaryCarePhysician"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Primary Care Physician (PCP)</FormLabel>
+                        <FormLabel className="flex items-center gap-2">
+                          Primary Care Physician (PCP)
+                          {isPCPLooking && (
+                            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              Looking up...
+                            </span>
+                          )}
+                        </FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <div className="relative">
+                            <Input 
+                              {...field} 
+                              onChange={(e) => {
+                                field.onChange(e);
+                                const name = e.target.value;
+                                if (name.length >= 3) {
+                                  // Get address for location context
+                                  const address = form.getValues("address");
+                                  debouncedLookup(name, address, (result) => {
+                                    if (result && (result.phone || result.fax || result.address)) {
+                                      // Only auto-fill if fields are empty
+                                      const currentPhone = form.getValues("pcpPhone");
+                                      const currentFax = form.getValues("pcpFax");
+                                      const currentAddress = form.getValues("pcpAddress");
+                                      
+                                      let filled = false;
+                                      if (!currentPhone && result.phone) {
+                                        form.setValue("pcpPhone", result.phone);
+                                        filled = true;
+                                      }
+                                      if (!currentFax && result.fax) {
+                                        form.setValue("pcpFax", result.fax);
+                                        filled = true;
+                                      }
+                                      if (!currentAddress && result.address) {
+                                        form.setValue("pcpAddress", result.address);
+                                        filled = true;
+                                      }
+                                      
+                                      if (filled) {
+                                        toast.success(
+                                          <div className="flex items-center gap-2">
+                                            <Sparkles className="h-4 w-4 text-primary" />
+                                            <span>Found contact info for {name}</span>
+                                          </div>,
+                                          { duration: 3000 }
+                                        );
+                                      }
+                                    }
+                                  });
+                                } else {
+                                  clearPCPLookup();
+                                }
+                              }}
+                            />
+                            {isPCPLooking && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+                              </div>
+                            )}
+                          </div>
                         </FormControl>
+                        <FormDescription className="text-xs">
+                          AI will try to find contact info as you type
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
