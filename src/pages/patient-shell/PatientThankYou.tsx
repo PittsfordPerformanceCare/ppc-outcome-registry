@@ -2,41 +2,14 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, ArrowRight, Phone, Mail, Clock, BookOpen } from "lucide-react";
-
-// Helper function to check if reason qualifies for concussion guide
-const shouldShowConcussionGuide = (reason: string | null): boolean => {
-  if (!reason) return false;
-  
-  const lowerReason = reason.toLowerCase();
-  
-  // Exact matches for dropdown values
-  const exactMatches = ["concussion", "headaches", "dizziness"];
-  if (exactMatches.includes(lowerReason)) return true;
-  
-  // Case-insensitive contains matching for free-text values
-  const containsPatterns = [
-    "concussion",
-    "head injury",
-    "head-injury",
-    "dizziness",
-    "vertigo",
-    "headache",
-    "tbi",
-    "traumatic brain",
-    "post-concussion",
-    "post concussion",
-    "balance",
-  ];
-  
-  return containsPatterns.some(pattern => lowerReason.includes(pattern));
-};
+import { isConcussionEducationCandidate } from "@/utils/concussionEducationMatcher";
 
 const PatientThankYou = () => {
   const [searchParams] = useSearchParams();
   const primaryReason = searchParams.get("reason");
   
   // Show concussion guide for concussion, head injury, headache, or dizziness-related intakes
-  const showConcussionGuide = shouldShowConcussionGuide(primaryReason);
+  const showConcussionGuide = isConcussionEducationCandidate(primaryReason);
 
   return (
     <div className="container mx-auto py-12 px-4 max-w-2xl">
