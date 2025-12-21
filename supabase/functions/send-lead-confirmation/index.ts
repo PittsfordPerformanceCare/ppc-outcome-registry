@@ -4,7 +4,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const appUrl = Deno.env.get("APP_URL") || "https://www.pittsfordperformancecare.com";
+// Use APP_URL if set, otherwise derive from Lovable app URL pattern
+const appUrl = Deno.env.get("APP_URL") || "https://ppc-unified-platform.lovable.app";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
