@@ -10,6 +10,7 @@ import {
   validationErrorResponse,
   botDetectedResponse,
 } from "../_shared/input-validator.ts";
+import { isConcussionEducationCandidate } from "../_shared/concussion-education-matcher.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,34 +18,6 @@ const corsHeaders = {
 };
 
 const SERVICE_TYPE = "lead_submission";
-
-// Check if primary concern qualifies for concussion education
-function shouldDeliverConcussionEducation(primaryConcern: string | null): boolean {
-  if (!primaryConcern) return false;
-  
-  const lowerConcern = primaryConcern.toLowerCase();
-  
-  // Exact matches for dropdown values
-  const exactMatches = ["concussion", "headaches", "dizziness"];
-  if (exactMatches.includes(lowerConcern)) return true;
-  
-  // Case-insensitive contains matching for free-text values
-  const containsPatterns = [
-    "concussion",
-    "head injury",
-    "head-injury",
-    "dizziness",
-    "vertigo",
-    "headache",
-    "tbi",
-    "traumatic brain",
-    "post-concussion",
-    "post concussion",
-    "balance",
-  ];
-  
-  return containsPatterns.some(pattern => lowerConcern.includes(pattern));
-}
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -99,7 +72,7 @@ Deno.serve(async (req) => {
     const { sanitized } = validation;
 
     // Check if this lead qualifies for concussion education
-    const deliverConcussionEducation = shouldDeliverConcussionEducation(sanitized.primary_concern as string | null);
+    const deliverConcussionEducation = isConcussionEducationCandidate(sanitized.primary_concern as string | null);
 
     // Build lead data from sanitized input
     const leadData: Record<string, unknown> = {
