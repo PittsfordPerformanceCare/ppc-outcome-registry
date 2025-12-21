@@ -18,6 +18,34 @@ const corsHeaders = {
 
 const SERVICE_TYPE = "lead_submission";
 
+// Check if primary concern qualifies for concussion education
+function shouldDeliverConcussionEducation(primaryConcern: string | null): boolean {
+  if (!primaryConcern) return false;
+  
+  const lowerConcern = primaryConcern.toLowerCase();
+  
+  // Exact matches for dropdown values
+  const exactMatches = ["concussion", "headaches", "dizziness"];
+  if (exactMatches.includes(lowerConcern)) return true;
+  
+  // Case-insensitive contains matching for free-text values
+  const containsPatterns = [
+    "concussion",
+    "head injury",
+    "head-injury",
+    "dizziness",
+    "vertigo",
+    "headache",
+    "tbi",
+    "traumatic brain",
+    "post-concussion",
+    "post concussion",
+    "balance",
+  ];
+  
+  return containsPatterns.some(pattern => lowerConcern.includes(pattern));
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -70,8 +98,11 @@ Deno.serve(async (req) => {
 
     const { sanitized } = validation;
 
+    // Check if this lead qualifies for concussion education
+    const deliverConcussionEducation = shouldDeliverConcussionEducation(sanitized.primary_concern as string | null);
+
     // Build lead data from sanitized input
-    const leadData = {
+    const leadData: Record<string, unknown> = {
       name: sanitized.name as string,
       email: sanitized.email as string | null,
       phone: sanitized.phone as string | null,
@@ -92,11 +123,20 @@ Deno.serve(async (req) => {
       funnel_stage: "lead",
     };
 
+    // Add education tracking if applicable
+    if (deliverConcussionEducation) {
+      leadData.education_delivered = true;
+      leadData.education_asset = "acute_concussion_guide_v1";
+      leadData.education_url = "/site/guides/concussion/acute-concussion-guide";
+      leadData.education_delivered_at = new Date().toISOString();
+      console.log("[create-lead] Education will be delivered: acute_concussion_guide_v1");
+    }
+
     // Insert into leads table
     const { data, error } = await supabase
       .from("leads")
       .insert(leadData)
-      .select("id")
+      .select("id, email, name, primary_concern")
       .single();
 
     if (error) {
@@ -127,8 +167,40 @@ Deno.serve(async (req) => {
       console.error("[create-lead] Audit log error (non-fatal):", auditErr);
     }
 
+    // Send confirmation email if email is provided (non-blocking)
+    if (data.email) {
+      try {
+        const emailResponse = await fetch(`${supabaseUrl}/functions/v1/send-lead-confirmation`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+          },
+          body: JSON.stringify({
+            leadId: data.id,
+            email: data.email,
+            name: data.name,
+            primaryConcern: data.primary_concern,
+            deliverConcussionEducation,
+          }),
+        });
+        
+        if (!emailResponse.ok) {
+          console.error("[create-lead] Failed to send confirmation email:", await emailResponse.text());
+        } else {
+          console.log("[create-lead] Confirmation email triggered successfully");
+        }
+      } catch (emailErr) {
+        console.error("[create-lead] Email trigger error (non-fatal):", emailErr);
+      }
+    }
+
     return new Response(
-      JSON.stringify({ success: true, lead_id: data.id }),
+      JSON.stringify({ 
+        success: true, 
+        lead_id: data.id,
+        education_delivered: deliverConcussionEducation,
+      }),
       { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {

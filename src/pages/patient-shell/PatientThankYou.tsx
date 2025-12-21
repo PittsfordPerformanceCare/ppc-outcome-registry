@@ -3,12 +3,40 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, ArrowRight, Phone, Mail, Clock, BookOpen } from "lucide-react";
 
+// Helper function to check if reason qualifies for concussion guide
+const shouldShowConcussionGuide = (reason: string | null): boolean => {
+  if (!reason) return false;
+  
+  const lowerReason = reason.toLowerCase();
+  
+  // Exact matches for dropdown values
+  const exactMatches = ["concussion", "headaches", "dizziness"];
+  if (exactMatches.includes(lowerReason)) return true;
+  
+  // Case-insensitive contains matching for free-text values
+  const containsPatterns = [
+    "concussion",
+    "head injury",
+    "head-injury",
+    "dizziness",
+    "vertigo",
+    "headache",
+    "tbi",
+    "traumatic brain",
+    "post-concussion",
+    "post concussion",
+    "balance",
+  ];
+  
+  return containsPatterns.some(pattern => lowerReason.includes(pattern));
+};
+
 const PatientThankYou = () => {
   const [searchParams] = useSearchParams();
   const primaryReason = searchParams.get("reason");
   
-  // Show concussion guide for concussion, headache, or dizziness-related intakes
-  const showConcussionGuide = ["concussion", "headaches", "dizziness"].includes(primaryReason || "");
+  // Show concussion guide for concussion, head injury, headache, or dizziness-related intakes
+  const showConcussionGuide = shouldShowConcussionGuide(primaryReason);
 
   return (
     <div className="container mx-auto py-12 px-4 max-w-2xl">
@@ -26,16 +54,19 @@ const PatientThankYou = () => {
           {/* Concussion Guide CTA - Shown for concussion-related intakes */}
           {showConcussionGuide && (
             <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-6 text-left border border-blue-200 dark:border-blue-800">
-              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2 text-blue-900 dark:text-blue-100">
+              <h3 className="font-semibold text-lg mb-2 flex items-center gap-2 text-blue-900 dark:text-blue-100">
                 <BookOpen className="h-5 w-5 text-blue-600" />
-                Acute Concussion Guide
+                Acute Concussion Guide: Early Recovery
               </h3>
-              <p className="text-sm text-blue-800 dark:text-blue-200 mb-4">
-                If you or your child has experienced a recent head injury, we recommend reviewing our acute concussion guide for important early recovery guidance.
+              <p className="text-xs text-blue-700 dark:text-blue-300 mb-3">
+                First 24 hours + first week considerations
               </p>
-              <Button asChild variant="outline" className="border-blue-300 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/50">
+              <p className="text-sm text-blue-800 dark:text-blue-200 mb-4">
+                Based on your reported symptoms, we recommend reviewing our acute concussion guide for important early recovery guidance, including red flags and energy management.
+              </p>
+              <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Link to="/site/guides/concussion/acute-concussion-guide">
-                  View Acute Concussion Guide
+                  Open Guide
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
