@@ -137,7 +137,7 @@ const PatientIntakePediatric = () => {
         description: "Thank you! We'll be in touch soon.",
       });
 
-      navigate("/patient/thank-you");
+      navigate(`/patient/thank-you?reason=${encodeURIComponent(formData.primaryConcern)}`);
     } catch (error: any) {
       console.error("Error submitting intake:", error);
       toast({
