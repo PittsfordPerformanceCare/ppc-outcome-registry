@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -31,7 +31,15 @@ export function SendIntakeFormsDialog({
   const [templateType, setTemplateType] = useState<"neuro" | "msk">("neuro");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Sync email state when dialog opens with a new patient
+  useEffect(() => {
+    if (open && initialEmail) {
+      setEmail(initialEmail);
+    }
+  }, [open, initialEmail]);
+
   const handleSubmit = async () => {
+    console.log("[SendIntakeFormsDialog] Submitting:", { email, patientName, leadId, careRequestId, templateType });
     if (!email.trim()) {
       toast.error("Email is required to send intake forms");
       return;
@@ -40,6 +48,7 @@ export function SendIntakeFormsDialog({
     setIsSubmitting(true);
 
     try {
+      console.log("[SendIntakeFormsDialog] Invoking send-onboarding-email edge function...");
       const { data, error } = await supabase.functions.invoke("send-onboarding-email", {
         body: {
           email: email.trim(),
@@ -49,14 +58,21 @@ export function SendIntakeFormsDialog({
         },
       });
 
+      console.log("[SendIntakeFormsDialog] Edge function response:", { data, error });
+
       // Check for function invocation error
-      if (error) throw error;
+      if (error) {
+        console.error("[SendIntakeFormsDialog] Edge function error:", error);
+        throw error;
+      }
       
       // Check for error returned in the response body
       if (data?.error) {
+        console.error("[SendIntakeFormsDialog] Response error:", data.error);
         throw new Error(data.error);
       }
 
+      console.log("[SendIntakeFormsDialog] Email sent successfully, ID:", data?.emailId);
       toast.success("Intake forms sent successfully");
       onOpenChange(false);
       onSuccess();
