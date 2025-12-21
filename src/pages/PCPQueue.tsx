@@ -53,8 +53,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Canonical delivery statuses
-type DeliveryStatus = "READY" | "SENT" | "FAILED" | "RESEND_REQUIRED" | "SKIPPED";
+// Canonical delivery statuses (including legacy 'pending')
+type DeliveryStatus = "pending" | "READY" | "SENT" | "FAILED" | "RESEND_REQUIRED" | "SKIPPED";
 
 // Canonical delivery methods
 type DeliveryMethod = "FAX" | "SECURE_EMAIL" | "PORTAL_UPLOAD" | "MANUAL_EXPORT";
@@ -77,6 +77,7 @@ interface PCPSummaryTask {
 }
 
 const statusConfig: Record<DeliveryStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; className?: string }> = {
+  pending: { label: "Ready", variant: "outline", className: "border-amber-500 text-amber-700 dark:text-amber-400" },
   READY: { label: "Ready", variant: "outline", className: "border-amber-500 text-amber-700 dark:text-amber-400" },
   SENT: { label: "Sent", variant: "default" },
   FAILED: { label: "Failed", variant: "destructive" },
@@ -343,16 +344,22 @@ const PCPQueue = () => {
   };
 
   const filteredTasks = tasks.filter(t => {
+    // Treat 'pending' as equivalent to 'READY' for filtering
+    const normalizedStatus = t.status === "pending" ? "READY" : t.status;
+    
     if (statusFilter === "all") return true;
-    if (statusFilter === "actionable") return t.status === "READY" || t.status === "RESEND_REQUIRED" || t.status === "FAILED";
-    if (statusFilter === "READY") return t.status === "READY";
-    if (statusFilter === "SENT") return t.status === "SENT";
-    if (statusFilter === "FAILED") return t.status === "FAILED" || t.status === "RESEND_REQUIRED";
-    if (statusFilter === "SKIPPED") return t.status === "SKIPPED";
+    if (statusFilter === "actionable") return normalizedStatus === "READY" || normalizedStatus === "RESEND_REQUIRED" || normalizedStatus === "FAILED";
+    if (statusFilter === "READY") return normalizedStatus === "READY";
+    if (statusFilter === "SENT") return normalizedStatus === "SENT";
+    if (statusFilter === "FAILED") return normalizedStatus === "FAILED" || normalizedStatus === "RESEND_REQUIRED";
+    if (statusFilter === "SKIPPED") return normalizedStatus === "SKIPPED";
     return true;
   });
 
-  const actionableCount = tasks.filter(t => t.status === "READY" || t.status === "RESEND_REQUIRED" || t.status === "FAILED").length;
+  const actionableCount = tasks.filter(t => {
+    const ns = t.status === "pending" ? "READY" : t.status;
+    return ns === "READY" || ns === "RESEND_REQUIRED" || ns === "FAILED";
+  }).length;
   const failedCount = tasks.filter(t => t.status === "FAILED" || t.status === "RESEND_REQUIRED").length;
 
   const getTimeSinceGeneration = (createdAt: string): { text: string; isUrgent: boolean } => {
