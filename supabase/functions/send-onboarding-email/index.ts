@@ -261,8 +261,14 @@ Deno.serve(async (req) => {
 
     console.log("Attempting to send email to:", email);
     
+    // Use verified domain from environment or fallback to resend.dev for testing
+    const fromDomain = Deno.env.get("RESEND_FROM_DOMAIN") || "resend.dev";
+    const fromEmail = `Pittsford Performance Care <noreply@${fromDomain}>`;
+    
+    console.log("Sending from:", fromEmail);
+    
     const emailResponse = await resend.emails.send({
-      from: "Pittsford Performance Care <onboarding@resend.dev>",
+      from: fromEmail,
       to: [email],
       subject,
       html,
