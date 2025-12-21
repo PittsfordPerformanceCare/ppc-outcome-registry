@@ -1,9 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, ArrowRight, Phone, Mail, Clock } from "lucide-react";
+import { CheckCircle, ArrowRight, Phone, Mail, Clock, BookOpen } from "lucide-react";
 
 const PatientThankYou = () => {
+  const [searchParams] = useSearchParams();
+  const primaryReason = searchParams.get("reason");
+  
+  // Show concussion guide for concussion, headache, or dizziness-related intakes
+  const showConcussionGuide = ["concussion", "headaches", "dizziness"].includes(primaryReason || "");
+
   return (
     <div className="container mx-auto py-12 px-4 max-w-2xl">
       <Card className="text-center">
@@ -17,6 +23,25 @@ const PatientThankYou = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
+          {/* Concussion Guide CTA - Shown for concussion-related intakes */}
+          {showConcussionGuide && (
+            <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-6 text-left border border-blue-200 dark:border-blue-800">
+              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2 text-blue-900 dark:text-blue-100">
+                <BookOpen className="h-5 w-5 text-blue-600" />
+                Acute Concussion Guide
+              </h3>
+              <p className="text-sm text-blue-800 dark:text-blue-200 mb-4">
+                If you or your child has experienced a recent head injury, we recommend reviewing our acute concussion guide for important early recovery guidance.
+              </p>
+              <Button asChild variant="outline" className="border-blue-300 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/50">
+                <Link to="/site/guides/concussion/acute-concussion-guide">
+                  View Acute Concussion Guide
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          )}
+
           {/* What happens next */}
           <div className="bg-muted/50 rounded-lg p-6 text-left">
             <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
