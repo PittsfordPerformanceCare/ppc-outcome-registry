@@ -33,8 +33,9 @@ export function SendIntakeFormsDialog({
 
   // Sync email state when dialog opens with a new patient
   useEffect(() => {
-    if (open && initialEmail) {
-      setEmail(initialEmail);
+    if (open) {
+      setEmail(initialEmail || "");
+      console.log("[SendIntakeFormsDialog] Dialog opened, syncing email:", initialEmail);
     }
   }, [open, initialEmail]);
 
