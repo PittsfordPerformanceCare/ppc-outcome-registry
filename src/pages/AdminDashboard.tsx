@@ -35,6 +35,19 @@ const AdminDashboard = () => {
       */}
       <ProspectJourneyTracker className="border-2 border-primary/30 shadow-sm" />
 
+      {/* ======================================
+          PCP SUMMARY ALERT - High Visibility
+          ======================================
+          Shows Jenn when patients have been discharged
+          and PCP summaries are ready to fax.
+      */}
+      <PCPSummaryTile 
+        count={data.pcpSummaries.pendingCount} 
+        oldestDays={data.pcpSummaries.oldestDays}
+        resendCount={data.pcpSummaries.resendCount}
+        alwaysShow={true}
+      />
+
       {/* Quick Pulse Metrics - Lightweight, non-intrusive */}
       <LeadHealthBanner
         newLast24Hours={data.newLast24Hours}
@@ -56,12 +69,6 @@ const AdminDashboard = () => {
 
       {/* Action-required tiles - Only show when count > 0 */}
       <div className="space-y-4">
-        <PCPSummaryTile 
-          count={data.pcpSummaries.pendingCount} 
-          oldestDays={data.pcpSummaries.oldestDays}
-          resendCount={data.pcpSummaries.resendCount}
-        />
-        
         <PausedEpisodesSignal />
         
         <ContactMessagesSection />
