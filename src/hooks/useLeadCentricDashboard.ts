@@ -297,14 +297,16 @@ export function useLeadCentricDashboard() {
         };
       });
 
-      // PCP Summary stats - count READY or RESEND_REQUIRED statuses
+      // PCP Summary stats - count pending, READY or RESEND_REQUIRED statuses
       const { data: pcpTasks } = await supabase
         .from("pcp_summary_tasks")
         .select("id, created_at, status")
-        .in("status", ["READY", "RESEND_REQUIRED", "FAILED"]);
+        .in("status", ["pending", "READY", "RESEND_REQUIRED", "FAILED"]);
 
       let pcpOldestDays: number | null = null;
-      const actionableTasks = pcpTasks?.filter(t => t.status === "READY" || t.status === "RESEND_REQUIRED") || [];
+      const actionableTasks = pcpTasks?.filter(t => 
+        t.status === "pending" || t.status === "READY" || t.status === "RESEND_REQUIRED"
+      ) || [];
       const resendTasks = pcpTasks?.filter(t => t.status === "RESEND_REQUIRED" || t.status === "FAILED") || [];
       
       if (actionableTasks.length > 0) {
