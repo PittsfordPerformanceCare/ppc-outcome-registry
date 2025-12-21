@@ -2012,6 +2012,10 @@ export type Database = {
           checkpoint_status: string
           contact_attempt_count: number | null
           created_at: string
+          education_asset: string | null
+          education_delivered: boolean | null
+          education_delivered_at: string | null
+          education_url: string | null
           email: string | null
           episode_opened_at: string | null
           funnel_stage: string | null
@@ -2044,6 +2048,10 @@ export type Database = {
           checkpoint_status?: string
           contact_attempt_count?: number | null
           created_at?: string
+          education_asset?: string | null
+          education_delivered?: boolean | null
+          education_delivered_at?: string | null
+          education_url?: string | null
           email?: string | null
           episode_opened_at?: string | null
           funnel_stage?: string | null
@@ -2076,6 +2084,10 @@ export type Database = {
           checkpoint_status?: string
           contact_attempt_count?: number | null
           created_at?: string
+          education_asset?: string | null
+          education_delivered?: boolean | null
+          education_delivered_at?: string | null
+          education_url?: string | null
           email?: string | null
           episode_opened_at?: string | null
           funnel_stage?: string | null
