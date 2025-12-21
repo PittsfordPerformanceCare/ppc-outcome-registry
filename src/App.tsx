@@ -118,6 +118,7 @@ const SiteClinicalGovernance = lazy(() => import("./pages/site/SiteClinicalGover
 const SiteWhitePapers = lazy(() => import("./pages/site/SiteWhitePapers"));
 const SiteWhitePaperNeuroCovidWeb = lazy(() => import("./pages/site/SiteWhitePaperNeuroCovidWeb"));
 const SiteWhitePaperPCSCaseReview = lazy(() => import("./pages/site/SiteWhitePaperPCSCaseReview"));
+const SiteWhitePaperCVSCaseReview = lazy(() => import("./pages/site/SiteWhitePaperCVSCaseReview"));
 
 // ========== PHASE 1 SHELL: /patient PAGES ==========
 const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
@@ -190,6 +191,7 @@ const App = () => (
               <Route path="white-papers" element={<SiteWhitePapers />} />
               <Route path="white-papers/persistent-neurologic-symptoms-after-covid-19" element={<SiteWhitePaperNeuroCovidWeb />} />
               <Route path="white-papers/persistent-post-concussion-syndrome-case-review" element={<SiteWhitePaperPCSCaseReview />} />
+              <Route path="white-papers/refractory-cyclic-vomiting-syndrome-case-review" element={<SiteWhitePaperCVSCaseReview />} />
               <Route path="privacy" element={<SitePrivacy />} />
               <Route path="terms" element={<SiteTerms />} />
             </Route>

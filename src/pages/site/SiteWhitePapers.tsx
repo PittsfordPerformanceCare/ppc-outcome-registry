@@ -24,7 +24,6 @@ const whitePapers: WhitePaper[] = [
     authorTitle: "Clinic Director, Pittsford Performance Care",
     year: "2025",
     description: "A clinically grounded overview of persistent neurologic symptoms following SARS-CoV-2 infection, with emphasis on functional neurologic disruption, autonomic involvement, and systems based models of post viral recovery.",
-    // pdfUrl will be added when PDF is uploaded: "/white-papers/persistent-neurologic-symptoms-after-covid-19.pdf"
     webUrl: "/site/white-papers/persistent-neurologic-symptoms-after-covid-19"
   },
   {
@@ -35,8 +34,17 @@ const whitePapers: WhitePaper[] = [
     authorTitle: "Clinic Director, Pittsford Performance Care",
     year: "2025",
     description: "A de-identified retrospective clinical case review examining persistent post concussion syndrome five years following initial injury, with emphasis on functional neurological assessment, adaptive care strategy, and observed outcomes.",
-    // pdfUrl will be added when PDF is uploaded
     webUrl: "/site/white-papers/persistent-post-concussion-syndrome-case-review"
+  },
+  {
+    id: "cvs-case-review",
+    title: "Refractory Cyclic Vomiting Syndrome in an Adult Patient",
+    subtitle: "Clinical Case Review",
+    author: "C. Robert Luckey, DC",
+    authorTitle: "Clinic Director, Pittsford Performance Care",
+    year: "2025",
+    description: "A de-identified retrospective clinical case review examining refractory cyclic vomiting syndrome in an adult patient, with emphasis on neuro-autonomic assessment, targeted rehabilitation strategies, and observed outcomes.",
+    webUrl: "/site/white-papers/refractory-cyclic-vomiting-syndrome-case-review"
   }
 ];
 
