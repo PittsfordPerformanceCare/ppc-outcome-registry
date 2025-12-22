@@ -333,6 +333,54 @@ export type Database = {
         }
         Relationships: []
       }
+      care_targets: {
+        Row: {
+          body_region: string | null
+          created_at: string
+          created_by: string | null
+          discharge_reason: string | null
+          discharged_at: string | null
+          domain: string | null
+          episode_id: string
+          id: string
+          name: string
+          outcome_instrument: string | null
+          priority: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          body_region?: string | null
+          created_at?: string
+          created_by?: string | null
+          discharge_reason?: string | null
+          discharged_at?: string | null
+          domain?: string | null
+          episode_id: string
+          id?: string
+          name: string
+          outcome_instrument?: string | null
+          priority?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          body_region?: string | null
+          created_at?: string
+          created_by?: string | null
+          discharge_reason?: string | null
+          discharged_at?: string | null
+          domain?: string | null
+          episode_id?: string
+          id?: string
+          name?: string
+          outcome_instrument?: string | null
+          priority?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clinic_settings: {
         Row: {
           address: string | null
@@ -1588,6 +1636,13 @@ export type Database = {
             foreignKeyName: "followups_episode_id_fkey"
             columns: ["episode_id"]
             isOneToOne: false
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
+          },
+          {
+            foreignKeyName: "followups_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
             referencedRelation: "episodes"
             referencedColumns: ["id"]
           },
@@ -2636,6 +2691,13 @@ export type Database = {
             foreignKeyName: "neurologic_exams_episode_id_fkey"
             columns: ["episode_id"]
             isOneToOne: false
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
+          },
+          {
+            foreignKeyName: "neurologic_exams_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
             referencedRelation: "episodes"
             referencedColumns: ["id"]
           },
@@ -3337,6 +3399,13 @@ export type Database = {
             foreignKeyName: "outcome_scores_episode_id_fkey"
             columns: ["episode_id"]
             isOneToOne: false
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
+          },
+          {
+            foreignKeyName: "outcome_scores_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
             referencedRelation: "episodes"
             referencedColumns: ["id"]
           },
@@ -3509,6 +3578,13 @@ export type Database = {
             foreignKeyName: "patient_episode_access_episode_id_fkey"
             columns: ["episode_id"]
             isOneToOne: false
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
+          },
+          {
+            foreignKeyName: "patient_episode_access_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
             referencedRelation: "episodes"
             referencedColumns: ["id"]
           },
@@ -3654,6 +3730,13 @@ export type Database = {
             foreignKeyName: "patient_messages_episode_id_fkey"
             columns: ["episode_id"]
             isOneToOne: false
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
+          },
+          {
+            foreignKeyName: "patient_messages_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
             referencedRelation: "episodes"
             referencedColumns: ["id"]
           },
@@ -3793,6 +3876,13 @@ export type Database = {
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "patient_referrals_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
+          },
           {
             foreignKeyName: "patient_referrals_episode_id_fkey"
             columns: ["episode_id"]
@@ -3986,6 +4076,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pcp_summary_tasks_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: true
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
           },
           {
             foreignKeyName: "pcp_summary_tasks_episode_id_fkey"
@@ -4196,6 +4293,13 @@ export type Database = {
             foreignKeyName: "pending_episodes_converted_to_episode_id_fkey"
             columns: ["converted_to_episode_id"]
             isOneToOne: false
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
+          },
+          {
+            foreignKeyName: "pending_episodes_converted_to_episode_id_fkey"
+            columns: ["converted_to_episode_id"]
+            isOneToOne: false
             referencedRelation: "episodes"
             referencedColumns: ["id"]
           },
@@ -4205,6 +4309,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "intake_forms"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_episodes_previous_episode_id_fkey"
+            columns: ["previous_episode_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
           },
           {
             foreignKeyName: "pending_episodes_previous_episode_id_fkey"
@@ -4319,6 +4430,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "professional_shared_episodes_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_episode_summary"
+            referencedColumns: ["episode_id"]
+          },
           {
             foreignKeyName: "professional_shared_episodes_episode_id_fkey"
             columns: ["episode_id"]
@@ -5232,6 +5350,125 @@ export type Database = {
       }
     }
     Views: {
+      analytics_care_target_outcomes: {
+        Row: {
+          baseline_recorded_at: string | null
+          baseline_score: number | null
+          body_region: string | null
+          care_target_discharge_date: string | null
+          care_target_id: string | null
+          care_target_name: string | null
+          care_target_start_date: string | null
+          care_target_status: string | null
+          clinic_id: string | null
+          clinician_id: string | null
+          discharge_reason: string | null
+          discharge_recorded_at: string | null
+          discharge_score: number | null
+          domain: string | null
+          duration_to_resolution_days: number | null
+          episode_id: string | null
+          episode_status: Database["public"]["Enums"]["episode_status"] | null
+          episode_type: string | null
+          integrity_override_reason: string | null
+          outcome_delta: number | null
+          outcome_direction: string | null
+          outcome_instrument: string | null
+          outcome_integrity_status: string | null
+          patient_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episodes_user_id_fkey"
+            columns: ["clinician_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_episode_summary: {
+        Row: {
+          clinic_id: string | null
+          clinician_id: string | null
+          clinician_name: string | null
+          created_at: string | null
+          episode_close_date: string | null
+          episode_duration_days: number | null
+          episode_id: string | null
+          episode_start_date: string | null
+          episode_status: Database["public"]["Enums"]["episode_status"] | null
+          episode_type: string | null
+          number_active: number | null
+          number_active_at_peak: number | null
+          number_discharged: number | null
+          number_maintenance: number | null
+          number_monitor_only: number | null
+          number_of_care_targets: number | null
+          patient_name: string | null
+          resolution_span_days: number | null
+          staggered_resolution: boolean | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episodes_user_id_fkey"
+            columns: ["clinician_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_registry_export: {
+        Row: {
+          baseline_score: number | null
+          body_region: string | null
+          care_target_discharge_date: string | null
+          care_target_id: string | null
+          care_target_name: string | null
+          care_target_start_date: string | null
+          clinic_id: string | null
+          data_quality_status: string | null
+          discharge_reason: string | null
+          discharge_score: number | null
+          domain: string | null
+          duration_days: number | null
+          episode_id: string | null
+          episode_quarter: number | null
+          episode_type: string | null
+          episode_year: number | null
+          final_status: string | null
+          mcid_achieved: boolean | null
+          outcome_classification: string | null
+          outcome_instrument: string | null
+          override_reason: string | null
+          raw_delta: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stalled_communication_tasks: {
         Row: {
           admin_acknowledged_at: string | null
