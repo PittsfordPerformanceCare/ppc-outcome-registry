@@ -52,9 +52,42 @@ serve(async (req) => {
     if (episodeError || !episode) {
       console.error("Episode not found:", episodeError);
       return new Response(
-        JSON.stringify({ error: "Episode not found" }),
+        JSON.stringify({ error: "Episode not found", code: "EPISODE_NOT_FOUND" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // RULE 1: Episode must be CLOSED before generating PCP summary
+    // This is a hard block - no override allowed
+    if (episode.current_status !== "CLOSED") {
+      console.log(`Episode ${episodeId} is not closed (status: ${episode.current_status}). Blocking PCP summary generation.`);
+      return new Response(
+        JSON.stringify({
+          error: "Episode must be closed before generating a PCP discharge summary",
+          code: "EPISODE_NOT_CLOSED",
+          currentStatus: episode.current_status,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // RULE 6: PCP/Referring Provider must be present before sending
+    // Allow draft generation but flag the issue
+    const pcpMissing = !episode.referring_physician;
+    if (pcpMissing) {
+      console.log(`Episode ${episodeId} has no referring physician. Flagging for UI.`);
+    }
+
+    // RULE 2: Check for existing sent summary (idempotency)
+    const { data: existingTask } = await supabase
+      .from("pcp_summary_tasks")
+      .select("*")
+      .eq("episode_id", episodeId)
+      .single();
+
+    const alreadySent = existingTask?.sent_at != null;
+    if (alreadySent && !confirmAndSend) {
+      console.log(`PCP summary for episode ${episodeId} was already sent at ${existingTask.sent_at}`);
     }
 
     // Fetch outcome scores for this episode
@@ -165,13 +198,6 @@ serve(async (req) => {
 
     const outcomeIntegrityPassed = outcomeIntegrityIssues.length === 0;
 
-    // Check if there's an existing task or create one
-    const { data: existingTask } = await supabase
-      .from("pcp_summary_tasks")
-      .select("*")
-      .eq("episode_id", episodeId)
-      .single();
-
     const taskUpdate = {
       draft_generated_at: new Date().toISOString(),
       draft_summary: draftSummary,
@@ -214,6 +240,16 @@ serve(async (req) => {
       issueCount: outcomeIntegrityIssues.length,
     });
 
+    // Determine if sending is blocked
+    const sendBlocked = pcpMissing || alreadySent;
+    const sendBlockedReasons: string[] = [];
+    if (pcpMissing) {
+      sendBlockedReasons.push("No PCP/referring physician on file. Add PCP to episode to proceed.");
+    }
+    if (alreadySent) {
+      sendBlockedReasons.push(`PCP summary was already sent on ${existingTask?.sent_at}. Duplicate sending is blocked.`);
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -221,6 +257,12 @@ serve(async (req) => {
         outcomeIntegrityPassed,
         outcomeIntegrityIssues,
         careTargets,
+        // Guardrail states for UI
+        pcpMissing,
+        alreadySent,
+        sendBlocked,
+        sendBlockedReasons,
+        existingTaskId: existingTask?.id,
         message: outcomeIntegrityPassed 
           ? "Draft summary generated. Ready for clinician confirmation."
           : "Draft summary generated with outcome integrity issues. Clinician review required.",

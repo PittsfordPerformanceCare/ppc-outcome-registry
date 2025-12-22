@@ -39,6 +39,16 @@ interface GenerateSummaryResult {
   outcomeIntegrityIssues: string[];
   careTargets: CareTargetSummary[];
   message: string;
+  // Guardrail states
+  pcpMissing?: boolean;
+  alreadySent?: boolean;
+  sendBlocked?: boolean;
+  sendBlockedReasons?: string[];
+  existingTaskId?: string;
+  // Error states
+  error?: string;
+  code?: "EPISODE_NOT_CLOSED" | "EPISODE_NOT_FOUND" | "PCP_MISSING";
+  currentStatus?: string;
 }
 
 export function usePCPDischargeSummary() {
@@ -46,9 +56,25 @@ export function usePCPDischargeSummary() {
   const [draftSummary, setDraftSummary] = useState<DraftSummary | null>(null);
   const [outcomeIntegrityPassed, setOutcomeIntegrityPassed] = useState(false);
   const [outcomeIntegrityIssues, setOutcomeIntegrityIssues] = useState<string[]>([]);
+  // New guardrail states
+  const [pcpMissing, setPcpMissing] = useState(false);
+  const [alreadySent, setAlreadySent] = useState(false);
+  const [sendBlocked, setSendBlocked] = useState(false);
+  const [sendBlockedReasons, setSendBlockedReasons] = useState<string[]>([]);
+  const [existingTaskId, setExistingTaskId] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const generateDraft = useCallback(async (episodeId: string): Promise<GenerateSummaryResult | null> => {
     setLoading(true);
+    // Reset all states
+    setErrorCode(null);
+    setErrorMessage(null);
+    setPcpMissing(false);
+    setAlreadySent(false);
+    setSendBlocked(false);
+    setSendBlockedReasons([]);
+    
     try {
       const { data, error } = await supabase.functions.invoke("generate-pcp-discharge-summary", {
         body: { episodeId },
@@ -60,11 +86,31 @@ export function usePCPDischargeSummary() {
         return null;
       }
 
+      // Handle error responses from the edge function
+      if (data?.code) {
+        setErrorCode(data.code);
+        setErrorMessage(data.error);
+        
+        if (data.code === "EPISODE_NOT_CLOSED") {
+          toast.error(`Episode must be closed first (current status: ${data.currentStatus || "unknown"})`);
+        } else if (data.code === "EPISODE_NOT_FOUND") {
+          toast.error("Episode not found");
+        }
+        return data as GenerateSummaryResult;
+      }
+
       const result = data as GenerateSummaryResult;
       
       setDraftSummary(result.draftSummary || null);
       setOutcomeIntegrityPassed(result.outcomeIntegrityPassed);
       setOutcomeIntegrityIssues(result.outcomeIntegrityIssues);
+      
+      // Set guardrail states
+      setPcpMissing(result.pcpMissing ?? false);
+      setAlreadySent(result.alreadySent ?? false);
+      setSendBlocked(result.sendBlocked ?? false);
+      setSendBlockedReasons(result.sendBlockedReasons ?? []);
+      setExistingTaskId(result.existingTaskId ?? null);
 
       return result;
     } catch (error) {
@@ -190,6 +236,15 @@ export function usePCPDischargeSummary() {
     draftSummary,
     outcomeIntegrityPassed,
     outcomeIntegrityIssues,
+    // New guardrail states
+    pcpMissing,
+    alreadySent,
+    sendBlocked,
+    sendBlockedReasons,
+    existingTaskId,
+    errorCode,
+    errorMessage,
+    // Actions
     generateDraft,
     confirmAndSend,
     overrideOutcomeIntegrity,
