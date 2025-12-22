@@ -23,6 +23,8 @@ import {
   Target,
   Activity,
   Send,
+  XCircle,
+  User,
 } from "lucide-react";
 import { usePCPDischargeSummary } from "@/hooks/usePCPDischargeSummary";
 import { PCPDischargeSummary } from "./PCPDischargeSummary";
@@ -48,6 +50,12 @@ export function PCPDischargeConfirmationDialog({
     draftSummary,
     outcomeIntegrityPassed,
     outcomeIntegrityIssues,
+    pcpMissing,
+    alreadySent,
+    sendBlocked,
+    sendBlockedReasons,
+    errorCode,
+    errorMessage,
     generateDraft,
     confirmAndSend,
     overrideOutcomeIntegrity,
@@ -130,6 +138,22 @@ export function PCPDischargeConfirmationDialog({
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
             <span className="ml-3 text-muted-foreground">Generating summary...</span>
           </div>
+        ) : errorCode ? (
+          <div className="py-8">
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Cannot Generate Summary</AlertTitle>
+              <AlertDescription>
+                {errorCode === "EPISODE_NOT_CLOSED" && (
+                  <p>This episode must be closed before a PCP discharge summary can be generated. Please close the episode first.</p>
+                )}
+                {errorCode === "EPISODE_NOT_FOUND" && (
+                  <p>The episode could not be found. Please try again.</p>
+                )}
+                {errorMessage && <p className="mt-2 text-sm">{errorMessage}</p>}
+              </AlertDescription>
+            </Alert>
+          </div>
         ) : draftSummary ? (
           <ScrollArea className="max-h-[60vh]">
             <div className="space-y-6 pr-4">
@@ -207,6 +231,37 @@ export function PCPDischargeConfirmationDialog({
                   </div>
                 )}
               </div>
+
+              {/* Send Blocked Alerts (Rule 2 & Rule 6) */}
+              {sendBlocked && (
+                <>
+                  <Separator />
+                  <div className="space-y-3">
+                    {pcpMissing && (
+                      <Alert variant="destructive" className="border-red-200 bg-red-50 dark:bg-red-950">
+                        <User className="h-4 w-4 text-red-600" />
+                        <AlertTitle className="text-red-800 dark:text-red-200">
+                          PCP/Referring Physician Required
+                        </AlertTitle>
+                        <AlertDescription className="text-red-700 dark:text-red-300">
+                          No referring physician is on file for this episode. Add a PCP to the episode before sending the discharge summary.
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    {alreadySent && (
+                      <Alert variant="destructive" className="border-red-200 bg-red-50 dark:bg-red-950">
+                        <XCircle className="h-4 w-4 text-red-600" />
+                        <AlertTitle className="text-red-800 dark:text-red-200">
+                          Summary Already Sent
+                        </AlertTitle>
+                        <AlertDescription className="text-red-700 dark:text-red-300">
+                          A PCP discharge summary has already been sent for this episode. Duplicate sending is not permitted.
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                </>
+              )}
 
               <Separator />
 
@@ -322,7 +377,12 @@ export function PCPDischargeConfirmationDialog({
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={!draftSummary || confirming || (!outcomeIntegrityPassed && !showOverrideForm)}
+            disabled={
+              !draftSummary || 
+              confirming || 
+              sendBlocked ||
+              (!outcomeIntegrityPassed && !showOverrideForm)
+            }
             className="gap-2"
           >
             {confirming ? (
@@ -330,7 +390,9 @@ export function PCPDischargeConfirmationDialog({
             ) : (
               <Send className="h-4 w-4" />
             )}
-            Confirm & Mark Ready
+            {sendBlocked 
+              ? (alreadySent ? "Already Sent" : "Missing PCP") 
+              : "Confirm & Mark Ready"}
           </Button>
         </DialogFooter>
       </DialogContent>
