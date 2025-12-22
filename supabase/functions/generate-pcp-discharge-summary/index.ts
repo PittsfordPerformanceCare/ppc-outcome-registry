@@ -1,3 +1,26 @@
+/**
+ * =============================================================================
+ * PCP DISCHARGE SUMMARY GENERATOR — Phase 3 Episode-Level Automation
+ * =============================================================================
+ * 
+ * GUARDRAIL ENFORCEMENT: SOURCE OF TRUTH
+ * 
+ * This edge function is the AUTHORITATIVE enforcement layer for Phase 3
+ * discharge guardrails. UI-side validation is supportive only and must
+ * never be relied upon for safety.
+ * 
+ * Hard Blocks (Server-Side Enforced):
+ * - Rule 1: EPISODE_NOT_CLOSED — Episode must be in CLOSED status
+ * - Rule 2: ALREADY_SENT — Prevents duplicate sends (idempotency)
+ * - Rule 6: PCP_MISSING — Blocks send (not draft) if no PCP/referring provider
+ * 
+ * Any caller (UI, scripts, direct API requests) is subject to these blocks.
+ * Future changes must preserve server-side enforcement regardless of UI behavior.
+ * 
+ * See: docs/PPC-Phase-3-Guardrail-Enforcement-Source-of-Truth.md
+ * =============================================================================
+ */
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 
