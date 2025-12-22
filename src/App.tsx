@@ -84,6 +84,7 @@ const ReturningPatientPage = lazy(() => import("./pages/ReturningPatientPage"));
 const ProspectJourney = lazy(() => import("./pages/ProspectJourney"));
 const LeadershipDashboard = lazy(() => import("./pages/LeadershipDashboard"));
 const ValuationNarrativePage = lazy(() => import("./pages/ValuationNarrativePage"));
+const ExternalSnapshotPage = lazy(() => import("./pages/ExternalSnapshotPage"));
 
 // ========== PHASE 1 SHELL: NEW LAYOUTS ==========
 const SiteLayout = lazy(() => import("./layouts/SiteLayout"));
@@ -293,6 +294,7 @@ const App = () => (
               <Route path="clinician" element={<ClinicianDashboard />} />
               <Route path="leadership" element={<LeadershipDashboard />} />
               <Route path="valuation-narrative" element={<ValuationNarrativePage />} />
+              <Route path="external-snapshot" element={<ExternalSnapshotPage />} />
             </Route>
 
             {/* RETURNING PATIENT ROUTE */}
