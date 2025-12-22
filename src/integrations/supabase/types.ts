@@ -3372,6 +3372,53 @@ export type Database = {
           },
         ]
       }
+      patient_discharge_letter_tasks: {
+        Row: {
+          care_targets_plain_language: Json | null
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          draft_generated_at: string | null
+          draft_letter: Json | null
+          episode_id: string
+          id: string
+          sent_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          care_targets_plain_language?: Json | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          draft_generated_at?: string | null
+          draft_letter?: Json | null
+          episode_id: string
+          id?: string
+          sent_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          care_targets_plain_language?: Json | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          draft_generated_at?: string | null
+          draft_letter?: Json | null
+          episode_id?: string
+          id?: string
+          sent_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_discharge_letter_tasks_confirmed_by_fkey"
+            columns: ["confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_episode_access: {
         Row: {
           code_used_at: string | null

@@ -173,3 +173,6 @@ verify_jwt = false
 
 [functions.generate-pcp-discharge-summary]
 verify_jwt = true
+
+[functions.generate-patient-discharge-letter]
+verify_jwt = true
