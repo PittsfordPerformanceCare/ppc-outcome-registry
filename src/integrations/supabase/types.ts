@@ -288,6 +288,51 @@ export type Database = {
           },
         ]
       }
+      care_target_discharge_message_tasks: {
+        Row: {
+          care_target_id: string
+          care_target_name_plain: string | null
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          draft_generated_at: string | null
+          draft_message: string | null
+          episode_id: string
+          id: string
+          remaining_active_targets_plain: string[] | null
+          sent_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          care_target_id: string
+          care_target_name_plain?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          draft_generated_at?: string | null
+          draft_message?: string | null
+          episode_id: string
+          id?: string
+          remaining_active_targets_plain?: string[] | null
+          sent_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          care_target_id?: string
+          care_target_name_plain?: string | null
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          draft_generated_at?: string | null
+          draft_message?: string | null
+          episode_id?: string
+          id?: string
+          remaining_active_targets_plain?: string[] | null
+          sent_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clinic_settings: {
         Row: {
           address: string | null
