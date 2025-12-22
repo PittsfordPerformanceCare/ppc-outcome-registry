@@ -124,6 +124,9 @@ const SiteWhitePaperPCSCaseReview = lazy(() => import("./pages/site/SiteWhitePap
 const SiteWhitePaperCVSCaseReview = lazy(() => import("./pages/site/SiteWhitePaperCVSCaseReview"));
 const AcuteConcussionGuide = lazy(() => import("./pages/site/guides/AcuteConcussionGuide"));
 
+// ========== CARE TARGET PAGES ==========
+const PostConcussionSymptomsPage = lazy(() => import("./pages/care/PostConcussionSymptomsPage"));
+
 // ========== PHASE 1 SHELL: /patient PAGES ==========
 const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
 const PatientIntakeShell = lazy(() => import("./pages/patient-shell/PatientIntakeShell"));
@@ -199,6 +202,11 @@ const App = () => (
               <Route path="guides/concussion/acute-concussion-guide" element={<AcuteConcussionGuide />} />
               <Route path="privacy" element={<SitePrivacy />} />
               <Route path="terms" element={<SiteTerms />} />
+            </Route>
+
+            {/* ========== CARE TARGET PAGES (PUBLIC) ========== */}
+            <Route path="/care" element={<SiteLayout />}>
+              <Route path="post-concussion-symptoms" element={<PostConcussionSymptomsPage />} />
             </Route>
 
             {/* ========== RESOURCES: CLINICIAN GUIDES (PUBLIC) ========== */}
