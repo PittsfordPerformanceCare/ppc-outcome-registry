@@ -3785,18 +3785,30 @@ export type Database = {
       }
       pcp_summary_tasks: {
         Row: {
+          care_targets_summary: Json | null
           clinic_id: string | null
+          clinical_course_summary: string | null
+          clinician_confirmed_at: string | null
+          clinician_confirmed_by: string | null
           clinician_name: string | null
           created_at: string
           delivery_method_used: string | null
           discharge_date: string
+          discharge_status: string | null
+          draft_generated_at: string | null
+          draft_summary: Json | null
           episode_id: string
+          followup_guidance: string | null
           id: string
           notes: string | null
+          outcome_integrity_issues: string[] | null
+          outcome_integrity_passed: boolean | null
           patient_name: string
           pcp_contact: string | null
           pcp_name: string | null
           preferred_delivery_method: string | null
+          reason_for_referral: string | null
+          recommendations: string[] | null
           region: string | null
           sent_at: string | null
           sent_by: string | null
@@ -3805,18 +3817,30 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          care_targets_summary?: Json | null
           clinic_id?: string | null
+          clinical_course_summary?: string | null
+          clinician_confirmed_at?: string | null
+          clinician_confirmed_by?: string | null
           clinician_name?: string | null
           created_at?: string
           delivery_method_used?: string | null
           discharge_date: string
+          discharge_status?: string | null
+          draft_generated_at?: string | null
+          draft_summary?: Json | null
           episode_id: string
+          followup_guidance?: string | null
           id?: string
           notes?: string | null
+          outcome_integrity_issues?: string[] | null
+          outcome_integrity_passed?: boolean | null
           patient_name: string
           pcp_contact?: string | null
           pcp_name?: string | null
           preferred_delivery_method?: string | null
+          reason_for_referral?: string | null
+          recommendations?: string[] | null
           region?: string | null
           sent_at?: string | null
           sent_by?: string | null
@@ -3825,18 +3849,30 @@ export type Database = {
           user_id: string
         }
         Update: {
+          care_targets_summary?: Json | null
           clinic_id?: string | null
+          clinical_course_summary?: string | null
+          clinician_confirmed_at?: string | null
+          clinician_confirmed_by?: string | null
           clinician_name?: string | null
           created_at?: string
           delivery_method_used?: string | null
           discharge_date?: string
+          discharge_status?: string | null
+          draft_generated_at?: string | null
+          draft_summary?: Json | null
           episode_id?: string
+          followup_guidance?: string | null
           id?: string
           notes?: string | null
+          outcome_integrity_issues?: string[] | null
+          outcome_integrity_passed?: boolean | null
           patient_name?: string
           pcp_contact?: string | null
           pcp_name?: string | null
           preferred_delivery_method?: string | null
+          reason_for_referral?: string | null
+          recommendations?: string[] | null
           region?: string | null
           sent_at?: string | null
           sent_by?: string | null
@@ -3850,6 +3886,13 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pcp_summary_tasks_clinician_confirmed_by_fkey"
+            columns: ["clinician_confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
