@@ -27,7 +27,7 @@ const SiteFooter = memo(() => {
       {/* Main Footer */}
       <div className="bg-slate-900 text-slate-300">
         <div className="container mx-auto px-4 py-16">
-          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-5">
+          <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-6">
             {/* Brand */}
             <div>
               <Link to="/site/home" className="inline-flex items-center gap-2 mb-6 group">
@@ -58,6 +58,19 @@ const SiteFooter = memo(() => {
                     {link.label}
                   </Link>
                 ))}
+              </nav>
+            </div>
+
+            {/* Care */}
+            <div>
+              <h4 className="font-semibold text-white mb-6 text-lg">Care</h4>
+              <nav className="flex flex-col gap-3">
+                <Link 
+                  to="/care/post-concussion-symptoms" 
+                  className="text-slate-400 hover:text-white transition-colors duration-200"
+                >
+                  Post-Concussion Symptoms
+                </Link>
               </nav>
             </div>
 
