@@ -103,16 +103,18 @@ export function usePatientDischargeLetter() {
       setExistingTaskId(data.existingTaskId || null);
 
       // Check if already confirmed by fetching task
+      // Note: Using type assertion as the table was just created and types may not be regenerated yet
       if (data.existingTaskId) {
         const { data: taskData } = await supabase
-          .from("patient_discharge_letter_tasks")
+          .from("patient_discharge_letter_tasks" as any)
           .select("confirmed_at, sent_at")
           .eq("id", data.existingTaskId)
           .single();
         
         if (taskData) {
-          setConfirmed(!!taskData.confirmed_at);
-          setAlreadySent(!!taskData.sent_at);
+          const task = taskData as { confirmed_at?: string; sent_at?: string };
+          setConfirmed(!!task.confirmed_at);
+          setAlreadySent(!!task.sent_at);
         }
       }
 
