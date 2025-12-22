@@ -176,3 +176,6 @@ verify_jwt = true
 
 [functions.generate-patient-discharge-letter]
 verify_jwt = true
+
+[functions.generate-care-target-discharge-message]
+verify_jwt = true
