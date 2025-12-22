@@ -82,14 +82,14 @@ serve(async (req: Request) => {
     const emailHtml = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #1f2937; margin-bottom: 8px;">Thank You for Reaching Out</h1>
-          <p style="color: #6b7280; font-size: 16px;">We've received your information and will be in touch soon.</p>
+          <h1 style="color: #1f2937; margin-bottom: 8px;">We've Received Your Inquiry</h1>
+          <p style="color: #6b7280; font-size: 16px;">${clinicName}</p>
         </div>
 
         <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
-          <p style="margin: 0; color: #374151;">Hi ${name || 'there'},</p>
+          <p style="margin: 0; color: #374151;">Hi ${name || "there"},</p>
           <p style="color: #4b5563; margin-top: 16px;">
-            Thank you for contacting ${clinicName}. We've received your inquiry${primaryConcern ? ` regarding <strong>${primaryConcern}</strong>` : ''} 
+            Thank you for contacting ${clinicName}. We've received your inquiry${primaryConcern ? ` regarding <strong>${primaryConcern}</strong>` : ""} 
             and our team will review it within 1-2 business days.
           </p>
         </div>
@@ -98,17 +98,17 @@ serve(async (req: Request) => {
 
         <div style="background-color: #f9fafb; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #1f2937; margin-top: 0;">What Happens Next</h3>
-          <ol style="color: #4b5563; padding-left: 20px; margin-bottom: 0;">
+          <ul style="color: #4b5563; padding-left: 20px; margin-bottom: 0; list-style-type: disc;">
             <li style="margin-bottom: 8px;">Our team will review your information</li>
             <li style="margin-bottom: 8px;">We'll contact you via your preferred method to discuss your needs</li>
             <li style="margin-bottom: 0;">Most patients are seen within 1-2 weeks of initial contact</li>
-          </ol>
+          </ul>
         </div>
 
         <div style="text-align: center; padding: 20px; border-top: 1px solid #e5e7eb; margin-top: 30px;">
           <p style="color: #6b7280; margin-bottom: 8px;">Questions? Contact us:</p>
           <p style="margin: 4px 0;">
-            <a href="tel:${clinicPhone.replace(/[^0-9]/g, '')}" style="color: #2563eb; text-decoration: none;">${clinicPhone}</a>
+            <a href="tel:${clinicPhone.replace(/[^0-9]/g, "")}" style="color: #2563eb; text-decoration: none;">${clinicPhone}</a>
           </p>
           <p style="margin: 4px 0;">
             <a href="mailto:${clinicEmail}" style="color: #2563eb; text-decoration: none;">${clinicEmail}</a>
