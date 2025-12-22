@@ -20,6 +20,32 @@ interface CareTargetSummary {
   notes?: string;
 }
 
+// Helper to log lifecycle events
+async function logLifecycleEvent(
+  supabase: any,
+  episodeId: string,
+  eventType: string,
+  metadata: Record<string, any> = {},
+  actorId?: string
+) {
+  try {
+    await supabase.from("lifecycle_events").insert({
+      entity_type: "episode",
+      entity_id: episodeId,
+      event_type: eventType,
+      actor_type: actorId ? "user" : "system",
+      actor_id: actorId || null,
+      metadata: {
+        ...metadata,
+        timestamp: new Date().toISOString(),
+      },
+    });
+    console.log(`Lifecycle event logged: ${eventType} for episode ${episodeId}`);
+  } catch (err) {
+    console.error(`Failed to log lifecycle event ${eventType}:`, err);
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -40,7 +66,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Generating PCP discharge summary for episode: ${episodeId}`);
+    console.log(`Generating PCP discharge summary for episode: ${episodeId}, confirmAndSend: ${confirmAndSend}`);
 
     // Fetch episode data
     const { data: episode, error: episodeError } = await supabase
@@ -57,10 +83,21 @@ serve(async (req) => {
       );
     }
 
-    // RULE 1: Episode must be CLOSED before generating PCP summary
-    // This is a hard block - no override allowed
+    // ═══════════════════════════════════════════════════════════════════════
+    // RULE 1: EPISODE STATUS HARD BLOCK (Server-Side Authoritative)
+    // Episode MUST be CLOSED before generating any PCP summary
+    // This is a hard block - no override allowed, no drafts generated
+    // ═══════════════════════════════════════════════════════════════════════
     if (episode.current_status !== "CLOSED") {
-      console.log(`Episode ${episodeId} is not closed (status: ${episode.current_status}). Blocking PCP summary generation.`);
+      console.log(`BLOCKED: Episode ${episodeId} is not closed (status: ${episode.current_status})`);
+      
+      // Log the blocked attempt
+      await logLifecycleEvent(supabase, episodeId, "PCP_DISCHARGE_CONFIRM_BLOCKED_EPISODE_NOT_CLOSED", {
+        attempted_action: confirmAndSend ? "confirm_and_send" : "generate_draft",
+        current_status: episode.current_status,
+        reason: "Episode must be CLOSED before generating PCP discharge summary",
+      });
+
       return new Response(
         JSON.stringify({
           error: "Episode must be closed before generating a PCP discharge summary",
@@ -71,14 +108,11 @@ serve(async (req) => {
       );
     }
 
-    // RULE 6: PCP/Referring Provider must be present before sending
-    // Allow draft generation but flag the issue
-    const pcpMissing = !episode.referring_physician;
-    if (pcpMissing) {
-      console.log(`Episode ${episodeId} has no referring physician. Flagging for UI.`);
-    }
-
-    // RULE 2: Check for existing sent summary (idempotency)
+    // ═══════════════════════════════════════════════════════════════════════
+    // RULE 2: IDEMPOTENCY HARD BLOCK (Server-Side Authoritative)
+    // If a summary has already been sent, block ALL subsequent attempts
+    // UI disabled state is NOT sufficient - server must be authoritative
+    // ═══════════════════════════════════════════════════════════════════════
     const { data: existingTask } = await supabase
       .from("pcp_summary_tasks")
       .select("*")
@@ -86,9 +120,60 @@ serve(async (req) => {
       .single();
 
     const alreadySent = existingTask?.sent_at != null;
-    if (alreadySent && !confirmAndSend) {
-      console.log(`PCP summary for episode ${episodeId} was already sent at ${existingTask.sent_at}`);
+    
+    if (alreadySent) {
+      console.log(`BLOCKED: PCP summary for episode ${episodeId} was already sent at ${existingTask.sent_at}`);
+      
+      // Log the blocked duplicate attempt
+      await logLifecycleEvent(supabase, episodeId, "PCP_DISCHARGE_CONFIRM_BLOCKED_ALREADY_SENT", {
+        attempted_action: confirmAndSend ? "confirm_and_send" : "generate_draft",
+        original_sent_at: existingTask.sent_at,
+        existing_task_id: existingTask.id,
+        reason: "PCP summary was already sent - duplicate sending is blocked",
+      });
+
+      return new Response(
+        JSON.stringify({
+          error: "PCP summary has already been sent for this episode",
+          code: "ALREADY_SENT",
+          sentAt: existingTask.sent_at,
+          existingTaskId: existingTask.id,
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // RULE 6: PCP REQUIRED (Send Block - Draft Allowed)
+    // If PCP/referring provider is missing:
+    //   - Allow draft generation
+    //   - Block any send/confirm action
+    // Server must enforce this even if UI allows the action
+    // ═══════════════════════════════════════════════════════════════════════
+    const pcpMissing = !episode.referring_physician;
+    
+    if (pcpMissing && confirmAndSend) {
+      console.log(`BLOCKED: Cannot send PCP summary for episode ${episodeId} - no referring physician`);
+      
+      // Log the blocked send attempt
+      await logLifecycleEvent(supabase, episodeId, "PCP_DISCHARGE_CONFIRM_BLOCKED_PCP_MISSING", {
+        attempted_action: "confirm_and_send",
+        reason: "No PCP/referring physician on file - delivery blocked",
+      });
+
+      return new Response(
+        JSON.stringify({
+          error: "Cannot send PCP summary without a referring physician on file",
+          code: "PCP_MISSING",
+          message: "Add PCP to episode to proceed with delivery.",
+        }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // DRAFT GENERATION (Passed all hard blocks)
+    // ═══════════════════════════════════════════════════════════════════════
 
     // Fetch outcome scores for this episode
     const { data: outcomeScores } = await supabase
@@ -223,16 +308,13 @@ serve(async (req) => {
       }
     }
 
-    // Log the generation event
-    await supabase.from("lifecycle_events").insert({
-      entity_type: "PCP_SUMMARY",
-      entity_id: episodeId,
-      event_type: "DRAFT_GENERATED",
-      event_data: {
-        outcomeIntegrityPassed,
-        outcomeIntegrityIssues,
-        careTargetsCount: careTargets.length,
-      },
+    // Log the draft generation lifecycle event
+    await logLifecycleEvent(supabase, episodeId, "PCP_DISCHARGE_DRAFT_GENERATED", {
+      outcome_integrity_passed: outcomeIntegrityPassed,
+      outcome_integrity_issues: outcomeIntegrityIssues,
+      care_targets_count: careTargets.length,
+      pcp_missing: pcpMissing,
+      existing_task_id: existingTask?.id || null,
     });
 
     console.log(`PCP discharge summary draft generated for ${episodeId}`, {
@@ -240,14 +322,11 @@ serve(async (req) => {
       issueCount: outcomeIntegrityIssues.length,
     });
 
-    // Determine if sending is blocked
-    const sendBlocked = pcpMissing || alreadySent;
+    // Determine if sending is blocked (for UI information)
+    const sendBlocked = pcpMissing;
     const sendBlockedReasons: string[] = [];
     if (pcpMissing) {
       sendBlockedReasons.push("No PCP/referring physician on file. Add PCP to episode to proceed.");
-    }
-    if (alreadySent) {
-      sendBlockedReasons.push(`PCP summary was already sent on ${existingTask?.sent_at}. Duplicate sending is blocked.`);
     }
 
     return new Response(
@@ -259,7 +338,6 @@ serve(async (req) => {
         careTargets,
         // Guardrail states for UI
         pcpMissing,
-        alreadySent,
         sendBlocked,
         sendBlockedReasons,
         existingTaskId: existingTask?.id,
