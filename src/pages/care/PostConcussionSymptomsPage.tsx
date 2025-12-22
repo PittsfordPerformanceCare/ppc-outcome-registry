@@ -96,24 +96,24 @@ const PostConcussionSymptomsPage = memo(() => {
               </p>
               <ul className="text-muted-foreground space-y-3">
                 <li>
-                  <strong className="text-foreground">Symptom and history review</strong> — 
-                  Understanding the timeline, triggers, and patterns of your symptoms
+                  <strong className="text-foreground">Symptom and history review:</strong>{" "}
+                  Understanding the timeline, triggers, and patterns of your symptoms.
                 </li>
                 <li>
-                  <strong className="text-foreground">Eye movement and visual processing</strong> — 
-                  Assessing how well the visual system tracks, focuses, and coordinates with balance
+                  <strong className="text-foreground">Eye movement and visual processing:</strong>{" "}
+                  Assessing how well the visual system tracks, focuses, and coordinates with balance.
                 </li>
                 <li>
-                  <strong className="text-foreground">Balance and coordination testing</strong> — 
-                  Evaluating how the vestibular and motor systems work together
+                  <strong className="text-foreground">Balance and coordination testing:</strong>{" "}
+                  Evaluating how the vestibular and motor systems work together.
                 </li>
                 <li>
-                  <strong className="text-foreground">Autonomic regulation and load tolerance</strong> — 
-                  Understanding how well the nervous system manages physical and cognitive demands
+                  <strong className="text-foreground">Autonomic regulation and load tolerance:</strong>{" "}
+                  Understanding how well the nervous system manages physical and cognitive demands.
                 </li>
                 <li>
-                  <strong className="text-foreground">Neck and movement contributors</strong> — 
-                  Considering whether cervical involvement may be adding to symptoms
+                  <strong className="text-foreground">Neck and movement contributors:</strong>{" "}
+                  Considering whether cervical involvement may be adding to symptoms.
                 </li>
               </ul>
             </section>
