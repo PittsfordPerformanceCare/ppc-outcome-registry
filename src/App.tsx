@@ -85,6 +85,7 @@ const ProspectJourney = lazy(() => import("./pages/ProspectJourney"));
 const LeadershipDashboard = lazy(() => import("./pages/LeadershipDashboard"));
 const ValuationNarrativePage = lazy(() => import("./pages/ValuationNarrativePage"));
 const ExternalSnapshotPage = lazy(() => import("./pages/ExternalSnapshotPage"));
+const NeuroscienceDomainPage = lazy(() => import("./pages/NeuroscienceDomainPage"));
 
 // ========== PHASE 1 SHELL: NEW LAYOUTS ==========
 const SiteLayout = lazy(() => import("./layouts/SiteLayout"));
@@ -221,6 +222,12 @@ const App = () => (
               <Route path="conditions/:conditionSlug" element={<ProfessionalConditionView />} />
               <Route path="request-verification" element={<ProfessionalVerificationRequest />} />
               <Route path="sample-review" element={<SampleClinicalOutcomesReview />} />
+            </Route>
+
+            {/* ========== EDUCATIONAL NEUROSCIENCE REFERENCE (PSOF-SAFE) ========== */}
+            <Route path="/neuroscience" element={<SiteLayout />}>
+              <Route index element={<NeuroscienceDomainPage />} />
+              <Route path=":domain" element={<NeuroscienceDomainPage />} />
             </Route>
 
             {/* ========== PROFESSIONAL: CLINICAL OUTCOMES REVIEW (GATED) ========== */}
