@@ -12,6 +12,7 @@ import { AdminLayout } from "./components/AdminLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { DischargeRedirect } from "./components/DischargeRedirect";
 import { SkipLink } from "./components/accessibility";
+import { ConnectionStatus } from "./components/feedback";
 
 // Lazy load all pages for better initial load performance
 const Index = lazy(() => import("./pages/Index"));
@@ -173,6 +174,7 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <SkipLink targetId="main-content" />
+        <ConnectionStatus position="bottom" />
         <Toaster />
         <Sonner />
         <BrowserRouter>
