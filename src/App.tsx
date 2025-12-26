@@ -30,6 +30,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const PatientIntake = lazy(() => import("./pages/PatientIntake"));
 const IntakeStart = lazy(() => import("./pages/IntakeStart"));
 const PatientAuth = lazy(() => import("./pages/PatientAuth"));
+const PatientResetPassword = lazy(() => import("./pages/PatientResetPassword"));
 const PatientDashboard = lazy(() => import("./pages/PatientDashboard"));
 const ReferralLanding = lazy(() => import("./pages/ReferralLanding"));
 const PatientEpisodeView = lazy(() => import("./pages/PatientEpisodeView"));
@@ -265,6 +266,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/patient-auth" element={<PatientAuth />} />
+            <Route path="/patient-reset-password" element={<PatientResetPassword />} />
             <Route path="/patient-access" element={<PatientAccess />} />
             <Route path="/patient-welcome" element={<PatientWelcome />} />
             <Route path="/patient-dashboard" element={<PatientDashboard />} />
