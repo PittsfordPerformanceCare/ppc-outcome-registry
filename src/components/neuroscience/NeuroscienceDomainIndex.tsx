@@ -66,6 +66,12 @@ const DOMAINS: DomainSummary[] = [
     description: "Functions associated with arousal, alertness, and basic regulatory processes that support engagement.",
     keywords: ["Arousal", "Alertness", "Regulation", "Wakefulness"],
   },
+  {
+    name: "Autonomic — Sympathetic",
+    slug: "autonomic-sympathetic",
+    description: "State-based patterns associated with arousal, alertness, readiness, and physiological activation in response to context.",
+    keywords: ["Arousal", "Alertness", "Activation", "Stress Response"],
+  },
 ];
 
 export function NeuroscienceDomainIndex() {
