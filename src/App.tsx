@@ -11,6 +11,7 @@ import { DashboardSkeleton } from "./components/skeletons/DashboardSkeleton";
 import { AdminLayout } from "./components/AdminLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { DischargeRedirect } from "./components/DischargeRedirect";
+import { SkipLink } from "./components/accessibility";
 
 // Lazy load all pages for better initial load performance
 const Index = lazy(() => import("./pages/Index"));
@@ -171,11 +172,13 @@ const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <SkipLink targetId="main-content" />
         <Toaster />
         <Sonner />
         <BrowserRouter>
           <DevToolbar />
           <Suspense fallback={<PageLoader />}>
+            <main id="main-content">
             <Routes>
             {/* ========== PHASE 1 SHELL: /site ROUTES (PUBLIC) ========== */}
             <Route path="/site" element={<SiteLayout />}>
@@ -431,6 +434,7 @@ const App = () => (
               }
             />
             </Routes>
+            </main>
           </Suspense>
         </BrowserRouter>
       </TooltipProvider>
