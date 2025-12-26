@@ -5,8 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy, Settings, HeartPulse, BookOpen } from "lucide-react";
+import { Activity, LogOut, TrendingUp, Calendar, MapPin, User, Loader2, Gift, Trophy, Settings, HeartPulse, BookOpen, Menu, MoreVertical } from "lucide-react";
 import { format } from "date-fns";
 import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
 import { PatientAchievements } from "@/components/PatientAchievements";
@@ -368,30 +375,30 @@ export default function PatientDashboard() {
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       <div className="container mx-auto max-w-6xl py-8 space-y-6">
         {/* Header with Personalized Greeting */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
-              <HeartPulse className="h-6 w-6 text-primary-foreground" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary to-primary/70 rounded-full flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
+              <HeartPulse className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h1 className="text-xl font-bold text-primary">PPC Patient Hub</h1>
-                <span className="text-muted-foreground">•</span>
-                <span className="text-lg font-semibold">
-                  Welcome back, {patientAccount?.full_name?.split(' ')[0] || 'there'}! 👋
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-1">
+                <h1 className="text-lg sm:text-xl font-bold text-primary">PPC Patient Hub</h1>
+                <span className="hidden sm:inline text-muted-foreground">•</span>
+                <span className="text-base sm:text-lg font-semibold truncate">
+                  Welcome, {patientAccount?.full_name?.split(' ')[0] || 'there'}! 👋
                 </span>
               </div>
-              <p className="text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {activeEpisodes.length > 0 
                   ? "Keep up the great work on your recovery journey"
                   : "View your completed treatment history"}
               </p>
               {achievements.length > 0 && (
-                <div className="flex gap-2 mt-2">
+                <div className="flex flex-wrap gap-1.5 mt-2">
                   {achievements.slice(0, 3).map((achievement) => (
                     <Badge 
                       key={achievement.id} 
-                      className="bg-primary/10 text-primary border-primary/20"
+                      className="bg-primary/10 text-primary border-primary/20 text-xs"
                     >
                       {achievement.badge_icon} {achievement.name}
                     </Badge>
@@ -400,14 +407,15 @@ export default function PatientDashboard() {
               )}
             </div>
           </div>
-          <div className="flex gap-2">
+          {/* Desktop buttons - hidden on mobile */}
+          <div className="hidden md:flex gap-2">
             <Button 
               variant="outline" 
               onClick={() => navigate("/patient-quick-start")}
               className="gap-2"
             >
               <BookOpen className="h-4 w-4" />
-              <span className="hidden sm:inline">Quick Start</span>
+              Quick Start
             </Button>
             <Button 
               variant="outline" 
@@ -415,12 +423,48 @@ export default function PatientDashboard() {
               className="gap-2"
             >
               <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">Preferences</span>
+              Preferences
             </Button>
             <Button variant="outline" onClick={handleSignOut} className="gap-2">
               <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Sign Out</span>
+              Sign Out
             </Button>
+          </div>
+
+          {/* Mobile dropdown menu - hidden on desktop */}
+          <div className="md:hidden">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="h-10 w-10">
+                  <MoreVertical className="h-5 w-5" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem 
+                  onClick={() => navigate("/patient-quick-start")}
+                  className="gap-2 cursor-pointer"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Quick Start Guide
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => navigate("/patient-preferences")}
+                  className="gap-2 cursor-pointer"
+                >
+                  <Settings className="h-4 w-4" />
+                  Preferences
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onClick={handleSignOut}
+                  className="gap-2 cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
