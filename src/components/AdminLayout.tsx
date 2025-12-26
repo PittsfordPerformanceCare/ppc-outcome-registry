@@ -1,11 +1,12 @@
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun, ExternalLink, LogOut, Stethoscope, Route } from "lucide-react";
+import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun, ExternalLink, LogOut, Stethoscope, Route, ChevronRight } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { TeamChatPanel } from "@/components/TeamChatPanel";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: Home },
@@ -37,69 +38,102 @@ export function AdminLayout() {
     navigate("/auth");
   };
 
-  return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-64 border-r bg-muted/30 p-4 hidden md:flex md:flex-col">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold">Admin Panel</h2>
-            <p className="text-sm text-muted-foreground">Manage leads & analytics</p>
-          </div>
-          <div className="flex items-center gap-1">
-            <TeamChatPanel />
-            <NotificationBell />
-          </div>
-        </div>
-        
-        {/* Quick link to public site */}
-        <Link
-          to="/site"
-          className="mb-4 flex items-center gap-2 px-3 py-2 rounded-md text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-        >
-          <ExternalLink className="h-4 w-4" />
-          View Public Site
-        </Link>
-        <nav className="space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.href || 
-              (item.href === "/admin" && location.pathname === "/admin/dashboard");
-            return (
-              <Link
-                key={item.href}
-                to={item.href}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-        
-        {/* Logout button at bottom */}
-        <div className="mt-auto pt-4 border-t">
-          <Button
-            variant="ghost"
-            className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-4 w-4" />
-            Log Out
-          </Button>
-        </div>
-      </aside>
+  const isActiveRoute = (href: string) => {
+    if (href === "/admin") {
+      return location.pathname === "/admin" || location.pathname === "/admin/dashboard";
+    }
+    return location.pathname === href || location.pathname.startsWith(href + "/");
+  };
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 overflow-auto">
-        <Outlet />
-      </main>
-    </div>
+  return (
+    <TooltipProvider>
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
+        <aside className="w-64 border-r bg-muted/30 p-4 hidden md:flex md:flex-col">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">Admin Panel</h2>
+              <p className="text-sm text-muted-foreground">Manage leads & analytics</p>
+            </div>
+            <div className="flex items-center gap-1">
+              <TeamChatPanel />
+              <NotificationBell />
+            </div>
+          </div>
+          
+          {/* Quick link to public site */}
+          <Link
+            to="/site"
+            className="mb-4 flex items-center gap-2 px-3 py-2 rounded-md text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+          >
+            <ExternalLink className="h-4 w-4" />
+            View Public Site
+          </Link>
+          
+          <nav className="space-y-0.5 flex-1 overflow-y-auto">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = isActiveRoute(item.href);
+              
+              return (
+                <Tooltip key={item.href} delayDuration={500}>
+                  <TooltipTrigger asChild>
+                    <Link
+                      to={item.href}
+                      className={cn(
+                        "group relative flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200",
+                        isActive
+                          ? "bg-primary text-primary-foreground font-medium shadow-sm"
+                          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      )}
+                    >
+                      {/* Active indicator bar */}
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-foreground/30 rounded-r-full" />
+                      )}
+                      
+                      <Icon className={cn(
+                        "h-4 w-4 shrink-0 transition-transform duration-200",
+                        isActive && "scale-110",
+                        !isActive && "group-hover:scale-105"
+                      )} />
+                      
+                      <span className="truncate">{item.label}</span>
+                      
+                      {/* Hover chevron indicator */}
+                      <ChevronRight className={cn(
+                        "h-3.5 w-3.5 ml-auto opacity-0 -translate-x-2 transition-all duration-200",
+                        "group-hover:opacity-100 group-hover:translate-x-0",
+                        isActive && "opacity-60 translate-x-0"
+                      )} />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" sideOffset={8}>
+                    {item.label}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </nav>
+          
+          {/* Logout button at bottom */}
+          <div className="mt-auto pt-4 border-t">
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4" />
+              Log Out
+            </Button>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 p-6 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
+    </TooltipProvider>
   );
 }

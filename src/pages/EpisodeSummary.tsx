@@ -28,8 +28,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useNavigationShortcuts } from "@/hooks/useNavigationShortcuts";
 import { KeyboardShortcutsDialog } from "@/components/KeyboardShortcutsDialog";
+import { PageHeader } from "@/components/navigation";
 import { 
-  ArrowLeft, 
   User, 
   Calendar, 
   MapPin, 
@@ -45,7 +45,8 @@ import {
   Home,
   ExternalLink,
   RefreshCw,
-  LogOut
+  LogOut,
+  ArrowLeft
 } from "lucide-react";
 import { format } from "date-fns";
 import { getMCIDThreshold } from "@/lib/mcidUtils";
@@ -322,113 +323,110 @@ export default function EpisodeSummary() {
         ]}
       />
       
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold text-primary">Episode Summary</h1>
-          <p className="text-muted-foreground print:hidden">Complete patient journey and outcomes</p>
-          {episode.current_status && (
-            <div className="flex items-center gap-2 mt-2">
-              <Badge className={getStatusColor(episode.current_status)}>
-                {EPISODE_STATUS_LABELS[episode.current_status] || episode.current_status}
+      {/* Header with Breadcrumbs */}
+      <PageHeader
+        title="Episode Summary"
+        description="Complete patient journey and outcomes"
+        breadcrumbs={[
+          { label: "Dashboard", href: "/" },
+          { label: episode.patientName },
+        ]}
+        backHref="/"
+        actions={
+          <div className="flex items-center gap-2 flex-wrap print:hidden">
+            {episode.episode_type === 'Neurology' && (
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(`/neuro-exam?episode=${episodeId}`)} 
+                className="gap-2"
+              >
+                <Activity className="h-4 w-4" />
+                Neuro Exam
+              </Button>
+            )}
+            {!episode.has_ortho_referral && (
+              <Button 
+                variant="outline" 
+                onClick={() => setShowOrthoReferralForm(true)} 
+                className="gap-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Create Ortho Referral
+              </Button>
+            )}
+            {episode.has_ortho_referral && episode.current_status && episode.current_status !== "EPISODE_CLOSED" && (
+              <>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowStatusUpdateDialog(true)} 
+                  className="gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Update Status
+                </Button>
+                <OrthoReferralPrint episodeId={episode.episodeId} />
+              </>
+            )}
+            {isCompleted && episode.baselineScores && episode.dischargeScores && (
+              <MCIDReportDialog
+                patientName={episode.patientName}
+                dateOfBirth={episode.dob}
+                region={episode.region}
+                diagnosis={episode.diagnosis}
+                startDate={episode.dateOfService}
+                dischargeDate={episode.dischargeDate!}
+                clinicianName={episode.clinician}
+                clinicianNPI={episode.npi}
+                referringPhysician={episode.diagnosis}
+                summary={calculateMCIDSummary(episode.baselineScores, episode.dischargeScores)}
+                daysInCare={Math.floor(
+                  (new Date(episode.dischargeDate!).getTime() - new Date(episode.dateOfService).getTime()) / 
+                  (1000 * 60 * 60 * 24)
+                )}
+              />
+            )}
+            {!isCompleted && (
+              <Button 
+                variant="default" 
+                onClick={() => setShowDischargeDialog(true)} 
+                className="gap-2 bg-primary"
+              >
+                <LogOut className="h-4 w-4" />
+                Discharge
+              </Button>
+            )}
+            <Button onClick={handlePrint} className="gap-2" variant="outline">
+              <Printer className="h-4 w-4" />
+              Print
+            </Button>
+            {isCompleted ? (
+              <Badge className="bg-success/15 text-success border-success/30 h-8 px-4">
+                <CheckCircle2 className="mr-1 h-4 w-4" />
+                Completed
               </Badge>
+            ) : (
+              <Badge variant="outline" className="h-8 px-4">
+                <Clock className="mr-1 h-4 w-4" />
+                Active
+              </Badge>
+            )}
+          </div>
+        }
+      >
+        {/* Status Badge and Care Coordination below header */}
+        <div className="flex items-center gap-4 flex-wrap">
+          {episode.current_status && (
+            <Badge className={getStatusColor(episode.current_status)}>
+              {EPISODE_STATUS_LABELS[episode.current_status] || episode.current_status}
+            </Badge>
+          )}
+          {episodeId && !isCompleted && (
+            <div className="print:hidden">
+              <CareCoordinationPauseControl episodeId={episodeId} />
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => navigate(-1)} className="gap-2 print:hidden">
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <Button variant="outline" onClick={() => navigate("/dashboard")} className="gap-2 print:hidden">
-            <Home className="h-4 w-4" />
-            Home
-          </Button>
-          {episode.episode_type === 'Neurology' && (
-            <Button 
-              variant="outline" 
-              onClick={() => navigate(`/neuro-exam?episode=${episodeId}`)} 
-              className="gap-2 print:hidden"
-            >
-              <Activity className="h-4 w-4" />
-              Neuro Exam
-            </Button>
-          )}
-          {!episode.has_ortho_referral && (
-            <Button 
-              variant="outline" 
-              onClick={() => setShowOrthoReferralForm(true)} 
-              className="gap-2 print:hidden"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Create Ortho Referral
-            </Button>
-          )}
-          {episode.has_ortho_referral && episode.current_status && episode.current_status !== "EPISODE_CLOSED" && (
-            <>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowStatusUpdateDialog(true)} 
-                className="gap-2 print:hidden"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Update Status
-              </Button>
-              <OrthoReferralPrint episodeId={episode.episodeId} />
-            </>
-          )}
-          {isCompleted && episode.baselineScores && episode.dischargeScores && (
-            <MCIDReportDialog
-              patientName={episode.patientName}
-              dateOfBirth={episode.dob}
-              region={episode.region}
-              diagnosis={episode.diagnosis}
-              startDate={episode.dateOfService}
-              dischargeDate={episode.dischargeDate!}
-              clinicianName={episode.clinician}
-              clinicianNPI={episode.npi}
-              referringPhysician={episode.diagnosis}
-              summary={calculateMCIDSummary(episode.baselineScores, episode.dischargeScores)}
-              daysInCare={Math.floor(
-                (new Date(episode.dischargeDate!).getTime() - new Date(episode.dateOfService).getTime()) / 
-                (1000 * 60 * 60 * 24)
-              )}
-            />
-          )}
-          {/* Discharge Button - Only show for active episodes */}
-          {!isCompleted && (
-            <Button 
-              variant="default" 
-              onClick={() => setShowDischargeDialog(true)} 
-              className="gap-2 print:hidden bg-primary"
-            >
-              <LogOut className="h-4 w-4" />
-              Discharge
-            </Button>
-          )}
-          <Button onClick={handlePrint} className="gap-2 print:hidden" variant="outline">
-            <Printer className="h-4 w-4" />
-            Print
-          </Button>
-          {isCompleted ? (
-            <Badge className="bg-success/15 text-success border-success/30 h-8 px-4">
-              <CheckCircle2 className="mr-1 h-4 w-4" />
-              Completed
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="h-8 px-4">
-              <Clock className="mr-1 h-4 w-4" />
-              Active
-            </Badge>
-          )}
-        </div>
-        {/* Care Coordination Pause Control */}
-        {episodeId && !isCompleted && (
-          <div className="mt-3 print:hidden">
-            <CareCoordinationPauseControl episodeId={episodeId} />
-          </div>
-        )}
-      </div>
+      </PageHeader>
 
       {/* Ortho Referral Form Dialog */}
       {episodeId && (

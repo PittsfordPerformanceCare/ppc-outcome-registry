@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PageHeader } from "@/components/navigation";
 import { 
   FileText, 
   Search, 
@@ -79,23 +80,23 @@ const AdminShellEpisodes = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <FileText className="h-6 w-6 text-primary" />
-            Episode Management
-          </h1>
-          <p className="text-muted-foreground">
-            View and manage patient episodes, discharges, and outcomes
-          </p>
-        </div>
-        <Button asChild>
-          <Link to="/new-episode">
-            <Plus className="mr-2 h-4 w-4" />
-            New Episode
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Episode Management"
+        description="View and manage patient episodes, discharges, and outcomes"
+        icon={FileText}
+        breadcrumbs={[
+          { label: "Admin", href: "/admin" },
+          { label: "Episodes" },
+        ]}
+        actions={
+          <Button asChild>
+            <Link to="/new-episode">
+              <Plus className="mr-2 h-4 w-4" />
+              New Episode
+            </Link>
+          </Button>
+        }
+      />
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
