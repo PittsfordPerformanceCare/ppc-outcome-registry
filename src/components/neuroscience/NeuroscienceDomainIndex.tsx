@@ -19,6 +19,30 @@ const DOMAINS: DomainSummary[] = [
     keywords: ["Executive Function", "Working Memory", "Planning", "Attention Regulation"],
   },
   {
+    name: "Temporal",
+    slug: "temporal",
+    description: "Functions associated with auditory processing, language comprehension, and aspects of memory formation.",
+    keywords: ["Auditory Processing", "Language", "Phonological Processing", "Verbal Memory"],
+  },
+  {
+    name: "Parietal",
+    slug: "parietal",
+    description: "Functions associated with spatial processing, sensory integration, attention orientation, and numerical cognition.",
+    keywords: ["Spatial Processing", "Sensory Integration", "Attention", "Number Sense"],
+  },
+  {
+    name: "Limbic",
+    slug: "limbic",
+    description: "Functions associated with emotional processing, motivation, stress responses, and memory encoding.",
+    keywords: ["Emotional Processing", "Motivation", "Stress Response", "Memory"],
+  },
+  {
+    name: "Cerebellar",
+    slug: "cerebellar",
+    description: "Functions associated with motor coordination, procedural learning, timing, and the automatization of skills.",
+    keywords: ["Motor Coordination", "Procedural Learning", "Timing", "Automatization"],
+  },
+  {
     name: "Vestibular",
     slug: "vestibular",
     description: "Functions associated with balance, spatial orientation, and the integration of movement with other sensory information.",
