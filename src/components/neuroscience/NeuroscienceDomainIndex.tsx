@@ -37,6 +37,12 @@ const DOMAINS: DomainSummary[] = [
     keywords: ["Emotional Processing", "Motivation", "Stress Response", "Memory"],
   },
   {
+    name: "Limbic–Prefrontal",
+    slug: "limbic-prefrontal",
+    description: "Functions associated with the integration of emotion and cognition, emotional regulation, stress response modulation, and motivation.",
+    keywords: ["Emotional Regulation", "Stress Response", "Motivation", "Emotion-Cognition Integration"],
+  },
+  {
     name: "Cerebellar",
     slug: "cerebellar",
     description: "Functions associated with motor coordination, procedural learning, timing, and the automatization of skills.",
