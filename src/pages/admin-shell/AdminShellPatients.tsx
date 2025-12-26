@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PageHeader } from "@/components/navigation";
 import { 
   Users, 
   Search, 
@@ -78,17 +79,15 @@ const AdminShellPatients = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Users className="h-6 w-6 text-primary" />
-            Patient Directory
-          </h1>
-          <p className="text-muted-foreground">
-            View patient profiles and episode history
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Patient Directory"
+        description="View patient profiles and episode history"
+        icon={Users}
+        breadcrumbs={[
+          { label: "Admin", href: "/admin" },
+          { label: "Patients" },
+        ]}
+      />
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-3">
