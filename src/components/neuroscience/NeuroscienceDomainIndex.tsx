@@ -72,6 +72,12 @@ const DOMAINS: DomainSummary[] = [
     description: "State-based patterns associated with arousal, alertness, readiness, and physiological activation in response to context.",
     keywords: ["Arousal", "Alertness", "Activation", "Stress Response"],
   },
+  {
+    name: "Autonomic — Parasympathetic",
+    slug: "autonomic-parasympathetic",
+    description: "State-based patterns associated with recovery, calming, restoration, and the balance between activation and rest.",
+    keywords: ["Recovery", "Restoration", "Calming", "Energy Conservation"],
+  },
 ];
 
 export function NeuroscienceDomainIndex() {
