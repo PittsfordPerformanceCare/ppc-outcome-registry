@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Activity } from "lucide-react";
+import { Loader2, Activity, ArrowLeft, Mail } from "lucide-react";
 import { z } from "zod";
 import { PatientPWAInstallPrompt } from "@/components/PatientPWAInstallPrompt";
 import { PasswordStrengthMeter } from "@/components/PasswordStrengthMeter";
@@ -16,11 +16,15 @@ import { usePasswordValidation, usePasswordMatch } from "@/hooks/usePasswordVali
 const emailSchema = z.string().email("Invalid email address");
 // Login uses simpler validation (don't block existing users)
 const loginPasswordSchema = z.string().min(1, "Password is required");
+
+type AuthView = 'signin' | 'signup' | 'forgot-password';
+
 export default function PatientAuth() {
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [currentView, setCurrentView] = useState<AuthView>('signin');
+  const [resetEmailSent, setResetEmailSent] = useState(false);
   const { toast } = useToast();
 
   // Form states
@@ -131,7 +135,7 @@ export default function PatientAuth() {
             title: "Account Created!",
             description: "You can now sign in to access your records.",
           });
-          setIsSignUp(false);
+          setCurrentView('signin');
         }
       }
     } catch (error: any) {
@@ -206,6 +210,145 @@ export default function PatientAuth() {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      emailSchema.parse(email);
+    } catch (error: any) {
+      toast({
+        title: "Invalid Email",
+        description: "Please enter a valid email address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const redirectUrl = `${window.location.origin}/patient-reset-password`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) throw error;
+
+      setResetEmailSent(true);
+      toast({
+        title: "Reset Email Sent",
+        description: "Check your email for a password reset link.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Reset Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Forgot Password View
+  if (currentView === 'forgot-password') {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4 gap-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center space-y-2">
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+              {resetEmailSent ? (
+                <Mail className="h-8 w-8 text-primary" />
+              ) : (
+                <Activity className="h-8 w-8 text-primary" />
+              )}
+            </div>
+            <CardTitle className="text-2xl">
+              {resetEmailSent ? "Check Your Email" : "Reset Password"}
+            </CardTitle>
+            <CardDescription>
+              {resetEmailSent 
+                ? "We've sent you a password reset link" 
+                : "Enter your email to receive a reset link"
+              }
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {resetEmailSent ? (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground text-center">
+                  We've sent an email to <span className="font-medium text-foreground">{email}</span> with 
+                  a link to reset your password. The link will expire in 1 hour.
+                </p>
+                <p className="text-sm text-muted-foreground text-center">
+                  Don't see the email? Check your spam folder.
+                </p>
+                <div className="flex flex-col gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => {
+                      setResetEmailSent(false);
+                      setEmail("");
+                    }}
+                  >
+                    Send to a different email
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full"
+                    onClick={() => {
+                      setCurrentView('signin');
+                      setResetEmailSent(false);
+                    }}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back to Sign In
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="reset-email">Email</Label>
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
+                    required
+                  />
+                </div>
+
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    "Send Reset Link"
+                  )}
+                </Button>
+
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  className="w-full"
+                  onClick={() => setCurrentView('signin')}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Back to Sign In
+                </Button>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4 gap-4">
@@ -224,7 +367,7 @@ export default function PatientAuth() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={isSignUp ? "signup" : "signin"} onValueChange={(v) => setIsSignUp(v === "signup")}>
+          <Tabs value={currentView === 'signup' ? 'signup' : 'signin'} onValueChange={(v) => setCurrentView(v as AuthView)}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -247,7 +390,16 @@ export default function PatientAuth() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Password</Label>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentView('forgot-password')}
+                      className="text-sm text-primary hover:underline"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
                   <Input
                     id="password"
                     type="password"
