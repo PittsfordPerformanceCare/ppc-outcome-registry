@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,34 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, User, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { FormField, FormErrorSummary } from "@/components/ui/form-field";
+import { cn } from "@/lib/utils";
+
+// Field labels for error messages
+const fieldLabels: Record<string, string> = {
+  firstName: "First Name",
+  lastName: "Last Name",
+  email: "Email Address",
+  primaryReason: "Primary Concern",
+  otherReason: "Reason Details",
+  consentToContact: "Consent",
+};
+
+// Validation rules
+const validateEmail = (email: string): string | undefined => {
+  if (!email) return "Email is required";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Please enter a valid email address";
+  return undefined;
+};
+
+const validateRequired = (value: string, fieldName: string): string | undefined => {
+  if (!value || !value.trim()) return `${fieldName} is required`;
+  return undefined;
+};
+
+interface FieldErrors {
+  [key: string]: string | undefined;
+}
 
 const PatientIntakeAdult = () => {
   const navigate = useNavigate();
@@ -19,6 +47,12 @@ const PatientIntakeAdult = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formLoadTime = useRef(Date.now());
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Validation state
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+  const [showErrorSummary, setShowErrorSummary] = useState(false);
 
   // Honeypot fields (should remain empty)
   const [honeypotWebsite, setHoneypotWebsite] = useState("");
@@ -40,39 +74,118 @@ const PatientIntakeAdult = () => {
     consentToContact: false,
   });
 
+  // Touch a field (mark as interacted with)
+  const touchField = useCallback((field: string) => {
+    setTouchedFields(prev => new Set(prev).add(field));
+  }, []);
+
+  // Validate a single field
+  const validateField = useCallback((field: string, value: string | boolean): string | undefined => {
+    switch (field) {
+      case "firstName":
+        return validateRequired(value as string, "First name");
+      case "lastName":
+        return validateRequired(value as string, "Last name");
+      case "email":
+        return validateEmail(value as string);
+      case "primaryReason":
+        return validateRequired(value as string, "Primary concern");
+      case "otherReason":
+        if (formData.primaryReason === "other") {
+          return validateRequired(value as string, "Reason details");
+        }
+        return undefined;
+      case "consentToContact":
+        if (!value) return "You must consent to be contacted";
+        return undefined;
+      default:
+        return undefined;
+    }
+  }, [formData.primaryReason]);
+
+  // Handle field blur - validate on blur
+  const handleBlur = useCallback((field: string, value: string | boolean) => {
+    touchField(field);
+    const error = validateField(field, value);
+    setFieldErrors(prev => ({ ...prev, [field]: error }));
+  }, [touchField, validateField]);
+
   const handleChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // If field was already touched, revalidate immediately
+    if (touchedFields.has(field)) {
+      const error = validateField(field, value);
+      setFieldErrors(prev => ({ ...prev, [field]: error }));
+    }
   };
+
+  // Validate all fields and return errors
+  const validateAllFields = useCallback((): FieldErrors => {
+    const errors: FieldErrors = {};
+    
+    errors.firstName = validateField("firstName", formData.firstName);
+    errors.lastName = validateField("lastName", formData.lastName);
+    errors.email = validateField("email", formData.email);
+    errors.primaryReason = validateField("primaryReason", formData.primaryReason);
+    
+    if (formData.primaryReason === "other") {
+      errors.otherReason = validateField("otherReason", formData.otherReason);
+    }
+    
+    errors.consentToContact = validateField("consentToContact", formData.consentToContact);
+    
+    // Filter out undefined values
+    return Object.fromEntries(
+      Object.entries(errors).filter(([, v]) => v !== undefined)
+    );
+  }, [formData, validateField]);
+
+  // Get error summary for display
+  const getErrorSummary = useCallback(() => {
+    return Object.entries(fieldErrors)
+      .filter(([, error]) => error !== undefined)
+      .map(([field, message]) => ({
+        field,
+        message: message as string,
+      }));
+  }, [fieldErrors]);
+
+  // Scroll to first error field
+  const scrollToFirstError = useCallback((errors: FieldErrors) => {
+    const firstErrorField = Object.keys(errors)[0];
+    if (firstErrorField && formRef.current) {
+      const element = formRef.current.querySelector(`[id="${firstErrorField}"]`) ||
+                      formRef.current.querySelector(`[name="${firstErrorField}"]`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+        (element as HTMLElement).focus?.();
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.primaryReason) {
+    // Validate all fields
+    const errors = validateAllFields();
+    
+    // Mark all required fields as touched
+    setTouchedFields(new Set(["firstName", "lastName", "email", "primaryReason", "otherReason", "consentToContact"]));
+    setFieldErrors(errors);
+    
+    if (Object.keys(errors).length > 0) {
+      setShowErrorSummary(true);
+      scrollToFirstError(errors);
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
+        title: "Please fix the errors",
+        description: `There ${Object.keys(errors).length === 1 ? "is 1 error" : `are ${Object.keys(errors).length} errors`} that need your attention.`,
         variant: "destructive",
       });
       return;
     }
-
-    if (formData.primaryReason === "other" && !formData.otherReason.trim()) {
-      toast({
-        title: "Missing Information",
-        description: "Please specify your reason for visit.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!formData.consentToContact) {
-      toast({
-        title: "Consent Required",
-        description: "Please consent to be contacted to proceed.",
-        variant: "destructive",
-      });
-      return;
-    }
+    
+    setShowErrorSummary(false);
 
     setIsSubmitting(true);
 
@@ -189,42 +302,81 @@ const PatientIntakeAdult = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+            {/* Error Summary */}
+            {showErrorSummary && (
+              <FormErrorSummary 
+                errors={getErrorSummary()} 
+                fieldLabels={fieldLabels}
+                onFieldClick={(field) => {
+                  const element = formRef.current?.querySelector(`[id="${field}"]`);
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "center" });
+                    (element as HTMLElement).focus?.();
+                  }
+                }}
+              />
+            )}
+
             {/* Personal Information */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg border-b pb-2">Your Information</h3>
               
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name *</Label>
+                <FormField
+                  label="First Name"
+                  htmlFor="firstName"
+                  required
+                  error={fieldErrors.firstName}
+                  touched={touchedFields.has("firstName")}
+                >
                   <Input
                     id="firstName"
                     value={formData.firstName}
                     onChange={(e) => handleChange("firstName", e.target.value)}
-                    required
+                    onBlur={(e) => handleBlur("firstName", e.target.value)}
+                    className={cn(
+                      touchedFields.has("firstName") && fieldErrors.firstName && "border-destructive focus-visible:ring-destructive"
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name *</Label>
+                </FormField>
+                <FormField
+                  label="Last Name"
+                  htmlFor="lastName"
+                  required
+                  error={fieldErrors.lastName}
+                  touched={touchedFields.has("lastName")}
+                >
                   <Input
                     id="lastName"
                     value={formData.lastName}
                     onChange={(e) => handleChange("lastName", e.target.value)}
-                    required
+                    onBlur={(e) => handleBlur("lastName", e.target.value)}
+                    className={cn(
+                      touchedFields.has("lastName") && fieldErrors.lastName && "border-destructive focus-visible:ring-destructive"
+                    )}
                   />
-                </div>
+                </FormField>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address *</Label>
+              <FormField
+                label="Email Address"
+                htmlFor="email"
+                required
+                error={fieldErrors.email}
+                touched={touchedFields.has("email")}
+              >
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleChange("email", e.target.value)}
-                  required
+                  onBlur={(e) => handleBlur("email", e.target.value)}
+                  className={cn(
+                    touchedFields.has("email") && fieldErrors.email && "border-destructive focus-visible:ring-destructive"
+                  )}
                 />
-              </div>
+              </FormField>
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
@@ -259,20 +411,28 @@ const PatientIntakeAdult = () => {
             <div className="space-y-4">
               <h3 className="font-semibold text-lg border-b pb-2">Primary Reason for Visit</h3>
 
-              <div className="space-y-2">
-                <Label htmlFor="primaryReason">What best describes your main concern? *</Label>
-                <p className="text-sm text-muted-foreground">(Select one)</p>
+              <FormField
+                label="What best describes your main concern?"
+                htmlFor="primaryReason"
+                required
+                error={fieldErrors.primaryReason}
+                touched={touchedFields.has("primaryReason")}
+                hint="(Select one)"
+              >
                 <Select
                   value={formData.primaryReason}
                   onValueChange={(value) => {
                     handleChange("primaryReason", value);
+                    touchField("primaryReason");
                     // Clear prior care if not concussion
                     if (value !== "concussion") {
                       handleChange("priorConcussionCare", "");
                     }
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={cn(
+                    touchedFields.has("primaryReason") && fieldErrors.primaryReason && "border-destructive focus-visible:ring-destructive"
+                  )}>
                     <SelectValue placeholder="Select your main concern" />
                   </SelectTrigger>
                   <SelectContent>
@@ -287,19 +447,28 @@ const PatientIntakeAdult = () => {
                     <SelectItem value="other">Other (please specify)</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              </FormField>
 
               {/* Other reason text field */}
               {formData.primaryReason === "other" && (
-                <div className="space-y-2">
-                  <Label htmlFor="otherReason">Please specify *</Label>
+                <FormField
+                  label="Please specify"
+                  htmlFor="otherReason"
+                  required
+                  error={fieldErrors.otherReason}
+                  touched={touchedFields.has("otherReason")}
+                >
                   <Input
                     id="otherReason"
                     value={formData.otherReason}
                     onChange={(e) => handleChange("otherReason", e.target.value)}
+                    onBlur={(e) => handleBlur("otherReason", e.target.value)}
                     placeholder="Describe your main concern..."
+                    className={cn(
+                      touchedFields.has("otherReason") && fieldErrors.otherReason && "border-destructive focus-visible:ring-destructive"
+                    )}
                   />
-                </div>
+                </FormField>
               )}
 
               {/* Conditional Prior Care question for concussion patients */}
@@ -403,17 +572,30 @@ const PatientIntakeAdult = () => {
             </div>
 
             {/* Consent */}
-            <div className="space-y-4 bg-muted/50 rounded-lg p-4">
+            <div className={cn(
+              "space-y-4 rounded-lg p-4",
+              touchedFields.has("consentToContact") && fieldErrors.consentToContact 
+                ? "bg-destructive/10 border border-destructive/20" 
+                : "bg-muted/50"
+            )}>
               <div className="flex items-start space-x-3">
                 <Checkbox
-                  id="consent"
+                  id="consentToContact"
                   checked={formData.consentToContact}
-                  onCheckedChange={(checked) => handleChange("consentToContact", checked as boolean)}
+                  onCheckedChange={(checked) => {
+                    handleChange("consentToContact", checked as boolean);
+                    touchField("consentToContact");
+                  }}
                 />
-                <Label htmlFor="consent" className="font-normal text-sm leading-relaxed">
-                  I consent to being contacted by Pittsford Performance Care regarding my intake submission. 
-                  I understand that my information will be kept confidential and used only for scheduling purposes.
-                </Label>
+                <div className="space-y-1">
+                  <Label htmlFor="consentToContact" className="font-normal text-sm leading-relaxed">
+                    I consent to being contacted by Pittsford Performance Care regarding my intake submission. 
+                    I understand that my information will be kept confidential and used only for scheduling purposes. *
+                  </Label>
+                  {touchedFields.has("consentToContact") && fieldErrors.consentToContact && (
+                    <p className="text-sm text-destructive">{fieldErrors.consentToContact}</p>
+                  )}
+                </div>
               </div>
             </div>
 
