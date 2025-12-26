@@ -78,6 +78,12 @@ const DOMAINS: DomainSummary[] = [
     description: "State-based patterns associated with recovery, calming, restoration, and the balance between activation and rest.",
     keywords: ["Recovery", "Restoration", "Calming", "Energy Conservation"],
   },
+  {
+    name: "Visual",
+    slug: "visual",
+    description: "Functions associated with visual attention, spatial organization, visual perception, and visual–motor integration.",
+    keywords: ["Visual Attention", "Spatial Organization", "Visual Perception", "Visual–Motor Integration"],
+  },
 ];
 
 export function NeuroscienceDomainIndex() {
