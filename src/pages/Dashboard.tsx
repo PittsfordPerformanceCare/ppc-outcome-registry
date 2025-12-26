@@ -8,14 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, ClipboardPlus, TrendingUp, Users, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText } from "lucide-react";
+import { Calendar, ClipboardPlus, TrendingUp, Users, Search, Filter, X, Download, Printer, BarChart3, Trash2, CheckSquare, FileText, PieChart, Settings2, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { MCIDStatisticsCard } from "@/components/MCIDStatisticsCard";
 import { PPC_CONFIG } from "@/lib/ppcConfig";
 import { generateBatchMCIDReports } from "@/lib/batchPDFExport";
 import { useClinicSettings } from "@/hooks/useClinicSettings";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SwipeableTabs } from "@/components/ui/swipeable-tabs";
 import { ExportScheduler } from "@/components/ExportScheduler";
 import { AdvancedFilters, FilterState } from "@/components/AdvancedFilters";
 import { DateRangeComparison } from "@/components/DateRangeComparison";
@@ -36,6 +36,7 @@ import { TreatmentEfficacyChart } from "@/components/TreatmentEfficacyChart";
 import { useDashboardData, Episode } from "@/hooks/useDashboardData";
 import { DashboardHero, InboxCards, PerformanceDials } from "@/components/dashboard";
 import { ErrorBoundary, InlineErrorBoundary } from "@/components/ErrorBoundary";
+import { LastLoginIndicator } from "@/components/session";
 import {
   Dialog,
   DialogContent,
@@ -286,62 +287,80 @@ export default function Dashboard() {
 
         {/* Analytics Section */}
         <div className="space-y-6">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold text-primary">Analytics & Insights</h2>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-6 w-6 text-primary" />
+              <h2 className="text-2xl font-bold text-primary">Analytics & Insights</h2>
+            </div>
+            <LastLoginIndicator />
           </div>
           
-          <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="advanced-filters">Advanced Filters</TabsTrigger>
-              <TabsTrigger value="comparison">Date Comparison</TabsTrigger>
-              <TabsTrigger value="scheduler">Export Scheduler</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="overview" className="space-y-6">
-              <div className="grid gap-6 lg:grid-cols-2">
-                <ErrorBoundary>
-                  <TrendChart episodes={episodesWithScores} />
-                </ErrorBoundary>
-                <ErrorBoundary>
-                  <RegionalPerformanceChart episodes={episodesWithScores} />
-                </ErrorBoundary>
-              </div>
-              <ErrorBoundary>
-                <TreatmentEfficacyChart episodes={episodesWithScores} />
-              </ErrorBoundary>
-            </TabsContent>
-
-            <TabsContent value="advanced-filters">
-              <ErrorBoundary>
-                <AdvancedFilters
-                  availableDiagnoses={uniqueDiagnoses}
-                  availableRegions={uniqueRegions}
-                  onFiltersChange={setAdvancedFilters}
-                  initialFilters={advancedFilters}
-                />
-              </ErrorBoundary>
-            </TabsContent>
-
-            <TabsContent value="comparison">
-              <ErrorBoundary>
-                <DateRangeComparison episodes={episodes} />
-              </ErrorBoundary>
-            </TabsContent>
-
-            <TabsContent value="scheduler">
-              <ExportScheduler 
-                currentFilters={{
-                  region: filterRegion !== "all" ? filterRegion : undefined,
-                  clinician: filterClinician !== "all" ? filterClinician : undefined,
-                  dateFrom: filterDateFrom || undefined,
-                  dateTo: filterDateTo || undefined,
-                  ...advancedFilters,
-                }}
-              />
-            </TabsContent>
-          </Tabs>
+          <SwipeableTabs
+            defaultValue="overview"
+            tabs={[
+              {
+                value: "overview",
+                label: "Overview",
+                icon: <PieChart className="h-4 w-4" />,
+                content: (
+                  <div className="space-y-6">
+                    <div className="grid gap-6 lg:grid-cols-2">
+                      <ErrorBoundary>
+                        <TrendChart episodes={episodesWithScores} />
+                      </ErrorBoundary>
+                      <ErrorBoundary>
+                        <RegionalPerformanceChart episodes={episodesWithScores} />
+                      </ErrorBoundary>
+                    </div>
+                    <ErrorBoundary>
+                      <TreatmentEfficacyChart episodes={episodesWithScores} />
+                    </ErrorBoundary>
+                  </div>
+                ),
+              },
+              {
+                value: "advanced-filters",
+                label: "Advanced Filters",
+                icon: <Filter className="h-4 w-4" />,
+                content: (
+                  <ErrorBoundary>
+                    <AdvancedFilters
+                      availableDiagnoses={uniqueDiagnoses}
+                      availableRegions={uniqueRegions}
+                      onFiltersChange={setAdvancedFilters}
+                      initialFilters={advancedFilters}
+                    />
+                  </ErrorBoundary>
+                ),
+              },
+              {
+                value: "comparison",
+                label: "Date Comparison",
+                icon: <Calendar className="h-4 w-4" />,
+                content: (
+                  <ErrorBoundary>
+                    <DateRangeComparison episodes={episodes} />
+                  </ErrorBoundary>
+                ),
+              },
+              {
+                value: "scheduler",
+                label: "Export Scheduler",
+                icon: <Clock className="h-4 w-4" />,
+                content: (
+                  <ExportScheduler 
+                    currentFilters={{
+                      region: filterRegion !== "all" ? filterRegion : undefined,
+                      clinician: filterClinician !== "all" ? filterClinician : undefined,
+                      dateFrom: filterDateFrom || undefined,
+                      dateTo: filterDateTo || undefined,
+                      ...advancedFilters,
+                    }}
+                  />
+                ),
+              },
+            ]}
+          />
         </div>
 
         {/* Search & Filter Section */}

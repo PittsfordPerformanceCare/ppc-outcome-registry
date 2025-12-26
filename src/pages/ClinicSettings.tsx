@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Loader2, Save, AlertCircle, Send, Mail, MessageSquare, Bell, Clock, FileText } from "lucide-react";
+import { Loader2, Save, AlertCircle, Send, Mail, MessageSquare, Bell, Clock, FileText, Shield } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -22,6 +22,8 @@ import { EmailTemplateAnalytics } from "@/components/EmailTemplateAnalytics";
 import { ClinicBrandingSettings } from "@/components/ClinicBrandingSettings";
 import { WebhookAlertSettings } from "@/components/WebhookAlertSettings";
 import { GoogleCalendarConnect } from "@/components/GoogleCalendarConnect";
+import { SessionManagement } from "@/components/SessionManagement";
+import { LastLoginIndicator } from "@/components/session";
 
 interface ClinicSettings {
   clinic_name: string;
@@ -591,6 +593,16 @@ if (authLoading || initialLoading) {
       <NotificationAlertSettings />
       <RateLimitConfigPanel />
       <GoogleCalendarConnect />
+      
+      {/* Session & Security Section */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Shield className="h-5 w-5 text-primary" />
+          <h2 className="text-xl font-semibold">Security & Sessions</h2>
+        </div>
+        <LastLoginIndicator showDetails className="mb-4" />
+        <SessionManagement />
+      </div>
 
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={loading} size="lg">
