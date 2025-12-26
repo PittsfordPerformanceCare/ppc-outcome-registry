@@ -6,6 +6,7 @@ import { CerebellarDomain } from "@/components/neuroscience/domains/CerebellarDo
 import { TemporalDomain } from "@/components/neuroscience/domains/TemporalDomain";
 import { ParietalDomain } from "@/components/neuroscience/domains/ParietalDomain";
 import { LimbicDomain } from "@/components/neuroscience/domains/LimbicDomain";
+import { ProprioceptiveDomain } from "@/components/neuroscience/domains/ProprioceptiveDomain";
 import { NeuroscienceDomainIndex } from "@/components/neuroscience/NeuroscienceDomainIndex";
 
 const DOMAIN_COMPONENTS: Record<string, React.ComponentType> = {
@@ -16,6 +17,7 @@ const DOMAIN_COMPONENTS: Record<string, React.ComponentType> = {
   temporal: TemporalDomain,
   parietal: ParietalDomain,
   limbic: LimbicDomain,
+  proprioceptive: ProprioceptiveDomain,
 };
 
 export default function NeuroscienceDomainPage() {

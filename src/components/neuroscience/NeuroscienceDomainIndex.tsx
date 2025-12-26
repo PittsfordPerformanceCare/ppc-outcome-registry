@@ -49,6 +49,12 @@ const DOMAINS: DomainSummary[] = [
     keywords: ["Balance", "Spatial Orientation", "Movement Integration", "Postural Control"],
   },
   {
+    name: "Proprioceptive",
+    slug: "proprioceptive",
+    description: "Functions associated with body awareness, position sense, force modulation, and motor feedback during movement.",
+    keywords: ["Body Awareness", "Position Sense", "Force Modulation", "Motor Feedback"],
+  },
+  {
     name: "Brainstem",
     slug: "brainstem",
     description: "Functions associated with arousal, alertness, and basic regulatory processes that support engagement.",
