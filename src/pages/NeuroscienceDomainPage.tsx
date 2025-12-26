@@ -2,12 +2,20 @@ import { useParams, Navigate } from "react-router-dom";
 import { FrontalDomain } from "@/components/neuroscience/domains/FrontalDomain";
 import { VestibularDomain } from "@/components/neuroscience/domains/VestibularDomain";
 import { BrainstemDomain } from "@/components/neuroscience/domains/BrainstemDomain";
+import { CerebellarDomain } from "@/components/neuroscience/domains/CerebellarDomain";
+import { TemporalDomain } from "@/components/neuroscience/domains/TemporalDomain";
+import { ParietalDomain } from "@/components/neuroscience/domains/ParietalDomain";
+import { LimbicDomain } from "@/components/neuroscience/domains/LimbicDomain";
 import { NeuroscienceDomainIndex } from "@/components/neuroscience/NeuroscienceDomainIndex";
 
 const DOMAIN_COMPONENTS: Record<string, React.ComponentType> = {
   frontal: FrontalDomain,
   vestibular: VestibularDomain,
   brainstem: BrainstemDomain,
+  cerebellar: CerebellarDomain,
+  temporal: TemporalDomain,
+  parietal: ParietalDomain,
+  limbic: LimbicDomain,
 };
 
 export default function NeuroscienceDomainPage() {
