@@ -5,200 +5,218 @@ export function VestibularDomain() {
     <EducationalNeuroscienceDomainPage
       domainName="Vestibular"
       overview={
-        <div className="space-y-3 text-sm text-muted-foreground">
-          <p>
-            The vestibular domain is commonly discussed in educational neuroscience literature 
-            in relation to functions associated with balance, spatial orientation, and the 
-            integration of movement with other sensory information. These functions are 
-            sometimes discussed in connection with postural control, coordination, and 
-            the sense of body position in space.
+        <>
+          <p className="mb-4">
+            In educational neuroscience literature, the vestibular domain is commonly discussed 
+            in relation to functions associated with balance, spatial orientation, postural 
+            control, and the integration of movement with other sensory information. These 
+            functions are sometimes described as contributing to how the body maintains 
+            equilibrium, perceives motion, and coordinates movement within the environment.
           </p>
-          <p>
-            Educational neuroscience perspectives note that vestibular-associated functions 
-            interact extensively with visual, proprioceptive, and motor systems. The literature 
-            emphasizes that these integrative functions develop across childhood and may vary 
-            considerably across individuals and contexts.
+          <p className="mb-4">
+            Vestibular-associated functions are frequently discussed as interacting extensively 
+            with visual, proprioceptive, auditory, and motor systems. Educational neuroscience 
+            perspectives emphasize that these integrative processes operate as part of 
+            distributed networks and develop across childhood with considerable individual 
+            variation in timing and expression.
           </p>
-          <p>
-            This reference is provided for informational purposes only. It does not describe 
-            any specific learner, predict outcomes, or guide educational decisions.
+          <p className="mb-4">
+            The literature notes that vestibular processing may influence many aspects of 
+            learning-related behavior, including postural stability during seated work, 
+            spatial awareness during navigation, and the regulation of arousal states. 
+            These relationships are complex, bidirectional, and influenced by context.
           </p>
-        </div>
+          <p className="text-sm text-muted-foreground italic">
+            This content is informational only and does not constitute clinical guidance, 
+            diagnostic explanation, or intervention rationale.
+          </p>
+        </>
       }
       educatorObservations={
-        <div className="space-y-3 text-sm text-muted-foreground">
-          <p>
-            In classroom settings, educators sometimes notice patterns that educational 
-            neuroscience literature often discusses in relation to vestibular-associated 
-            functions. These observations vary widely across individuals, activities, and contexts.
+        <>
+          <p className="mb-4">
+            In classroom settings, educators sometimes notice variations in how learners engage 
+            with movement, maintain posture, and orient themselves within physical space. These 
+            observations reflect natural variability and may include differences in:
           </p>
-          <ul className="space-y-2 mt-3">
-            <li className="flex items-start gap-2">
+          <ul className="space-y-2 mb-4">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="text-primary mt-1">•</span>
-              <span>
-                Some learners may appear to seek or avoid movement-based activities, 
-                with preferences that vary across different types of motion.
-              </span>
+              <span>Preferences for or responses to movement-based activities, with some 
+              learners appearing to seek movement opportunities while others may seem to 
+              prefer stillness</span>
             </li>
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="text-primary mt-1">•</span>
-              <span>
-                Patterns related to seated posture, balance during transitions, or 
-                coordination during physical activities sometimes vary across settings.
-              </span>
+              <span>Patterns related to seated posture, including shifting positions, 
+              leaning, or seeking support during desk-based activities</span>
             </li>
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="text-primary mt-1">•</span>
-              <span>
-                Some learners may appear more comfortable in structured seating 
-                arrangements, while others may seem to benefit from opportunities 
-                for movement.
-              </span>
+              <span>Balance and coordination during transitions, physical education, 
+              or activities requiring navigation through space</span>
             </li>
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="text-primary mt-1">•</span>
-              <span>
-                Responses to changes in body position or environmental motion 
-                sometimes differ across individuals and situations.
-              </span>
+              <span>Responses to changes in body position, environmental motion, or 
+              activities involving spinning, swinging, or rapid directional changes</span>
+            </li>
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
+              <span className="text-primary mt-1">•</span>
+              <span>Comfort levels in different seating arrangements or physical 
+              configurations within the classroom</span>
             </li>
           </ul>
-          <p className="mt-3 italic">
-            These observations are descriptive and reflect natural variability. They do not 
-            indicate deficits, disorders, or specific educational needs.
+          <p className="text-sm text-muted-foreground">
+            Such patterns are naturally variable across learners, tasks, and contexts. Similar 
+            observations may arise from many different factors, and individual patterns commonly 
+            shift with development, experience, and environmental conditions.
           </p>
-        </div>
+        </>
       }
       neurosciencePerspectives={
-        <div className="space-y-3 text-sm text-muted-foreground">
-          <p>
-            Educational neuroscience literature offers multiple, non-exclusive perspectives 
-            on vestibular-associated functions:
-          </p>
-          <ul className="space-y-3 mt-3">
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <div>
-                <strong>Sensory Integration:</strong> The literature often discusses how 
-                vestibular information combines with visual, proprioceptive, and tactile 
-                input to support spatial awareness and movement coordination.
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <div>
-                <strong>Developmental Trajectories:</strong> Research frequently notes 
-                that vestibular-associated functions develop across childhood, with 
-                individual differences in timing and expression.
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <div>
-                <strong>Arousal and Attention:</strong> Some perspectives in the 
-                literature discuss connections between vestibular input and states 
-                of alertness or calm, though these relationships are complex and 
-                individually variable.
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <div>
-                <strong>Movement and Learning:</strong> Educational neuroscience 
-                sometimes explores how movement and position may relate to learning 
-                contexts, while emphasizing that these relationships vary considerably.
-              </div>
-            </li>
-          </ul>
-        </div>
+        <>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium mb-2">Vestibular Contributions to Orientation and Posture</h4>
+              <p className="text-sm text-muted-foreground">
+                Educational neuroscience literature often discusses vestibular contributions to 
+                maintaining upright posture, sensing head position and movement, and coordinating 
+                balance adjustments. These processes operate largely outside conscious awareness 
+                and interact continuously with visual and proprioceptive systems.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Interaction with Visual Systems</h4>
+              <p className="text-sm text-muted-foreground">
+                The literature frequently describes vestibular-visual interactions, including 
+                contributions to gaze stability during head movement and spatial perception. 
+                These integrative processes may influence activities involving reading, copying 
+                from the board, or tracking moving objects.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Connection to Motor Planning</h4>
+              <p className="text-sm text-muted-foreground">
+                Some perspectives discuss vestibular input as contributing to motor planning 
+                and coordination. The literature notes that information about body position 
+                and movement may support the timing and sequencing of motor actions, though 
+                these relationships involve multiple interacting systems.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Developmental Timing and Experience-Dependence</h4>
+              <p className="text-sm text-muted-foreground">
+                Educational neuroscience emphasizes that vestibular-associated functions develop 
+                across childhood and are influenced by movement experiences. Individual 
+                developmental trajectories vary considerably, and patterns observed at one 
+                point may shift with maturation and experience.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">Arousal and Attention Interactions</h4>
+              <p className="text-sm text-muted-foreground">
+                Some literature discusses connections between vestibular input and states of 
+                arousal or alertness. Movement and position changes are sometimes described as 
+                influencing readiness for learning, though these relationships are complex, 
+                bidirectional, and individually variable.
+              </p>
+            </div>
+          </div>
+        </>
       }
       contextualModifiers={
-        <div className="space-y-3 text-sm text-muted-foreground">
-          <p>
-            Educational neuroscience literature commonly identifies factors that may 
-            influence observed patterns associated with vestibular functions. These 
+        <>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Educational neuroscience literature commonly identifies contextual factors that may 
+            influence observed patterns associated with vestibular-related functions. These 
             modifiers underscore why single-cause interpretations are discouraged:
           </p>
-          <ul className="space-y-2 mt-3">
-            <li className="flex items-start gap-2">
+          <ul className="space-y-2">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="text-amber-500 mt-1">•</span>
-              <span>
-                <strong>Physical Environment:</strong> Seating arrangements, floor 
-                surfaces, and available space for movement may influence comfort 
-                and engagement.
-              </span>
+              <span><strong>Seating and classroom layout:</strong> Chair type, desk height, 
+              foot support, and spatial arrangement may significantly influence postural 
+              comfort and stability during learning activities.</span>
             </li>
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="text-amber-500 mt-1">•</span>
-              <span>
-                <strong>Activity Type:</strong> Sedentary versus active tasks may 
-                elicit different responses across individuals.
-              </span>
+              <span><strong>Movement demands:</strong> The extent to which activities require 
+              stillness versus movement, and the type of movement involved, may elicit 
+              different responses across individuals.</span>
             </li>
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="text-amber-500 mt-1">•</span>
-              <span>
-                <strong>Emotional State:</strong> Anxiety, excitement, or fatigue 
-                may influence sensory preferences and responses.
-              </span>
+              <span><strong>Visual complexity:</strong> Busy visual environments, fluorescent 
+              lighting, or visually demanding tasks may interact with vestibular processing 
+              in ways that vary across individuals.</span>
             </li>
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="text-amber-500 mt-1">•</span>
-              <span>
-                <strong>Time of Day:</strong> Energy levels and sensory preferences 
-                may shift across the school day.
-              </span>
+              <span><strong>Transitions and novelty:</strong> Moving between activities, 
+              locations, or positions may affect observed patterns differently than 
+              sustained activities in familiar settings.</span>
             </li>
-            <li className="flex items-start gap-2">
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
               <span className="text-amber-500 mt-1">•</span>
-              <span>
-                <strong>Prior Activity:</strong> Recent physical activity or prolonged 
-                stillness may affect subsequent responses.
-              </span>
+              <span><strong>Fatigue and time of day:</strong> Energy levels, physical tiredness, 
+              and circadian factors may influence postural control and movement preferences 
+              across the school day.</span>
+            </li>
+            <li className="flex items-start gap-2 text-sm text-muted-foreground">
+              <span className="text-amber-500 mt-1">•</span>
+              <span><strong>Prior activity:</strong> Recent physical activity, prolonged 
+              stillness, or the sequence of preceding activities may affect subsequent 
+              movement-related observations.</span>
             </li>
           </ul>
-        </div>
+        </>
       }
       misconceptions={
-        <div className="space-y-3 text-sm text-muted-foreground">
-          <p>
-            Several common misunderstandings about vestibular-associated functions appear 
-            in popular discourse:
-          </p>
-          <ul className="space-y-2 mt-3">
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <span>
-                <strong>Simple Cause-Effect:</strong> Movement preferences and responses 
-                reflect complex, interacting factors. Simple causal explanations 
-                oversimplify the literature.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <span>
-                <strong>Fixed Preferences:</strong> Sensory preferences often vary 
-                across contexts, developmental stages, and situations. Stability 
-                should not be assumed.
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary mt-1">•</span>
-              <span>
-                <strong>Isolated System:</strong> Vestibular functions interact 
-                extensively with other sensory and motor systems. Isolated 
-                interpretations are not well-supported.
-              </span>
-            </li>
-          </ul>
-        </div>
+        <>
+          <div className="space-y-4">
+            <div>
+              <h4 className="font-medium mb-2">"Movement seeking equals misbehavior"</h4>
+              <p className="text-sm text-muted-foreground">
+                Preferences for movement reflect natural variation in how individuals interact 
+                with their environments. Movement-seeking patterns are not inherently problematic 
+                and may be influenced by many developmental, contextual, and situational factors.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">"Vestibular functions operate in isolation"</h4>
+              <p className="text-sm text-muted-foreground">
+                Vestibular processing interacts extensively with visual, proprioceptive, auditory, 
+                and motor systems. Observed patterns rarely reflect a single system operating 
+                independently; rather, they emerge from complex interactions among multiple systems.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">"Movement preferences are fixed traits"</h4>
+              <p className="text-sm text-muted-foreground">
+                Sensory and movement preferences commonly vary across contexts, developmental 
+                stages, and situations. Patterns observed in one setting or at one time may not 
+                generalize to other circumstances.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-medium mb-2">"Balance difficulties indicate specific conditions"</h4>
+              <p className="text-sm text-muted-foreground">
+                Variation in balance and coordination reflects the interplay of multiple factors 
+                including development, experience, fatigue, attention, and context. Observed 
+                patterns do not reliably indicate specific conditions or predict particular outcomes.
+              </p>
+            </div>
+          </div>
+        </>
       }
       professionalQuestions={[
-        "How do observed patterns vary across different physical settings or activities?",
-        "What contextual factors might be influencing movement preferences or responses?",
-        "How consistent are these observations across different times of day?",
-        "What does the developmental literature suggest about variability in sensory preferences?",
-        "How might the physical environment be contributing to what is observed?",
+        "How do observations change across different classroom settings or physical environments?",
+        "Do patterns vary with movement demands, seating arrangements, or transitions?",
+        "How might environmental structure or layout influence what is observed?",
+        "Are observations consistent across different times of day or following different activities?",
+        "What contextual factors might be contributing to movement preferences or responses?",
+        "How have observed patterns changed over developmental time?",
       ]}
       governingDocuments={[
         "PPC Educational Neuroscience Reference Policy (Revised – Legal Hardened)",
