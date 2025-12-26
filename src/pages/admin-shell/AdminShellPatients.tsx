@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { PageHeader } from "@/components/navigation";
+import { SkeletonStats, SkeletonTable } from "@/components/ui/loading";
+import { EmptyState } from "@/components/ui/error";
 import { 
   Users, 
   Search, 
@@ -90,34 +91,38 @@ const AdminShellPatients = () => {
       />
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Patients</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{patients.length}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">With Active Episodes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {patients.filter((p) => p.has_active_episode).length}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Episodes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{episodes.length}</div>
-          </CardContent>
-        </Card>
-      </div>
+      {isLoading ? (
+        <SkeletonStats count={3} />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Patients</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{patients.length}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">With Active Episodes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">
+                {patients.filter((p) => p.has_active_episode).length}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">Total Episodes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{episodes.length}</div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Patient List */}
       <Card>
@@ -140,15 +145,13 @@ const AdminShellPatients = () => {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="space-y-2">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
+            <SkeletonTable rows={5} columns={6} />
           ) : filteredPatients.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No patients found.
-            </div>
+            <EmptyState
+              type="search"
+              title="No patients found"
+              description="Try adjusting your search query."
+            />
           ) : (
             <div className="rounded-md border">
               <Table>
