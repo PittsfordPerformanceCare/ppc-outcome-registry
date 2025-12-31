@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -351,11 +352,11 @@ const PatientIntakeReferral = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="providerPhone">Your Phone</Label>
-                    <Input
+                    <PhoneInput
                       id="providerPhone"
-                      type="tel"
                       value={formData.providerPhone}
-                      onChange={(e) => handleChange("providerPhone", e.target.value)}
+                      onChange={(value) => handleChange("providerPhone", value)}
+                      showCountryCode={false}
                       className="h-11"
                     />
                   </div>
