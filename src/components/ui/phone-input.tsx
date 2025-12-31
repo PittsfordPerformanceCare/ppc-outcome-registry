@@ -41,6 +41,27 @@ const extractDigits = (value: string): string => {
   return value.replace(/\D/g, "");
 };
 
+// Extract digits from a stored value that may include country code prefix
+const extractDigitsFromStoredValue = (value: string, countryDial: string): string => {
+  // Remove the country dial code prefix if present (e.g., "+1 " from "+1 (585) 203-1050")
+  let cleaned = value;
+  
+  // Check if value starts with the country dial code
+  if (cleaned.startsWith(countryDial)) {
+    cleaned = cleaned.slice(countryDial.length).trim();
+  }
+  
+  // Extract just the digits from what remains
+  const digits = extractDigits(cleaned);
+  
+  // If we have 11 digits starting with 1, it's likely a US number with country code baked in
+  if (digits.length === 11 && digits.startsWith("1") && countryDial === "+1") {
+    return digits.slice(1);
+  }
+  
+  return digits;
+};
+
 // Format phone number based on country format pattern
 const formatPhoneNumber = (digits: string, format: string, maxLength: number): string => {
   const trimmedDigits = digits.slice(0, maxLength);
@@ -91,7 +112,8 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
     // Sync external value to local state
     React.useEffect(() => {
       if (value) {
-        const digits = extractDigits(value);
+        // Use the smarter extraction that handles country code prefixes
+        const digits = extractDigitsFromStoredValue(value, selectedCountry.dial);
         const formatted = formatPhoneNumber(digits, selectedCountry.format, selectedCountry.maxLength);
         setLocalValue(formatted);
       } else {
