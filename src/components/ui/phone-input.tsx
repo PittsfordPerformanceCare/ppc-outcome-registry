@@ -100,25 +100,21 @@ const cleanPastedPhone = (value: string): string => {
   return digits;
 };
 
+// v3 - Fixed formatting sync issue
 const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
   ({ className, value = "", onChange, onBlur, showCountryCode = true, defaultCountry = "US", ...props }, ref) => {
     const [selectedCountry, setSelectedCountry] = React.useState<CountryCode>(
       COUNTRY_CODES.find(c => c.code === defaultCountry) || COUNTRY_CODES[0]
     );
-    const [localValue, setLocalValue] = React.useState("");
     const inputRef = React.useRef<HTMLInputElement>(null);
     const cursorPositionRef = React.useRef<number | null>(null);
+    const lastInputRef = React.useRef<string>("");
 
-    // Sync external value to local state
-    React.useEffect(() => {
-      if (value) {
-        // Use the smarter extraction that handles country code prefixes
-        const digits = extractDigitsFromStoredValue(value, selectedCountry.dial);
-        const formatted = formatPhoneNumber(digits, selectedCountry.format, selectedCountry.maxLength);
-        setLocalValue(formatted);
-      } else {
-        setLocalValue("");
-      }
+    // Compute the formatted display value directly from the external value
+    const displayValue = React.useMemo(() => {
+      if (!value) return "";
+      const digits = extractDigitsFromStoredValue(value, selectedCountry.dial);
+      return formatPhoneNumber(digits, selectedCountry.format, selectedCountry.maxLength);
     }, [value, selectedCountry]);
 
     // Restore cursor position after formatting
@@ -127,12 +123,12 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
         inputRef.current.setSelectionRange(cursorPositionRef.current, cursorPositionRef.current);
         cursorPositionRef.current = null;
       }
-    }, [localValue]);
+    }, [displayValue]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const inputValue = e.target.value;
       const cursorPos = e.target.selectionStart || 0;
-      const previousLength = localValue.length;
+      const previousLength = displayValue.length;
       
       // Extract digits and format
       const digits = extractDigits(inputValue);
@@ -142,8 +138,6 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
       const lengthDiff = formatted.length - previousLength;
       const newCursorPos = Math.max(0, cursorPos + lengthDiff);
       cursorPositionRef.current = newCursorPos;
-      
-      setLocalValue(formatted);
       
       // Pass the full value with country code to parent
       const fullValue = showCountryCode && digits.length > 0 
@@ -158,8 +152,6 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
       const cleanedDigits = cleanPastedPhone(pastedText);
       const formatted = formatPhoneNumber(cleanedDigits, selectedCountry.format, selectedCountry.maxLength);
       
-      setLocalValue(formatted);
-      
       const fullValue = showCountryCode && cleanedDigits.length > 0 
         ? `${selectedCountry.dial} ${formatted}`
         : formatted;
@@ -172,9 +164,8 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
         setSelectedCountry(country);
         
         // Re-format existing number with new format
-        const digits = extractDigits(localValue);
+        const digits = extractDigits(displayValue);
         const formatted = formatPhoneNumber(digits, country.format, country.maxLength);
-        setLocalValue(formatted);
         
         const fullValue = showCountryCode && digits.length > 0 
           ? `${country.dial} ${formatted}`
@@ -253,7 +244,7 @@ const PhoneInput = React.forwardRef<HTMLInputElement, PhoneInputProps>(
             type="tel"
             inputMode="tel"
             autoComplete="tel"
-            value={localValue}
+            value={displayValue}
             onChange={handleInputChange}
             onPaste={handlePaste}
             onKeyDown={handleKeyDown}
