@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DOBPicker } from "@/components/ui/dob-picker";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Brain, ArrowRight, ArrowLeft, CheckCircle2, User, Heart, FileText, Shield } from "lucide-react";
@@ -316,12 +317,11 @@ const NeurologicIntakeForm = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input
+                  <PhoneInput
                     id="phone"
-                    type="tel"
                     value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    placeholder="(555) 123-4567"
+                    onChange={(value) => handleInputChange("phone", value)}
+                    showCountryCode={false}
                   />
                 </div>
                 <div className="space-y-2">
