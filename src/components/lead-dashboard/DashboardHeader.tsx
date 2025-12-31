@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { PhoneIntakeDialog } from "@/components/admin-dashboard/PhoneIntakeDialog";
+import { CreateIntakeLinkDialog } from "@/components/admin-dashboard/CreateIntakeLinkDialog";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 
@@ -59,6 +60,7 @@ export function DashboardHeader({ onRefresh }: DashboardHeaderProps) {
         <h1 className="text-xl font-semibold tracking-tight">{clinicName}</h1>
       </div>
       <div className="flex items-center gap-3">
+        <CreateIntakeLinkDialog />
         <Button
           variant="outline"
           size="sm"
