@@ -15,7 +15,7 @@ import { Link2, Copy, Check, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 // Always use the production Lovable app URL for consistency
-const APP_URL = 'https://ppc-unified-platform.lovable.app';
+const APP_URL = 'https://muse-meadow-app.lovable.app';
 
 export function CreateIntakeLinkDialog() {
   const [open, setOpen] = useState(false);
