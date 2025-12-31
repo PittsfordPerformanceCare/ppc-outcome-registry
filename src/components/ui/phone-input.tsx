@@ -36,7 +36,7 @@ interface PhoneInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElemen
   defaultCountry?: string;
 }
 
-// Extract only digits from a string
+// Extract only digits from a string - v2 format fix
 const extractDigits = (value: string): string => {
   return value.replace(/\D/g, "");
 };
