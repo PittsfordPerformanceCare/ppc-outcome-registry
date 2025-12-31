@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -380,11 +381,11 @@ const PatientIntakeAdult = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input
+                <PhoneInput
                   id="phone"
-                  type="tel"
                   value={formData.phone}
-                  onChange={(e) => handleChange("phone", e.target.value)}
+                  onChange={(value) => handleChange("phone", value)}
+                  showCountryCode={false}
                 />
               </div>
 
