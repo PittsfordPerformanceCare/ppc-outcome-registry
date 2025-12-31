@@ -629,12 +629,12 @@ export default function PatientDashboard() {
           </TabsContent>
 
           <TabsContent value="referrals" className="space-y-6">
-            <PatientReferralDashboard patientId={user?.id || ''} />
+            {patientAccountId && <PatientReferralDashboard patientId={patientAccountId} />}
           </TabsContent>
         </Tabs>
 
         {/* Referral QR Code Generator - Bottom of Dashboard */}
-        <PatientReferralCard patientId={user?.id || ''} />
+        {patientAccountId && <PatientReferralCard patientId={patientAccountId} />}
         </div>
       </div>
     </PullToRefresh>
