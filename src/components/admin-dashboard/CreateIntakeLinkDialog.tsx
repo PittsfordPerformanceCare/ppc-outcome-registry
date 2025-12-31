@@ -14,9 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Link2, Copy, Check, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
-const APP_URL = import.meta.env.VITE_SUPABASE_URL?.includes('supabase') 
-  ? 'https://ppc-unified-platform.lovable.app'
-  : window.location.origin;
+// Always use the production Lovable app URL for consistency
+const APP_URL = 'https://ppc-unified-platform.lovable.app';
 
 export function CreateIntakeLinkDialog() {
   const [open, setOpen] = useState(false);
@@ -25,7 +24,8 @@ export function CreateIntakeLinkDialog() {
   const [copied, setCopied] = useState(false);
   
   // The intake form URL - patients fill this out and it appears in Jennifer's dashboard
-  const intakeUrl = `${APP_URL}/patient-intake`;
+  // Using /patient/intake which is the newer patient shell route
+  const intakeUrl = `${APP_URL}/patient/intake`;
   
   const handleCopyLink = async () => {
     try {
@@ -42,7 +42,7 @@ export function CreateIntakeLinkDialog() {
     }
   };
 
-  const handleCopyWithPatientInfo = async () => {
+  const handleCopyEmailTemplate = async () => {
     const emailBody = `Hi ${patientName || 'there'},
 
 Please complete your intake forms before your visit by clicking the link below:
@@ -60,13 +60,33 @@ Pittsford Performance Care`;
       await navigator.clipboard.writeText(emailBody);
       setCopied(true);
       toast.success("Email template copied!", {
-        description: "Paste this into your email to send to the patient."
+        description: "Paste this into your email. The link will be clickable when sent."
       });
       
       setTimeout(() => setCopied(false), 3000);
     } catch (error) {
       toast.error("Failed to copy");
     }
+  };
+
+  // Create a mailto link that opens the email client with pre-filled content
+  const handleOpenEmailClient = () => {
+    const subject = encodeURIComponent("Complete Your Intake Forms - Pittsford Performance Care");
+    const body = encodeURIComponent(`Hi ${patientName || 'there'},
+
+Please complete your intake forms before your visit by clicking the link below:
+
+${intakeUrl}
+
+This helps us prepare for your appointment so we can focus on your care.
+
+If you have any questions, please call us at (585) 203-1050.
+
+Thank you,
+Pittsford Performance Care`);
+    
+    const mailtoLink = `mailto:${patientEmail || ''}?subject=${subject}&body=${body}`;
+    window.open(mailtoLink, '_blank');
   };
 
   const handleOpenInNewTab = () => {
@@ -169,11 +189,20 @@ Pittsford Performance Care`;
             Close
           </Button>
           <Button
-            onClick={handleCopyWithPatientInfo}
+            variant="outline"
+            onClick={handleCopyEmailTemplate}
             className="gap-2"
           >
             <Copy className="h-4 w-4" />
-            Copy Email Template
+            Copy Template
+          </Button>
+          <Button
+            onClick={handleOpenEmailClient}
+            className="gap-2"
+            disabled={!patientEmail}
+          >
+            <ExternalLink className="h-4 w-4" />
+            Open in Email App
           </Button>
         </DialogFooter>
       </DialogContent>
