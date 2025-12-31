@@ -82,7 +82,7 @@ function getNeuroTemplate(displayName: string, intakeFormUrl: string): { subject
               <!-- Contact Info -->
               <div style="background-color: #f1f5f9; border-radius: 8px; padding: 20px; text-align: center; margin: 24px 0;">
                 <p style="margin: 0 0 8px 0; font-size: 15px; color: #475569;">Questions before your visit? We're here to help.</p>
-                <a href="tel:+15853640550" style="color: #7c3aed; font-size: 18px; font-weight: 600; text-decoration: none;">(585) 364-0550</a>
+                <a href="tel:+15852031050" style="color: #7c3aed; font-size: 18px; font-weight: 600; text-decoration: none;">(585) 203-1050</a>
               </div>
               
               <!-- Signature -->
@@ -96,7 +96,7 @@ function getNeuroTemplate(displayName: string, intakeFormUrl: string): { subject
             <td style="background-color: #f8fafc; padding: 24px 40px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="margin: 0 0 4px 0; font-size: 14px; color: #64748b; font-weight: 500;">Pittsford Performance Care</p>
               <p style="margin: 0 0 8px 0; font-size: 13px; color: #94a3b8;">3800 Monroe Ave • Suite 22 • Pittsford, NY 14534</p>
-              <p style="margin: 0; font-size: 13px; color: #94a3b8;">(585) 364-0550</p>
+              <p style="margin: 0; font-size: 13px; color: #94a3b8;">(585) 203-1050</p>
             </td>
           </tr>
           
@@ -184,7 +184,7 @@ function getMskTemplate(displayName: string, intakeFormUrl: string): { subject: 
               <!-- Contact Info -->
               <div style="background-color: #f1f5f9; border-radius: 8px; padding: 20px; text-align: center; margin: 24px 0;">
                 <p style="margin: 0 0 8px 0; font-size: 15px; color: #475569;">Questions before your visit? We're here to help.</p>
-                <a href="tel:+15853640550" style="color: #1d4ed8; font-size: 18px; font-weight: 600; text-decoration: none;">(585) 364-0550</a>
+                <a href="tel:+15852031050" style="color: #1d4ed8; font-size: 18px; font-weight: 600; text-decoration: none;">(585) 203-1050</a>
               </div>
               
               <!-- Signature -->
@@ -198,7 +198,7 @@ function getMskTemplate(displayName: string, intakeFormUrl: string): { subject: 
             <td style="background-color: #f8fafc; padding: 24px 40px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="margin: 0 0 4px 0; font-size: 14px; color: #64748b; font-weight: 500;">Pittsford Performance Care</p>
               <p style="margin: 0 0 8px 0; font-size: 13px; color: #94a3b8;">3800 Monroe Ave • Suite 22 • Pittsford, NY 14534</p>
-              <p style="margin: 0; font-size: 13px; color: #94a3b8;">(585) 364-0550</p>
+              <p style="margin: 0; font-size: 13px; color: #94a3b8;">(585) 203-1050</p>
             </td>
           </tr>
           
