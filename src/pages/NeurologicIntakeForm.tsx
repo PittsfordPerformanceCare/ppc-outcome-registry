@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DOBPicker } from "@/components/ui/dob-picker";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Brain, ArrowRight, ArrowLeft, CheckCircle2, User, Heart, FileText, Shield } from "lucide-react";
@@ -296,11 +297,10 @@ const NeurologicIntakeForm = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="dateOfBirth">Date of Birth *</Label>
-                    <Input
-                      id="dateOfBirth"
-                      type="date"
+                    <DOBPicker
                       value={formData.dateOfBirth}
-                      onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
+                      onChange={(value) => handleInputChange("dateOfBirth", value)}
+                      placeholder="Select your date of birth"
                     />
                   </div>
                 </div>
