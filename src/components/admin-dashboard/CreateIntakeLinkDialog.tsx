@@ -90,7 +90,9 @@ Pittsford Performance Care`);
   };
 
   const handleOpenInNewTab = () => {
-    window.open(intakeUrl, '_blank');
+    // Use current origin for preview so it works in sandbox and production
+    const previewUrl = `${window.location.origin}/patient-intake`;
+    window.open(previewUrl, '_blank');
   };
 
   const resetForm = () => {
