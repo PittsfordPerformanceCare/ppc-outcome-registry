@@ -23,9 +23,9 @@ export function CreateIntakeLinkDialog() {
   const [patientEmail, setPatientEmail] = useState("");
   const [copied, setCopied] = useState(false);
   
-  // The intake form URL - patients fill this out and it appears in Jennifer's dashboard
-  // Using /patient/intake which is the newer patient shell route
-  const intakeUrl = `${APP_URL}/patient/intake`;
+  // The legal intake form URL - patients fill this out and it appears in Jennifer's dashboard
+  // Using /patient-intake which is the full legal intake form (not the lead intake shell)
+  const intakeUrl = `${APP_URL}/patient-intake`;
   
   const handleCopyLink = async () => {
     try {
