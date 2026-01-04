@@ -26,12 +26,20 @@ export const NeuroLetterGenerator = ({ episodeId, open, onOpenChange }: NeuroLet
   const generateLetter = async (type: LetterType) => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Get current session - this is more reliable than getUser
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!user) {
-        throw new Error("User not authenticated");
+      if (!session?.user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to generate letters",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
       }
 
+      const user = session.user;
       let data, error;
 
       if (type === "pcp") {
