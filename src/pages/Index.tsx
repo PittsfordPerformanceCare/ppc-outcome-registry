@@ -17,33 +17,30 @@ const Index = () => {
       
       if (session) {
         // FIRST: Check if user has a staff role (admin or clinician) - they are NOT patients
-        const { data: staffRole } = await supabase
+        const { data: staffRoles, error: roleError } = await supabase
           .from("user_roles")
           .select("role")
-          .eq("user_id", session.user.id)
-          .in("role", ["admin", "clinician", "owner"])
-          .limit(1)
-          .maybeSingle();
+          .eq("user_id", session.user.id);
+
+        if (roleError) {
+          console.error("Error fetching user roles:", roleError);
+        }
+
+        // Check for staff roles
+        const staffRole = staffRoles?.find(r => 
+          ["admin", "clinician", "owner"].includes(r.role)
+        );
 
         if (staffRole) {
           // Staff user - go to admin dashboard (admins) or clinician dashboard (clinicians only)
-          if (staffRole.role === "clinician") {
-            // Check if they're ALSO an admin
-            const { data: adminRole } = await supabase
-              .from("user_roles")
-              .select("role")
-              .eq("user_id", session.user.id)
-              .eq("role", "admin")
-              .maybeSingle();
-            
-            if (adminRole) {
-              navigate("/admin/dashboard", { replace: true });
-            } else {
-              navigate("/clinician/dashboard", { replace: true });
-            }
-          } else {
-            // admin or owner
+          // Check if user is ALSO an admin (admins take priority)
+          const isAdmin = staffRoles?.some(r => r.role === "admin");
+          const isOwner = staffRoles?.some(r => r.role === "owner");
+          
+          if (isAdmin || isOwner) {
             navigate("/admin/dashboard", { replace: true });
+          } else {
+            navigate("/clinician/dashboard", { replace: true });
           }
         } else {
           // No staff role - check if patient account
