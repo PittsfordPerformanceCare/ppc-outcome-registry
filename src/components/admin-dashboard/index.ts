@@ -9,3 +9,4 @@ export { ClinicianQueuesOverview } from './ClinicianQueuesOverview';
 export { PausedEpisodesSignal } from './PausedEpisodesSignal';
 export { PhoneIntakeDialog } from './PhoneIntakeDialog';
 export { ContactMessagesSection } from './ContactMessagesSection';
+export { FrontDeskQRCode } from './FrontDeskQRCode';
