@@ -5083,6 +5083,48 @@ export type Database = {
           },
         ]
       }
+      verified_providers: {
+        Row: {
+          city: string | null
+          created_at: string
+          fax: string | null
+          id: string
+          phone: string | null
+          practice_name: string | null
+          provider_name: string
+          state: string | null
+          street_address: string | null
+          updated_at: string
+          zip: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          fax?: string | null
+          id?: string
+          phone?: string | null
+          practice_name?: string | null
+          provider_name: string
+          state?: string | null
+          street_address?: string | null
+          updated_at?: string
+          zip?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          fax?: string | null
+          id?: string
+          phone?: string | null
+          practice_name?: string | null
+          provider_name?: string
+          state?: string | null
+          street_address?: string | null
+          updated_at?: string
+          zip?: string | null
+        }
+        Relationships: []
+      }
       webhook_activity_log: {
         Row: {
           clinic_id: string | null
