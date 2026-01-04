@@ -110,7 +110,8 @@ Deno.serve(async (req) => {
       export_purpose, 
       dataset_type, 
       date_range_start, 
-      date_range_end 
+      date_range_end,
+      site_id 
     } = body;
 
     // Validate required fields
@@ -135,8 +136,13 @@ Deno.serve(async (req) => {
       );
     }
 
+    // site_id is optional - if provided, filter by site; otherwise export all sites
+
     console.log(`[Research Export] Starting export: ${dataset_type} for ${export_purpose} by user ${user.id}`);
     console.log(`[Research Export] Date range: ${date_range_start} to ${date_range_end}`);
+    if (site_id) {
+      console.log(`[Research Export] Filtering by site_id: ${site_id}`);
+    }
 
     // Use service role for querying research views
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -163,8 +169,13 @@ Deno.serve(async (req) => {
         throw new Error('Invalid dataset type');
     }
 
-    // Fetch data from research view
+    // Fetch data from research view with optional site filter
     let query = adminClient.from(viewName).select('*');
+    
+    // Apply site filter if provided
+    if (site_id) {
+      query = query.eq('site_id', site_id);
+    }
     
     // For views with time buckets, filter by year-quarter range
     // Note: This is a simplified filter - in production you'd want more precise date filtering
@@ -232,6 +243,7 @@ Deno.serve(async (req) => {
         row_count: rowCount,
         hash_version: 'v1',
         schema_version: '1.0.0',
+        site_id: site_id || null,
       })
       .select()
       .single();
