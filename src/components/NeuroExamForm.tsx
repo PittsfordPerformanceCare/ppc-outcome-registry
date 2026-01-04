@@ -1930,7 +1930,29 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
           id={field}
           className={`${hasError ? "border-destructive focus-visible:ring-destructive" : ""} ${side ? sideBg : ""}`}
           value={formData[field] || ''}
-          onChange={(e) => updateField(field, e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            // Auto-format blood pressure fields: insert "/" after 2-3 digits
+            if (field.includes('bp_')) {
+              // Remove any non-digit characters except /
+              const cleaned = value.replace(/[^\d/]/g, '');
+              
+              // If user is typing and there's no slash yet
+              if (!cleaned.includes('/')) {
+                // Auto-insert slash after 2-3 digits (when they type the 3rd or 4th digit)
+                if (cleaned.length >= 3 && cleaned.length <= 6) {
+                  // Find the best split point (usually after 2-3 digits for systolic)
+                  const systolic = cleaned.slice(0, cleaned.length > 3 ? 3 : 2);
+                  const diastolic = cleaned.slice(cleaned.length > 3 ? 3 : 2);
+                  updateField(field, `${systolic}/${diastolic}`);
+                  return;
+                }
+              }
+              updateField(field, cleaned);
+            } else {
+              updateField(field, value);
+            }
+          }}
           {...props}
         />
         {previousValue && (
