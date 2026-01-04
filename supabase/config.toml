@@ -57,6 +57,9 @@ verify_jwt = false
 [functions.generate-neuro-letter]
 verify_jwt = true
 
+[functions.generate-neuro-pcp-summary]
+verify_jwt = true
+
 [functions.send-referral-approval]
 verify_jwt = false
 
