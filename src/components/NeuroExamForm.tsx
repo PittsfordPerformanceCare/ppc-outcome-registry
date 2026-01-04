@@ -1932,23 +1932,18 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
           value={formData[field] || ''}
           onChange={(e) => {
             const value = e.target.value;
-            // Auto-format blood pressure fields: insert "/" after 2-3 digits
+            // For blood pressure fields, allow digits and slash only
             if (field.includes('bp_')) {
-              // Remove any non-digit characters except /
+              // Allow digits and a single slash
               const cleaned = value.replace(/[^\d/]/g, '');
-              
-              // If user is typing and there's no slash yet
-              if (!cleaned.includes('/')) {
-                // Auto-insert slash after 2-3 digits (when they type the 3rd or 4th digit)
-                if (cleaned.length >= 3 && cleaned.length <= 6) {
-                  // Find the best split point (usually after 2-3 digits for systolic)
-                  const systolic = cleaned.slice(0, cleaned.length > 3 ? 3 : 2);
-                  const diastolic = cleaned.slice(cleaned.length > 3 ? 3 : 2);
-                  updateField(field, `${systolic}/${diastolic}`);
-                  return;
-                }
+              // Ensure only one slash
+              const parts = cleaned.split('/');
+              if (parts.length > 2) {
+                // Too many slashes, keep only first two parts
+                updateField(field, `${parts[0]}/${parts[1]}`);
+              } else {
+                updateField(field, cleaned);
               }
-              updateField(field, cleaned);
             } else {
               updateField(field, value);
             }
