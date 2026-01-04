@@ -10,6 +10,7 @@ import { TimeModule } from '@/components/leadership/TimeModule';
 import { OutcomesModule } from '@/components/leadership/OutcomesModule';
 import { ComplexityModule } from '@/components/leadership/ComplexityModule';
 import { IntegrityModule } from '@/components/leadership/IntegrityModule';
+import { LeadResolutionModule } from '@/components/leadership/LeadResolutionModule';
 import { InterpretationPanel } from '@/components/leadership/InterpretationPanel';
 import { LeadershipFiltersBar } from '@/components/leadership/LeadershipFiltersBar';
 import { Card, CardContent } from '@/components/ui/card';
@@ -166,6 +167,9 @@ export default function LeadershipDashboard() {
               <ComplexityModule metrics={analytics.complexity} />
               <IntegrityModule metrics={analytics.integrity} />
             </div>
+
+            {/* Module G - Lead → Resolution */}
+            <LeadResolutionModule filters={{ siteId: (filters as any).siteId }} />
           </>
         )}
       </div>

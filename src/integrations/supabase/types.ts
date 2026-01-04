@@ -233,16 +233,27 @@ export type Database = {
           approved_at: string | null
           archive_reason: string | null
           assigned_clinician_id: string | null
+          campaign_id: string | null
           created_at: string
           episode_id: string | null
           id: string
           intake_payload: Json
+          landing_page: string | null
+          lead_id: string | null
+          lead_source: Database["public"]["Enums"]["lead_source_type"] | null
           patient_id: string | null
           primary_complaint: string | null
+          referrer_url: string | null
+          site_id: string | null
           source: string
           status: string
           triage_notes: string | null
           updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           admin_owner_id?: string | null
@@ -250,16 +261,27 @@ export type Database = {
           approved_at?: string | null
           archive_reason?: string | null
           assigned_clinician_id?: string | null
+          campaign_id?: string | null
           created_at?: string
           episode_id?: string | null
           id?: string
           intake_payload: Json
+          landing_page?: string | null
+          lead_id?: string | null
+          lead_source?: Database["public"]["Enums"]["lead_source_type"] | null
           patient_id?: string | null
           primary_complaint?: string | null
+          referrer_url?: string | null
+          site_id?: string | null
           source?: string
           status?: string
           triage_notes?: string | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           admin_owner_id?: string | null
@@ -267,16 +289,27 @@ export type Database = {
           approved_at?: string | null
           archive_reason?: string | null
           assigned_clinician_id?: string | null
+          campaign_id?: string | null
           created_at?: string
           episode_id?: string | null
           id?: string
           intake_payload?: Json
+          landing_page?: string | null
+          lead_id?: string | null
+          lead_source?: Database["public"]["Enums"]["lead_source_type"] | null
           patient_id?: string | null
           primary_complaint?: string | null
+          referrer_url?: string | null
+          site_id?: string | null
           source?: string
           status?: string
           triage_notes?: string | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: [
           {
@@ -294,10 +327,31 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "care_requests_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "care_requests_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patient_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_requests_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "care_requests_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
         ]
@@ -1196,6 +1250,77 @@ export type Database = {
           },
         ]
       }
+      episode_origins: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          episode_id: string
+          id: string
+          lead_id: string | null
+          lead_source: Database["public"]["Enums"]["lead_source_type"]
+          origin_notes: string | null
+          site_id: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          episode_id: string
+          id?: string
+          lead_id?: string | null
+          lead_source?: Database["public"]["Enums"]["lead_source_type"]
+          origin_notes?: string | null
+          site_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          episode_id?: string
+          id?: string
+          lead_id?: string | null
+          lead_source?: Database["public"]["Enums"]["lead_source_type"]
+          origin_notes?: string | null
+          site_id?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episode_origins_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episode_origins_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "episode_origins_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "episode_origins_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       episode_outcome_tool_locks: {
         Row: {
           created_at: string
@@ -1252,6 +1377,7 @@ export type Database = {
           allergy_flag: boolean | null
           allergy_notes: string | null
           body_region: string | null
+          care_request_id: string | null
           cis_delta: number | null
           cis_post: number | null
           cis_pre: number | null
@@ -1328,6 +1454,7 @@ export type Database = {
           allergy_flag?: boolean | null
           allergy_notes?: string | null
           body_region?: string | null
+          care_request_id?: string | null
           cis_delta?: number | null
           cis_post?: number | null
           cis_pre?: number | null
@@ -1404,6 +1531,7 @@ export type Database = {
           allergy_flag?: boolean | null
           allergy_notes?: string | null
           body_region?: string | null
+          care_request_id?: string | null
           cis_delta?: number | null
           cis_post?: number | null
           cis_pre?: number | null
@@ -1477,6 +1605,13 @@ export type Database = {
           visits?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "episodes_care_request_id_fkey"
+            columns: ["care_request_id"]
+            isOneToOne: false
+            referencedRelation: "care_requests"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "episodes_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -5786,6 +5921,20 @@ export type Database = {
           },
         ]
       }
+      analytics_lead_funnel_by_source: {
+        Row: {
+          care_targets_count: number | null
+          care_targets_discharged_count: number | null
+          episodes_created_count: number | null
+          episodes_discharged_count: number | null
+          lead_source: string | null
+          leads_count: number | null
+          mcid_met_rate: number | null
+          median_time_to_resolution_bucket: string | null
+          site_id: string | null
+        }
+        Relationships: []
+      }
       analytics_registry_export: {
         Row: {
           baseline_score: number | null
@@ -5822,6 +5971,33 @@ export type Database = {
           {
             foreignKeyName: "episodes_clinic_id_fkey"
             columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      analytics_resolution_by_source: {
+        Row: {
+          care_targets_discharged_count: number | null
+          instrument_type: string | null
+          lead_source: string | null
+          mcid_met_rate: number | null
+          median_delta: number | null
+          median_time_to_resolution: number | null
+          site_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["site_id"]
             isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
@@ -5896,6 +6072,7 @@ export type Database = {
           episode_time_bucket: string | null
           episode_uuid: string | null
           instrument_type: string | null
+          lead_source: string | null
           mcid_met: boolean | null
           mcid_threshold: number | null
           patient_uuid: string | null
@@ -6103,6 +6280,28 @@ export type Database = {
         | "SEQUENTIAL_CARE"
         | "EMERGED_DURING_TREATMENT"
         | "PREVENTIVE_OR_PERFORMANCE"
+      lead_source_type:
+        | "pillar:concussion"
+        | "pillar:neck-pain"
+        | "pillar:back-pain"
+        | "pillar:sports-injury"
+        | "pillar:post-surgical"
+        | "pillar:vestibular"
+        | "pillar:pediatric"
+        | "pillar:other"
+        | "referral:physician"
+        | "referral:patient"
+        | "referral:school"
+        | "referral:coach"
+        | "referral:employer"
+        | "referral:insurance"
+        | "referral:other"
+        | "direct:google"
+        | "direct:website"
+        | "direct:call"
+        | "direct:walk-in"
+        | "direct:return-patient"
+        | "unknown"
       task_owner_type: "ADMIN" | "CLINICIAN"
       task_priority: "HIGH" | "NORMAL"
       task_source: "ADMIN" | "CLINICIAN" | "PATIENT_PORTAL"
@@ -6271,6 +6470,29 @@ export const Constants = {
         "SEQUENTIAL_CARE",
         "EMERGED_DURING_TREATMENT",
         "PREVENTIVE_OR_PERFORMANCE",
+      ],
+      lead_source_type: [
+        "pillar:concussion",
+        "pillar:neck-pain",
+        "pillar:back-pain",
+        "pillar:sports-injury",
+        "pillar:post-surgical",
+        "pillar:vestibular",
+        "pillar:pediatric",
+        "pillar:other",
+        "referral:physician",
+        "referral:patient",
+        "referral:school",
+        "referral:coach",
+        "referral:employer",
+        "referral:insurance",
+        "referral:other",
+        "direct:google",
+        "direct:website",
+        "direct:call",
+        "direct:walk-in",
+        "direct:return-patient",
+        "unknown",
       ],
       task_owner_type: ["ADMIN", "CLINICIAN"],
       task_priority: ["HIGH", "NORMAL"],
