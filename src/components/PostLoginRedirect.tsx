@@ -22,11 +22,11 @@ export function PostLoginRedirect() {
     }
 
     // User is logged in, route based on role
-    // Owner and Admin both go to admin dashboard
-    if (isAdmin || isOwner) {
-      navigate("/admin/dashboard", { replace: true });
-    } else if (isClinician) {
+    // Clinician takes priority (for users with multiple roles like clinician + admin)
+    if (isClinician) {
       navigate("/clinician/dashboard", { replace: true });
+    } else if (isAdmin || isOwner) {
+      navigate("/admin/dashboard", { replace: true });
     } else {
       // Fallback for patients or unknown roles - go to hub
       navigate("/site/hub", { replace: true });
