@@ -334,7 +334,7 @@ export default function EpisodeSummary() {
         backHref="/"
         actions={
           <div className="flex items-center gap-2 flex-wrap print:hidden">
-            {episode.episode_type === 'Neurology' && (
+            {episode.episode_type === 'Neurology' ? (
               <Button 
                 variant="outline" 
                 onClick={() => navigate(`/neuro-exam?episode=${episodeId}`)} 
@@ -342,6 +342,15 @@ export default function EpisodeSummary() {
               >
                 <Activity className="h-4 w-4" />
                 Neuro Exam
+              </Button>
+            ) : (
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(`/neuro-exam?episode=${episodeId}`)} 
+                className="gap-2"
+              >
+                <Activity className="h-4 w-4" />
+                Pivot to Neuro Exam
               </Button>
             )}
             {!episode.has_ortho_referral && (
