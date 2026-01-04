@@ -407,7 +407,66 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
 
   useEffect(() => {
     loadProspects();
-  }, []);
+    
+    // Subscribe to real-time updates for intake_forms and intakes tables
+    // This enables instant notification when a patient submits legal forms
+    const intakeFormsChannel = supabase
+      .channel('prospect-journey-intake-forms')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'intake_forms'
+        },
+        (payload) => {
+          console.log('[ProspectJourney] Intake form change detected:', payload);
+          // Reload prospects to update the journey state
+          loadProspects();
+          
+          // Show toast for new submissions
+          if (payload.eventType === 'INSERT' && (payload.new as any)?.status === 'submitted') {
+            toast({
+              title: "📋 Legal Forms Received!",
+              description: `${(payload.new as any)?.patient_name || 'A patient'} has submitted their intake forms.`,
+              duration: 8000,
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    const intakesChannel = supabase
+      .channel('prospect-journey-intakes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'intakes'
+        },
+        (payload) => {
+          console.log('[ProspectJourney] Intakes change detected:', payload);
+          // Reload prospects to update the journey state
+          loadProspects();
+          
+          // Show toast for completed intakes
+          if (payload.eventType === 'UPDATE' && (payload.new as any)?.status === 'completed') {
+            toast({
+              title: "📋 Legal Forms Received!",
+              description: `${(payload.new as any)?.patient_name || 'A patient'} has completed their intake forms.`,
+              duration: 8000,
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(intakeFormsChannel);
+      supabase.removeChannel(intakesChannel);
+    };
+  }, [toast]);
 
   // Handle action button click
   const handleAction = async (prospect: ProspectJourney) => {
