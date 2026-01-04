@@ -1879,25 +1879,42 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
   };
 
   // Enhanced validated input with tooltips, side indicators, and previous values
-  const ValidatedInput = ({ 
-    field, 
-    label, 
-    side = null,
-    tooltip = null,
-    optional = false,
-    ...props 
-  }: {
-    field: string;
-    label?: string;
-    side?: 'left' | 'right' | null;
-    tooltip?: string | null;
-    optional?: boolean;
-    [key: string]: any;
-  }) => {
+  // Using a stable render function to prevent focus loss
+  const renderValidatedInput = (
+    field: string,
+    options: {
+      label?: string;
+      side?: 'left' | 'right' | null;
+      tooltip?: string | null;
+      optional?: boolean;
+      placeholder?: string;
+      [key: string]: any;
+    } = {}
+  ) => {
+    const { label, side = null, tooltip = null, optional = false, ...props } = options;
     const hasError = !!validationErrors[field];
     const previousValue = getPreviousValue(field);
     const sideColor = side === 'left' ? 'text-blue-600' : side === 'right' ? 'text-orange-600' : '';
     const sideBg = side === 'left' ? 'bg-blue-50 dark:bg-blue-950' : side === 'right' ? 'bg-orange-50 dark:bg-orange-950' : '';
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      // For blood pressure fields, allow digits and slash only
+      if (field.includes('bp_')) {
+        // Allow digits and a single slash
+        const cleaned = value.replace(/[^\d/]/g, '');
+        // Ensure only one slash
+        const parts = cleaned.split('/');
+        if (parts.length > 2) {
+          // Too many slashes, keep only first two parts
+          updateField(field, `${parts[0]}/${parts[1]}`);
+        } else {
+          updateField(field, cleaned);
+        }
+      } else {
+        updateField(field, value);
+      }
+    };
 
     return (
       <div className="space-y-1">
@@ -1928,26 +1945,10 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
         )}
         <Input
           id={field}
+          name={field}
           className={`${hasError ? "border-destructive focus-visible:ring-destructive" : ""} ${side ? sideBg : ""}`}
           value={formData[field] || ''}
-          onChange={(e) => {
-            const value = e.target.value;
-            // For blood pressure fields, allow digits and slash only
-            if (field.includes('bp_')) {
-              // Allow digits and a single slash
-              const cleaned = value.replace(/[^\d/]/g, '');
-              // Ensure only one slash
-              const parts = cleaned.split('/');
-              if (parts.length > 2) {
-                // Too many slashes, keep only first two parts
-                updateField(field, `${parts[0]}/${parts[1]}`);
-              } else {
-                updateField(field, cleaned);
-              }
-            } else {
-              updateField(field, value);
-            }
-          }}
+          onChange={handleChange}
           {...props}
         />
         {previousValue && (
@@ -2327,8 +2328,8 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                       
                       {/* Supine */}
                       <div className="text-sm font-medium">Supine</div>
-                      <ValidatedInput field="bp_supine_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
-                      <ValidatedInput field="bp_supine_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                      {renderValidatedInput("bp_supine_right", { side: "right", tooltip: VITALS_RANGES.bloodPressure.tooltip, placeholder: "120/80" })}
+                      {renderValidatedInput("bp_supine_left", { side: "left", tooltip: VITALS_RANGES.bloodPressure.tooltip, placeholder: "120/80" })}
                       <div className="flex items-center justify-center">
                         {(() => {
                           const iad = calculateIAD(formData.bp_supine_right, formData.bp_supine_left);
@@ -2343,8 +2344,8 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                       
                       {/* Seated */}
                       <div className="text-sm font-medium">Seated</div>
-                      <ValidatedInput field="bp_seated_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
-                      <ValidatedInput field="bp_seated_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" />
+                      {renderValidatedInput("bp_seated_right", { side: "right", tooltip: VITALS_RANGES.bloodPressure.tooltip, placeholder: "120/80" })}
+                      {renderValidatedInput("bp_seated_left", { side: "left", tooltip: VITALS_RANGES.bloodPressure.tooltip, placeholder: "120/80" })}
                       <div className="flex items-center justify-center">
                         {(() => {
                           const iad = calculateIAD(formData.bp_seated_right, formData.bp_seated_left);
@@ -2359,8 +2360,8 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                       
                       {/* Standing Immediate */}
                       <div className="text-sm font-medium">Standing (immediate)</div>
-                      <ValidatedInput field="bp_standing_immediate_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
-                      <ValidatedInput field="bp_standing_immediate_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                      {renderValidatedInput("bp_standing_immediate_right", { side: "right", tooltip: VITALS_RANGES.bloodPressure.tooltip, placeholder: "120/80", optional: true })}
+                      {renderValidatedInput("bp_standing_immediate_left", { side: "left", tooltip: VITALS_RANGES.bloodPressure.tooltip, placeholder: "120/80", optional: true })}
                       <div className="flex items-center justify-center">
                         {(() => {
                           const iad = calculateIAD(formData.bp_standing_immediate_right, formData.bp_standing_immediate_left);
@@ -2375,8 +2376,8 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                       
                       {/* Standing 3 min */}
                       <div className="text-sm font-medium">Standing (3 min)</div>
-                      <ValidatedInput field="bp_standing_3min_right" side="right" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
-                      <ValidatedInput field="bp_standing_3min_left" side="left" tooltip={VITALS_RANGES.bloodPressure.tooltip} placeholder="120/80" optional />
+                      {renderValidatedInput("bp_standing_3min_right", { side: "right", tooltip: VITALS_RANGES.bloodPressure.tooltip, placeholder: "120/80", optional: true })}
+                      {renderValidatedInput("bp_standing_3min_left", { side: "left", tooltip: VITALS_RANGES.bloodPressure.tooltip, placeholder: "120/80", optional: true })}
                       <div className="flex items-center justify-center">
                         {(() => {
                           const iad = calculateIAD(formData.bp_standing_3min_right, formData.bp_standing_3min_left);
@@ -2424,16 +2425,16 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
                       </div>
                 
                       <div className="text-sm font-medium">O2 Saturation (supine)</div>
-                      <ValidatedInput field="o2_saturation_supine_right" side="right" tooltip={VITALS_RANGES.o2Saturation.tooltip} placeholder="98" />
-                      <ValidatedInput field="o2_saturation_supine_left" side="left" tooltip={VITALS_RANGES.o2Saturation.tooltip} placeholder="98" />
+                      {renderValidatedInput("o2_saturation_supine_right", { side: "right", tooltip: VITALS_RANGES.o2Saturation.tooltip, placeholder: "98" })}
+                      {renderValidatedInput("o2_saturation_supine_left", { side: "left", tooltip: VITALS_RANGES.o2Saturation.tooltip, placeholder: "98" })}
                       
                       <div className="text-sm font-medium">Heart Rate (supine)</div>
-                      <ValidatedInput field="heart_rate_supine_right" side="right" tooltip={VITALS_RANGES.heartRate.tooltip} placeholder="72" />
-                      <ValidatedInput field="heart_rate_supine_left" side="left" tooltip={VITALS_RANGES.heartRate.tooltip} placeholder="72" />
+                      {renderValidatedInput("heart_rate_supine_right", { side: "right", tooltip: VITALS_RANGES.heartRate.tooltip, placeholder: "72" })}
+                      {renderValidatedInput("heart_rate_supine_left", { side: "left", tooltip: VITALS_RANGES.heartRate.tooltip, placeholder: "72" })}
                       
                       <div className="text-sm font-medium">Temperature</div>
-                      <ValidatedInput field="temperature_right" side="right" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
-                      <ValidatedInput field="temperature_left" side="left" tooltip={VITALS_RANGES.temperature.tooltip} placeholder="98.6" optional />
+                      {renderValidatedInput("temperature_right", { side: "right", tooltip: VITALS_RANGES.temperature.tooltip, placeholder: "98.6", optional: true })}
+                      {renderValidatedInput("temperature_left", { side: "left", tooltip: VITALS_RANGES.temperature.tooltip, placeholder: "98.6", optional: true })}
                     </div>
                   </CardContent>
                 </CollapsibleContent>
@@ -2570,24 +2571,24 @@ export const NeuroExamForm = ({ episodeId, onSaved }: NeuroExamFormProps) => {
               </div>
               
               <div>Tricep</div>
-              <ValidatedInput field="reflex_tricep_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
-              <ValidatedInput field="reflex_tricep_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              {renderValidatedInput("reflex_tricep_right", { side: "right", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
+              {renderValidatedInput("reflex_tricep_left", { side: "left", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
               
               <div>Bicep</div>
-              <ValidatedInput field="reflex_bicep_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
-              <ValidatedInput field="reflex_bicep_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              {renderValidatedInput("reflex_bicep_right", { side: "right", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
+              {renderValidatedInput("reflex_bicep_left", { side: "left", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
               
               <div>Brachioradialis</div>
-              <ValidatedInput field="reflex_brachioradialis_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
-              <ValidatedInput field="reflex_brachioradialis_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              {renderValidatedInput("reflex_brachioradialis_right", { side: "right", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
+              {renderValidatedInput("reflex_brachioradialis_left", { side: "left", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
               
               <div>Patellar</div>
-              <ValidatedInput field="reflex_patellar_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
-              <ValidatedInput field="reflex_patellar_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              {renderValidatedInput("reflex_patellar_right", { side: "right", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
+              {renderValidatedInput("reflex_patellar_left", { side: "left", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
               
               <div>Achilles</div>
-              <ValidatedInput field="reflex_achilles_right" side="right" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
-              <ValidatedInput field="reflex_achilles_left" side="left" tooltip={REFLEX_SCALE.tooltip} placeholder="2+" optional />
+              {renderValidatedInput("reflex_achilles_right", { side: "right", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
+              {renderValidatedInput("reflex_achilles_left", { side: "left", tooltip: REFLEX_SCALE.tooltip, placeholder: "2+", optional: true })}
             </div>
 
             <div>
