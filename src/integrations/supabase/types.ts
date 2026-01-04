@@ -2449,6 +2449,7 @@ export type Database = {
           neuro_uprds_right: string | null
           o2_saturation_supine_left: string | null
           o2_saturation_supine_right: string | null
+          o2_saturation_walking: string | null
           overall_notes: string | null
           reflex_achilles_left: string | null
           reflex_achilles_right: string | null
@@ -2482,6 +2483,7 @@ export type Database = {
           visual_pursuits: string | null
           visual_saccades: string | null
           vitals_notes: string | null
+          walking_o2_notes: string | null
         }
         Insert: {
           auscultation_abdomen?: string | null
@@ -2550,6 +2552,7 @@ export type Database = {
           neuro_uprds_right?: string | null
           o2_saturation_supine_left?: string | null
           o2_saturation_supine_right?: string | null
+          o2_saturation_walking?: string | null
           overall_notes?: string | null
           reflex_achilles_left?: string | null
           reflex_achilles_right?: string | null
@@ -2583,6 +2586,7 @@ export type Database = {
           visual_pursuits?: string | null
           visual_saccades?: string | null
           vitals_notes?: string | null
+          walking_o2_notes?: string | null
         }
         Update: {
           auscultation_abdomen?: string | null
@@ -2651,6 +2655,7 @@ export type Database = {
           neuro_uprds_right?: string | null
           o2_saturation_supine_left?: string | null
           o2_saturation_supine_right?: string | null
+          o2_saturation_walking?: string | null
           overall_notes?: string | null
           reflex_achilles_left?: string | null
           reflex_achilles_right?: string | null
@@ -2684,6 +2689,7 @@ export type Database = {
           visual_pursuits?: string | null
           visual_saccades?: string | null
           vitals_notes?: string | null
+          walking_o2_notes?: string | null
         }
         Relationships: [
           {
