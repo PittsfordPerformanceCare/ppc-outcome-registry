@@ -150,6 +150,7 @@ const AdminShellPatients = lazy(() => import("./pages/admin-shell/AdminShellPati
 const AdminShellTasks = lazy(() => import("./pages/admin-shell/AdminShellTasks"));
 const AdminShellProviderTools = lazy(() => import("./pages/admin-shell/AdminShellProviderTools"));
 const AdminShellCommunications = lazy(() => import("./pages/admin-shell/AdminShellCommunications"));
+const AdminShellResearchExports = lazy(() => import("./pages/admin-shell/AdminShellResearchExports"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -261,6 +262,7 @@ const App = () => (
               <Route path="tasks" element={<AdminShellTasks />} />
               <Route path="provider-tools" element={<AdminShellProviderTools />} />
               <Route path="communications" element={<AdminShellCommunications />} />
+              <Route path="research-exports" element={<AdminShellResearchExports />} />
             </Route>
 
             {/* ========== PUBLIC INTAKE GATEWAY (Must be first - No Authentication) ========== */}

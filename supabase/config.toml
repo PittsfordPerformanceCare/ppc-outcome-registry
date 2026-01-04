@@ -182,3 +182,6 @@ verify_jwt = true
 
 [functions.generate-care-target-discharge-message]
 verify_jwt = true
+
+[functions.create-research-export]
+verify_jwt = true
