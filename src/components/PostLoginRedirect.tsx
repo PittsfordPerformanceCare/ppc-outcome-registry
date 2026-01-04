@@ -22,8 +22,13 @@ export function PostLoginRedirect() {
     }
 
     // User is logged in, route based on role
-    // Clinician takes priority (for users with multiple roles like clinician + admin)
-    if (isClinician) {
+    // Jennifer goes to admin dashboard, other clinicians go to clinician dashboard
+    const userEmail = user.email?.toLowerCase();
+    const isAdminPrimary = userEmail === 'jennifer@pittsfordperformancecare.com';
+    
+    if (isAdminPrimary && isAdmin) {
+      navigate("/admin/dashboard", { replace: true });
+    } else if (isClinician) {
       navigate("/clinician/dashboard", { replace: true });
     } else if (isAdmin || isOwner) {
       navigate("/admin/dashboard", { replace: true });
