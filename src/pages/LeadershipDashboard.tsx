@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Helmet } from 'react-helmet';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { useLeadershipAnalytics, LeadershipFilters } from '@/hooks/useLeadershipAnalytics';
 import { useAnalyticsCareTargetOutcomes } from '@/hooks/useAnalyticsCareTargetOutcomes';
 import { VolumeModule } from '@/components/leadership/VolumeModule';
@@ -16,6 +18,11 @@ import { Loader2, Download, BarChart3, AlertCircle } from 'lucide-react';
 import { exportRegistryToCSV, useAnalyticsRegistryExport } from '@/hooks/useAnalyticsRegistryExport';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
+interface Site {
+  id: string;
+  name: string;
+}
+
 export default function LeadershipDashboard() {
   const [filters, setFilters] = useState<LeadershipFilters>({
     timeWindow: '90d',
@@ -23,6 +30,20 @@ export default function LeadershipDashboard() {
     bodyRegion: undefined,
     clinicianId: undefined,
     includeOverrides: false,
+  });
+
+  // Fetch available sites for filter
+  const { data: sites } = useQuery({
+    queryKey: ['sites-for-analytics'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('clinics')
+        .select('id, name')
+        .order('name');
+      
+      if (error) throw error;
+      return data as Site[];
+    }
   });
 
   const analytics = useLeadershipAnalytics(filters);
@@ -117,6 +138,7 @@ export default function LeadershipDashboard() {
           onFilterChange={handleFilterChange}
           domains={domains}
           bodyRegions={bodyRegions}
+          sites={sites}
         />
 
         {/* Loading State */}

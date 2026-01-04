@@ -20,6 +20,7 @@ De-identified care target outcomes for registry and publication use.
 | care_target_uuid | UUID | Unique care target identifier | care_targets.id | Pseudonymized to `care_target_pid` on export | Becomes `CAR_[16-char-hash]` |
 | episode_uuid | TEXT | Parent episode identifier | care_targets.episode_id | Pseudonymized to `episode_pid` on export | Becomes `EPI_[16-char-hash]` |
 | patient_uuid | UUID | Patient identifier | episodes.user_id (via join) | Pseudonymized to `patient_pid` on export | Becomes `PAT_[16-char-hash]` |
+| site_id | UUID | Site/clinic identifier | episodes.clinic_id | Pseudonymized to `site_pid` on export | Becomes `SIT_[16-char-hash]` |
 | body_region | TEXT | Anatomical region of care target | care_targets.body_region | None | e.g., "Lumbar Spine", "Cervical", "Knee" |
 | instrument_type | TEXT | Outcome measurement instrument | care_targets.outcome_instrument | None | e.g., "NDI", "ODI", "LEFS", "DASH" |
 | baseline_score | NUMERIC | Initial outcome score | outcome_scores (baseline) | Aggregated from earliest score | Numeric, instrument-specific scale |
@@ -40,6 +41,7 @@ Minimal outcome scores for statistical analysis.
 | Column Name | Data Type | Description | Source View | Transformations | Notes / Allowed Values |
 |-------------|-----------|-------------|-------------|-----------------|------------------------|
 | care_target_uuid | UUID | Care target identifier | care_targets.id | Pseudonymized to `care_target_pid` on export | Becomes `CAR_[16-char-hash]` |
+| site_id | UUID | Site/clinic identifier | episodes.clinic_id | Pseudonymized to `site_pid` on export | Becomes `SIT_[16-char-hash]` |
 | instrument_type | TEXT | Outcome measurement instrument | care_targets.outcome_instrument | None | e.g., "NDI", "ODI", "LEFS", "DASH" |
 | baseline_score | NUMERIC | Initial outcome score | outcome_scores (baseline) | Aggregated from earliest score | Numeric, instrument-specific scale |
 | discharge_score | NUMERIC | Final outcome score | outcome_scores (discharge) | Aggregated from latest score | Numeric, instrument-specific scale |
@@ -56,6 +58,7 @@ Episode-level aggregates without identifiers.
 |-------------|-----------|-------------|-------------|-----------------|------------------------|
 | episode_uuid | TEXT | Unique episode identifier | episodes.id | Pseudonymized to `episode_pid` on export | Becomes `EPI_[16-char-hash]` |
 | patient_uuid | UUID | Patient identifier | episodes.user_id | Pseudonymized to `patient_pid` on export | Becomes `PAT_[16-char-hash]` |
+| site_id | UUID | Site/clinic identifier | episodes.clinic_id | Pseudonymized to `site_pid` on export | Becomes `SIT_[16-char-hash]` |
 | episode_start_bucket | TEXT | Episode start quarter | episodes.start_date | Quarter bucketed | "YYYY-Q1", "YYYY-Q2", etc. |
 | episode_end_bucket | TEXT | Episode end quarter | episodes.discharge_date | Quarter bucketed | "YYYY-Q1", "YYYY-Q2", etc., or NULL |
 | number_of_care_targets | INTEGER | Count of care targets | care_targets (aggregated) | COUNT per episode | Integer >= 0 |
