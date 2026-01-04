@@ -1647,6 +1647,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "followups_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
+          },
+          {
             foreignKeyName: "followups_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -2714,6 +2721,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "neurologic_exams_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
+          },
+          {
             foreignKeyName: "neurologic_exams_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -3422,6 +3436,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "outcome_scores_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
+          },
+          {
             foreignKeyName: "outcome_scores_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -3601,6 +3622,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "patient_episode_access_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
+          },
+          {
             foreignKeyName: "patient_episode_access_granted_by_fkey"
             columns: ["granted_by"]
             isOneToOne: false
@@ -3753,6 +3781,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "patient_messages_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
+          },
+          {
             foreignKeyName: "patient_messages_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -3901,6 +3936,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "episodes"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_referrals_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
           },
           {
             foreignKeyName: "patient_referrals_intake_form_id_fkey"
@@ -4102,6 +4144,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "episodes"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pcp_summary_tasks_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: true
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
           },
         ]
       }
@@ -4316,6 +4365,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pending_episodes_converted_to_episode_id_fkey"
+            columns: ["converted_to_episode_id"]
+            isOneToOne: false
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
+          },
+          {
             foreignKeyName: "pending_episodes_intake_form_id_fkey"
             columns: ["intake_form_id"]
             isOneToOne: false
@@ -4335,6 +4391,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "episodes"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_episodes_previous_episode_id_fkey"
+            columns: ["previous_episode_id"]
+            isOneToOne: false
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
           },
           {
             foreignKeyName: "pending_episodes_referral_inquiry_id_fkey"
@@ -4455,6 +4518,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "episodes"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "professional_shared_episodes_episode_id_fkey"
+            columns: ["episode_id"]
+            isOneToOne: false
+            referencedRelation: "v_research_episodes"
+            referencedColumns: ["episode_uuid"]
           },
         ]
       }
@@ -4861,6 +4931,56 @@ export type Database = {
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      research_exports: {
+        Row: {
+          created_at: string
+          created_by: string
+          dataset_type: string
+          date_range_end: string
+          date_range_start: string
+          export_purpose: string
+          hash_version: string
+          id: string
+          row_count: number
+          schema_version: string
+          storage_path: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          dataset_type: string
+          date_range_end: string
+          date_range_start: string
+          export_purpose: string
+          hash_version?: string
+          id?: string
+          row_count?: number
+          schema_version?: string
+          storage_path?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          dataset_type?: string
+          date_range_end?: string
+          date_range_start?: string
+          export_purpose?: string
+          hash_version?: string
+          id?: string
+          row_count?: number
+          schema_version?: string
+          storage_path?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "research_exports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -5568,6 +5688,62 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      v_research_care_targets: {
+        Row: {
+          age_band_at_episode_start: string | null
+          baseline_score: number | null
+          body_region: string | null
+          care_target_status: string | null
+          care_target_uuid: string | null
+          discharge_score: number | null
+          episode_time_bucket: string | null
+          episode_uuid: string | null
+          instrument_type: string | null
+          mcid_met: boolean | null
+          mcid_threshold: number | null
+          patient_uuid: string | null
+          score_delta: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_episode_access_patient_id_fkey"
+            columns: ["patient_uuid"]
+            isOneToOne: false
+            referencedRelation: "patient_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_research_episodes: {
+        Row: {
+          episode_end_bucket: string | null
+          episode_start_bucket: string | null
+          episode_status: string | null
+          episode_uuid: string | null
+          number_of_care_targets: number | null
+          patient_uuid: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_episode_access_patient_id_fkey"
+            columns: ["patient_uuid"]
+            isOneToOne: false
+            referencedRelation: "patient_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_research_outcomes: {
+        Row: {
+          baseline_score: number | null
+          care_target_uuid: string | null
+          discharge_score: number | null
+          instrument_type: string | null
+          mcid_met: boolean | null
+          score_delta: number | null
+        }
+        Relationships: []
       }
     }
     Functions: {
