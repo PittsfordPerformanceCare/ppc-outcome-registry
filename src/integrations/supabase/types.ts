@@ -2437,6 +2437,7 @@ export type Database = {
           neuro_pupillary_fatigue_left: string | null
           neuro_pupillary_fatigue_notes: string | null
           neuro_pupillary_fatigue_right: string | null
+          neuro_pupillary_fatigue_structured: Json | null
           neuro_red_desaturation_left: boolean | null
           neuro_red_desaturation_right: boolean | null
           neuro_ue_capillary_refill_left: string | null
@@ -2536,6 +2537,7 @@ export type Database = {
           neuro_pupillary_fatigue_left?: string | null
           neuro_pupillary_fatigue_notes?: string | null
           neuro_pupillary_fatigue_right?: string | null
+          neuro_pupillary_fatigue_structured?: Json | null
           neuro_red_desaturation_left?: boolean | null
           neuro_red_desaturation_right?: boolean | null
           neuro_ue_capillary_refill_left?: string | null
@@ -2635,6 +2637,7 @@ export type Database = {
           neuro_pupillary_fatigue_left?: string | null
           neuro_pupillary_fatigue_notes?: string | null
           neuro_pupillary_fatigue_right?: string | null
+          neuro_pupillary_fatigue_structured?: Json | null
           neuro_red_desaturation_left?: boolean | null
           neuro_red_desaturation_right?: boolean | null
           neuro_ue_capillary_refill_left?: string | null
