@@ -96,6 +96,13 @@ export type Database = {
             foreignKeyName: "admin_coverage_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "admin_coverage_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -149,6 +156,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "audit_logs_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "audit_logs_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -881,6 +895,13 @@ export type Database = {
             foreignKeyName: "comparison_report_schedules_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "comparison_report_schedules_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -1145,6 +1166,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "episode_integrity_issues_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "episode_integrity_issues_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -1453,6 +1481,13 @@ export type Database = {
             foreignKeyName: "episodes_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -1576,6 +1611,13 @@ export type Database = {
             foreignKeyName: "export_templates_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "export_templates_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -1625,6 +1667,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "followups_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "followups_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -1703,6 +1752,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "google_calendar_connections_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "google_calendar_connections_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -2297,6 +2353,13 @@ export type Database = {
             foreignKeyName: "merge_report_presets_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "merge_report_presets_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -2703,6 +2766,13 @@ export type Database = {
             foreignKeyName: "neurologic_exams_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "neurologic_exams_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -2882,6 +2952,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "notification_alert_config_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "notification_alert_config_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -3272,6 +3349,13 @@ export type Database = {
             foreignKeyName: "outcome_measure_responses_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "outcome_measure_responses_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -3414,6 +3498,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "outcome_scores_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "outcome_scores_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -4121,6 +4212,13 @@ export type Database = {
             foreignKeyName: "pcp_summary_tasks_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "pcp_summary_tasks_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -4222,6 +4320,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "pending_episode_continuations_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "pending_episode_continuations_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -4564,6 +4669,13 @@ export type Database = {
             foreignKeyName: "profiles_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "profiles_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -4649,6 +4761,13 @@ export type Database = {
             foreignKeyName: "rate_limit_config_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "rate_limit_config_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -4686,6 +4805,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "rate_limit_tracking_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "rate_limit_tracking_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -4806,6 +4932,13 @@ export type Database = {
             foreignKeyName: "referral_inquiries_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "referral_inquiries_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -4863,6 +4996,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "referral_report_deliveries_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "referral_report_deliveries_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -4926,6 +5066,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "referral_report_schedules_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "referral_report_schedules_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -5556,6 +5703,13 @@ export type Database = {
             foreignKeyName: "episodes_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
@@ -5592,6 +5746,13 @@ export type Database = {
           updated_at: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
           {
             foreignKeyName: "episodes_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -5638,10 +5799,28 @@ export type Database = {
             foreignKeyName: "episodes_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
             referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
         ]
+      }
+      analytics_site_summary: {
+        Row: {
+          discharged_care_targets: number | null
+          discharged_episodes: number | null
+          site_id: string | null
+          site_name: string | null
+          total_care_targets: number | null
+          total_episodes: number | null
+        }
+        Relationships: []
       }
       stalled_communication_tasks: {
         Row: {
@@ -5704,8 +5883,23 @@ export type Database = {
           mcid_threshold: number | null
           patient_uuid: string | null
           score_delta: number | null
+          site_id: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "patient_episode_access_patient_id_fkey"
             columns: ["patient_uuid"]
@@ -5723,8 +5917,23 @@ export type Database = {
           episode_uuid: string | null
           number_of_care_targets: number | null
           patient_uuid: string | null
+          site_id: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "patient_episode_access_patient_id_fkey"
             columns: ["patient_uuid"]
@@ -5742,8 +5951,24 @@ export type Database = {
           instrument_type: string | null
           mcid_met: boolean | null
           score_delta: number | null
+          site_id: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "episodes_clinic_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
