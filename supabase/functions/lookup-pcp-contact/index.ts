@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,6 +21,81 @@ serve(async (req) => {
       );
     }
 
+    const searchName = doctorName.trim();
+    console.log(`Looking up PCP: "${searchName}" (location: ${location || "not provided"})`);
+
+    // STEP 1: Check verified_providers table first
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Try exact match first, then fuzzy match
+    const searchTerms: string[] = searchName.toLowerCase().split(/\s+/).filter((term: string) => term.length > 1);
+    
+    // Build a query that matches providers where all search terms appear in the name
+    let { data: providers, error: dbError } = await supabase
+      .from("verified_providers")
+      .select("*")
+      .ilike("provider_name", `%${searchName}%`)
+      .limit(5);
+
+    // If no exact match, try matching just last name or first + last
+    if ((!providers || providers.length === 0) && searchTerms.length > 0) {
+      const lastTerm = searchTerms[searchTerms.length - 1];
+      const { data: fuzzyProviders, error: fuzzyError } = await supabase
+        .from("verified_providers")
+        .select("*")
+        .ilike("provider_name", `%${lastTerm}%`)
+        .limit(10);
+      
+      if (!fuzzyError && fuzzyProviders && fuzzyProviders.length > 0) {
+        // Score and rank by how many search terms match
+        const scored = fuzzyProviders.map(p => {
+          const nameLower = p.provider_name.toLowerCase();
+          const matchCount = searchTerms.filter((term: string) => nameLower.includes(term)).length;
+          return { ...p, matchScore: matchCount };
+        }).filter(p => p.matchScore > 0)
+          .sort((a, b) => b.matchScore - a.matchScore);
+        
+        providers = scored.slice(0, 5);
+      }
+    }
+
+    if (dbError) {
+      console.error("Database lookup error:", dbError);
+    }
+
+    // If we found a match in the database, return it
+    if (providers && providers.length > 0) {
+      const bestMatch = providers[0];
+      
+      // Format full address
+      const addressParts = [
+        bestMatch.street_address,
+        bestMatch.city,
+        bestMatch.state,
+        bestMatch.zip
+      ].filter(Boolean);
+      const fullAddress = addressParts.join(", ");
+
+      console.log(`Found verified provider: ${bestMatch.provider_name} at ${bestMatch.practice_name}`);
+
+      return new Response(
+        JSON.stringify({
+          phone: bestMatch.phone || "",
+          fax: bestMatch.fax || "",
+          address: fullAddress,
+          confidence: "high",
+          note: `Verified: ${bestMatch.provider_name} at ${bestMatch.practice_name}`,
+          source: "database"
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log("No database match found, falling back to AI lookup");
+
+    // STEP 2: Fall back to AI lookup
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
@@ -34,7 +110,7 @@ IMPORTANT: Only return real, verified contact information from your training dat
 If you're not confident about the information, return empty strings for the fields you're unsure about.`;
 
     const userPrompt = `Please look up the contact information for this Primary Care Physician:
-Doctor Name: ${doctorName}
+Doctor Name: ${searchName}
 ${location ? `Location/Area: ${location}` : ""}
 
 Return the information in this exact JSON format:
@@ -117,7 +193,7 @@ If you cannot find reliable information for this doctor, return:
     if (toolCall && toolCall.function?.arguments) {
       const result = JSON.parse(toolCall.function.arguments);
       return new Response(
-        JSON.stringify(result),
+        JSON.stringify({ ...result, source: "ai" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -130,7 +206,7 @@ If you cannot find reliable information for this doctor, return:
         if (jsonMatch) {
           const result = JSON.parse(jsonMatch[0]);
           return new Response(
-            JSON.stringify(result),
+            JSON.stringify({ ...result, source: "ai" }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" } }
           );
         }
@@ -145,7 +221,8 @@ If you cannot find reliable information for this doctor, return:
         fax: "", 
         address: "",
         confidence: "low",
-        note: "Could not retrieve contact information" 
+        note: "Could not retrieve contact information",
+        source: "none"
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
