@@ -2,13 +2,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { LeadershipFilters } from '@/hooks/useLeadershipAnalytics';
-import { Calendar, Layers, MapPin, User, Shield } from 'lucide-react';
+import { Calendar, Layers, MapPin, User, Shield, Building2 } from 'lucide-react';
+
+interface Site {
+  id: string;
+  name: string;
+}
 
 interface LeadershipFiltersBarProps {
   filters: LeadershipFilters;
   onFilterChange: (key: keyof LeadershipFilters, value: any) => void;
   domains: string[];
   bodyRegions: string[];
+  sites?: Site[];
 }
 
 export function LeadershipFiltersBar({
@@ -16,9 +22,33 @@ export function LeadershipFiltersBar({
   onFilterChange,
   domains,
   bodyRegions,
+  sites,
 }: LeadershipFiltersBarProps) {
   return (
     <div className="flex flex-wrap items-center gap-4 p-4 bg-card rounded-lg border">
+      {/* Site Filter */}
+      {sites && sites.length > 0 && (
+        <div className="flex items-center gap-2">
+          <Building2 className="h-4 w-4 text-muted-foreground" />
+          <Select
+            value={(filters as any).siteId || 'all'}
+            onValueChange={(value) => onFilterChange('siteId' as any, value === 'all' ? undefined : value)}
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Site" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Sites</SelectItem>
+              {sites.map((site) => (
+                <SelectItem key={site.id} value={site.id}>
+                  {site.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {/* Time Window */}
       <div className="flex items-center gap-2">
         <Calendar className="h-4 w-4 text-muted-foreground" />

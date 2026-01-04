@@ -5094,6 +5094,7 @@ export type Database = {
           id: string
           row_count: number
           schema_version: string
+          site_id: string | null
           storage_path: string | null
         }
         Insert: {
@@ -5107,6 +5108,7 @@ export type Database = {
           id?: string
           row_count?: number
           schema_version?: string
+          site_id?: string | null
           storage_path?: string | null
         }
         Update: {
@@ -5120,6 +5122,7 @@ export type Database = {
           id?: string
           row_count?: number
           schema_version?: string
+          site_id?: string | null
           storage_path?: string | null
         }
         Relationships: [
@@ -5128,6 +5131,20 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "research_exports_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "analytics_site_summary"
+            referencedColumns: ["site_id"]
+          },
+          {
+            foreignKeyName: "research_exports_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
             referencedColumns: ["id"]
           },
         ]

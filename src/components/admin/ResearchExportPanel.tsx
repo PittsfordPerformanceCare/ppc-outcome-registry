@@ -22,11 +22,18 @@ interface ResearchExport {
   hash_version: string;
   schema_version: string;
   created_at: string;
+  site_id: string | null;
+}
+
+interface Site {
+  id: string;
+  name: string;
 }
 
 export function ResearchExportPanel() {
   const [datasetType, setDatasetType] = useState<string>('care_targets');
   const [exportPurpose, setExportPurpose] = useState<string>('registry');
+  const [siteId, setSiteId] = useState<string>('all');
   const [dateRangeStart, setDateRangeStart] = useState<string>(
     format(subMonths(new Date(), 12), 'yyyy-MM-dd')
   );
@@ -34,6 +41,20 @@ export function ResearchExportPanel() {
     format(new Date(), 'yyyy-MM-dd')
   );
   const [isExporting, setIsExporting] = useState(false);
+
+  // Fetch available sites
+  const { data: sites } = useQuery({
+    queryKey: ['sites-for-export'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('clinics')
+        .select('id, name')
+        .order('name');
+      
+      if (error) throw error;
+      return data as Site[];
+    }
+  });
 
   // Fetch export history
   const { data: exportHistory, isLoading: historyLoading, refetch: refetchHistory } = useQuery({
@@ -67,6 +88,7 @@ export function ResearchExportPanel() {
           dataset_type: datasetType,
           date_range_start: dateRangeStart,
           date_range_end: dateRangeEnd,
+          site_id: siteId === 'all' ? null : siteId,
         }
       });
 
@@ -128,7 +150,28 @@ export function ResearchExportPanel() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Site Selector */}
+            <div className="space-y-2">
+              <Label htmlFor="site-selector">Site</Label>
+              <Select value={siteId} onValueChange={setSiteId}>
+                <SelectTrigger id="site-selector">
+                  <SelectValue placeholder="Select site" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Sites</SelectItem>
+                  {sites?.map((site) => (
+                    <SelectItem key={site.id} value={site.id}>
+                      {site.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Filter export by specific site or export all sites
+              </p>
+            </div>
+
             {/* Dataset Type */}
             <div className="space-y-2">
               <Label htmlFor="dataset-type">Dataset Type</Label>

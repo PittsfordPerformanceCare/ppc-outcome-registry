@@ -41,6 +41,16 @@ All exports require a start and end date. The system filters records based on ti
 | `publication` | Academic publication datasets |
 | `research` | General observational research |
 
+### 4. Site Filter (Optional)
+
+| Value | Description |
+|-------|-------------|
+| `null` / omitted | Export all sites |
+| `a0000000-0000-0000-0000-000000000001` | PPC-Primary only |
+| `a0000000-0000-0000-0000-000000000002` | PPC-Shadow only |
+
+Site filtering enables multi-site deployments to export data per-site or across all sites.
+
 ---
 
 ## Future Enhancements (Not Yet Implemented)
@@ -65,7 +75,8 @@ The following cohort filters are planned for future releases:
   "export_purpose": "registry",
   "dataset_type": "care_targets",
   "date_range_start": "2025-10-01",
-  "date_range_end": "2026-01-04"
+  "date_range_end": "2026-01-04",
+  "site_id": null
 }
 ```
 
@@ -73,6 +84,7 @@ The following cohort filters are planned for future releases:
 - Currently returns ALL care targets in date range
 - Status filtering (`care_target_status = 'discharged'`) requires post-export filtering or future enhancement
 - Returns: care target outcomes with baseline, discharge, delta, MCID status
+- Use `site_id` to filter to specific site
 
 ---
 
