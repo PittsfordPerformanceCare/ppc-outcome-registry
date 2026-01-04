@@ -122,16 +122,6 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check if care_request_mode is enabled
-    const { data: clinicSettings } = await supabase
-      .from("clinic_settings")
-      .select("care_request_mode_enabled")
-      .limit(1)
-      .single();
-
-    const careRequestModeEnabled = clinicSettings?.care_request_mode_enabled === true;
-    console.log("[submit-intake-form] Care request mode:", careRequestModeEnabled);
-
     const accessCode = generateAccessCode();
 
     // Build intake form data (sanitize all string fields)
@@ -205,63 +195,118 @@ Deno.serve(async (req) => {
     console.log("[submit-intake-form] Intake created successfully:", data.id);
     await recordRateLimitUsage(SERVICE_TYPE, true);
 
-    // If care_request_mode is enabled, create a care_request instead of proceeding with legacy flow
-    if (careRequestModeEnabled) {
-      console.log("[submit-intake-form] Creating care request for intake:", data.id);
+    // Check if a matching care request already exists (by name or email)
+    const normalizedName = (patientName || "").toLowerCase().trim();
+    const normalizedEmail = (email || "").toLowerCase().trim();
+    
+    let existingCareRequest = null;
+    
+    // Search for existing care requests by checking intake_payload
+    const { data: existingRequests } = await supabase
+      .from("care_requests")
+      .select("id, intake_payload, status")
+      .not("status", "in", '("ARCHIVED","DECLINED","CONVERTED")')
+      .is("episode_id", null);
+    
+    if (existingRequests && existingRequests.length > 0) {
+      existingCareRequest = existingRequests.find((cr) => {
+        const payload = cr.intake_payload as Record<string, unknown> || {};
+        const crName = ((payload.name as string) || (payload.patient_name as string) || "").toLowerCase().trim();
+        const crEmail = ((payload.email as string) || "").toLowerCase().trim();
+        
+        // Match by name OR email
+        return (crName && crName === normalizedName) || 
+               (normalizedEmail && crEmail && crEmail === normalizedEmail);
+      });
+    }
+    
+    if (existingCareRequest) {
+      console.log("[submit-intake-form] Found matching care request:", existingCareRequest.id);
       
-      // Get default admin for owner assignment
-      const { data: adminUser } = await supabase
-        .from("user_roles")
-        .select("user_id")
-        .eq("role", "admin")
-        .limit(1)
-        .single();
-
-      // Create care request with full payload snapshot
-      const { data: careRequest, error: crError } = await supabase
-        .from("care_requests")
-        .insert({
-          status: "SUBMITTED",
-          admin_owner_id: adminUser?.user_id || null,
-          source: "WEBSITE",
-          intake_payload: intakeData,
-          primary_complaint: chiefComplaint,
-        })
-        .select("id")
-        .single();
-
-      if (crError) {
-        console.error("[submit-intake-form] Care request creation error:", crError);
-        // Non-fatal - intake was created
-      } else {
-        // Log lifecycle event
-        await supabase.from("lifecycle_events").insert({
-          entity_type: "CARE_REQUEST",
-          entity_id: careRequest.id,
-          event_type: "CARE_REQUEST_SUBMITTED",
-          actor_type: "system",
-          metadata: { intake_id: data.id, source: "website_intake" }
-        });
-
-        console.log("[submit-intake-form] Care request created:", careRequest.id);
-      }
-
-      // Do NOT notify clinicians when care_request_mode is enabled
-      // Admin will be notified via the care requests queue badge
-
+      // Log lifecycle event for form submission
+      await supabase.from("lifecycle_events").insert({
+        entity_type: "CARE_REQUEST",
+        entity_id: existingCareRequest.id,
+        event_type: "LEGAL_FORMS_RECEIVED",
+        actor_type: "patient",
+        metadata: { intake_form_id: data.id, source: "patient_submission" }
+      });
+      
       return new Response(
         JSON.stringify({ 
           success: true, 
           intake_id: data.id,
           access_code: accessCode,
-          care_request_id: careRequest?.id || null,
-          mode: "care_request"
+          care_request_id: existingCareRequest.id,
+          matched: true,
+          mode: "matched_existing"
+        }),
+        { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    // No matching care request found - auto-create one
+    // This enables Front Desk QR workflow where patients submit forms before any care request exists
+    console.log("[submit-intake-form] No matching care request found, auto-creating one");
+    
+    // Get default admin for owner assignment
+    const { data: adminUser } = await supabase
+      .from("user_roles")
+      .select("user_id")
+      .eq("role", "admin")
+      .limit(1)
+      .single();
+
+    // Create care request with full payload snapshot
+    // Source is FRONT_DESK_QR to indicate this came from patient-initiated form submission
+    const { data: careRequest, error: crError } = await supabase
+      .from("care_requests")
+      .insert({
+        status: "SUBMITTED",
+        admin_owner_id: adminUser?.user_id || null,
+        source: "FRONT_DESK_QR",
+        intake_payload: {
+          ...intakeData,
+          name: patientName,
+          patient_name: patientName,
+        },
+        primary_complaint: chiefComplaint,
+      })
+      .select("id")
+      .single();
+
+    if (crError) {
+      console.error("[submit-intake-form] Care request creation error:", crError);
+      // Return success for intake, but note the care request failure
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          intake_id: data.id,
+          access_code: accessCode,
+          care_request_id: null,
+          mode: "intake_only",
+          warning: "Care request could not be created"
         }),
         { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Legacy flow - handle referral code update if present
+    // Log lifecycle event
+    await supabase.from("lifecycle_events").insert({
+      entity_type: "CARE_REQUEST",
+      entity_id: careRequest.id,
+      event_type: "CARE_REQUEST_CREATED_FROM_INTAKE",
+      actor_type: "system",
+      metadata: { 
+        intake_form_id: data.id, 
+        source: "front_desk_qr",
+        auto_created: true 
+      }
+    });
+
+    console.log("[submit-intake-form] Care request auto-created:", careRequest.id);
+
+    // Handle referral code update if present (legacy support)
     const referralCode = sanitizeString(body.referral_code, 50);
     if (referralCode && email) {
       try {
@@ -291,6 +336,7 @@ Deno.serve(async (req) => {
           patient_name: patientName,
           email: email?.toLowerCase(),
           source: "submit-intake-form-api",
+          care_request_id: careRequest.id,
         },
       });
     } catch (auditErr) {
@@ -302,7 +348,9 @@ Deno.serve(async (req) => {
         success: true, 
         intake_id: data.id,
         access_code: accessCode,
-        mode: "legacy"
+        care_request_id: careRequest.id,
+        auto_created: true,
+        mode: "auto_created"
       }),
       { status: 201, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

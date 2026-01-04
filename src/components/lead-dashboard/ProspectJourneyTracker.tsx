@@ -305,13 +305,18 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         // Forms sent if either intake system has a record and visit is scheduled
         const formsSent = (!!matchedIntakeForm || !!matchedIntake) && isScheduled;
         
+        // Check if this care request came from Front Desk QR (forms submitted first, auto-created care request)
+        const isFromFrontDeskQR = cr.source === "FRONT_DESK_QR";
+        
         // Forms received if either system shows completed/submitted status
         // Also check for "pending" with submitted_at for front desk QR submissions
+        // FRONT_DESK_QR source means the intake form created this care request - forms ARE received
         const intakeFormsReceived = matchedIntakeForm?.status === "submitted" || 
           matchedIntakeForm?.status === "completed" ||
+          matchedIntakeForm?.status === "pending" || // Front desk QR forms come in as pending
           (!!matchedIntakeForm?.submitted_at && matchedIntakeForm?.status !== "draft");
         const neurologicIntakeReceived = matchedIntake?.status === "completed" || matchedIntake?.status === "approved";
-        const formsReceived = intakeFormsReceived || neurologicIntakeReceived;
+        const formsReceived = intakeFormsReceived || neurologicIntakeReceived || isFromFrontDeskQR;
         
         const episodeActive = !!cr.episode_id;
 
@@ -347,7 +352,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const createdDate = new Date(cr.created_at);
         const daysInPipeline = Math.floor((Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
 
-        console.log(`[ProspectJourney] ${patientName}: status=${statusUpper}, isApproved=${isApproved}, formsReceived=${formsReceived}, matchedIntake=${!!matchedIntake}, currentStage=${currentStage}, jenniferAction=${jenniferAction}`);
+        console.log(`[ProspectJourney] ${patientName}: status=${statusUpper}, source=${cr.source}, isApproved=${isApproved}, formsReceived=${formsReceived}, isFromFrontDeskQR=${isFromFrontDeskQR}, currentStage=${currentStage}, jenniferAction=${jenniferAction}`);
 
         // Get system category from payload
         const systemCategory = (payload.system_category as string) || null;
