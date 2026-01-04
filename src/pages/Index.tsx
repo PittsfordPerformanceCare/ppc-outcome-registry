@@ -56,8 +56,8 @@ const Index = () => {
           if (patientAccount) {
             navigate("/patient/concierge", { replace: true });
           } else {
-            // Unknown user type - send to public site
-            navigate("/site/home", { replace: true });
+            // Unknown user type - send to hub
+            navigate("/site/hub", { replace: true });
           }
         }
       } else if (isStandalone) {

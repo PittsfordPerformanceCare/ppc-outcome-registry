@@ -28,8 +28,8 @@ export function PostLoginRedirect() {
     } else if (isClinician) {
       navigate("/clinician/dashboard", { replace: true });
     } else {
-      // Fallback for patients or unknown roles
-      navigate("/site/home", { replace: true });
+      // Fallback for patients or unknown roles - go to hub
+      navigate("/site/hub", { replace: true });
     }
     setHasRedirected(true);
   }, [user, isAdmin, isClinician, isOwner, loading, navigate, hasRedirected]);
