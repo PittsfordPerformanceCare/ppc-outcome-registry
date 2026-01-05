@@ -1153,7 +1153,7 @@ export default function PatientIntake() {
             </div>
             <div className="space-y-2">
               <h1 className="text-4xl font-bold text-success animate-[slide-up_0.6s_ease-out]">
-                Form Submitted Successfully! 🎉
+                Your Information Has Been Received
               </h1>
               <p className="text-lg text-muted-foreground animate-[fade-in_0.8s_ease-out]">
                 Thank you for completing your intake form
@@ -1196,6 +1196,28 @@ export default function PatientIntake() {
               </Button>
             </div>
 
+            {/* What Happens Next Section */}
+            <div className="rounded-lg bg-muted/50 border p-4 space-y-3 animate-[fade-in_0.4s_ease-out_0.3s_both]">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <Clock className="h-5 w-5 text-primary" />
+                What Happens Next
+              </h3>
+              <ol className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">1</span>
+                  <span>Our team will review your information within 1-2 business days.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">2</span>
+                  <span>We will contact you to schedule your evaluation appointment.</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">3</span>
+                  <span>Most patients are seen within 1-2 weeks of initial contact.</span>
+                </li>
+              </ol>
+            </div>
+
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-success animate-scale-in" />
@@ -1205,7 +1227,7 @@ export default function PatientIntake() {
               {primaryComplaint && (
                 <div className="border rounded-lg p-4 bg-success/5 border-success/20 animate-[scale-in_0.3s_ease-out_0.3s_both]">
                   <div className="flex items-start gap-2 mb-2">
-                    <Badge className="bg-success text-success-foreground">🎯 Priority</Badge>
+                    <Badge className="bg-success text-success-foreground">Primary</Badge>
                   </div>
                   <div className="flex flex-wrap gap-2 mb-2">
                     <Badge variant="outline">{primaryComplaint.category}</Badge>
@@ -1282,7 +1304,7 @@ export default function PatientIntake() {
             )}
 
             <p className="text-sm text-center text-muted-foreground animate-[fade-in_0.6s_ease-out_0.6s_both]">
-              A staff member will review your information shortly.
+              Questions? Call us at <a href="tel:585-203-1050" className="text-primary hover:underline font-medium">(585) 203-1050</a>
             </p>
 
             <div className="print:hidden animate-[slide-up_0.5s_ease-out_0.7s_both]">
@@ -1292,37 +1314,19 @@ export default function PatientIntake() {
                 variant="default"
               >
                 <Download className="h-4 w-4 mr-2" />
-                Print PDF
+                Download Your Copy (PDF)
               </Button>
             </div>
 
             <div className="space-y-3">
               <Button 
-                onClick={() => navigate(`/patient-auth?code=${accessCode}`)} 
-                className="w-full print:hidden min-h-[52px] animate-[fade-in_0.5s_ease-out_0.8s_both] bg-success hover:bg-success/90"
+                onClick={() => navigate("/site/hub")} 
+                className="w-full print:hidden min-h-[52px] animate-[fade-in_0.5s_ease-out_0.8s_both] bg-primary hover:bg-primary/90"
                 variant="default"
               >
-                <Activity className="h-4 w-4 mr-2" />
-                Create Your Patient Account
+                <Home className="h-4 w-4 mr-2" />
+                Learn More About Pittsford Performance Care
               </Button>
-              <div className="flex gap-2">
-                <Button 
-                  onClick={() => navigate("/install")} 
-                  className="flex-1 print:hidden min-h-[52px]"
-                  variant="outline"
-                >
-                  <Smartphone className="h-4 w-4 mr-2" />
-                  Install App Guide
-                </Button>
-                <Button 
-                  onClick={() => navigate("/")} 
-                  className="flex-1 print:hidden min-h-[52px]"
-                  variant="outline"
-                >
-                  <Home className="h-4 w-4 mr-2" />
-                  Home
-                </Button>
-              </div>
             </div>
           </CardContent>
         </Card>

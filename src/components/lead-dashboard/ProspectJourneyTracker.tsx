@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,8 @@ import {
   Activity,
   Trash2,
   MoreVertical,
-  FileText
+  FileText,
+  Printer
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -46,6 +47,7 @@ import { BookNPVisitDialog } from "./BookNPVisitDialog";
 import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
 import { LeadDetailsDialog } from "./LeadDetailsDialog";
 import { IntakeFormSummaryDialog } from "./IntakeFormSummaryDialog";
+import { IntakeSummaryPrintable } from "@/components/intake/IntakeSummaryPrintable";
 import { useNavigate } from "react-router-dom";
 import { getSuggestedEpisodeType, getRoutingBadgeConfig, type EpisodeTypeRoute } from "@/lib/routingSuggestion";
 
@@ -141,6 +143,10 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [prospectToDelete, setProspectToDelete] = useState<ProspectJourney | null>(null);
   const [deleting, setDeleting] = useState(false);
+  
+  // Auto-print state for newly received intake forms
+  const [autoPrintData, setAutoPrintData] = useState<any>(null);
+  const printTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const loadProspects = async () => {
     setLoading(true);
@@ -434,13 +440,35 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           // Reload prospects to update the journey state
           loadProspects();
           
-          // Show toast for new submissions
+          // Show toast for new submissions and trigger auto-print
           if (payload.eventType === 'INSERT' && (payload.new as any)?.status === 'submitted') {
+            const formData = payload.new as any;
             toast({
               title: "📋 Legal Forms Received!",
-              description: `${(payload.new as any)?.patient_name || 'A patient'} has submitted their intake forms.`,
+              description: `${formData?.patient_name || 'A patient'} has submitted their intake forms.`,
               duration: 8000,
+              action: (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setAutoPrintData(formData);
+                    // Clear after print
+                    if (printTimeoutRef.current) clearTimeout(printTimeoutRef.current);
+                    printTimeoutRef.current = setTimeout(() => setAutoPrintData(null), 3000);
+                  }}
+                >
+                  <Printer className="h-4 w-4 mr-1" />
+                  Print
+                </Button>
+              ),
             });
+            
+            // Auto-trigger print dialog
+            setAutoPrintData(formData);
+            // Clear after print completes
+            if (printTimeoutRef.current) clearTimeout(printTimeoutRef.current);
+            printTimeoutRef.current = setTimeout(() => setAutoPrintData(null), 3000);
           }
         }
       )
@@ -475,6 +503,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
     return () => {
       supabase.removeChannel(intakeFormsChannel);
       supabase.removeChannel(intakesChannel);
+      if (printTimeoutRef.current) clearTimeout(printTimeoutRef.current);
     };
   }, [toast]);
 
@@ -1004,6 +1033,15 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Auto-print component for newly received intake forms */}
+      {autoPrintData && (
+        <IntakeSummaryPrintable 
+          data={autoPrintData}
+          autoPrint={true}
+          onPrintComplete={() => setAutoPrintData(null)}
+        />
+      )}
     </>
   );
 }
