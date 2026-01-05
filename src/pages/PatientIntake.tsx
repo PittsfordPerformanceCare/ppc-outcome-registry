@@ -1609,44 +1609,6 @@ export default function PatientIntake() {
           </Card>
         )}
 
-        {/* Returning Patient Lookup */}
-        {showReturningPatientLookup && !isRestoringProgress && !hasPrefilledData && (
-          <div className="mb-6">
-            <ReturningPatientLookup
-              onPatientSelect={handleReturningPatientSelect}
-              onClose={() => setShowReturningPatientLookup(false)}
-            />
-          </div>
-        )}
-
-        {hasPrefilledData && (
-          <Card className="mb-6 border-success/50 bg-success/5">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-success">
-                  <CheckCircle2 className="h-5 w-5" />
-                  <div>
-                    <p className="font-medium">Information Pre-filled</p>
-                    <p className="text-xs text-success/80">
-                      Your previous information has been loaded. Please update your current complaint below.
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setShowReturningPatientLookup(true);
-                    setHasPrefilledData(false);
-                  }}
-                >
-                  Search Again
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Wizard Progress */}
         <IntakeWizardSteps 
           steps={wizardSteps}
