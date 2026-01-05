@@ -1031,11 +1031,59 @@ export default function PatientIntake() {
     return true;
   };
 
+  // Get specific error message for step validation
+  const getStepValidationErrors = (stepIndex: number): string[] => {
+    const errors: string[] = [];
+    const formErrors = form.formState.errors;
+    
+    switch (stepIndex) {
+      case 0:
+        if (formErrors.legalName) errors.push("Legal Name");
+        if (formErrors.dateOfBirth) errors.push("Date of Birth");
+        if (formErrors.episodeType) errors.push("Episode Type");
+        break;
+      case 3:
+        if (formErrors.complaints) {
+          // Check for array-level errors
+          if (formErrors.complaints.root) {
+            errors.push("Please set priorities for all concerns");
+          }
+          // Check for individual complaint errors
+          const complaints = form.getValues("complaints");
+          complaints.forEach((complaint, index) => {
+            const complaintErrors = formErrors.complaints?.[index];
+            if (complaintErrors) {
+              if ((complaintErrors as any).category) errors.push(`Concern #${index + 1}: Body Region`);
+              if ((complaintErrors as any).severity) errors.push(`Concern #${index + 1}: Severity`);
+              if ((complaintErrors as any).duration) errors.push(`Concern #${index + 1}: Duration`);
+              if ((complaintErrors as any).text) errors.push(`Concern #${index + 1}: Description (min 5 characters)`);
+            }
+          });
+        }
+        break;
+      case 5:
+        if (formErrors.consentSignature) errors.push("Consent Signature");
+        if (formErrors.consentSignedName) errors.push("Consent Signed Name");
+        if (formErrors.hipaaAcknowledged) errors.push("HIPAA Acknowledgment checkbox");
+        if (formErrors.hipaaSignedName) errors.push("HIPAA Signed Name");
+        break;
+    }
+    
+    return errors;
+  };
+
   const handleNextStep = async () => {
     const isValid = await validateStep(currentStep);
     
     if (!isValid) {
-      toast.error("Please complete all required fields before proceeding");
+      const missingFields = getStepValidationErrors(currentStep);
+      if (missingFields.length > 0) {
+        toast.error(`Please complete: ${missingFields.slice(0, 3).join(", ")}${missingFields.length > 3 ? ` (+${missingFields.length - 3} more)` : ""}`, {
+          duration: 5000,
+        });
+      } else {
+        toast.error("Please complete all required fields before proceeding");
+      }
       medium();
       return;
     }
