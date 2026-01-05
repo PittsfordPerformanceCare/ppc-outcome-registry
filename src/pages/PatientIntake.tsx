@@ -25,7 +25,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { SortableComplaintItem } from "@/components/SortableComplaintItem";
-import { ReturningPatientLookup } from "@/components/ReturningPatientLookup";
+
 import { IntakeWizardSteps } from "@/components/IntakeWizardSteps";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useDarkMode } from "@/hooks/useDarkMode";
@@ -239,7 +239,6 @@ export default function PatientIntake() {
   const [hasFormChanged, setHasFormChanged] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const [showReturningPatientLookup, setShowReturningPatientLookup] = useState(true);
   const [hasPrefilledData, setHasPrefilledData] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
@@ -662,23 +661,6 @@ export default function PatientIntake() {
 
     return () => subscription.unsubscribe();
   }, [form, hasTriggeredConfetti]);
-
-
-  // Handle returning patient selection and pre-fill
-  const handleReturningPatientSelect = (patientData: any) => {
-    // Pre-fill all the fields
-    Object.keys(patientData).forEach((key) => {
-      if (patientData[key]) {
-        form.setValue(key as any, patientData[key]);
-      }
-    });
-    
-    setHasPrefilledData(true);
-    setShowReturningPatientLookup(false);
-    
-    // Trigger haptic feedback
-    success();
-  };
 
   // Check for duplicate patients
   const checkForDuplicates = async (name: string, dob: string) => {
