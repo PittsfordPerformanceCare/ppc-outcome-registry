@@ -1072,6 +1072,24 @@ export default function PatientIntake() {
     return errors;
   };
 
+  // Scroll to first error field
+  const scrollToFirstError = () => {
+    // Find first element with error styling or FormMessage with content
+    const errorElements = document.querySelectorAll('[data-error="true"], .text-destructive');
+    if (errorElements.length > 0) {
+      const firstError = errorElements[0];
+      const formItem = firstError.closest('.space-y-4, [class*="FormItem"]');
+      if (formItem) {
+        formItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Try to focus the input within
+        const input = formItem.querySelector('input, textarea, select, [role="combobox"]');
+        if (input instanceof HTMLElement) {
+          setTimeout(() => input.focus(), 400);
+        }
+      }
+    }
+  };
+
   const handleNextStep = async () => {
     const isValid = await validateStep(currentStep);
     
@@ -1085,6 +1103,8 @@ export default function PatientIntake() {
         toast.error("Please complete all required fields before proceeding");
       }
       medium();
+      // Auto-scroll to first error after a brief delay for form state to update
+      setTimeout(scrollToFirstError, 100);
       return;
     }
 

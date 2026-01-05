@@ -149,96 +149,143 @@ export function SortableComplaintItem({
         <FormField
           control={form.control}
           name={`complaints.${index}.category`}
-          render={({ field: categoryField }) => (
-            <FormItem>
-              <FormLabel>Body Region *</FormLabel>
-              <Select onValueChange={categoryField.onChange} value={categoryField.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select body region" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="bg-background">
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field: categoryField, fieldState }) => {
+            const isComplete = !!categoryField.value;
+            return (
+              <FormItem data-error={fieldState.error ? "true" : undefined}>
+                <FormLabel className="flex items-center gap-2">
+                  Body Region *
+                  {isComplete && (
+                    <CheckCircle2 className="h-4 w-4 text-success animate-scale-in" />
+                  )}
+                </FormLabel>
+                <Select onValueChange={categoryField.onChange} value={categoryField.value}>
+                  <FormControl>
+                    <SelectTrigger className={isComplete ? 'border-success/50' : ''}>
+                      <SelectValue placeholder="Select body region" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="bg-background">
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <FormField
           control={form.control}
           name={`complaints.${index}.severity`}
-          render={({ field: severityField }) => (
-            <FormItem>
-              <FormLabel>Severity *</FormLabel>
-              <Select onValueChange={severityField.onChange} value={severityField.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select severity" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="bg-background">
-                  {severityLevels.map((severity) => (
-                    <SelectItem key={severity} value={severity}>
-                      {severity}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field: severityField, fieldState }) => {
+            const isComplete = !!severityField.value;
+            return (
+              <FormItem data-error={fieldState.error ? "true" : undefined}>
+                <FormLabel className="flex items-center gap-2">
+                  Severity *
+                  {isComplete && (
+                    <CheckCircle2 className="h-4 w-4 text-success animate-scale-in" />
+                  )}
+                </FormLabel>
+                <Select onValueChange={severityField.onChange} value={severityField.value}>
+                  <FormControl>
+                    <SelectTrigger className={isComplete ? 'border-success/50' : ''}>
+                      <SelectValue placeholder="Select severity" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className="bg-background">
+                    {severityLevels.map((severity) => (
+                      <SelectItem key={severity} value={severity}>
+                        {severity}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
       </div>
 
       <FormField
         control={form.control}
         name={`complaints.${index}.duration`}
-        render={({ field: durationField }) => (
-          <FormItem>
-            <FormLabel>How long have you had this issue? *</FormLabel>
-            <Select onValueChange={durationField.onChange} value={durationField.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select duration" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent className="bg-background">
-                {durationOptions.map((duration) => (
-                  <SelectItem key={duration} value={duration}>
-                    {duration}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
+        render={({ field: durationField, fieldState }) => {
+          const isComplete = !!durationField.value;
+          return (
+            <FormItem data-error={fieldState.error ? "true" : undefined}>
+              <FormLabel className="flex items-center gap-2">
+                How long have you had this issue? *
+                {isComplete && (
+                  <CheckCircle2 className="h-4 w-4 text-success animate-scale-in" />
+                )}
+              </FormLabel>
+              <Select onValueChange={durationField.onChange} value={durationField.value}>
+                <FormControl>
+                  <SelectTrigger className={isComplete ? 'border-success/50' : ''}>
+                    <SelectValue placeholder="Select duration" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent className="bg-background">
+                  {durationOptions.map((duration) => (
+                    <SelectItem key={duration} value={duration}>
+                      {duration}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
       />
 
       <FormField
         control={form.control}
         name={`complaints.${index}.text`}
-        render={({ field: textField }) => (
-          <FormItem>
-            <FormLabel>Describe This Concern *</FormLabel>
-            <FormDescription>Be as detailed as possible about this specific issue</FormDescription>
-            <FormControl>
-              <Textarea
-                placeholder="Example: Sharp pain in left shoulder when reaching overhead, difficulty sleeping on that side, started after lifting heavy boxes at work..."
-                rows={4}
-                {...textField}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
+        render={({ field: textField, fieldState }) => {
+          const charCount = textField.value?.length || 0;
+          const minChars = 5;
+          const isComplete = charCount >= minChars;
+          
+          return (
+            <FormItem data-error={fieldState.error ? "true" : undefined}>
+              <div className="flex items-center justify-between">
+                <FormLabel className="flex items-center gap-2">
+                  Describe This Concern *
+                  {isComplete && (
+                    <CheckCircle2 className="h-4 w-4 text-success animate-scale-in" />
+                  )}
+                </FormLabel>
+                <span className={`text-xs transition-colors ${
+                  charCount === 0 
+                    ? 'text-muted-foreground' 
+                    : isComplete 
+                      ? 'text-success font-medium' 
+                      : 'text-destructive font-medium'
+                }`}>
+                  {charCount}/{minChars} min
+                </span>
+              </div>
+              <FormDescription>Be as detailed as possible about this specific issue</FormDescription>
+              <FormControl>
+                <Textarea
+                  placeholder="Example: Sharp pain in left shoulder when reaching overhead, difficulty sleeping on that side, started after lifting heavy boxes at work..."
+                  rows={4}
+                  className={isComplete ? 'border-success/50 focus:border-success' : ''}
+                  {...textField}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
       />
     </div>
   );
