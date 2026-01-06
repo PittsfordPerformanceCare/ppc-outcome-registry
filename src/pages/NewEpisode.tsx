@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { createEpisode, saveOutcomeScore } from "@/lib/dbOperations";
@@ -26,6 +26,7 @@ import { PatientSearch } from "@/components/PatientSearch";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getSuggestedEpisodeType } from "@/lib/routingSuggestion";
+import { ReauthDialog } from "@/components/ReauthDialog";
 
 export default function NewEpisode() {
   const navigate = useNavigate();
@@ -67,6 +68,9 @@ export default function NewEpisode() {
   const [sourceCareRequestId, setSourceCareRequestId] = useState<string | null>(null);
   // Track form completion status for each index
   const [formCompletionStatus, setFormCompletionStatus] = useState<Record<string, boolean>>({});
+  // Re-auth dialog state
+  const [showReauthDialog, setShowReauthDialog] = useState(false);
+  const pendingSubmitRef = useRef<React.FormEvent | null>(null);
   // Auto-populate clinician from logged-in user
   useEffect(() => {
     const loadClinicianInfo = async () => {
@@ -475,12 +479,45 @@ export default function NewEpisode() {
       toast.success("Episode created successfully!");
       navigate("/dashboard");
     } catch (error: any) {
-      toast.error(`Failed to create episode: ${error.message}`);
+      // Check if this is an authentication error
+      const isAuthError = error.message?.toLowerCase().includes('auth') ||
+        error.message?.toLowerCase().includes('jwt') ||
+        error.message?.toLowerCase().includes('token') ||
+        error.message?.toLowerCase().includes('session') ||
+        error.code === 'PGRST301' ||
+        error.code === '401';
+      
+      if (isAuthError) {
+        pendingSubmitRef.current = e;
+        setShowReauthDialog(true);
+        toast.error("Session expired. Please sign in again to save your episode.");
+      } else {
+        toast.error(`Failed to create episode: ${error.message}`);
+      }
+    }
+  };
+
+  // Handle successful re-authentication
+  const handleReauthSuccess = () => {
+    // Re-trigger the form submission after successful re-auth
+    if (pendingSubmitRef.current) {
+      const syntheticEvent = {
+        preventDefault: () => {},
+      } as React.FormEvent;
+      handleSubmit(syntheticEvent);
+      pendingSubmitRef.current = null;
     }
   };
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      {/* Re-authentication Dialog */}
+      <ReauthDialog
+        open={showReauthDialog}
+        onOpenChange={setShowReauthDialog}
+        onSuccess={handleReauthSuccess}
+      />
+
       <div>
         <h1 className="text-3xl font-bold">Create New Episode</h1>
         <p className="mt-2 text-muted-foreground">
