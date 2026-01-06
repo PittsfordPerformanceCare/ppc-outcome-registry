@@ -38,17 +38,18 @@ const SiteHub = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-              At Pittsford Performance Care, we use a single neurologic domain map to evaluate 
-              and treat symptoms across concussion recovery and chronic musculoskeletal 
-              conditions. Whether you're recovering from a recent injury or stuck with persistent 
-              symptoms others couldn't resolve—our{" "}
+              At Pittsford Performance Care, we apply a unified neurologic framework to evaluate 
+              both concussion recovery and chronic musculoskeletal conditions. Different symptoms 
+              often share common underlying dysfunction—and understanding that connection changes 
+              how we treat. Whether you're recovering from a recent injury or stuck with persistent 
+              symptoms others couldn't resolve, our{" "}
               <LexiconTerm 
                 term={getLexiconByTerm("neuro-based care")?.label || "Neuro-Based Care"} 
                 definition={getLexiconByTerm("neuro-based care")?.definition || ""}
               >
                 neuro-based approach
               </LexiconTerm>{" "}
-              finds what's wrong and fixes it.
+              identifies the source and addresses it directly.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -86,7 +87,7 @@ const SiteHub = () => {
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Get the right evaluation from day one. Our domain-mapped approach accelerates 
                   recovery and prevents symptoms from becoming chronic. Most patients recover 
-                  in just 6 visits.
+                  within a handful of visits.
                 </p>
               </div>
               <div className="bg-primary/5 border border-primary/10 rounded-xl p-6">
@@ -229,6 +230,12 @@ const SiteHub = () => {
                   </LexiconTerm>{" "}
                   tracks your progress with validated clinical measures from day one. You'll see exactly 
                   how much you've improved—not just how you feel on a good day.
+                </p>
+                
+                <p className="text-muted-foreground leading-relaxed">
+                  We measure because measurement supports honest conversation. Data helps us understand 
+                  what's working, recognize when to adjust, and confirm when you're ready to move on. 
+                  It's not about numbers for their own sake—it's about clarity and accountability in your care.
                 </p>
                 
                 <ul className="space-y-4">
@@ -374,7 +381,8 @@ const SiteHub = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Understand What's Happening in Your Body</h2>
             
             <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-2xl mx-auto">
-              We believe you should understand your own condition. Explore our articles 
+              We believe you should understand your own condition. These articles aren't marketing—they're 
+              educational tools to help you make sense of what you're experiencing. Explore our writing 
               on concussion recovery, chronic pain, and why traditional approaches often fall short.
             </p>
             
