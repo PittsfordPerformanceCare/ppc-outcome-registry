@@ -254,6 +254,12 @@ const SiteClinicalGovernance = () => {
                 >
                   About Pittsford Performance Care
                 </Link>
+                <Link 
+                  to="/site/governance-charter" 
+                  className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                >
+                  Governance Charter
+                </Link>
               </div>
             </div>
 
