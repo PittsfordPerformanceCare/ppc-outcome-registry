@@ -796,14 +796,18 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                               setSelectedProspect(prospect);
                               // If at forms_received or episode_active stage, show intake form summary
                               if (prospect.currentStage === "forms_received" || prospect.currentStage === "episode_active") {
-                                // Fetch intake form data
-                                const { data: intakeForm } = await supabase
+                                // Fetch intake form data - use proper filter syntax
+                                const { data: intakeForm, error } = await supabase
                                   .from("intake_forms")
                                   .select("*")
-                                  .or(`patient_name.ilike.${prospect.name},email.ilike.${prospect.email || ''}`)
+                                  .or(`patient_name.ilike.%${prospect.name}%,email.ilike.%${prospect.email || 'NOMATCH'}%`)
                                   .order("created_at", { ascending: false })
                                   .limit(1)
                                   .maybeSingle();
+                                
+                                if (error) {
+                                  console.error("Error fetching intake form:", error);
+                                }
                                 
                                 if (intakeForm) {
                                   setSelectedIntakeForm(intakeForm);
