@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -5,6 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { 
@@ -20,9 +22,11 @@ import {
   FileText,
   Shield,
   Heart,
-  UserCheck
+  UserCheck,
+  Printer
 } from "lucide-react";
 import { format } from "date-fns";
+import { IntakeSummaryPrintable } from "@/components/intake/IntakeSummaryPrintable";
 
 interface IntakeFormData {
   id: string;
@@ -76,7 +80,18 @@ export function IntakeFormSummaryDialog({
   onOpenChange, 
   intakeForm 
 }: IntakeFormSummaryDialogProps) {
+  const [showPrintView, setShowPrintView] = useState(false);
+  
   if (!intakeForm) return null;
+
+  const handlePrint = () => {
+    setShowPrintView(true);
+    // Wait for render then print
+    setTimeout(() => {
+      window.print();
+      setShowPrintView(false);
+    }, 100);
+  };
 
   const calculateAge = (dob: string) => {
     const birthDate = new Date(dob);
@@ -131,12 +146,23 @@ export function IntakeFormSummaryDialog({
                   : 'N/A'}
               </p>
             </div>
-            {redFlags.length > 0 && (
-              <Badge variant="destructive" className="gap-1">
-                <AlertTriangle className="h-3 w-3" />
-                {redFlags.length} Alert{redFlags.length > 1 ? 's' : ''}
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrint}
+                className="gap-2"
+              >
+                <Printer className="h-4 w-4" />
+                Print
+              </Button>
+              {redFlags.length > 0 && (
+                <Badge variant="destructive" className="gap-1">
+                  <AlertTriangle className="h-3 w-3" />
+                  {redFlags.length} Alert{redFlags.length > 1 ? 's' : ''}
+                </Badge>
+              )}
+            </div>
           </div>
         </DialogHeader>
 
@@ -430,6 +456,46 @@ export function IntakeFormSummaryDialog({
           </div>
         </ScrollArea>
       </DialogContent>
+
+      {/* Hidden print view - uses the standardized print format */}
+      {showPrintView && (
+        <IntakeSummaryPrintable 
+          data={{
+            patient_name: intakeForm.patient_name,
+            date_of_birth: intakeForm.date_of_birth,
+            phone: intakeForm.phone || undefined,
+            email: intakeForm.email || undefined,
+            address: intakeForm.address || undefined,
+            insurance_provider: intakeForm.insurance_provider || undefined,
+            insurance_id: intakeForm.insurance_id || undefined,
+            emergency_contact_name: intakeForm.emergency_contact_name || undefined,
+            emergency_contact_phone: intakeForm.emergency_contact_phone || undefined,
+            emergency_contact_relationship: intakeForm.emergency_contact_relationship || undefined,
+            primary_care_physician: intakeForm.primary_care_physician || undefined,
+            pcp_phone: intakeForm.pcp_phone || undefined,
+            pcp_fax: intakeForm.pcp_fax || undefined,
+            current_medications: intakeForm.current_medications || undefined,
+            allergies: intakeForm.allergies || undefined,
+            medical_history: intakeForm.medical_history || undefined,
+            chief_complaint: intakeForm.chief_complaint,
+            complaints: intakeForm.complaints?.map(c => ({
+              text: c.text,
+              category: c.category || '',
+              severity: c.severity || '',
+              duration: c.duration || '',
+              isPrimary: c.isPrimary || false,
+            })),
+            injury_date: intakeForm.injury_date || undefined,
+            injury_mechanism: intakeForm.injury_mechanism || undefined,
+            pain_level: intakeForm.pain_level ?? undefined,
+            symptoms: intakeForm.symptoms || undefined,
+            review_of_systems: intakeForm.review_of_systems || undefined,
+            consent_signed_name: intakeForm.consent_signed_name || undefined,
+            consent_date: intakeForm.consent_date || undefined,
+            submitted_at: intakeForm.submitted_at || undefined,
+          }}
+        />
+      )}
     </Dialog>
   );
 }
