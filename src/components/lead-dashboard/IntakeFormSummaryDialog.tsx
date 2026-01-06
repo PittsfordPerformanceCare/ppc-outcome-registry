@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,6 @@ import {
   Printer
 } from "lucide-react";
 import { format } from "date-fns";
-import { IntakeSummaryPrintable } from "@/components/intake/IntakeSummaryPrintable";
 
 interface IntakeFormData {
   id: string;
@@ -67,6 +66,8 @@ interface IntakeFormData {
   consent_date?: string | null;
   hipaa_acknowledged?: boolean | null;
   submitted_at?: string | null;
+  guardian_phone?: string | null;
+  access_code?: string | null;
 }
 
 interface IntakeFormSummaryDialogProps {
@@ -80,17 +81,186 @@ export function IntakeFormSummaryDialog({
   onOpenChange, 
   intakeForm 
 }: IntakeFormSummaryDialogProps) {
-  const [showPrintView, setShowPrintView] = useState(false);
+  const printIframeRef = useRef<HTMLIFrameElement>(null);
   
   if (!intakeForm) return null;
 
+  const formatDateStr = (dateStr?: string | null) => {
+    if (!dateStr) return "Not provided";
+    try {
+      return format(new Date(dateStr), "MMM d, yyyy");
+    } catch {
+      return dateStr;
+    }
+  };
+
   const handlePrint = () => {
-    setShowPrintView(true);
-    // Wait for render then print
-    setTimeout(() => {
-      window.print();
-      setShowPrintView(false);
-    }, 100);
+    const iframe = printIframeRef.current;
+    if (!iframe) return;
+
+    const complaints = intakeForm.complaints || [];
+    const primaryComplaint = complaints.find(c => c.isPrimary) || complaints[0];
+    const reviewOfSystems = intakeForm.review_of_systems || [];
+
+    // Build the print HTML content
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Intake Form Summary - ${intakeForm.patient_name}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: Arial, sans-serif; font-size: 11px; line-height: 1.3; padding: 20px; color: #000; }
+          .header { border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 16px; display: flex; justify-content: space-between; }
+          .header h1 { font-size: 18px; font-weight: bold; }
+          .header-right { text-align: right; font-size: 10px; }
+          .section-header { background: #f3f4f6; padding: 4px 8px; font-weight: bold; font-size: 11px; margin-bottom: 4px; }
+          .section-header-dark { background: #1f2937; color: white; padding: 4px 8px; font-weight: bold; font-size: 11px; margin-bottom: 4px; }
+          .section-header-alert { background: #fee2e2; color: #991b1b; padding: 4px 8px; font-weight: bold; font-size: 11px; margin-bottom: 4px; }
+          .section { margin-bottom: 16px; }
+          .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; }
+          .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px 16px; }
+          .col-span-2 { grid-column: span 2; }
+          .complaint-box { border: 2px solid #1f2937; padding: 8px; }
+          .alert-text { color: #b91c1c; font-weight: bold; }
+          .footer { border-top: 2px solid #000; padding-top: 12px; margin-top: 16px; }
+          .notes-box { background: #fafafa; border: 1px solid #d1d5db; padding: 12px; min-height: 80px; }
+          .timestamp { text-align: center; font-size: 9px; color: #9ca3af; margin-top: 8px; }
+          strong { font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h1>NEW PATIENT INTAKE SUMMARY</h1>
+            <p style="font-size: 12px; color: #666;">Pittsford Performance Care</p>
+          </div>
+          <div class="header-right">
+            <p><strong>Received:</strong> ${formatDateStr(intakeForm.submitted_at)}</p>
+            ${intakeForm.access_code ? `<p><strong>Code:</strong> ${intakeForm.access_code}</p>` : ''}
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-header">PATIENT INFORMATION</div>
+          <div class="grid-2">
+            <p><strong>Name:</strong> ${intakeForm.patient_name}</p>
+            <p><strong>DOB:</strong> ${formatDateStr(intakeForm.date_of_birth)}</p>
+            <p><strong>Phone:</strong> ${intakeForm.phone || "—"}</p>
+            <p><strong>Email:</strong> ${intakeForm.email || "—"}</p>
+            ${intakeForm.guardian_phone ? `<p class="col-span-2"><strong>Guardian Phone:</strong> ${intakeForm.guardian_phone}</p>` : ''}
+            ${intakeForm.address ? `<p class="col-span-2"><strong>Address:</strong> ${intakeForm.address}</p>` : ''}
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="grid-2">
+            <div>
+              <div class="section-header">EMERGENCY CONTACT</div>
+              <p><strong>Name:</strong> ${intakeForm.emergency_contact_name || "—"}</p>
+              <p><strong>Phone:</strong> ${intakeForm.emergency_contact_phone || "—"}</p>
+              <p><strong>Relationship:</strong> ${intakeForm.emergency_contact_relationship || "—"}</p>
+            </div>
+            <div>
+              <div class="section-header">INSURANCE</div>
+              <p><strong>Provider:</strong> ${intakeForm.insurance_provider || "—"}</p>
+              <p><strong>ID:</strong> ${intakeForm.insurance_id || "—"}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-header-dark">CHIEF COMPLAINT</div>
+          <div class="complaint-box">
+            ${primaryComplaint ? `
+              <p style="font-weight: bold;">${primaryComplaint.category || 'General'} — ${primaryComplaint.severity || 'Unknown'} — ${primaryComplaint.duration || 'Not specified'}</p>
+              <p style="margin-top: 4px;">${primaryComplaint.text || intakeForm.chief_complaint}</p>
+            ` : `<p>${intakeForm.chief_complaint || "Not specified"}</p>`}
+            ${intakeForm.pain_level !== null && intakeForm.pain_level !== undefined ? `<p style="margin-top: 4px;"><strong>Pain Level:</strong> ${intakeForm.pain_level}/10</p>` : ''}
+          </div>
+        </div>
+
+        ${complaints.length > 1 ? `
+          <div class="section">
+            <div class="section-header">ADDITIONAL CONCERNS</div>
+            ${complaints.filter(c => !c.isPrimary).map((complaint, i) => `
+              <p style="border-bottom: 1px solid #e5e7eb; padding: 4px 0;"><strong>#${i + 2}:</strong> ${complaint.category || 'General'} — ${complaint.severity || 'Unknown'} — ${complaint.text}</p>
+            `).join('')}
+          </div>
+        ` : ''}
+
+        ${(intakeForm.injury_date || intakeForm.injury_mechanism || intakeForm.symptoms) ? `
+          <div class="section">
+            <div class="section-header">INJURY DETAILS</div>
+            <div class="grid-2">
+              ${intakeForm.injury_date ? `<p><strong>Date:</strong> ${formatDateStr(intakeForm.injury_date)}</p>` : ''}
+              ${intakeForm.injury_mechanism ? `<p class="col-span-2"><strong>Mechanism:</strong> ${intakeForm.injury_mechanism}</p>` : ''}
+              ${intakeForm.symptoms ? `<p class="col-span-2"><strong>Symptoms:</strong> ${intakeForm.symptoms}</p>` : ''}
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="section">
+          <div class="grid-2">
+            <div>
+              <div class="section-header">MEDICAL HISTORY</div>
+              <p>${intakeForm.medical_history || "None reported"}</p>
+            </div>
+            <div>
+              <div class="section-header">CURRENT MEDICATIONS</div>
+              <p>${intakeForm.current_medications || "None reported"}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="${intakeForm.allergies && intakeForm.allergies.toLowerCase() !== 'none' && intakeForm.allergies.toLowerCase() !== 'nkda' ? 'section-header-alert' : 'section-header'}">
+            ALLERGIES ${intakeForm.allergies && intakeForm.allergies.toLowerCase() !== 'none' ? '⚠️' : ''}
+          </div>
+          <p class="${intakeForm.allergies && intakeForm.allergies.toLowerCase() !== 'none' ? 'alert-text' : ''}">${intakeForm.allergies || "NKDA (No Known Drug Allergies)"}</p>
+        </div>
+
+        ${intakeForm.primary_care_physician ? `
+          <div class="section">
+            <div class="section-header">PRIMARY CARE PHYSICIAN</div>
+            <div class="grid-3">
+              <p><strong>Name:</strong> ${intakeForm.primary_care_physician}</p>
+              <p><strong>Phone:</strong> ${intakeForm.pcp_phone || "—"}</p>
+              <p><strong>Fax:</strong> ${intakeForm.pcp_fax || "—"}</p>
+            </div>
+          </div>
+        ` : ''}
+
+        ${reviewOfSystems.length > 0 ? `
+          <div class="section">
+            <div class="section-header">REVIEW OF SYSTEMS — POSITIVE FINDINGS</div>
+            <p style="font-size: 10px;">${reviewOfSystems.join(" • ")}</p>
+          </div>
+        ` : ''}
+
+        <div class="footer">
+          <div class="notes-box">
+            <p style="font-weight: bold; font-size: 11px; margin-bottom: 8px;">EHR NOTES / ACTION ITEMS:</p>
+          </div>
+        </div>
+
+        <p class="timestamp">Printed: ${format(new Date(), "MMM d, yyyy 'at' h:mm a")}</p>
+      </body>
+      </html>
+    `;
+
+    // Write to iframe and print
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (iframeDoc) {
+      iframeDoc.open();
+      iframeDoc.write(printContent);
+      iframeDoc.close();
+      
+      // Wait for content to load then print
+      setTimeout(() => {
+        iframe.contentWindow?.print();
+      }, 100);
+    }
   };
 
   const calculateAge = (dob: string) => {
@@ -457,45 +627,12 @@ export function IntakeFormSummaryDialog({
         </ScrollArea>
       </DialogContent>
 
-      {/* Hidden print view - uses the standardized print format */}
-      {showPrintView && (
-        <IntakeSummaryPrintable 
-          data={{
-            patient_name: intakeForm.patient_name,
-            date_of_birth: intakeForm.date_of_birth,
-            phone: intakeForm.phone || undefined,
-            email: intakeForm.email || undefined,
-            address: intakeForm.address || undefined,
-            insurance_provider: intakeForm.insurance_provider || undefined,
-            insurance_id: intakeForm.insurance_id || undefined,
-            emergency_contact_name: intakeForm.emergency_contact_name || undefined,
-            emergency_contact_phone: intakeForm.emergency_contact_phone || undefined,
-            emergency_contact_relationship: intakeForm.emergency_contact_relationship || undefined,
-            primary_care_physician: intakeForm.primary_care_physician || undefined,
-            pcp_phone: intakeForm.pcp_phone || undefined,
-            pcp_fax: intakeForm.pcp_fax || undefined,
-            current_medications: intakeForm.current_medications || undefined,
-            allergies: intakeForm.allergies || undefined,
-            medical_history: intakeForm.medical_history || undefined,
-            chief_complaint: intakeForm.chief_complaint,
-            complaints: intakeForm.complaints?.map(c => ({
-              text: c.text,
-              category: c.category || '',
-              severity: c.severity || '',
-              duration: c.duration || '',
-              isPrimary: c.isPrimary || false,
-            })),
-            injury_date: intakeForm.injury_date || undefined,
-            injury_mechanism: intakeForm.injury_mechanism || undefined,
-            pain_level: intakeForm.pain_level ?? undefined,
-            symptoms: intakeForm.symptoms || undefined,
-            review_of_systems: intakeForm.review_of_systems || undefined,
-            consent_signed_name: intakeForm.consent_signed_name || undefined,
-            consent_date: intakeForm.consent_date || undefined,
-            submitted_at: intakeForm.submitted_at || undefined,
-          }}
-        />
-      )}
+      {/* Hidden iframe for printing */}
+      <iframe
+        ref={printIframeRef}
+        style={{ display: 'none', position: 'absolute', width: 0, height: 0 }}
+        title="Print Intake Summary"
+      />
     </Dialog>
   );
 }
