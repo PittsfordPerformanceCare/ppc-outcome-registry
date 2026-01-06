@@ -127,6 +127,7 @@ const SiteWhitePaperNeuroCovidWeb = lazy(() => import("./pages/site/SiteWhitePap
 const SiteWhitePaperPCSCaseReview = lazy(() => import("./pages/site/SiteWhitePaperPCSCaseReview"));
 const SiteWhitePaperCVSCaseReview = lazy(() => import("./pages/site/SiteWhitePaperCVSCaseReview"));
 const AcuteConcussionGuide = lazy(() => import("./pages/site/guides/AcuteConcussionGuide"));
+const GovernanceCharter = lazy(() => import("./pages/site/GovernanceCharter"));
 
 // ========== CARE TARGET PAGES ==========
 const PostConcussionSymptomsPage = lazy(() => import("./pages/care/PostConcussionSymptomsPage"));
@@ -210,6 +211,7 @@ const App = () => (
               <Route path="guides/concussion/acute-concussion-guide" element={<AcuteConcussionGuide />} />
               <Route path="privacy" element={<SitePrivacy />} />
               <Route path="terms" element={<SiteTerms />} />
+              <Route path="governance-charter" element={<GovernanceCharter />} />
             </Route>
 
             {/* ========== CARE TARGET PAGES (PUBLIC) ========== */}
