@@ -8,15 +8,25 @@ export function PostLoginRedirect() {
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, isClinician, isOwner, loading: roleLoading } = useUserRole();
   const [hasRedirected, setHasRedirected] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   const loading = authLoading || roleLoading;
 
+  // Wait for auth to fully resolve before making decisions
   useEffect(() => {
-    if (loading || hasRedirected) return;
+    if (!authLoading) {
+      setAuthChecked(true);
+    }
+  }, [authLoading]);
+
+  useEffect(() => {
+    // Don't redirect until auth has been fully checked
+    if (loading || hasRedirected || !authChecked) return;
     
     if (!user) {
-      // Not logged in, go to patient concierge
-      navigate("/patient/concierge", { replace: true });
+      // Not logged in - show staff login instead of patient concierge
+      // This is the /auth route used for staff
+      navigate("/staff-login", { replace: true });
       setHasRedirected(true);
       return;
     }
@@ -37,9 +47,9 @@ export function PostLoginRedirect() {
       navigate("/site/hub", { replace: true });
     }
     setHasRedirected(true);
-  }, [user, isAdmin, isClinician, isOwner, loading, navigate, hasRedirected]);
+  }, [user, isAdmin, isClinician, isOwner, loading, navigate, hasRedirected, authChecked]);
 
-  if (loading) {
+  if (loading || !authChecked) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-muted-foreground">Loading...</div>
