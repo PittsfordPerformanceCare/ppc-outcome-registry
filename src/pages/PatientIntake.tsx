@@ -1871,10 +1871,14 @@ export default function PatientIntake() {
                       <FormControl>
                         <Textarea 
                           rows={2} 
+                          placeholder="Street address, City, State, ZIP"
                           {...field} 
                           autoComplete="street-address"
                         />
                       </FormControl>
+                      <FormDescription className="text-xs">
+                        Include street, city, state, and ZIP code
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
