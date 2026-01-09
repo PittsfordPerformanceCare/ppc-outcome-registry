@@ -91,6 +91,13 @@ interface ProspectJourney {
     primary_complaint: string | null;
     assigned_clinician_id: string | null;
   };
+  // Episode data when converted
+  episodeData?: {
+    id: string;
+    patientName: string;
+    currentStatus: string | null;
+    createdAt: string;
+  };
 }
 
 interface ProspectJourneyTrackerProps {
@@ -161,12 +168,11 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           .select("*")
           .not("funnel_stage", "in", '("converted","closed_lost")')
           .order("created_at", { ascending: false }),
-        // Get care requests (main pipeline)
+        // Get care requests (main pipeline) - include those with episodes for "Episode Active" stage
         supabase
           .from("care_requests")
-          .select("*")
-          .not("status", "in", '("archived","declined","ARCHIVED","DECLINED","CONVERTED")')
-          .is("episode_id", null)
+          .select("*, episodes!care_requests_episode_id_fkey(id, patient_name, current_status, created_at)")
+          .not("status", "in", '("archived","declined","ARCHIVED","DECLINED")')
           .order("created_at", { ascending: false }),
         // Get pending episodes (for scheduled visits)
         supabase
@@ -364,6 +370,15 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const systemCategory = (payload.system_category as string) || null;
         const suggestedRoute = getSuggestedEpisodeType(systemCategory, primaryConcern);
 
+        // Extract episode data if linked
+        const episodeRecord = (cr as any).episodes;
+        const episodeData = episodeRecord ? {
+          id: episodeRecord.id,
+          patientName: episodeRecord.patient_name,
+          currentStatus: episodeRecord.current_status,
+          createdAt: episodeRecord.created_at,
+        } : undefined;
+
         journeys.push({
           id: cr.id,
           name: patientName,
@@ -391,6 +406,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
             primary_complaint: cr.primary_complaint,
             assigned_clinician_id: cr.assigned_clinician_id,
           },
+          episodeData,
         });
       }
 
@@ -500,9 +516,34 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
       )
       .subscribe();
 
+    // Subscribe to episodes table to show when Dr. Luckey creates an episode
+    const episodesChannel = supabase
+      .channel('prospect-journey-episodes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'episodes'
+        },
+        (payload) => {
+          console.log('[ProspectJourney] New episode created:', payload);
+          loadProspects();
+          
+          // Show toast when episode is created
+          toast({
+            title: "✅ Episode Created!",
+            description: `${(payload.new as any)?.patient_name || 'A patient'} is now in active care.`,
+            duration: 5000,
+          });
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(intakeFormsChannel);
       supabase.removeChannel(intakesChannel);
+      supabase.removeChannel(episodesChannel);
       if (printTimeoutRef.current) clearTimeout(printTimeoutRef.current);
     };
   }, [toast]);
@@ -622,6 +663,13 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
   };
 
   const activeProspects = prospects.filter(p => p.currentStage !== "episode_active");
+  // Show recently converted episodes (within last 7 days) for visibility
+  const recentlyConvertedProspects = prospects.filter(p => {
+    if (p.currentStage !== "episode_active" || !p.episodeData) return false;
+    const episodeCreated = new Date(p.episodeData.createdAt);
+    const daysSinceCreation = Math.floor((Date.now() - episodeCreated.getTime()) / (1000 * 60 * 60 * 24));
+    return daysSinceCreation <= 7;
+  });
   const actionRequiredCount = activeProspects.filter(p => !["waiting", "done"].includes(p.jenniferAction)).length;
   const waitingOnPatientCount = activeProspects.filter(p => p.jenniferAction === "waiting").length;
 
@@ -926,6 +974,46 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* Recently Converted Episodes - shows Dr. Luckey has created episodes */}
+          {recentlyConvertedProspects.length > 0 && (
+            <div className="mt-6 pt-4 border-t">
+              <h4 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                Recently Converted to Episodes ({recentlyConvertedProspects.length})
+              </h4>
+              <div className="space-y-2">
+                {recentlyConvertedProspects.map((prospect) => (
+                  <div
+                    key={prospect.id}
+                    className="p-3 rounded-lg border border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <div>
+                          <h4 className="font-medium">{prospect.name}</h4>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span className="text-green-700 dark:text-green-400 font-medium">Episode Active</span>
+                            <span>•</span>
+                            <span>
+                              Created {prospect.episodeData 
+                                ? formatDistanceToNow(new Date(prospect.episodeData.createdAt), { addSuffix: true })
+                                : 'recently'
+                              }
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <Badge className="bg-green-600 hover:bg-green-700 text-white">
+                        In Care
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
