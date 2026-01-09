@@ -161,7 +161,7 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
     
     try {
       // Fetch all data in parallel for efficiency
-      const [leadsResult, careRequestsResult, pendingEpisodesResult, intakeFormsResult, intakesResult] = await Promise.all([
+      const [leadsResult, careRequestsResult, linkedEpisodesResult, pendingEpisodesResult, intakeFormsResult, intakesResult] = await Promise.all([
         // Get leads that haven't been converted to care requests
         supabase
           .from("leads")
@@ -171,9 +171,14 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         // Get care requests (main pipeline) - include those with episodes for "Episode Active" stage
         supabase
           .from("care_requests")
-          .select("*, episodes!care_requests_episode_id_fkey(id, patient_name, current_status, created_at)")
+          .select("*")
           .not("status", "in", '("archived","declined","ARCHIVED","DECLINED")')
           .order("created_at", { ascending: false }),
+        // Get episodes linked to care requests for "Episode Active" display
+        supabase
+          .from("episodes")
+          .select("id, patient_name, current_status, created_at, care_request_id")
+          .not("care_request_id", "is", null),
         // Get pending episodes (for scheduled visits)
         supabase
           .from("pending_episodes")
@@ -192,20 +197,28 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
 
       if (leadsResult.error) throw leadsResult.error;
       if (careRequestsResult.error) throw careRequestsResult.error;
+      if (linkedEpisodesResult.error) throw linkedEpisodesResult.error;
       if (pendingEpisodesResult.error) throw pendingEpisodesResult.error;
       if (intakeFormsResult.error) throw intakeFormsResult.error;
       if (intakesResult.error) throw intakesResult.error;
 
       const leads = leadsResult.data || [];
       const careRequests = careRequestsResult.data || [];
+      const linkedEpisodes = linkedEpisodesResult.data || [];
       const pendingEpisodes = pendingEpisodesResult.data || [];
       const intakeForms = intakeFormsResult.data || [];
       const intakes = intakesResult.data || [];
+
+      // Create a map for quick lookup of episodes by care_request_id
+      const episodesByCareRequestId = new Map(
+        linkedEpisodes.map(ep => [ep.care_request_id, ep])
+      );
 
       console.log("[ProspectJourney] Fetched data:", {
         leads: leads.length,
         careRequests: careRequests.length,
         careRequestStatuses: careRequests.map(cr => ({ name: (cr.intake_payload as any)?.name, status: cr.status })),
+        linkedEpisodes: linkedEpisodes.length,
         pendingEpisodes: pendingEpisodes.length,
         intakeForms: intakeForms.length,
         intakes: intakes.length,
@@ -370,13 +383,13 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const systemCategory = (payload.system_category as string) || null;
         const suggestedRoute = getSuggestedEpisodeType(systemCategory, primaryConcern);
 
-        // Extract episode data if linked
-        const episodeRecord = (cr as any).episodes;
-        const episodeData = episodeRecord ? {
-          id: episodeRecord.id,
-          patientName: episodeRecord.patient_name,
-          currentStatus: episodeRecord.current_status,
-          createdAt: episodeRecord.created_at,
+        // Extract episode data if linked (from our map)
+        const linkedEpisode = episodesByCareRequestId.get(cr.id);
+        const episodeData = linkedEpisode ? {
+          id: linkedEpisode.id,
+          patientName: linkedEpisode.patient_name,
+          currentStatus: linkedEpisode.current_status,
+          createdAt: linkedEpisode.created_at,
         } : undefined;
 
         journeys.push({
