@@ -174,11 +174,11 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           .select("*")
           .not("status", "in", '("archived","declined","ARCHIVED","DECLINED")')
           .order("created_at", { ascending: false }),
-        // Get episodes linked to care requests for "Episode Active" display
+        // Get episodes linked to care requests OR recently created (for "Episode Active" display)
         supabase
           .from("episodes")
           .select("id, patient_name, current_status, created_at, care_request_id")
-          .not("care_request_id", "is", null),
+          .gte("created_at", new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()), // Last 30 days
         // Get pending episodes (for scheduled visits)
         supabase
           .from("pending_episodes")
@@ -209,9 +209,13 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
       const intakeForms = intakeFormsResult.data || [];
       const intakes = intakesResult.data || [];
 
-      // Create a map for quick lookup of episodes by care_request_id
+      // Create maps for quick lookup of episodes
       const episodesByCareRequestId = new Map(
-        linkedEpisodes.map(ep => [ep.care_request_id, ep])
+        linkedEpisodes.filter(ep => ep.care_request_id).map(ep => [ep.care_request_id, ep])
+      );
+      // Also create a map by normalized patient name for fallback matching
+      const episodesByPatientName = new Map(
+        linkedEpisodes.map(ep => [ep.patient_name.toLowerCase().trim(), ep])
       );
 
       console.log("[ProspectJourney] Fetched data:", {
@@ -343,7 +347,10 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const neurologicIntakeReceived = matchedIntake?.status === "completed" || matchedIntake?.status === "approved";
         const formsReceived = intakeFormsReceived || neurologicIntakeReceived || isFromFrontDeskQR;
         
-        const episodeActive = !!cr.episode_id;
+        // Check for episode - first by care_request linkage, then by patient name match
+        const linkedEpisode = episodesByCareRequestId.get(cr.id) || 
+          episodesByPatientName.get(patientName.toLowerCase().trim());
+        const episodeActive = !!cr.episode_id || !!linkedEpisode;
 
         // Determine current stage
         let currentStage: JourneyStage = "lead_submitted";
@@ -377,14 +384,13 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const createdDate = new Date(cr.created_at);
         const daysInPipeline = Math.floor((Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
 
-        console.log(`[ProspectJourney] ${patientName}: status=${statusUpper}, source=${cr.source}, isApproved=${isApproved}, formsReceived=${formsReceived}, isFromFrontDeskQR=${isFromFrontDeskQR}, currentStage=${currentStage}, jenniferAction=${jenniferAction}`);
+        console.log(`[ProspectJourney] ${patientName}: status=${statusUpper}, source=${cr.source}, isApproved=${isApproved}, formsReceived=${formsReceived}, isFromFrontDeskQR=${isFromFrontDeskQR}, episodeActive=${episodeActive}, currentStage=${currentStage}, jenniferAction=${jenniferAction}`);
 
         // Get system category from payload
         const systemCategory = (payload.system_category as string) || null;
         const suggestedRoute = getSuggestedEpisodeType(systemCategory, primaryConcern);
 
-        // Extract episode data if linked (from our map)
-        const linkedEpisode = episodesByCareRequestId.get(cr.id);
+        // Extract episode data if linked
         const episodeData = linkedEpisode ? {
           id: linkedEpisode.id,
           patientName: linkedEpisode.patient_name,
