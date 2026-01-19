@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "./useAuth";
 import { useToast } from "./use-toast";
 
-const TIMEOUT_DURATION = 15 * 60 * 1000; // 15 minutes
-const WARNING_DURATION = 2 * 60 * 1000; // 2 minutes before timeout
+const TIMEOUT_DURATION = 60 * 60 * 1000; // 1 hour
+const WARNING_DURATION = 5 * 60 * 1000; // 5 minutes before timeout
 
 export function useSessionTimeout() {
   const { signOut, user } = useAuth();
@@ -32,17 +32,17 @@ export function useSessionTimeout() {
     clearTimers();
     setShowWarning(false);
 
-    // Set warning timer (13 minutes)
+    // Set warning timer (55 minutes)
     warningRef.current = setTimeout(() => {
       setShowWarning(true);
       toast({
         title: "Session expiring soon",
-        description: "Your session will expire in 2 minutes due to inactivity.",
+        description: "Your session will expire in 5 minutes due to inactivity.",
         duration: 10000,
       });
     }, TIMEOUT_DURATION - WARNING_DURATION);
 
-    // Set logout timer (15 minutes)
+    // Set logout timer (1 hour)
     timeoutRef.current = setTimeout(() => {
       handleLogout();
     }, TIMEOUT_DURATION);
