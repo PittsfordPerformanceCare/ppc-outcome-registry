@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Users, BarChart3, Settings, FileText, Activity, AlertTriangle, ClipboardList, Link2, Flag, Home, TrendingUp, Calendar, Sun, ExternalLink, LogOut, Stethoscope, Route, ChevronRight } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { TeamChatPanel } from "@/components/TeamChatPanel";
+import { AdminNotificationsPanel } from "@/components/AdminNotificationsPanel";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -56,6 +57,7 @@ export function AdminLayout() {
               <p className="text-sm text-muted-foreground">Manage leads & analytics</p>
             </div>
             <div className="flex items-center gap-1">
+              <AdminNotificationsPanel />
               <TeamChatPanel />
               <NotificationBell />
             </div>

@@ -497,6 +497,28 @@ export function IntakeToEpisodeConverter({ intakeForm, open, onClose, onSuccess 
         // Don't fail the whole conversion if notification fails
       }
 
+      // Send admin notification for intake conversion
+      try {
+        await supabase.functions.invoke('send-admin-notification', {
+          body: {
+            notificationType: 'intake_converted',
+            senderName: profile?.clinician_name || profile?.full_name || 'Clinician',
+            senderId: user.id,
+            patientName: intakeForm.patient_name,
+            entityId: episodeId,
+            entityType: 'episode',
+            additionalDetails: {
+              region: selectedRegion,
+              diagnosis: selectedDiagnosis || intakeForm.chief_complaint,
+            },
+          },
+        });
+        console.log('[IntakeToEpisodeConverter] Admin notification sent');
+      } catch (notifError) {
+        console.error('[IntakeToEpisodeConverter] Failed to send admin notification:', notifError);
+        // Don't fail the whole conversion if notification fails
+      }
+
       // Prompt for baseline assessment instead of immediately closing
       setConverting(false);
       setShowBaselineAssessment(true);
