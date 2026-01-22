@@ -240,6 +240,29 @@ export function DischargeDecisionDialog({
         care_paused: "Episode discharged - care paused",
       };
 
+      // Send admin notification for episode discharge
+      try {
+        await supabase.functions.invoke('send-admin-notification', {
+          body: {
+            notificationType: 'episode_discharged',
+            senderName: profile?.full_name || 'Clinician',
+            senderId: user.id,
+            patientName,
+            entityId: episodeId,
+            entityType: 'episode',
+            additionalDetails: {
+              region,
+              outcome: outcomeMessages[dischargeOutcome].replace('Episode discharged - ', ''),
+              dischargeDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            },
+          },
+        });
+        console.log('[DischargeDecisionDialog] Admin notification sent');
+      } catch (notifError) {
+        console.error('[DischargeDecisionDialog] Failed to send admin notification:', notifError);
+        // Don't fail the whole discharge if notification fails
+      }
+
       toast.success(outcomeMessages[dischargeOutcome]);
       handleClose();
       onSuccess?.();
