@@ -161,13 +161,17 @@ export function validateLeadPayload(body: Record<string, unknown>): ValidationRe
     errors.push({ field: "contact", message: "Email or phone is required" });
   }
 
-  // Sanitize optional text fields
+  // Sanitize optional text fields (including new routing fields)
   const textFields = [
     "who_is_this_for",
     "primary_concern",
     "symptom_summary",
     "preferred_contact_method",
     "notes",
+    "time_sensitivity",
+    "goal_of_contact",
+    "system_category",
+    "route_label",
     "utm_source",
     "utm_medium",
     "utm_campaign",

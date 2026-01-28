@@ -5,11 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Phone, Mail } from "lucide-react";
+import {
+  PRIMARY_CONCERN_OPTIONS,
+  TIME_SENSITIVITY_OPTIONS,
+  REFERRAL_PURPOSE_OPTIONS,
+  mapSystemCategory,
+  computeRouteLabel,
+} from "@/lib/conciergeRouting";
 
 const PatientIntakeReferral = () => {
   const navigate = useNavigate();
@@ -28,7 +35,9 @@ const PatientIntakeReferral = () => {
     providerEmail: "",
     providerPhone: "",
     patientName: "",
-    referralReason: "",
+    referralCategory: "",
+    referralPurpose: "",
+    timeSensitivity: "no", // Default to non-urgent for referrals
     consentConfirmed: false,
   });
 
@@ -39,7 +48,7 @@ const PatientIntakeReferral = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.providerName || !formData.providerEmail || !formData.patientName || !formData.referralReason) {
+    if (!formData.providerName || !formData.providerEmail || !formData.patientName || !formData.referralCategory || !formData.referralPurpose) {
       toast({
         title: "Missing Information",
         description: "Please complete all required fields.",
@@ -66,6 +75,13 @@ const PatientIntakeReferral = () => {
         if (stored) storedTracking = JSON.parse(stored);
       } catch {}
 
+      // Compute routing
+      const systemCategory = mapSystemCategory(formData.referralCategory);
+      const routeLabel = computeRouteLabel(formData.referralCategory, formData.timeSensitivity);
+
+      // Build operational notes (no clinical content)
+      const notes = `Referring Provider: ${formData.providerName}. Practice: ${formData.practiceName || "Not specified"}.`;
+
       // Submit via edge function with bot protection
       const { data, error } = await supabase.functions.invoke("create-lead", {
         body: {
@@ -73,11 +89,15 @@ const PatientIntakeReferral = () => {
           email: formData.providerEmail,
           phone: formData.providerPhone || null,
           preferred_contact_method: "email",
-          primary_concern: formData.referralReason,
+          system_category: systemCategory,
+          primary_concern: formData.referralCategory,
+          time_sensitivity: formData.timeSensitivity,
+          goal_of_contact: formData.referralPurpose,
+          route_label: routeLabel,
           who_is_this_for: "referral",
-          funnel_stage: "provider_referral",
-          checkpoint_status: "referral_lead_submitted",
-          notes: `Referring Provider: ${formData.providerName}. Practice: ${formData.practiceName}. Provider phone: ${formData.providerPhone}`,
+          funnel_stage: "lead",
+          checkpoint_status: "lead_created",
+          notes: notes,
           origin_page: searchParams.get("origin_page") || storedTracking.origin_page || "/patient/intake/referral",
           origin_cta: searchParams.get("origin_cta") || storedTracking.origin_cta || null,
           utm_source: searchParams.get("utm_source") || storedTracking.utm_source || null,
@@ -316,6 +336,26 @@ const PatientIntakeReferral = () => {
               <h3 className="text-lg font-medium text-foreground mb-6">Referral Form</h3>
               
               <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Honeypot fields - hidden from users */}
+                <div className="hidden" aria-hidden="true">
+                  <input
+                    type="text"
+                    name="website"
+                    value={honeypotWebsite}
+                    onChange={(e) => setHoneypotWebsite(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                  <input
+                    type="text"
+                    name="fax"
+                    value={honeypotFax}
+                    onChange={(e) => setHoneypotFax(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="providerName">Your Name *</Label>
@@ -371,19 +411,64 @@ const PatientIntakeReferral = () => {
                     className="h-11"
                     required
                   />
+                  <p className="text-xs text-muted-foreground">Do not include clinical details.</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="referralReason">Reason for Referral *</Label>
-                  <Textarea
-                    id="referralReason"
-                    value={formData.referralReason}
-                    onChange={(e) => handleChange("referralReason", e.target.value)}
-                    placeholder="Brief clinical context..."
-                    rows={4}
-                    className="resize-none"
-                    required
-                  />
+                  <Label htmlFor="referralCategory">Referral Category *</Label>
+                  <Select
+                    value={formData.referralCategory}
+                    onValueChange={(value) => handleChange("referralCategory", value)}
+                  >
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PRIMARY_CONCERN_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="referralPurpose">Referral Purpose *</Label>
+                  <Select
+                    value={formData.referralPurpose}
+                    onValueChange={(value) => handleChange("referralPurpose", value)}
+                  >
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Select purpose" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {REFERRAL_PURPOSE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="timeSensitivity">Time Sensitivity</Label>
+                  <Select
+                    value={formData.timeSensitivity}
+                    onValueChange={(value) => handleChange("timeSensitivity", value)}
+                  >
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder="Select urgency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TIME_SENSITIVITY_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="flex items-start space-x-3 pt-2">
@@ -396,6 +481,11 @@ const PatientIntakeReferral = () => {
                     I confirm that patient consent has been obtained for this referral.
                   </Label>
                 </div>
+
+                {/* Microcopy */}
+                <p className="text-sm text-muted-foreground text-center px-4 pt-2">
+                  Clinical details and medical history will be collected securely after next steps are confirmed.
+                </p>
 
                 <Button type="submit" className="w-full h-11" disabled={isSubmitting}>
                   {isSubmitting ? (

@@ -2374,6 +2374,7 @@ export type Database = {
           email: string | null
           episode_opened_at: string | null
           funnel_stage: string | null
+          goal_of_contact: string | null
           id: string
           intake_completed_at: string | null
           intake_first_reminder_sent_at: string | null
@@ -2389,9 +2390,11 @@ export type Database = {
           pillar_origin: string | null
           preferred_contact_method: string | null
           primary_concern: string | null
+          route_label: string | null
           severity_score: number | null
           symptom_summary: string | null
           system_category: string | null
+          time_sensitivity: string | null
           updated_at: string
           utm_campaign: string | null
           utm_content: string | null
@@ -2410,6 +2413,7 @@ export type Database = {
           email?: string | null
           episode_opened_at?: string | null
           funnel_stage?: string | null
+          goal_of_contact?: string | null
           id?: string
           intake_completed_at?: string | null
           intake_first_reminder_sent_at?: string | null
@@ -2425,9 +2429,11 @@ export type Database = {
           pillar_origin?: string | null
           preferred_contact_method?: string | null
           primary_concern?: string | null
+          route_label?: string | null
           severity_score?: number | null
           symptom_summary?: string | null
           system_category?: string | null
+          time_sensitivity?: string | null
           updated_at?: string
           utm_campaign?: string | null
           utm_content?: string | null
@@ -2446,6 +2452,7 @@ export type Database = {
           email?: string | null
           episode_opened_at?: string | null
           funnel_stage?: string | null
+          goal_of_contact?: string | null
           id?: string
           intake_completed_at?: string | null
           intake_first_reminder_sent_at?: string | null
@@ -2461,9 +2468,11 @@ export type Database = {
           pillar_origin?: string | null
           preferred_contact_method?: string | null
           primary_concern?: string | null
+          route_label?: string | null
           severity_score?: number | null
           symptom_summary?: string | null
           system_category?: string | null
+          time_sensitivity?: string | null
           updated_at?: string
           utm_campaign?: string | null
           utm_content?: string | null
