@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,14 +14,22 @@ import { Loader2, User, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { FormField, FormErrorSummary } from "@/components/ui/form-field";
 import { cn } from "@/lib/utils";
+import {
+  PRIMARY_CONCERN_OPTIONS,
+  TIME_SENSITIVITY_OPTIONS,
+  SELF_GOAL_OPTIONS,
+  mapSystemCategory,
+  computeRouteLabel,
+} from "@/lib/conciergeRouting";
 
 // Field labels for error messages
 const fieldLabels: Record<string, string> = {
   firstName: "First Name",
   lastName: "Last Name",
   email: "Email Address",
-  primaryReason: "Primary Concern",
-  otherReason: "Reason Details",
+  primaryConcern: "Primary Concern",
+  timeSensitivity: "Time Sensitivity",
+  goalOfContact: "Goal of Contact",
   consentToContact: "Consent",
 };
 
@@ -42,7 +49,7 @@ interface FieldErrors {
   [key: string]: string | undefined;
 }
 
-const PatientIntakeAdult = () => {
+const PatientIntakeSelf = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -65,13 +72,9 @@ const PatientIntakeAdult = () => {
     email: "",
     phone: "",
     preferredContact: "email",
-    primaryReason: "",
-    otherReason: "",
-    priorConcussionCare: "",
-    symptomDuration: "",
-    symptomDescription: "",
-    previousTreatment: "",
-    hasReferral: "",
+    primaryConcern: "",
+    timeSensitivity: "",
+    goalOfContact: "",
     consentToContact: false,
   });
 
@@ -89,20 +92,19 @@ const PatientIntakeAdult = () => {
         return validateRequired(value as string, "Last name");
       case "email":
         return validateEmail(value as string);
-      case "primaryReason":
+      case "primaryConcern":
         return validateRequired(value as string, "Primary concern");
-      case "otherReason":
-        if (formData.primaryReason === "other") {
-          return validateRequired(value as string, "Reason details");
-        }
-        return undefined;
+      case "timeSensitivity":
+        return validateRequired(value as string, "Time sensitivity");
+      case "goalOfContact":
+        return validateRequired(value as string, "Goal of contact");
       case "consentToContact":
         if (!value) return "You must consent to be contacted";
         return undefined;
       default:
         return undefined;
     }
-  }, [formData.primaryReason]);
+  }, []);
 
   // Handle field blur - validate on blur
   const handleBlur = useCallback((field: string, value: string | boolean) => {
@@ -128,12 +130,9 @@ const PatientIntakeAdult = () => {
     errors.firstName = validateField("firstName", formData.firstName);
     errors.lastName = validateField("lastName", formData.lastName);
     errors.email = validateField("email", formData.email);
-    errors.primaryReason = validateField("primaryReason", formData.primaryReason);
-    
-    if (formData.primaryReason === "other") {
-      errors.otherReason = validateField("otherReason", formData.otherReason);
-    }
-    
+    errors.primaryConcern = validateField("primaryConcern", formData.primaryConcern);
+    errors.timeSensitivity = validateField("timeSensitivity", formData.timeSensitivity);
+    errors.goalOfContact = validateField("goalOfContact", formData.goalOfContact);
     errors.consentToContact = validateField("consentToContact", formData.consentToContact);
     
     // Filter out undefined values
@@ -172,7 +171,10 @@ const PatientIntakeAdult = () => {
     const errors = validateAllFields();
     
     // Mark all required fields as touched
-    setTouchedFields(new Set(["firstName", "lastName", "email", "primaryReason", "otherReason", "consentToContact"]));
+    setTouchedFields(new Set([
+      "firstName", "lastName", "email", "primaryConcern", 
+      "timeSensitivity", "goalOfContact", "consentToContact"
+    ]));
     setFieldErrors(errors);
     
     if (Object.keys(errors).length > 0) {
@@ -187,7 +189,6 @@ const PatientIntakeAdult = () => {
     }
     
     setShowErrorSummary(false);
-
     setIsSubmitting(true);
 
     try {
@@ -202,26 +203,13 @@ const PatientIntakeAdult = () => {
       const utmMedium = searchParams.get("utm_medium") || storedTracking.utm_medium || null;
       const utmCampaign = searchParams.get("utm_campaign") || storedTracking.utm_campaign || null;
       const utmContent = searchParams.get("utm_content") || storedTracking.utm_content || null;
-      const originPage = searchParams.get("origin_page") || storedTracking.origin_page || "/patient/intake/adult";
+      const originPage = searchParams.get("origin_page") || storedTracking.origin_page || "/patient/intake/self";
       const originCta = searchParams.get("origin_cta") || storedTracking.origin_cta || null;
       const pillarOrigin = searchParams.get("pillar_origin") || storedTracking.pillar_origin || null;
 
-      // Map primary reason to system category
-      const reasonToCategory: Record<string, string> = {
-        "acute": "msk",
-        "concussion": "concussion",
-        "dizziness": "balance",
-        "headaches": "concussion",
-        "neck": "msk",
-        "chronic": "msk",
-        "neurologic": "cognitive",
-        "sports": "msk",
-        "other": "other",
-      };
-
-      const primaryReasonDisplay = formData.primaryReason === "other" 
-        ? `Other: ${formData.otherReason}` 
-        : formData.primaryReason;
+      // Compute routing
+      const systemCategory = mapSystemCategory(formData.primaryConcern);
+      const routeLabel = computeRouteLabel(formData.primaryConcern, formData.timeSensitivity);
 
       // Submit via edge function with bot protection
       const { data, error } = await supabase.functions.invoke("create-lead", {
@@ -230,13 +218,15 @@ const PatientIntakeAdult = () => {
           email: formData.email,
           phone: formData.phone || null,
           preferred_contact_method: formData.preferredContact,
-          system_category: reasonToCategory[formData.primaryReason] || "other",
-          primary_concern: primaryReasonDisplay,
-          symptom_summary: formData.symptomDescription || null,
+          system_category: systemCategory,
+          primary_concern: formData.primaryConcern,
+          time_sensitivity: formData.timeSensitivity,
+          goal_of_contact: formData.goalOfContact,
+          route_label: routeLabel,
           who_is_this_for: "self",
-          funnel_stage: "lead_intake",
-          checkpoint_status: "lead_intake_completed",
-          notes: `Primary reason: ${primaryReasonDisplay}. ${formData.priorConcussionCare ? `Prior concussion care: ${formData.priorConcussionCare}. ` : ''}Duration: ${formData.symptomDuration}. Previous treatment: ${formData.previousTreatment}. Has referral: ${formData.hasReferral}`,
+          funnel_stage: "lead",
+          checkpoint_status: "lead_created",
+          notes: formData.preferredContact !== "email" ? `Preferred contact: ${formData.preferredContact}` : null,
           origin_page: originPage,
           origin_cta: originCta,
           pillar_origin: pillarOrigin,
@@ -269,7 +259,7 @@ const PatientIntakeAdult = () => {
         description: "Thank you! We'll be in touch soon.",
       });
 
-      navigate(`/patient/thank-you?reason=${encodeURIComponent(formData.primaryReason)}`);
+      navigate(`/patient/thank-you?reason=${encodeURIComponent(formData.primaryConcern)}`);
     } catch (error: any) {
       console.error("Error submitting intake:", error);
       toast({
@@ -297,9 +287,9 @@ const PatientIntakeAdult = () => {
           <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center mx-auto mb-3">
             <User className="h-6 w-6 text-blue-600" />
           </div>
-          <CardTitle className="text-2xl">Adult Lead Intake</CardTitle>
+          <CardTitle className="text-2xl">Adult Concierge Intake</CardTitle>
           <CardDescription>
-            Tell us about yourself and your symptoms so we can prepare for your evaluation.
+            Tell us about yourself so we can connect you with the right care.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -319,7 +309,27 @@ const PatientIntakeAdult = () => {
               />
             )}
 
-            {/* Personal Information */}
+            {/* Honeypot fields - hidden from users */}
+            <div className="hidden" aria-hidden="true">
+              <input
+                type="text"
+                name="website"
+                value={honeypotWebsite}
+                onChange={(e) => setHoneypotWebsite(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+              <input
+                type="text"
+                name="fax"
+                value={honeypotFax}
+                onChange={(e) => setHoneypotFax(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
+            {/* Contact Information */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg border-b pb-2">Your Information</h3>
               
@@ -404,172 +414,104 @@ const PatientIntakeAdult = () => {
                     <RadioGroupItem value="phone" id="contact-phone" />
                     <Label htmlFor="contact-phone" className="font-normal">Phone</Label>
                   </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="text" id="contact-text" />
+                    <Label htmlFor="contact-text" className="font-normal">Text</Label>
+                  </div>
                 </RadioGroup>
               </div>
             </div>
 
-            {/* Primary Reason for Visit */}
+            {/* Routing Information */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">Primary Reason for Visit</h3>
+              <h3 className="font-semibold text-lg border-b pb-2">How Can We Help?</h3>
 
               <FormField
-                label="What best describes your main concern?"
-                htmlFor="primaryReason"
+                label="Primary Concern"
+                htmlFor="primaryConcern"
                 required
-                error={fieldErrors.primaryReason}
-                touched={touchedFields.has("primaryReason")}
-                hint="(Select one)"
+                error={fieldErrors.primaryConcern}
+                touched={touchedFields.has("primaryConcern")}
               >
                 <Select
-                  value={formData.primaryReason}
+                  value={formData.primaryConcern}
                   onValueChange={(value) => {
-                    handleChange("primaryReason", value);
-                    touchField("primaryReason");
-                    // Clear prior care if not concussion
-                    if (value !== "concussion") {
-                      handleChange("priorConcussionCare", "");
-                    }
+                    handleChange("primaryConcern", value);
+                    touchField("primaryConcern");
                   }}
                 >
                   <SelectTrigger className={cn(
-                    touchedFields.has("primaryReason") && fieldErrors.primaryReason && "border-destructive focus-visible:ring-destructive"
+                    touchedFields.has("primaryConcern") && fieldErrors.primaryConcern && "border-destructive focus-visible:ring-destructive"
                   )}>
                     <SelectValue placeholder="Select your main concern" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="acute">Recent Injury / Acute Symptoms (Rapid Evaluation Needed)</SelectItem>
-                    <SelectItem value="concussion">Concussion / Head Injury (recent or past)</SelectItem>
-                    <SelectItem value="dizziness">Dizziness / Vertigo / Balance Issues</SelectItem>
-                    <SelectItem value="headaches">Headaches / Migraines</SelectItem>
-                    <SelectItem value="neck">Neck Pain / Whiplash</SelectItem>
-                    <SelectItem value="chronic">Chronic Pain or Unresolved Injury</SelectItem>
-                    <SelectItem value="neurologic">Neurologic Symptoms (brain fog, fatigue, coordination, vision issues)</SelectItem>
-                    <SelectItem value="sports">Sports Performance / Return-to-Play Clearance</SelectItem>
-                    <SelectItem value="other">Other (please specify)</SelectItem>
+                    {PRIMARY_CONCERN_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormField>
 
-              {/* Other reason text field */}
-              {formData.primaryReason === "other" && (
-                <FormField
-                  label="Please specify"
-                  htmlFor="otherReason"
-                  required
-                  error={fieldErrors.otherReason}
-                  touched={touchedFields.has("otherReason")}
-                >
-                  <Input
-                    id="otherReason"
-                    value={formData.otherReason}
-                    onChange={(e) => handleChange("otherReason", e.target.value)}
-                    onBlur={(e) => handleBlur("otherReason", e.target.value)}
-                    placeholder="Describe your main concern..."
-                    className={cn(
-                      touchedFields.has("otherReason") && fieldErrors.otherReason && "border-destructive focus-visible:ring-destructive"
-                    )}
-                  />
-                </FormField>
-              )}
-
-              {/* Conditional Prior Care question for concussion patients */}
-              {formData.primaryReason === "concussion" && (
-                <div className="space-y-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                  <div className="space-y-2">
-                    <Label className="font-medium">Prior Care (for coordination purposes only)</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Have you previously been evaluated by another provider for this concussion or head injury?
-                    </p>
-                    <p className="text-sm text-muted-foreground">(Select one)</p>
-                  </div>
-                  <Select
-                    value={formData.priorConcussionCare}
-                    onValueChange={(value) => handleChange("priorConcussionCare", value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select an option" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pcp">Yes — Primary Care Provider (PCP)</SelectItem>
-                      <SelectItem value="neurologist">Yes — Neurologist</SelectItem>
-                      <SelectItem value="other-provider">Yes — Other provider</SelectItem>
-                      <SelectItem value="no">No</SelectItem>
-                      <SelectItem value="not-sure">Not sure</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground italic mt-2">
-                    All concussion and head injury patients receive a comprehensive neurologic evaluation at Pittsford Performance Care. 
-                    This question helps us understand prior care and coordinate appropriately.
-                  </p>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="symptomDuration">How long have you had these symptoms?</Label>
+              <FormField
+                label="Is this time-sensitive?"
+                htmlFor="timeSensitivity"
+                required
+                error={fieldErrors.timeSensitivity}
+                touched={touchedFields.has("timeSensitivity")}
+              >
                 <Select
-                  value={formData.symptomDuration}
-                  onValueChange={(value) => handleChange("symptomDuration", value)}
+                  value={formData.timeSensitivity}
+                  onValueChange={(value) => {
+                    handleChange("timeSensitivity", value);
+                    touchField("timeSensitivity");
+                  }}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select duration" />
+                  <SelectTrigger className={cn(
+                    touchedFields.has("timeSensitivity") && fieldErrors.timeSensitivity && "border-destructive focus-visible:ring-destructive"
+                  )}>
+                    <SelectValue placeholder="Select urgency" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="less-than-2-weeks">Less than 2 weeks</SelectItem>
-                    <SelectItem value="2-4-weeks">2-4 weeks</SelectItem>
-                    <SelectItem value="1-3-months">1-3 months</SelectItem>
-                    <SelectItem value="3-6-months">3-6 months</SelectItem>
-                    <SelectItem value="6-12-months">6-12 months</SelectItem>
-                    <SelectItem value="over-1-year">Over 1 year</SelectItem>
+                    {TIME_SENSITIVITY_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </FormField>
 
-              <div className="space-y-2">
-                <Label htmlFor="symptomDescription">Brief Description of Symptoms</Label>
-                <Textarea
-                  id="symptomDescription"
-                  value={formData.symptomDescription}
-                  onChange={(e) => handleChange("symptomDescription", e.target.value)}
-                  placeholder="Describe your main symptoms and how they affect your daily life..."
-                  rows={4}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Have you been treated for this before?</Label>
-                <RadioGroup
-                  value={formData.previousTreatment}
-                  onValueChange={(value) => handleChange("previousTreatment", value)}
-                  className="flex gap-4"
+              <FormField
+                label="Goal of Contact"
+                htmlFor="goalOfContact"
+                required
+                error={fieldErrors.goalOfContact}
+                touched={touchedFields.has("goalOfContact")}
+              >
+                <Select
+                  value={formData.goalOfContact}
+                  onValueChange={(value) => {
+                    handleChange("goalOfContact", value);
+                    touchField("goalOfContact");
+                  }}
                 >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="treatment-yes" />
-                    <Label htmlFor="treatment-yes" className="font-normal">Yes</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="treatment-no" />
-                    <Label htmlFor="treatment-no" className="font-normal">No</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Do you have a referral from another provider?</Label>
-                <RadioGroup
-                  value={formData.hasReferral}
-                  onValueChange={(value) => handleChange("hasReferral", value)}
-                  className="flex gap-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="referral-yes" />
-                    <Label htmlFor="referral-yes" className="font-normal">Yes</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="referral-no" />
-                    <Label htmlFor="referral-no" className="font-normal">No</Label>
-                  </div>
-                </RadioGroup>
-              </div>
+                  <SelectTrigger className={cn(
+                    touchedFields.has("goalOfContact") && fieldErrors.goalOfContact && "border-destructive focus-visible:ring-destructive"
+                  )}>
+                    <SelectValue placeholder="What are you hoping to accomplish?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SELF_GOAL_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
             </div>
 
             {/* Consent */}
@@ -600,6 +542,11 @@ const PatientIntakeAdult = () => {
               </div>
             </div>
 
+            {/* Microcopy */}
+            <p className="text-sm text-muted-foreground text-center px-4">
+              Clinical details and medical history will be collected securely after next steps are confirmed.
+            </p>
+
             {/* Submit */}
             <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
               {isSubmitting ? (
@@ -618,4 +565,4 @@ const PatientIntakeAdult = () => {
   );
 };
 
-export default PatientIntakeAdult;
+export default PatientIntakeSelf;

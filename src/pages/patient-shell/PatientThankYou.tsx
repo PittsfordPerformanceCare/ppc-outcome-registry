@@ -2,14 +2,14 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, ArrowRight, Phone, Mail, Clock, BookOpen } from "lucide-react";
-import { isConcussionEducationCandidate } from "@/utils/concussionEducationMatcher";
+import { shouldDeliverConcussionEducation, CONCUSSION_EDUCATION_CONCERN } from "@/lib/conciergeRouting";
 
 const PatientThankYou = () => {
   const [searchParams] = useSearchParams();
   const primaryReason = searchParams.get("reason");
   
-  // Show concussion guide for concussion, head injury, headache, or dizziness-related intakes
-  const showConcussionGuide = isConcussionEducationCandidate(primaryReason);
+  // Show concussion guide only for exact concussion concern selection
+  const showConcussionGuide = shouldDeliverConcussionEducation(primaryReason);
 
   return (
     <div className="container mx-auto py-12 px-4 max-w-2xl">
@@ -24,7 +24,7 @@ const PatientThankYou = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
-          {/* Concussion Guide CTA - Shown for concussion-related intakes */}
+          {/* Concussion Guide CTA - Shown for concussion concern selection only */}
           {showConcussionGuide && (
             <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-6 text-left border border-blue-200 dark:border-blue-800">
               <h3 className="font-semibold text-lg mb-2 flex items-center gap-2 text-blue-900 dark:text-blue-100">
@@ -35,7 +35,7 @@ const PatientThankYou = () => {
                 First 24 hours + first week considerations
               </p>
               <p className="text-sm text-blue-800 dark:text-blue-200 mb-4">
-                Based on your reported symptoms, we recommend reviewing our acute concussion guide for important early recovery guidance, including red flags and energy management.
+                Based on your reported concern, we recommend reviewing our acute concussion guide for important early recovery guidance, including red flags and energy management.
               </p>
               <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Link to="/site/guides/concussion/acute-concussion-guide">
@@ -45,6 +45,11 @@ const PatientThankYou = () => {
               </Button>
             </div>
           )}
+
+          {/* Microcopy */}
+          <p className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-4">
+            Clinical details and medical history will be collected securely after next steps are confirmed.
+          </p>
 
           {/* What happens next */}
           <div className="bg-muted/50 rounded-lg p-6 text-left">

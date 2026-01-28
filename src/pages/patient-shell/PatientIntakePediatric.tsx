@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -15,6 +14,13 @@ import { Loader2, Users, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { FormField, FormErrorSummary } from "@/components/ui/form-field";
 import { cn } from "@/lib/utils";
+import {
+  PRIMARY_CONCERN_OPTIONS,
+  TIME_SENSITIVITY_OPTIONS,
+  PEDIATRIC_GOAL_OPTIONS,
+  mapSystemCategory,
+  computeRouteLabel,
+} from "@/lib/conciergeRouting";
 
 // Field labels for error messages
 const fieldLabels: Record<string, string> = {
@@ -23,6 +29,8 @@ const fieldLabels: Record<string, string> = {
   parentEmail: "Email Address",
   childFirstName: "Child's First Name",
   primaryConcern: "Primary Concern",
+  timeSensitivity: "Time Sensitivity",
+  goalOfContact: "Goal of Contact",
   consentToContact: "Consent",
 };
 
@@ -71,14 +79,10 @@ const PatientIntakePediatric = () => {
     childLastName: "",
     childAge: "",
     childGrade: "",
-    // Symptoms
+    // Routing
     primaryConcern: "",
-    headInjuryEvaluation: "",
-    symptomDuration: "",
-    schoolSymptoms: "",
-    athleticSymptoms: "",
-    symptomDescription: "",
-    previousEvaluation: "",
+    timeSensitivity: "",
+    goalOfContact: "",
     consentToContact: false,
   });
 
@@ -100,6 +104,10 @@ const PatientIntakePediatric = () => {
         return validateRequired(value as string, "Child's first name");
       case "primaryConcern":
         return validateRequired(value as string, "Primary concern");
+      case "timeSensitivity":
+        return validateRequired(value as string, "Time sensitivity");
+      case "goalOfContact":
+        return validateRequired(value as string, "Goal of contact");
       case "consentToContact":
         if (!value) return "You must consent to be contacted";
         return undefined;
@@ -134,6 +142,8 @@ const PatientIntakePediatric = () => {
     errors.parentEmail = validateField("parentEmail", formData.parentEmail);
     errors.childFirstName = validateField("childFirstName", formData.childFirstName);
     errors.primaryConcern = validateField("primaryConcern", formData.primaryConcern);
+    errors.timeSensitivity = validateField("timeSensitivity", formData.timeSensitivity);
+    errors.goalOfContact = validateField("goalOfContact", formData.goalOfContact);
     errors.consentToContact = validateField("consentToContact", formData.consentToContact);
     
     // Filter out undefined values
@@ -172,7 +182,10 @@ const PatientIntakePediatric = () => {
     const errors = validateAllFields();
     
     // Mark all required fields as touched
-    setTouchedFields(new Set(["parentFirstName", "parentLastName", "parentEmail", "childFirstName", "primaryConcern", "consentToContact"]));
+    setTouchedFields(new Set([
+      "parentFirstName", "parentLastName", "parentEmail", "childFirstName",
+      "primaryConcern", "timeSensitivity", "goalOfContact", "consentToContact"
+    ]));
     setFieldErrors(errors);
     
     if (Object.keys(errors).length > 0) {
@@ -187,7 +200,6 @@ const PatientIntakePediatric = () => {
     }
     
     setShowErrorSummary(false);
-
     setIsSubmitting(true);
 
     try {
@@ -206,6 +218,16 @@ const PatientIntakePediatric = () => {
       const originCta = searchParams.get("origin_cta") || storedTracking.origin_cta || null;
       const pillarOrigin = searchParams.get("pillar_origin") || storedTracking.pillar_origin || null;
 
+      // Compute routing
+      const systemCategory = mapSystemCategory(formData.primaryConcern);
+      const routeLabel = computeRouteLabel(formData.primaryConcern, formData.timeSensitivity);
+
+      // Build operational notes (no clinical content)
+      const noteParts: string[] = [];
+      if (formData.childAge) noteParts.push(`Child age: ${formData.childAge}`);
+      if (formData.childGrade) noteParts.push(`Grade: ${formData.childGrade}`);
+      const notes = noteParts.length > 0 ? noteParts.join(". ") + "." : null;
+
       // Submit via edge function with bot protection
       const { data, error } = await supabase.functions.invoke("create-lead", {
         body: {
@@ -213,13 +235,15 @@ const PatientIntakePediatric = () => {
           email: formData.parentEmail,
           phone: formData.parentPhone || null,
           preferred_contact_method: formData.preferredContact,
-          system_category: formData.primaryConcern,
+          system_category: systemCategory,
           primary_concern: formData.primaryConcern,
-          symptom_summary: formData.symptomDescription || null,
+          time_sensitivity: formData.timeSensitivity,
+          goal_of_contact: formData.goalOfContact,
+          route_label: routeLabel,
           who_is_this_for: "child",
-          funnel_stage: "lead_intake",
-          checkpoint_status: "lead_intake_completed",
-          notes: `Child age: ${formData.childAge}. Grade: ${formData.childGrade}. Duration: ${formData.symptomDuration}. School symptoms: ${formData.schoolSymptoms}. Athletic symptoms: ${formData.athleticSymptoms}.${formData.headInjuryEvaluation ? ` Head injury evaluation: ${formData.headInjuryEvaluation}.` : ''} Previous evaluation: ${formData.previousEvaluation}`,
+          funnel_stage: "lead",
+          checkpoint_status: "lead_created",
+          notes: notes,
           origin_page: originPage,
           origin_cta: originCta,
           pillar_origin: pillarOrigin,
@@ -280,9 +304,9 @@ const PatientIntakePediatric = () => {
           <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center mx-auto mb-3">
             <Users className="h-6 w-6 text-emerald-600" />
           </div>
-          <CardTitle className="text-2xl">Pediatric Lead Intake</CardTitle>
+          <CardTitle className="text-2xl">Pediatric Concierge Intake</CardTitle>
           <CardDescription>
-            Tell us about your child so we can prepare for their evaluation.
+            Tell us about your child so we can connect them with the right care.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -301,6 +325,26 @@ const PatientIntakePediatric = () => {
                 }}
               />
             )}
+
+            {/* Honeypot fields - hidden from users */}
+            <div className="hidden" aria-hidden="true">
+              <input
+                type="text"
+                name="website"
+                value={honeypotWebsite}
+                onChange={(e) => setHoneypotWebsite(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+              <input
+                type="text"
+                name="fax"
+                value={honeypotFax}
+                onChange={(e) => setHoneypotFax(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
 
             {/* Parent Information */}
             <div className="space-y-4">
@@ -387,6 +431,10 @@ const PatientIntakePediatric = () => {
                     <RadioGroupItem value="phone" id="contact-phone" />
                     <Label htmlFor="contact-phone" className="font-normal">Phone</Label>
                   </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="text" id="contact-text" />
+                    <Label htmlFor="contact-text" className="font-normal">Text</Label>
+                  </div>
                 </RadioGroup>
               </div>
             </div>
@@ -445,9 +493,9 @@ const PatientIntakePediatric = () => {
               </div>
             </div>
 
-            {/* Symptom Information */}
+            {/* Routing Information */}
             <div className="space-y-4">
-              <h3 className="font-semibold text-lg border-b pb-2">Symptoms & Concerns</h3>
+              <h3 className="font-semibold text-lg border-b pb-2">How Can We Help?</h3>
 
               <FormField
                 label="Primary Concern"
@@ -469,144 +517,72 @@ const PatientIntakePediatric = () => {
                     <SelectValue placeholder="Select primary concern" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="acute-injury">Acute Injury (Recent)</SelectItem>
-                    <SelectItem value="concussion">Concussion / Head Injury</SelectItem>
-                    <SelectItem value="school-symptoms">School Performance Issues</SelectItem>
-                    <SelectItem value="motor-issues">Motor / Coordination Issues</SelectItem>
-                    <SelectItem value="headaches">Headaches</SelectItem>
-                    <SelectItem value="balance">Balance / Dizziness</SelectItem>
-                    <SelectItem value="fatigue">Fatigue / Energy Issues</SelectItem>
-                    <SelectItem value="sports-injury">Sports-Related Symptoms</SelectItem>
-                    <SelectItem value="chronic-injury">Unresolved Chronic Injury</SelectItem>
-                    <SelectItem value="growth-pain">Growth Related Pain Syndrome</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    {PRIMARY_CONCERN_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </FormField>
 
-              {formData.primaryConcern === "concussion" && (
-                <div className="space-y-2 pl-4 border-l-2 border-emerald-200 dark:border-emerald-800">
-                  <Label>Have they been evaluated for this by their Pediatrician or Neurologist?</Label>
-                  <RadioGroup
-                    value={formData.headInjuryEvaluation}
-                    onValueChange={(value) => handleChange("headInjuryEvaluation", value)}
-                    className="flex gap-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="yes-pediatrician" id="head-eval-ped" />
-                      <Label htmlFor="head-eval-ped" className="font-normal">Yes, Pediatrician</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="yes-neurologist" id="head-eval-neuro" />
-                      <Label htmlFor="head-eval-neuro" className="font-normal">Yes, Neurologist</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="yes-both" id="head-eval-both" />
-                      <Label htmlFor="head-eval-both" className="font-normal">Yes, Both</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="no" id="head-eval-no" />
-                      <Label htmlFor="head-eval-no" className="font-normal">No</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label htmlFor="symptomDuration">How long have symptoms been present?</Label>
+              <FormField
+                label="Is this time-sensitive?"
+                htmlFor="timeSensitivity"
+                required
+                error={fieldErrors.timeSensitivity}
+                touched={touchedFields.has("timeSensitivity")}
+              >
                 <Select
-                  value={formData.symptomDuration}
-                  onValueChange={(value) => handleChange("symptomDuration", value)}
+                  value={formData.timeSensitivity}
+                  onValueChange={(value) => {
+                    handleChange("timeSensitivity", value);
+                    touchField("timeSensitivity");
+                  }}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select duration" />
+                  <SelectTrigger className={cn(
+                    touchedFields.has("timeSensitivity") && fieldErrors.timeSensitivity && "border-destructive focus-visible:ring-destructive"
+                  )}>
+                    <SelectValue placeholder="Select urgency" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="less-than-2-weeks">Less than 2 weeks</SelectItem>
-                    <SelectItem value="2-4-weeks">2-4 weeks</SelectItem>
-                    <SelectItem value="1-3-months">1-3 months</SelectItem>
-                    <SelectItem value="3-6-months">3-6 months</SelectItem>
-                    <SelectItem value="over-6-months">Over 6 months</SelectItem>
+                    {TIME_SENSITIVITY_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-              </div>
+              </FormField>
 
-              <div className="space-y-2">
-                <Label>Are symptoms affecting school performance?</Label>
-                <RadioGroup
-                  value={formData.schoolSymptoms}
-                  onValueChange={(value) => handleChange("schoolSymptoms", value)}
-                  className="flex gap-4"
+              <FormField
+                label="Goal of Contact"
+                htmlFor="goalOfContact"
+                required
+                error={fieldErrors.goalOfContact}
+                touched={touchedFields.has("goalOfContact")}
+              >
+                <Select
+                  value={formData.goalOfContact}
+                  onValueChange={(value) => {
+                    handleChange("goalOfContact", value);
+                    touchField("goalOfContact");
+                  }}
                 >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="school-yes" />
-                    <Label htmlFor="school-yes" className="font-normal">Yes</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="school-no" />
-                    <Label htmlFor="school-no" className="font-normal">No</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="unsure" id="school-unsure" />
-                    <Label htmlFor="school-unsure" className="font-normal">Unsure</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Are symptoms affecting athletic performance?</Label>
-                <RadioGroup
-                  value={formData.athleticSymptoms}
-                  onValueChange={(value) => handleChange("athleticSymptoms", value)}
-                  className="flex gap-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="athletic-yes" />
-                    <Label htmlFor="athletic-yes" className="font-normal">Yes</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="athletic-no" />
-                    <Label htmlFor="athletic-no" className="font-normal">No</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="unsure" id="athletic-unsure" />
-                    <Label htmlFor="athletic-unsure" className="font-normal">Unsure</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="na" id="athletic-na" />
-                    <Label htmlFor="athletic-na" className="font-normal">N/A</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="symptomDescription">Description of Symptoms</Label>
-                <Textarea
-                  id="symptomDescription"
-                  value={formData.symptomDescription}
-                  onChange={(e) => handleChange("symptomDescription", e.target.value)}
-                  placeholder="Describe your child's symptoms and how they affect daily activities..."
-                  rows={4}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Has your child been previously evaluated for this?</Label>
-                <RadioGroup
-                  value={formData.previousEvaluation}
-                  onValueChange={(value) => handleChange("previousEvaluation", value)}
-                  className="flex gap-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="eval-yes" />
-                    <Label htmlFor="eval-yes" className="font-normal">Yes</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="eval-no" />
-                    <Label htmlFor="eval-no" className="font-normal">No</Label>
-                  </div>
-                </RadioGroup>
-              </div>
+                  <SelectTrigger className={cn(
+                    touchedFields.has("goalOfContact") && fieldErrors.goalOfContact && "border-destructive focus-visible:ring-destructive"
+                  )}>
+                    <SelectValue placeholder="What are you hoping to accomplish?" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PEDIATRIC_GOAL_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
             </div>
 
             {/* Consent */}
@@ -636,6 +612,11 @@ const PatientIntakePediatric = () => {
                 </div>
               </div>
             </div>
+
+            {/* Microcopy */}
+            <p className="text-sm text-muted-foreground text-center px-4">
+              Clinical details and medical history will be collected securely after next steps are confirmed.
+            </p>
 
             {/* Submit */}
             <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>

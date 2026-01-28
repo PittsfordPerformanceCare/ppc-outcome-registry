@@ -10,7 +10,6 @@ import {
   validationErrorResponse,
   botDetectedResponse,
 } from "../_shared/input-validator.ts";
-import { isConcussionEducationCandidate } from "../_shared/concussion-education-matcher.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,6 +17,9 @@ const corsHeaders = {
 };
 
 const SERVICE_TYPE = "lead_submission";
+
+// Concussion education is now triggered by exact primary_concern match, not keyword detection
+const CONCUSSION_EDUCATION_CONCERN = "concussion";
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -52,6 +54,9 @@ Deno.serve(async (req) => {
     console.log("[create-lead] Received request from IP:", clientIp, "body keys:", Object.keys(body));
     console.log("[create-lead] Name:", body.name || body.full_name);
     console.log("[create-lead] Email:", body.email);
+    console.log("[create-lead] Primary concern:", body.primary_concern);
+    console.log("[create-lead] Time sensitivity:", body.time_sensitivity);
+    console.log("[create-lead] Route label:", body.route_label);
     console.log("[create-lead] Honeypot website:", body.website, "fax:", body.fax);
     console.log("[create-lead] Form load time:", body._form_loaded_at, "elapsed:", body._form_loaded_at ? (Date.now() - body._form_loaded_at) / 1000 : "N/A", "seconds");
 
@@ -71,8 +76,8 @@ Deno.serve(async (req) => {
 
     const { sanitized } = validation;
 
-    // Check if this lead qualifies for concussion education
-    const deliverConcussionEducation = isConcussionEducationCandidate(sanitized.primary_concern as string | null);
+    // Check if this lead qualifies for concussion education (exact dropdown match only)
+    const deliverConcussionEducation = sanitized.primary_concern === CONCUSSION_EDUCATION_CONCERN;
 
     // Build lead data from sanitized input
     const leadData: Record<string, unknown> = {
@@ -81,9 +86,14 @@ Deno.serve(async (req) => {
       phone: sanitized.phone as string | null,
       who_is_this_for: sanitized.who_is_this_for as string | null,
       primary_concern: sanitized.primary_concern as string | null,
-      symptom_summary: sanitized.symptom_summary as string | null,
       preferred_contact_method: sanitized.preferred_contact_method as string | null,
       notes: sanitized.notes as string | null,
+      // New routing fields
+      time_sensitivity: sanitized.time_sensitivity as string | null,
+      goal_of_contact: sanitized.goal_of_contact as string | null,
+      system_category: sanitized.system_category as string | null,
+      route_label: sanitized.route_label as string | null,
+      // Attribution fields
       utm_source: sanitized.utm_source as string | null,
       utm_medium: sanitized.utm_medium as string | null,
       utm_campaign: sanitized.utm_campaign as string | null,
@@ -91,7 +101,6 @@ Deno.serve(async (req) => {
       origin_page: sanitized.origin_page as string | null,
       origin_cta: sanitized.origin_cta as string | null,
       pillar_origin: sanitized.pillar_origin as string | null,
-      system_category: sanitized.primary_concern as string | null,
       checkpoint_status: "lead_created",
       funnel_stage: "lead",
     };

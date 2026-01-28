@@ -135,7 +135,7 @@ const PostConcussionSymptomsPage = lazy(() => import("./pages/care/PostConcussio
 // ========== PHASE 1 SHELL: /patient PAGES ==========
 const PatientConcierge = lazy(() => import("./pages/patient-shell/PatientConcierge"));
 const PatientIntakeShell = lazy(() => import("./pages/patient-shell/PatientIntakeShell"));
-const PatientIntakeAdult = lazy(() => import("./pages/patient-shell/PatientIntakeAdult"));
+const PatientIntakeSelf = lazy(() => import("./pages/patient-shell/PatientIntakeSelf"));
 const PatientIntakePediatric = lazy(() => import("./pages/patient-shell/PatientIntakePediatric"));
 const PatientIntakeReferral = lazy(() => import("./pages/patient-shell/PatientIntakeReferral"));
 const PatientThankYou = lazy(() => import("./pages/patient-shell/PatientThankYou"));
@@ -246,7 +246,7 @@ const App = () => (
             <Route path="/patient" element={<PatientLayout />}>
               <Route path="concierge" element={<PatientConcierge />} />
               <Route path="intake" element={<PatientIntakeShell />} />
-              <Route path="intake/adult" element={<PatientIntakeAdult />} />
+              <Route path="intake/adult" element={<PatientIntakeSelf />} />
               <Route path="intake/pediatric" element={<PatientIntakePediatric />} />
               <Route path="intake/referral" element={<PatientIntakeReferral />} />
               <Route path="thank-you" element={<PatientThankYou />} />
