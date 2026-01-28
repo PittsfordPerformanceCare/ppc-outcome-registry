@@ -37,13 +37,17 @@ import {
   ArrowRight,
   Inbox,
   Calendar,
-  FileText
+  FileText,
+  Brain,
+  Activity,
+  AlertCircle
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { BookNPVisitDialog } from "./BookNPVisitDialog";
 import { SendIntakeFormsDialog } from "./SendIntakeFormsDialog";
+import { getNewPatientExamType, getExamTypeBadgeConfig } from "@/lib/routingSuggestion";
 
 interface Lead {
   id: string;
@@ -61,6 +65,9 @@ interface Lead {
   contact_attempt_count: number | null;
   last_contacted_at: string | null;
   preferred_contact_method: string | null;
+  // Routing fields for exam type determination
+  route_label?: string | null;
+  system_category?: string | null;
 }
 
 interface LeadsSectionProps {
@@ -305,9 +312,9 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
         <TableHeader>
           <TableRow className="hover:bg-transparent">
             <TableHead className="w-[180px]">Contact</TableHead>
+            <TableHead>Exam Type</TableHead>
             <TableHead>Method</TableHead>
             <TableHead>Source / CTA</TableHead>
-            <TableHead>Concern</TableHead>
             <TableHead>Waiting</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="w-[200px] text-right">Actions</TableHead>
@@ -317,6 +324,15 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
           {sortedLeads.map((lead, index) => {
             const isNewest = index === 0;
             const isQualifying = qualifyingLeadId === lead.id;
+            
+            // Derive exam type from route_label or system_category
+            const examType = getNewPatientExamType(lead.route_label, lead.system_category);
+            const examTypeBadge = getExamTypeBadgeConfig(examType);
+            const ExamTypeIcon = examType === "Neurologic New Patient" 
+              ? Brain 
+              : examType === "Musculoskeletal New Patient" 
+                ? Activity 
+                : AlertCircle;
 
             return (
               <TableRow 
@@ -335,6 +351,15 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
                       </div>
                     </div>
                   </div>
+                </TableCell>
+                <TableCell>
+                  <Badge 
+                    variant="outline" 
+                    className={`font-medium flex items-center gap-1.5 w-fit ${examTypeBadge.className}`}
+                  >
+                    <ExamTypeIcon className="h-3 w-3" />
+                    <span className="truncate max-w-[140px]">{examType}</span>
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">
@@ -374,9 +399,6 @@ export function LeadsSection({ leads, loading, onRefresh, hasLeadsButNoCareReque
                   <Badge variant="outline" className="font-normal">
                     {getSourceLabel(lead)}
                   </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground max-w-[150px] truncate">
-                  {lead.primary_concern || "—"}
                 </TableCell>
                 <TableCell>{getSLAIndicator(lead.created_at)}</TableCell>
                 <TableCell>{getLeadStatusBadge(lead.lead_status)}</TableCell>

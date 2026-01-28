@@ -49,7 +49,7 @@ import { LeadDetailsDialog } from "./LeadDetailsDialog";
 import { IntakeFormSummaryDialog } from "./IntakeFormSummaryDialog";
 import { IntakeSummaryPrintable } from "@/components/intake/IntakeSummaryPrintable";
 import { useNavigate } from "react-router-dom";
-import { getSuggestedEpisodeType, getRoutingBadgeConfig, type EpisodeTypeRoute } from "@/lib/routingSuggestion";
+import { getSuggestedEpisodeType, getRoutingBadgeConfig, getNewPatientExamType, getExamTypeBadgeConfig, type EpisodeTypeRoute, type NewPatientExamType } from "@/lib/routingSuggestion";
 
 // The 6 journey stages per UX spec - FIXED, never add more
 type JourneyStage = 
@@ -70,7 +70,9 @@ interface ProspectJourney {
   phone: string | null;
   primaryConcern: string | null;
   systemCategory: string | null;
+  routeLabel: string | null; // New: from leads.route_label
   suggestedRoute: EpisodeTypeRoute;
+  newPatientExamType: NewPatientExamType; // Derived exam type for admin display
   createdAt: string;
   currentStage: JourneyStage;
   jenniferAction: JenniferAction;
@@ -258,7 +260,9 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
         const daysInPipeline = Math.floor((Date.now() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
 
         const systemCategory = lead.system_category || null;
+        const routeLabel = lead.route_label || null;
         const suggestedRoute = getSuggestedEpisodeType(systemCategory, lead.primary_concern);
+        const newPatientExamType = getNewPatientExamType(routeLabel, systemCategory);
 
         journeys.push({
           id: lead.id,
@@ -267,7 +271,9 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           phone: lead.phone || null,
           primaryConcern: lead.primary_concern || lead.symptom_summary || null,
           systemCategory,
+          routeLabel,
           suggestedRoute,
+          newPatientExamType,
           createdAt: lead.created_at,
           currentStage: "lead_submitted",
           jenniferAction: "approve",
@@ -386,9 +392,11 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
 
         console.log(`[ProspectJourney] ${patientName}: status=${statusUpper}, source=${cr.source}, isApproved=${isApproved}, formsReceived=${formsReceived}, isFromFrontDeskQR=${isFromFrontDeskQR}, episodeActive=${episodeActive}, currentStage=${currentStage}, jenniferAction=${jenniferAction}`);
 
-        // Get system category from payload
+        // Get system category and route label from payload
         const systemCategory = (payload.system_category as string) || null;
+        const routeLabel = (payload.route_label as string) || null;
         const suggestedRoute = getSuggestedEpisodeType(systemCategory, primaryConcern);
+        const newPatientExamType = getNewPatientExamType(routeLabel, systemCategory);
 
         // Extract episode data if linked
         const episodeData = linkedEpisode ? {
@@ -405,7 +413,9 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
           phone,
           primaryConcern,
           systemCategory,
+          routeLabel,
           suggestedRoute,
+          newPatientExamType,
           createdAt: cr.created_at,
           currentStage,
           jenniferAction,
@@ -890,20 +900,20 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                           >
                             {prospect.name}
                           </h4>
-                          {/* Routing suggestion badge */}
-                          {prospect.suggestedRoute !== "UNKNOWN" && (
-                            <Badge 
-                              variant="outline" 
-                              className={`text-xs px-1.5 py-0 flex items-center gap-1 ${getRoutingBadgeConfig(prospect.suggestedRoute).className}`}
-                            >
-                              {prospect.suggestedRoute === "NEURO" ? (
-                                <Brain className="h-3 w-3" />
-                              ) : (
-                                <Activity className="h-3 w-3" />
-                              )}
-                              {getRoutingBadgeConfig(prospect.suggestedRoute).label}
-                            </Badge>
-                          )}
+                          {/* New Patient Exam Type Badge - prominent display */}
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs px-2 py-0.5 flex items-center gap-1.5 font-medium ${getExamTypeBadgeConfig(prospect.newPatientExamType).className}`}
+                          >
+                            {prospect.newPatientExamType === "Neurologic New Patient" ? (
+                              <Brain className="h-3 w-3" />
+                            ) : prospect.newPatientExamType === "Musculoskeletal New Patient" ? (
+                              <Activity className="h-3 w-3" />
+                            ) : (
+                              <HelpCircle className="h-3 w-3" />
+                            )}
+                            {prospect.newPatientExamType}
+                          </Badge>
                           {prospect.patientCompleted && (
                             <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />
                           )}
@@ -929,7 +939,35 @@ export function ProspectJourneyTracker({ className }: ProspectJourneyTrackerProp
                             </>
                           )}
                         </div>
-                        {prospect.primaryConcern && (
+                        {/* Suggested Exam Type with CTA - shown for leads/early stages */}
+                        {prospect.currentStage === "lead_submitted" && (
+                          <div className="mt-2 p-2 rounded-md bg-muted/50 border border-muted">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex items-center gap-2 text-xs">
+                                <span className="text-muted-foreground">Suggested New Patient Exam Type:</span>
+                                <span className={`font-semibold ${
+                                  prospect.newPatientExamType === "Neurologic New Patient" 
+                                    ? "text-blue-700 dark:text-blue-400" 
+                                    : prospect.newPatientExamType === "Musculoskeletal New Patient"
+                                      ? "text-green-700 dark:text-green-400"
+                                      : "text-amber-700 dark:text-amber-400"
+                                }`}>
+                                  {prospect.newPatientExamType}
+                                </span>
+                              </div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 text-xs gap-1 text-primary hover:text-primary"
+                                onClick={() => handleAction(prospect)}
+                              >
+                                {getExamTypeBadgeConfig(prospect.newPatientExamType).ctaLabel}
+                                <ArrowRight className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        {prospect.primaryConcern && prospect.currentStage !== "lead_submitted" && (
                           <p className="text-sm text-muted-foreground truncate mt-1">
                             {prospect.primaryConcern}
                           </p>
