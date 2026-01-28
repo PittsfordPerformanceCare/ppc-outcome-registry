@@ -17,6 +17,9 @@ interface Lead {
   contact_attempt_count: number | null;
   last_contacted_at: string | null;
   preferred_contact_method: string | null;
+  // Routing fields for exam type determination
+  route_label: string | null;
+  system_category: string | null;
 }
 
 interface CareRequest {
