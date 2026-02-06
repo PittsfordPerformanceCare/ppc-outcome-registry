@@ -141,15 +141,16 @@ export function getPrimaryConcernLabel(value: string | null | undefined): string
 }
 
 /**
- * Determines if concussion education should be delivered based on primary concern selection
- * 
- * This replaces keyword-based detection with exact dropdown matching
+ * Concerns that qualify for concussion education delivery.
+ * Matches the neuro-related dropdown values from PRIMARY_CONCERN_OPTIONS.
  */
-export function shouldDeliverConcussionEducation(primaryConcern: string | null | undefined): boolean {
-  return primaryConcern === "concussion";
-}
+const EDUCATION_ELIGIBLE_CONCERNS: PrimaryConcernValue[] = ["concussion", "dizziness", "headaches"];
 
 /**
- * Gets the full primary concern label for display (used in thank-you page)
+ * Determines if concussion education should be delivered based on primary concern selection.
+ * Triggers for all neuro-relevant concerns (concussion, dizziness, headaches).
  */
-export const CONCUSSION_EDUCATION_CONCERN = "concussion";
+export function shouldDeliverConcussionEducation(primaryConcern: string | null | undefined): boolean {
+  if (!primaryConcern) return false;
+  return EDUCATION_ELIGIBLE_CONCERNS.includes(primaryConcern as PrimaryConcernValue);
+}

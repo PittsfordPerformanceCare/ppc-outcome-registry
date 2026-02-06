@@ -18,8 +18,8 @@ const corsHeaders = {
 
 const SERVICE_TYPE = "lead_submission";
 
-// Concussion education is now triggered by exact primary_concern match, not keyword detection
-const CONCUSSION_EDUCATION_CONCERN = "concussion";
+// Concussion education triggers for all neuro-relevant concerns (matches frontend EDUCATION_ELIGIBLE_CONCERNS)
+const EDUCATION_ELIGIBLE_CONCERNS = ["concussion", "dizziness", "headaches"];
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -76,8 +76,10 @@ Deno.serve(async (req) => {
 
     const { sanitized } = validation;
 
-    // Check if this lead qualifies for concussion education (exact dropdown match only)
-    const deliverConcussionEducation = sanitized.primary_concern === CONCUSSION_EDUCATION_CONCERN;
+    // Check if this lead qualifies for concussion education (neuro-relevant dropdown matches)
+    const deliverConcussionEducation = EDUCATION_ELIGIBLE_CONCERNS.includes(
+      sanitized.primary_concern as string
+    );
 
     // Build lead data from sanitized input
     const leadData: Record<string, unknown> = {
