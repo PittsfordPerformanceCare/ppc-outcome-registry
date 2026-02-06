@@ -2,13 +2,13 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, ArrowRight, Phone, Mail, Clock, BookOpen } from "lucide-react";
-import { shouldDeliverConcussionEducation, CONCUSSION_EDUCATION_CONCERN } from "@/lib/conciergeRouting";
+import { shouldDeliverConcussionEducation } from "@/lib/conciergeRouting";
 
 const PatientThankYou = () => {
   const [searchParams] = useSearchParams();
   const primaryReason = searchParams.get("reason");
   
-  // Show concussion guide only for exact concussion concern selection
+  // Show concussion guide for neuro-relevant concern selections
   const showConcussionGuide = shouldDeliverConcussionEducation(primaryReason);
 
   return (

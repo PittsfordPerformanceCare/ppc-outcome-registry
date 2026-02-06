@@ -4,10 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 const resendApiKey = Deno.env.get("RESEND_API_KEY");
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-// APP_URL is for general app links, but the guide route only exists in the Lovable app
-const appUrl = Deno.env.get("APP_URL") || "https://ppc-unified-platform.lovable.app";
-// Always use Lovable app URL for guides since the route is only defined there
-const guideBaseUrl = "https://ppc-unified-platform.lovable.app";
+const appUrl = Deno.env.get("APP_URL") || "https://muse-meadow-app.lovable.app";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -69,7 +66,7 @@ serve(async (req: Request) => {
           Based on your reported symptoms, we recommend reviewing our acute concussion guide. 
           This resource covers the first 24 hours and first week after a head injury, including important safety information and recovery guidance.
         </p>
-        <a href="${guideBaseUrl}/site/guides/concussion/acute-concussion-guide" 
+        <a href="${appUrl}/site/guides/concussion/acute-concussion-guide" 
            style="display: inline-block; background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
           Open Acute Concussion Guide
         </a>
