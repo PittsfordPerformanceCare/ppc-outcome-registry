@@ -1,280 +1,135 @@
 
 
-# Concierge Lead Intake Refactoring Plan
+# Rebuild Acute Concussion Guide as a Dual-Purpose Educational Asset
 
 ## Overview
 
-This plan updates the public-facing Concierge Lead Intake forms to be strictly non-PHI while implementing deterministic routing to clinic scheduling blocks (MSK on Monday, Neuro on Wednesday). The forms will capture only intent and routing signals, with clinical details collected later in the secure HIPAA environment.
+The Acute Concussion Guide already exists as a well-structured 541-line page at `/site/guides/concussion/acute-concussion-guide`. The goal is to ensure it works seamlessly as:
 
-## Current State Analysis
+1. **A public site asset** -- accessible to anyone browsing the site (already works)
+2. **An automatic value-add for concussion-specific lead submissions** -- delivered via the Thank You page and confirmation email when a concussion-related concern is selected
 
-### Existing Forms
-| Form | File | Current PHI-Risk Fields |
-|------|------|------------------------|
-| Adult/Self | `PatientIntakeAdult.tsx` | symptomDuration, symptomDescription, previousTreatment, hasReferral, priorConcussionCare |
-| Pediatric | `PatientIntakePediatric.tsx` | symptomDuration, symptomDescription, schoolSymptoms, athleticSymptoms, previousEvaluation, headInjuryEvaluation |
-| Referral | `PatientIntakeReferral.tsx` | referralReason (free-text textarea) |
+## Current State Assessment
 
-### Issues to Address
-1. Free-text symptom fields capture PHI
-2. No time_sensitivity or goal_of_contact fields
-3. Routing is computed client-side only, not stored
-4. Education delivery uses keyword matching on free-text instead of dropdown selection
+**What already works:**
+- The guide page itself is fully built with proper SEO, structured data, and clinical content
+- The Thank You page (`PatientThankYou.tsx`) conditionally shows a guide CTA when `primary_concern === "concussion"`
+- The `create-lead` edge function tracks education delivery with `education_delivered`, `education_asset`, `education_url`, and `education_delivered_at` fields
+- The `send-lead-confirmation` edge function includes a concussion guide section in the email when `deliverConcussionEducation` is true
+- The `leads` database table has all required education tracking columns
 
-## Technical Changes
+**What needs fixing:**
 
-### Phase 1: Database Schema Update
-
-Add three new columns to the `leads` table:
-
-```sql
-ALTER TABLE leads 
-ADD COLUMN IF NOT EXISTS time_sensitivity text,
-ADD COLUMN IF NOT EXISTS goal_of_contact text,
-ADD COLUMN IF NOT EXISTS route_label text;
+### 1. Stale URL in the confirmation email
+The `send-lead-confirmation` edge function hard-codes a stale URL:
 ```
-
-### Phase 2: Shared Routing Helper
-
-Create `src/lib/conciergeRouting.ts` with:
-
-```text
-+-----------------------------------------------------------+
-|  conciergeRouting.ts                                       |
-+-----------------------------------------------------------+
-| Constants:                                                 |
-|   - PRIMARY_CONCERN_OPTIONS (exact strings per spec)       |
-|   - TIME_SENSITIVITY_OPTIONS                               |
-|   - GOAL_OF_CONTACT_OPTIONS (self/pediatric/referral)      |
-|   - NEURO_CONCERNS / MSK_CONCERNS / REVIEW_CONCERNS lists  |
-|                                                            |
-| Functions:                                                 |
-|   - mapSystemCategory(primaryConcern) -> 'neuro'|'msk'|'review'
-|   - computeRouteLabel(primaryConcern, timeSensitivity) ->  |
-|       'MSK NP - Monday' | 'Neuro NP - Wednesday' | 'Admin Review'
-|   - shouldDeliverConcussionEducation(primaryConcern) ->    |
-|       boolean (checks for exact concussion concern value)  |
-+-----------------------------------------------------------+
+const guideBaseUrl = "https://ppc-unified-platform.lovable.app";
 ```
+This should point to the production published URL (`https://muse-meadow-app.lovable.app`) and eventually the custom domain (`https://www.pittsfordperformancecare.com`). It should use the `APP_URL` environment variable consistently.
 
-**Routing Matrix Logic:**
-- Neuro concerns: Concussion, Dizziness/Balance/Vertigo, Headaches/Migraine, Neurologic-Related
-- MSK concerns: Neck Pain/Whiplash, Chronic Pain, Sports Performance
-- Review required: Recent Injury/Acute, Other/Not Sure
+### 2. Education trigger is too narrow
+Currently, education delivery triggers **only** when `primary_concern === "concussion"`. Per the dropdown options in `conciergeRouting.ts`, the full set of concussion-adjacent concerns that should qualify includes:
+- `"concussion"` -- Concussion or Head Injury (recent or past)
+- `"dizziness"` -- Dizziness, Balance, or Vertigo Concerns
+- `"headaches"` -- Headaches or Migraine-Related Concerns
 
-**Time Sensitivity Modifier:**
-- If time_sensitivity is NOT "No - ongoing or non-urgent", route_label becomes "Admin Review"
+These three are all classified as `neuro` system category and clinically benefit from the acute concussion guide content (red flags, energy management, visual/vestibular protection).
 
-### Phase 3: Form Component Updates
+This expansion needs to happen in three places:
+- `shouldDeliverConcussionEducation()` in `src/lib/conciergeRouting.ts` (frontend Thank You page)
+- `CONCUSSION_EDUCATION_CONCERN` check in `supabase/functions/create-lead/index.ts` (backend lead creation)
+- The `deliverConcussionEducation` flag passed to `send-lead-confirmation`
 
-#### 3A. PatientIntakeAdult.tsx (rename to PatientIntakeSelf.tsx)
+### 3. Deprecated keyword-matching files should be removed
+Two files exist solely for deprecated keyword-based matching:
+- `src/utils/concussionEducationMatcher.ts`
+- `supabase/functions/_shared/concussion-education-matcher.ts`
 
-**Remove these fields completely:**
-- symptomDuration
-- symptomDescription
-- priorConcussionCare
-- previousTreatment
-- hasReferral
-- otherReason (conditionally shown for "other" selection)
+Neither is imported anywhere in the active codebase. They should be removed to prevent confusion, since education delivery is now governed by exact dropdown selection.
 
-**Update Primary Concern dropdown to exact spec values:**
-```
-- Recent Injury / Acute Concern (rapid evaluation needed)
-- Concussion or Head Injury (recent or past)
-- Dizziness, Balance, or Vertigo Concerns
-- Headaches or Migraine-Related Concerns
-- Neck Pain or Whiplash-Related Concerns
-- Chronic Pain or Unresolved Injury
-- Neurologic-Related Concerns (thinking, fatigue, coordination, vision)
-- Sports Performance or Return-to-Play Clearance
-- Other / Not Sure
-```
+## Implementation Plan
 
-**Add new fields:**
-- Time Sensitivity (required select)
-- Goal of Contact (required select)
+### Step 1: Update education delivery trigger (frontend)
+**File:** `src/lib/conciergeRouting.ts`
 
-**Add microcopy before submit button:**
-"Clinical details and medical history will be collected securely after next steps are confirmed."
-
-**Update payload construction:**
-- Remove: symptom_summary, notes with clinical content
-- Add: time_sensitivity, goal_of_contact, system_category (computed), route_label (computed)
-- Keep notes ONLY for operational context (e.g., "Preferred contact: email")
-
-#### 3B. PatientIntakePediatric.tsx
-
-**Remove these fields completely:**
-- symptomDuration
-- symptomDescription
-- schoolSymptoms
-- athleticSymptoms
-- previousEvaluation
-- headInjuryEvaluation
-
-**Keep operational fields:**
-- childAge (optional)
-- childGrade (optional)
-
-**Add same Primary Concern, Time Sensitivity, Goal of Contact (pediatric options)**
-
-**Update notes field to contain ONLY:**
-`Child age: ${childAge}. Grade: ${childGrade}.` (no symptom narratives)
-
-#### 3C. PatientIntakeReferral.tsx
-
-**Remove:**
-- referralReason (free-text textarea)
-
-**Add:**
-- Referral Category (required select - uses same Primary Concern options)
-- Referral Purpose (required select - referral-specific options)
-- Time Sensitivity (recommended - default to "No" if omitted)
-
-**Add helper text under Patient Name field:**
-"Do not include clinical details."
-
-**Update payload:**
-- primary_concern = Referral Category selection
-- goal_of_contact = Referral Purpose selection
-- notes = `Referring Provider: ${providerName}. Practice: ${practiceName}.` (operational only)
-
-### Phase 4: Edge Function Updates
-
-#### 4A. Update `supabase/functions/_shared/input-validator.ts`
-
-Add new fields to validation:
+Update `shouldDeliverConcussionEducation()` to accept the three neuro-relevant concerns:
 ```typescript
-const textFields = [
-  // existing fields...
-  "time_sensitivity",
-  "goal_of_contact",
-  "system_category",
-  "route_label",
-];
-```
+const EDUCATION_ELIGIBLE_CONCERNS = ["concussion", "dizziness", "headaches"];
 
-#### 4B. Update `supabase/functions/create-lead/index.ts`
-
-**Update leadData construction:**
-```typescript
-const leadData: Record<string, unknown> = {
-  name: sanitized.name,
-  email: sanitized.email,
-  phone: sanitized.phone,
-  who_is_this_for: sanitized.who_is_this_for,
-  primary_concern: sanitized.primary_concern,
-  preferred_contact_method: sanitized.preferred_contact_method,
-  notes: sanitized.notes, // Now contains ONLY operational context
-  // Remove: symptom_summary (no longer sent)
-  
-  // New routing fields
-  time_sensitivity: sanitized.time_sensitivity,
-  goal_of_contact: sanitized.goal_of_contact,
-  system_category: sanitized.system_category,
-  route_label: sanitized.route_label,
-  
-  // Existing tracking fields preserved
-  utm_source, utm_medium, utm_campaign, utm_content,
-  origin_page, origin_cta, pillar_origin,
-  checkpoint_status: "lead_created",
-  funnel_stage: "lead",
-};
-```
-
-**Update education delivery logic:**
-```typescript
-// Replace keyword-based detection with exact primary_concern match
-const deliverConcussionEducation = 
-  sanitized.primary_concern === "Concussion or Head Injury (recent or past)";
-```
-
-#### 4C. Update `supabase/functions/_shared/concussion-education-matcher.ts`
-
-Add new function for dropdown-based detection:
-```typescript
-export function isConcussionEducationCandidateBySelection(
+export function shouldDeliverConcussionEducation(
   primaryConcern: string | null | undefined
 ): boolean {
-  return primaryConcern === "Concussion or Head Injury (recent or past)";
+  if (!primaryConcern) return false;
+  return EDUCATION_ELIGIBLE_CONCERNS.includes(primaryConcern);
 }
 ```
 
-Keep existing function for backward compatibility with legacy data.
+### Step 2: Update education delivery trigger (backend)
+**File:** `supabase/functions/create-lead/index.ts`
 
-### Phase 5: Frontend Updates
-
-#### 5A. Update PatientThankYou.tsx
-
-Update education guide display to use dropdown-based check:
+Replace the single-value check with the same three-value set:
 ```typescript
-const showConcussionGuide = 
-  primaryReason === "Concussion or Head Injury (recent or past)";
+const EDUCATION_ELIGIBLE_CONCERNS = ["concussion", "dizziness", "headaches"];
+
+// Later in the handler:
+const deliverConcussionEducation = EDUCATION_ELIGIBLE_CONCERNS.includes(
+  sanitized.primary_concern as string
+);
 ```
 
-Add microcopy to confirmation page:
-"Clinical details and medical history will be collected securely after next steps are confirmed."
+### Step 3: Fix the guide URL in confirmation email
+**File:** `supabase/functions/send-lead-confirmation/index.ts`
 
-#### 5B. Update ProspectJourneyTracker.tsx
+Replace the hard-coded stale URL with the `APP_URL` environment variable:
+```typescript
+const appUrl = Deno.env.get("APP_URL") || "https://muse-meadow-app.lovable.app";
+// Remove the separate guideBaseUrl variable entirely
+// Use appUrl for the guide link:
+// href="${appUrl}/site/guides/concussion/acute-concussion-guide"
+```
 
-Update to display route_label from leads table:
-- Show "MSK NP - Monday" in green badge
-- Show "Neuro NP - Wednesday" in blue badge  
-- Show "Admin Review" in amber badge
+### Step 4: Remove deprecated keyword matcher files
+Delete the two unused files:
+- `src/utils/concussionEducationMatcher.ts`
+- `supabase/functions/_shared/concussion-education-matcher.ts`
 
-Use stored route_label if present, fall back to computed value for legacy leads.
+These are no longer imported anywhere and contain the old keyword-based logic that was replaced by dropdown-selection-based triggering.
 
-### Phase 6: Cleanup
+### Step 5: Verify end-to-end flow
+After implementation, the complete flow will be:
 
-#### Files to update:
-1. `src/pages/patient-shell/PatientIntakeAdult.tsx` → Rename to `PatientIntakeSelf.tsx`
-2. `src/pages/patient-shell/PatientIntakePediatric.tsx`
-3. `src/pages/patient-shell/PatientIntakeReferral.tsx`
-4. `src/pages/patient-shell/PatientThankYou.tsx`
-5. `src/lib/routingSuggestion.ts` (update to use new constants)
-6. `src/App.tsx` (update route if file renamed)
-7. `supabase/functions/create-lead/index.ts`
-8. `supabase/functions/_shared/input-validator.ts`
-9. `supabase/functions/_shared/concussion-education-matcher.ts`
+```text
+Patient selects "Concussion or Head Injury",
+"Dizziness, Balance, or Vertigo", or
+"Headaches or Migraine-Related Concerns"
+         |
+         v
+  Lead is created via create-lead edge function
+  -> education_delivered = true
+  -> education_asset = "acute_concussion_guide_v1"
+  -> education_url = "/site/guides/concussion/acute-concussion-guide"
+  -> education_delivered_at = timestamp
+         |
+         v
+  Thank You page shows guide CTA card
+  (blue box with "Open Guide" button)
+         |
+         v
+  Confirmation email includes guide section
+  with direct link to the guide page
+         |
+         v
+  Guide is publicly accessible at
+  /site/guides/concussion/acute-concussion-guide
+```
 
-#### New files to create:
-1. `src/lib/conciergeRouting.ts` (shared constants and routing logic)
+## What Does NOT Change
+- The guide page content itself (AcuteConcussionGuide.tsx) -- no modifications needed
+- The database schema -- all tracking columns already exist
+- The Thank You page layout -- only the trigger condition changes
+- The email template content -- only the URL source changes
+- No new secrets, services, or backend resources are required
 
-## Security Considerations
-
-**Preserved protections:**
-- Honeypot fields (website, fax) remain in forms
-- Submission timing checks (minimum 3 seconds)
-- Rate limiting via existing infrastructure
-- Input sanitization in edge function
-- Silent bot rejection (fake success response)
-
-**PHI risk elimination:**
-- No free-text symptom fields in any form
-- notes field contains ONLY operational metadata
-- symptom_summary completely removed from payload
-
-## Implementation Order
-
-1. Database migration (add 3 columns)
-2. Create `src/lib/conciergeRouting.ts`
-3. Update edge functions (input-validator, create-lead, education-matcher)
-4. Update PatientIntakeSelf.tsx (formerly Adult)
-5. Update PatientIntakePediatric.tsx
-6. Update PatientIntakeReferral.tsx
-7. Update PatientThankYou.tsx
-8. Update ProspectJourneyTracker.tsx for route_label display
-9. Test all three form pathways
-10. Verify admin dashboard shows routing correctly
-
-## Acceptance Criteria Checklist
-
-- [ ] All three forms contain ONLY the safe fields specified
-- [ ] No free-text symptom capture exists anywhere
-- [ ] Leads include system_category and route_label computed deterministically
-- [ ] Attribution fields (UTM, origin) remain intact
-- [ ] Bot protections (honeypot, timing, rate limiting) remain intact
-- [ ] Education delivery triggered ONLY by primary_concern dropdown selection
-- [ ] Admin lead queue displays route_label clearly
-- [ ] Microcopy appears near submit button and on thank-you page
-
+## Technical Notes
+- The `EDUCATION_ELIGIBLE_CONCERNS` array should be defined as a constant in both frontend and backend to keep the two in sync conceptually, matching the dropdown `value` strings exactly from `PRIMARY_CONCERN_OPTIONS`
+- The `APP_URL` environment variable should be verified/set to the correct published URL before the email flow is tested in production
